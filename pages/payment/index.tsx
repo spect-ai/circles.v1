@@ -1,3 +1,4 @@
+import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import {
@@ -15,7 +16,7 @@ import {
   PostSocialsPayload,
 } from "@/app/services/Collection";
 import { CollectionType, PaymentConfig } from "@/app/types";
-import { Avatar, Box, Text } from "degen";
+import { Avatar, Box, Stack, Text } from "degen";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -69,27 +70,54 @@ const PaymentPage: NextPage = () => {
             alignItems="center"
           >
             {collection && collection.formMetadata && collection.parents && (
-              <CollectPayment
-                data={data}
-                setData={async (data) => {
-                  const res = await postFormPayment(
-                    query.channelId as string,
-                    data.__payment__,
-                    query.discordId as string
-                  );
+              <Box>
+                <ScrollContainer>
+                  <Stack space="2">
+                    {collection.formMetadata.logo && (
+                      <Avatar
+                        src={collection.formMetadata.logo}
+                        label=""
+                        size="20"
+                      />
+                    )}
+                    <NameInput
+                      autoFocus
+                      value={collection.name}
+                      disabled
+                      rows={Math.floor(collection.name?.length / 20) + 1}
+                    />
+                    {collection.description && (
+                      <Editor
+                        value={collection.description}
+                        isDirty={true}
+                        disabled
+                      />
+                    )}
+                  </Stack>
+                </ScrollContainer>
 
-                  console.log({ res });
-                  if (res.success)
-                    setBackToDiscordMessage(
-                      "Payment has been successfully made. Please close this tab & return to Discord."
+                <CollectPayment
+                  data={data}
+                  setData={async (data) => {
+                    const res = await postFormPayment(
+                      query.channelId as string,
+                      data.__payment__,
+                      query.discordId as string
                     );
-                }}
-                paymentConfig={
-                  collection?.formMetadata?.paymentConfig as PaymentConfig
-                }
-                circleId={collection?.parents[0].id}
-                circleSlug={collection?.parents[0].slug}
-              />
+
+                    console.log({ res });
+                    if (res.success)
+                      setBackToDiscordMessage(
+                        "Payment has been successfully made. Please close this tab & return to Discord."
+                      );
+                  }}
+                  paymentConfig={
+                    collection?.formMetadata?.paymentConfig as PaymentConfig
+                  }
+                  circleId={collection?.parents[0].id}
+                  circleSlug={collection?.parents[0].slug}
+                />
+              </Box>
             )}
           </Box>
         </DesktopContainer>
@@ -106,4 +134,29 @@ const DesktopContainer = styled(Box)`
   height: 100vh;
   overflowy: auto;
   overflowx: hidden;
+`;
+
+export const NameInput = styled.textarea`
+  resize: none;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.8rem;
+  font-family: Inter;
+  caret-color: rgb(191, 90, 242);
+  color: rgb(191, 90, 242);
+  font-weight: 600;
+  overflow: hidden;
+`;
+
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  height: 25rem;
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
 `;
