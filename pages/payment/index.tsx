@@ -9,7 +9,11 @@ import DiscordField from "@/app/modules/PublicForm/Fields/DiscordField";
 import GithubField from "@/app/modules/PublicForm/Fields/GithubField";
 import TelegramField from "@/app/modules/PublicForm/Fields/TelegramField";
 import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
-import { postSocials, PostSocialsPayload } from "@/app/services/Collection";
+import {
+  postFormPayment,
+  postSocials,
+  PostSocialsPayload,
+} from "@/app/services/Collection";
 import { CollectionType, PaymentConfig } from "@/app/types";
 import { Avatar, Box, Text } from "degen";
 import { NextPage } from "next";
@@ -67,7 +71,19 @@ const PaymentPage: NextPage = () => {
             {collection && collection.formMetadata && collection.parents && (
               <CollectPayment
                 data={data}
-                setData={setData}
+                setData={async (data) => {
+                  const res = await postFormPayment(
+                    query.channelId as string,
+                    data.__payment__,
+                    query.discordId as string
+                  );
+
+                  console.log({ res });
+                  if (res.success)
+                    setBackToDiscordMessage(
+                      "Payment has been successfully made. Please close this tab & return to Discord."
+                    );
+                }}
                 paymentConfig={
                   collection?.formMetadata?.paymentConfig as PaymentConfig
                 }

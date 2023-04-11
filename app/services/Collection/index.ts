@@ -526,3 +526,31 @@ export const postSocials = async (
     )
   ).json();
 };
+
+export type PostPaymentPayload = {
+  chain: Option;
+  token: Option;
+  value: string;
+  txnHash: string;
+};
+
+export const postFormPayment = async (
+  channelId: string,
+  payload: PostPaymentPayload,
+  discordId: string
+) => {
+  console.log({ payload });
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${channelId}/saveAndPostPayment?discordId=${discordId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      }
+    )
+  ).json();
+};
