@@ -34,9 +34,9 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:import/typescript",
-    "plugin:@next/next/recommended"
-    // "next"
-    // "next/core-web-vitals"
+    "plugin:@next/next/recommended",
+    "next",
+    "next/core-web-vitals"
   ],
   "rules": {
     // ...add rules which you'd like to disable
