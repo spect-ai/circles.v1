@@ -96,7 +96,7 @@ export const fieldOptionsDropdown = [
     ],
   },
   {
-    label: "Users",
+    label: "Users in this Space",
     options: [
       {
         label: "Multiple Users",

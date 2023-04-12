@@ -117,6 +117,12 @@ const PaymentPage: NextPage = () => {
                   circleId={collection?.parents[0].id}
                   circleSlug={collection?.parents[0].slug}
                 />
+                <Box marginTop="4" padding="2">
+                  {" "}
+                  <Text variant="base" weight="bold">
+                    {backToDiscordMessage}
+                  </Text>
+                </Box>
               </Box>
             )}
           </Box>
@@ -155,7 +161,7 @@ export const NameInput = styled.textarea`
 
 const ScrollContainer = styled(Box)`
   overflow-y: auto;
-  height: 25rem;
+  max-height: 25rem;
   ::-webkit-scrollbar {
     width: 5px;
   }

@@ -1,3 +1,4 @@
+import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import {
@@ -9,7 +10,8 @@ import GithubField from "@/app/modules/PublicForm/Fields/GithubField";
 import TelegramField from "@/app/modules/PublicForm/Fields/TelegramField";
 import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import { postSocials, PostSocialsPayload } from "@/app/services/Collection";
-import { Avatar, Box, Text } from "degen";
+import { CollectionType } from "@/app/types";
+import { Avatar, Box, Stack, Text } from "degen";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -21,6 +23,9 @@ const ConnectPage: NextPage = () => {
   const { query } = router;
   const [data, setData] = useState<any>({});
   const [backToDiscordMessage, setBackToDiscordMessage] = useState("");
+  const [collection, setCollection] = useState<CollectionType>(
+    {} as CollectionType
+  );
 
   useEffect(() => {
     if (query.discord && profileContext.discordId?.length) {
@@ -107,6 +112,22 @@ const ConnectPage: NextPage = () => {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (query.channelId) {
+      fetch(
+        `${process.env.API_HOST}/collection/v1/${query.channelId}/collection`
+      )
+        .then((res) => res.json())
+        .catch((err) => {
+          console.log(err);
+        })
+        .then((data) => {
+          setCollection(data);
+        });
+    }
+  }, [query.channelId]);
+  console.log("asasas");
+
   return (
     <>
       <MetaHead
@@ -139,11 +160,32 @@ const ConnectPage: NextPage = () => {
               padding="4"
               gap="2"
             >
-              <Avatar
-                src="https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset"
-                label=""
-                size="16"
-              />
+              {collection && collection.formMetadata && collection.parents && (
+                <ScrollContainer>
+                  <Stack space="2">
+                    {collection.formMetadata.logo && (
+                      <Avatar
+                        src={collection.formMetadata.logo}
+                        label=""
+                        size="20"
+                      />
+                    )}
+                    <NameInput
+                      autoFocus
+                      value={collection.name}
+                      disabled
+                      rows={Math.floor(collection.name?.length / 20) + 1}
+                    />
+                    {collection.description && (
+                      <Editor
+                        value={collection.description}
+                        isDirty={true}
+                        disabled
+                      />
+                    )}
+                  </Stack>
+                </ScrollContainer>
+              )}
               {query.wallet &&
                 query.discord &&
                 !query.telegram &&
@@ -160,18 +202,7 @@ const ConnectPage: NextPage = () => {
                     gap="4"
                   >
                     <Text variant="large" weight="bold">
-                      Sign in & connect Discord to
-                    </Text>
-                    <Text>😀 Prove that you're human</Text>
-                    <Text>
-                      🤝 Prove that you have roles on Guild.xyz to respond to
-                      role gated forms
-                    </Text>
-                    <Text>
-                      💰 Receive NFTs & ERC-20s for filling out forms on Discord
-                    </Text>
-                    <Text>
-                      🙌 Show off your NFTs & ERC-20s in form responses
+                      Sign in & connect Discord to continue
                     </Text>
                   </Box>
                 )}
@@ -266,4 +297,29 @@ const DesktopContainer = styled(Box)`
   height: 100vh;
   overflowy: auto;
   overflowx: hidden;
+`;
+
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  max-height: 25rem;
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+`;
+
+export const NameInput = styled.textarea`
+  resize: none;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.8rem;
+  font-family: Inter;
+  caret-color: rgb(191, 90, 242);
+  color: rgb(191, 90, 242);
+  font-weight: 600;
+  overflow: hidden;
 `;
