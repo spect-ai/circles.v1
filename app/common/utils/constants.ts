@@ -119,6 +119,7 @@ export const prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance = {
   telegram: ["telegram"],
   twitter: ["twitter"],
   github: ["github"],
+  readonly: ["readonly"],
 };
 
 export const opportunityType = [

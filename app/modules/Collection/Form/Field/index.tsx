@@ -124,6 +124,9 @@ function FieldComponent({
             <IconPencil color="accent" size="4" />
           </Box>
         </Stack>
+        {collection.properties[id]?.description && (
+          <Editor value={collection.properties[id]?.description} disabled />
+        )}
       </Stack>
       {collection.properties[id]?.type === "shortText" && (
         <Input

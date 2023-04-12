@@ -35,8 +35,8 @@ import Accordian from "@/app/common/components/Accordian";
 import AddConditions from "../Common/AddConditions";
 import PayWall from "./PayWallOptions";
 import RewardTokenOptions from "./RewardTokenOptions";
-import { Field } from "../Automation/Actions/Field";
 import { useKeyPressEvent } from "react-use";
+import Editor from "@/app/common/components/Editor";
 
 type Props = {
   propertyName?: string;
@@ -67,6 +67,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
 
   const [defaultValue, setDefaultValue] = useState<any>();
   const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([
     {
       label: "Option 1",
@@ -105,16 +106,19 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
   };
 
   useKeyPressEvent("Enter", () => {
-    if (name.trim() !== "" && !loading && !showNameCollissionError) {
-      if (
-        propertyName &&
-        !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
-          collection.properties[propertyName].type
-        ].includes(type.value)
-      ) {
-        setShowConfirm(true);
-      } else {
-        onSave();
+    // check if no input is focused
+    if (!document.activeElement?.className.includes("ProseMirror")) {
+      if (name.trim() !== "" && !loading && !showNameCollissionError) {
+        if (
+          propertyName &&
+          !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
+            collection.properties[propertyName].type
+          ].includes(type.value)
+        ) {
+          setShowConfirm(true);
+        } else {
+          onSave();
+        }
       }
     }
   });
@@ -318,6 +322,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
             title="This will remove existing data associated with this field, if you're looking to avoid this please set the field as inactive. Are you sure you want to delete this field?"
             handleClose={() => setShowConfirmOnDelete(false)}
             onConfirm={async () => {
+              setDeleteLoading(true);
               setShowConfirmOnDelete(false);
               const res: CollectionType = await deleteField(
                 collection.id,
@@ -331,6 +336,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
               } else {
                 toast.error("Error deleting field");
               }
+              setDeleteLoading(false);
             }}
             onCancel={() => setShowConfirmOnDelete(false)}
           />
@@ -391,19 +397,27 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
               </Text>
             )}
             {collection.collectionType === 0 && (
-              <Textarea
-                label
-                hideLabel
-                placeholder="Description"
-                rows={2}
-                value={description}
-                onChange={(e) => {
-                  setIsDirty(true);
-                  setDescription(e.target.value);
-                }}
-              />
+              <Box
+                width="full"
+                borderRadius="large"
+                maxHeight="56"
+                overflow="auto"
+                borderWidth="0.375"
+                id="editorContainer"
+                padding="4"
+              >
+                <Editor
+                  value={description}
+                  onChange={(value) => {
+                    setIsDirty(true);
+                    setDescription(value);
+                  }}
+                  placeholder={`Edit description`}
+                  isDirty={isDirty}
+                />
+              </Box>
             )}
-            {collection.collectionType === 0 && (
+            {collection.collectionType === 0 && type.value !== "readonly" && (
               <Tabs
                 selectedTab={required}
                 onTabClick={onRequiredTabClick}
@@ -437,27 +451,6 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
                 setIsDirty={setIsDirty}
               />
             ) : null}
-            {type.value === "user" || type.value === "user[]" ? (
-              <Stack>
-                {/* <Text variant="label">User Type</Text>
-                <Select
-                  options={[
-                    { label: "Assignee", value: "assignee" },
-                    { label: "Reviewer", value: "reviewer" },
-                    { label: "Grantee", value: "grantee" },
-                    { label: "Applicant", value: "applicant" },
-                    { label: "None", value: "none" },
-                  ]}
-                  value={{
-                    label: userType as string,
-                    value: userType as string,
-                  }}
-                  onChange={(type) => {
-                    setUserType(type.value as FormUserType);
-                  }}
-                /> */}
-              </Stack>
-            ) : null}
             {type.value === "reward" && collection.collectionType === 0 && (
               <RewardTokenOptions
                 networks={networks}
@@ -473,7 +466,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
                 setPayWallOption={setPayWallOption}
               />
             )}
-            {!["discord", "github", "twitter", "telegram", "wallet"].includes(
+            {/* {!["discord", "github", "twitter", "telegram", "wallet"].includes(
               type.value
             ) && (
               <Accordian name="Default Value" defaultOpen={false}>
@@ -496,7 +489,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
                   }}
                 />
               </Accordian>
-            )}
+            )} */}
 
             {collection.collectionType === 0 && (
               <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
@@ -561,6 +554,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
               </PrimaryButton>
               {propertyName && (
                 <PrimaryButton
+                  loading={deleteLoading}
                   tone="red"
                   icon={<IconTrash />}
                   onClick={() => {

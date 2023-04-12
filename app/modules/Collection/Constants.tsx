@@ -111,6 +111,11 @@ export const fieldOptionsDropdown = [
     options: [
       { label: "Number", value: "number", icon: getPropertyIcon("number") },
       { label: "Date", value: "date", icon: getPropertyIcon("date") },
+      {
+        label: "Read Only",
+        value: "readonly",
+        icon: getPropertyIcon("readonly"),
+      },
     ],
   },
 ];

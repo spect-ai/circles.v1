@@ -1013,7 +1013,8 @@ export type PropertyType =
   | "discord"
   | "twitter"
   | "github"
-  | "telegram";
+  | "telegram"
+  | "readonly";
 
 export type Option = {
   label: string;
