@@ -1,6 +1,5 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
-import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { Credential, LensSkills, Option } from "@/app/types";
 import { Box, Button, Input, Tag, Text } from "degen";
@@ -8,11 +7,14 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import LinkCredentialsModal from "./LinkCredentialsModal";
 import { skills as skillsList } from "@/app/common/utils/constants";
+import { useAtom } from "jotai";
+import { userDataAtom } from "@/app/state/global";
 
 type Props = {
   handleClose: () => void;
   modalMode: "add" | "edit";
   skills: LensSkills[];
+  allCredentials: { [id: string]: any[] };
   skillId?: number;
 };
 
@@ -20,9 +22,10 @@ export default function AddSkillModal({
   handleClose,
   modalMode,
   skills,
+  allCredentials,
   skillId,
 }: Props) {
-  const { userData } = useGlobal();
+  const [userData, setUserData] = useAtom(userDataAtom);
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState({} as Option);
@@ -105,9 +108,10 @@ export default function AddSkillModal({
             </Text>
           )}
           <Input
-            label=""
+            label
             placeholder={`Enter Skill`}
             value={title}
+            maxLength={50}
             onChange={(e) => {
               setTitle(e.target.value);
               setRequiredFieldsNotSet({
@@ -149,6 +153,7 @@ export default function AddSkillModal({
           <LinkCredentialsModal
             credentials={linkedCredentials}
             setCredentials={setLinkedCredentials}
+            allCredentials={allCredentials}
           />
         </Box>
         <Box
@@ -167,13 +172,17 @@ export default function AddSkillModal({
             variant="secondary"
             size="small"
             width="32"
+            loading={loading}
             onClick={async () => {
+              setLoading(true);
               if (!title || !category?.value) {
                 setRequiredFieldsNotSet({
                   ...requiredFieldsNotSet,
                   title: isEmpty("title", title),
                   category: isEmpty("category", category),
                 });
+                setLoading(false);
+
                 return;
               }
 
@@ -195,10 +204,14 @@ export default function AddSkillModal({
                 ];
               } else if (modalMode === "edit") {
                 if (!skillId && skillId !== 0) {
+                  setLoading(false);
+
                   return;
                 }
                 newSkills = skills.map((skill, index) => {
                   if (index === skillId) {
+                    setLoading(false);
+
                     return {
                       title,
                       category: category?.value,
@@ -208,12 +221,16 @@ export default function AddSkillModal({
                       icon: "",
                     };
                   }
+                  setLoading(false);
+
                   return skill;
                 });
               }
               const res = await updateProfile({
                 skillsV2: newSkills,
               });
+              setLoading(false);
+
               handleClose();
             }}
           >

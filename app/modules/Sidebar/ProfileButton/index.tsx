@@ -2,13 +2,17 @@ import { smartTrim } from "@/app/common/utils/utils";
 import { UserType } from "@/app/types";
 import { Box, Button, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { useGlobal } from "@/app/context/globalContext";
 import { SettingOutlined } from "@ant-design/icons";
 import ProfileModal from "../../Profile/ProfileSettings";
 import mixpanel from "@/app/common/utils/mixpanel";
+import { useAtom } from "jotai";
+import {
+  isProfilePanelExpandedAtom,
+  quickProfileUserAtom,
+} from "@/app/state/global";
 
 const Container = styled(Box)<{ mode: string }>`
   cursor: pointer;
@@ -20,7 +24,6 @@ const Container = styled(Box)<{ mode: string }>`
 `;
 
 export default function ProfileButton() {
-  const { openQuickProfile, setTab, notifseen, setNotifSeen } = useGlobal();
   const [isOpen, setIsOpen] = useState(false);
   const { mode } = useTheme();
 
@@ -32,6 +35,12 @@ export default function ProfileButton() {
     }
   );
 
+  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
+    isProfilePanelExpandedAtom
+  );
+
+  const [quickProfileUser, setQuickProfileUser] = useAtom(quickProfileUserAtom);
+
   useEffect(() => {
     void fetchUser();
   }, [currentUser, fetchUser, isOpen]);
@@ -41,9 +50,9 @@ export default function ProfileButton() {
       currentUser?.notifications?.map((notif) => {
         if (notif.read == false) setNotifIds([...notifIds, notif.timestamp]);
       });
-      setTimeout(() => {
-        if (notifIds.length > 0) setNotifSeen(false);
-      }, 10000);
+      // setTimeout(() => {
+      //   if (notifIds.length > 0) setNotifSeen(false);
+      // }, 10000);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser?.notifications]);
@@ -60,8 +69,13 @@ export default function ProfileButton() {
       >
         <Container
           onClick={() => {
-            setTab("Work");
-            openQuickProfile((currentUser as UserType).id);
+            process.env.NODE_ENV === "production" &&
+              mixpanel.track("Notification Panel Open", {
+                user: currentUser?.username,
+              });
+            // openQuickProfile((currentUser as UserType).id);
+            setIsProfilePanelExpanded(true);
+            setQuickProfileUser(currentUser?.id || "");
           }}
           data-tour="profile-header-button"
           padding="1"

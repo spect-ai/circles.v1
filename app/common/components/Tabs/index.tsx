@@ -11,6 +11,7 @@ type Props = {
   selectedColor?: "secondary" | "tertiary";
   shape?: string;
   border?: boolean;
+  width?: string;
 };
 
 export default function Tabs({
@@ -23,11 +24,12 @@ export default function Tabs({
   selectedColor = "tertiary",
   shape = "square",
   border = false,
+  width = "full",
 }: Props) {
   return (
     <Box
       display="flex"
-      width="full"
+      width={width as any}
       flexDirection={orientation === "horizontal" ? "row" : "column"}
       borderWidth={border ? "0.5" : "0"}
       borderRadius="3xLarge"

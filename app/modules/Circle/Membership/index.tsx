@@ -1,22 +1,8 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import { UserType } from "@/app/types";
-import {
-  GithubOutlined,
-  TwitterOutlined,
-  YoutubeFilled,
-} from "@ant-design/icons";
-import { fetchEnsAvatar, fetchEnsName } from "@wagmi/core";
-import {
-  Avatar,
-  Box,
-  Button,
-  Heading,
-  IconBookOpenSolid,
-  Stack,
-  Tag,
-  Text,
-} from "degen";
-import React, { useEffect, useState } from "react";
+import { GithubOutlined, TwitterOutlined } from "@ant-design/icons";
+import { Avatar, Box, Button, Stack, Tag, Text } from "degen";
+import { useState } from "react";
 import { Hidden } from "react-grid-system";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { useCircle } from "../CircleContext";
@@ -25,7 +11,6 @@ import { Globe } from "react-feather";
 import { AnimatePresence, motion } from "framer-motion";
 import { Embed } from "../../Collection/Embed";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useRouter } from "next/router";
 import { useLocation } from "react-use";
 import styled from "styled-components";
 
@@ -48,30 +33,19 @@ export default function Membership({}: Props) {
   const route = pathname?.split("/")[2];
 
   return (
-    <Box paddingX="8" paddingY="4">
+    <Box marginX="8" marginTop="2">
       <AnimatePresence>
         {isEmebedOpen && (
           <Embed
             isOpen={isEmebedOpen}
             setIsOpen={setIsEmebedOpen}
             component="members"
-            routeId={circle.slug}
+            routeId={circle?.slug || ""}
           />
         )}
       </AnimatePresence>
       {route !== "embed" && (
-        <Stack
-          space="1"
-          direction="horizontal"
-          align="center"
-          justify="space-between"
-        >
-          <Stack direction="horizontal" space="4" align="center">
-            <Heading>Membership Center</Heading>
-            <PrimaryButton onClick={() => setIsEmebedOpen(true)}>
-              Embed
-            </PrimaryButton>
-          </Stack>
+        <Stack space="0" direction="vertical" align="flex-start">
           <Hidden xs sm>
             <Box>
               {navigationBreadcrumbs && (
@@ -79,11 +53,31 @@ export default function Membership({}: Props) {
               )}
             </Box>
           </Hidden>
+          <Box display="flex" flexDirection="row" width="full">
+            <Box
+              display="flex"
+              flexDirection={{
+                xs: "column",
+                md: "row",
+              }}
+              justifyContent="space-between"
+              width="full"
+            >
+              <Stack direction="horizontal" space="4" align="center">
+                <Text size="headingThree" weight="semiBold" ellipsis>
+                  Membership Center
+                </Text>
+              </Stack>
+              <PrimaryButton onClick={() => setIsEmebedOpen(true)}>
+                Embed
+              </PrimaryButton>
+            </Box>
+          </Box>
         </Stack>
       )}
       <ScrollContainer>
         <Stack align="baseline" space="2" direction="horizontal" wrap>
-          {circle.members.map((member) => (
+          {circle?.members.map((member) => (
             <Member
               key={member}
               member={memberDetails?.memberDetails[member] as UserType}
@@ -113,8 +107,8 @@ const Member = ({ member, roles }: MemberProps) => {
         }}
       >
         <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           style={{
             cursor: "pointer",
           }}
@@ -130,7 +124,7 @@ const Member = ({ member, roles }: MemberProps) => {
                 <Avatar
                   src={
                     member.avatar ||
-                    `https://api.dicebear.com/5.x/thumbs/svg?seed=${member.username}`
+                    `https://api.dicebear.com/5.x/thumbs/svg?seed=${member.id}`
                   }
                   address={member.ethAddress as `0x${string}`}
                   label={member.username}

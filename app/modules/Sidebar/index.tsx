@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Avatar, Box, Button, Stack, Text, IconMenu } from "degen";
 import { useRouter } from "next/router";
@@ -7,7 +7,6 @@ import Logo from "@/app/common/components/Logo";
 import { HomeOutlined } from "@ant-design/icons";
 import { useQuery } from "react-query";
 import { CircleType, UserType } from "@/app/types";
-import { useGlobal } from "@/app/context/globalContext";
 import styled from "styled-components";
 import mixpanel from "@/app/common/utils/mixpanel";
 import NotificationPanel from "../Profile/NotificationPanel";
@@ -16,6 +15,14 @@ import {
   patchUnreadNotifications,
 } from "@/app/services/Notification";
 import { toast } from "react-toastify";
+import { useAtom } from "jotai";
+import {
+  connectedUserAtom,
+  isProfilePanelExpandedAtom,
+  isSidebarExpandedAtom,
+  quickProfileUserAtom,
+  socketAtom,
+} from "@/app/state/global";
 
 export const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -33,13 +40,14 @@ function Sidebar(): ReactElement {
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const {
-    connectedUser,
-    isSidebarExpanded,
-    openQuickProfile,
-    isProfilePanelExpanded,
-    setIsSidebarExpanded,
-  } = useGlobal();
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
+  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
+    isProfilePanelExpandedAtom
+  );
+  const [quickProfileUser, setQuickProfileUser] = useAtom(quickProfileUserAtom);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -52,7 +60,7 @@ function Sidebar(): ReactElement {
     enabled: false,
   });
 
-  const { socket } = useGlobal();
+  const [socket, setSocket] = useAtom(socketAtom);
 
   const [unreadNotifications, setUnreadNotifications] = useState(0);
 
@@ -71,7 +79,7 @@ function Sidebar(): ReactElement {
   }, [isSidebarExpanded]);
 
   useEffect(() => {
-    socket.connected &&
+    socket?.connected &&
       socket?.on("notification", (data) => {
         setUnreadNotifications(data.unreadNotifications);
       });
@@ -99,6 +107,7 @@ function Sidebar(): ReactElement {
               href={`/${circle?.slug}`}
               src={circle.avatar}
               gradient={circle.gradient}
+              name={circle.name}
             />
           ) : (
             <Logo
@@ -159,6 +168,7 @@ function Sidebar(): ReactElement {
                     href={`/${aCircle.slug}`}
                     src={aCircle.avatar}
                     gradient={aCircle.gradient}
+                    name={aCircle.name}
                   />
                 </Box>
               ))}
@@ -171,7 +181,13 @@ function Sidebar(): ReactElement {
               shape="circle"
               variant="transparent"
               onClick={() => {
-                openQuickProfile(currentUser.id);
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track("Notification Panel Open", {
+                    circle: circle?.slug,
+                    user: currentUser?.username,
+                  });
+                setIsProfilePanelExpanded(true);
+                setQuickProfileUser(connectedUser);
                 (async () => {
                   if (unreadNotifications > 0) {
                     const res = await patchUnreadNotifications();
@@ -188,7 +204,10 @@ function Sidebar(): ReactElement {
               }}
             >
               <Avatar
-                src={currentUser?.avatar}
+                src={
+                  currentUser?.avatar ||
+                  `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser?.id}`
+                }
                 address={currentUser.ethAddress}
                 label=""
                 size={{

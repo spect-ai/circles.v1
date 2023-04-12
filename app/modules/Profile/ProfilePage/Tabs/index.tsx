@@ -1,16 +1,14 @@
-import { Box } from "degen";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { Box } from "degen";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import React, { useState, useEffect } from "react";
-import { UserType } from "@/app/types";
 
-import Activity from "./Activity";
-import Kudos from "./Kudos";
-import Retro from "./Retro";
-import Experience from "./Experience";
+import { profileLoadingAtom, userDataAtom } from "@/app/state/global";
+import { useAtom } from "jotai";
 import Education from "./Education";
-import { useGlobal } from "@/app/context/globalContext";
+import Experience from "./Experience";
 import Skills from "./Skills";
+import { getCredentialsByAddressAndIssuer } from "@/app/services/Credentials/AggregatedCredentials";
 
 export const Card = styled(Box)<{ mode: string }>`
   display: flex;
@@ -68,6 +66,9 @@ export const ScrollContainer = styled(Box)`
     margin: 0;
     padding-right: 1.2rem;
   }
+  @media (max-width: 1028px) and (min-width: 768px) {
+    width: 100%;
+  }
   overflow: auto;
   width: 50vw;
   height: 80vh;
@@ -79,7 +80,49 @@ export const ScrollContainer = styled(Box)`
 
 const ProfileTabs = () => {
   const [tab, setProfileTab] = useState("Experience");
-  const { userData, profileLoading } = useGlobal();
+  const [userData, setUserData] = useAtom(userDataAtom);
+  const [profileLoading, setProfileLoading] = useAtom(profileLoadingAtom);
+  const [credentialLoading, setCredentialLoading] = useState(false);
+  const [poaps, setPoaps] = useState([]);
+  const [gitcoinPassports, setGitcoinPassports] = useState([]);
+  const [kudos, setKudos] = useState([]);
+
+  const fetchAllCredentials = () => {
+    getCredentialsByAddressAndIssuer(userData?.ethAddress, "poap")
+      .then((res) => {
+        console.log({ res });
+        if (res?.length) setPoaps(res);
+        else setPoaps([]);
+      })
+      .catch((err) => console.log(err));
+    getCredentialsByAddressAndIssuer(userData?.ethAddress, "gitcoinPassport")
+      .then((res) => {
+        console.log({ res });
+        if (res?.length) setGitcoinPassports(res);
+        else setGitcoinPassports([]);
+      })
+      .catch((err) => console.log(err));
+    getCredentialsByAddressAndIssuer(userData?.ethAddress, "kudos")
+      .then((res) => {
+        console.log({ res });
+        if (res?.length) setKudos(res);
+        else setKudos([]);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    if (userData) {
+      setCredentialLoading(true);
+
+      void fetchAllCredentials();
+      const selectedCredentials = {} as {
+        [tab: string]: { [id: string]: boolean };
+      };
+
+      setCredentialLoading(false);
+    }
+  }, []);
 
   return (
     <Box
@@ -132,9 +175,36 @@ const ProfileTabs = () => {
             md: "0",
           }}
         >
-          {tab === "Experience" && <Experience userData={userData} />}
-          {tab === "Education" && <Education userData={userData} />}
-          {tab === "Skills" && <Skills userData={userData} />}
+          {tab === "Experience" && (
+            <Experience
+              userData={userData}
+              allCredentials={{
+                poaps,
+                gitcoinPassports,
+                kudos,
+              }}
+            />
+          )}
+          {tab === "Education" && (
+            <Education
+              userData={userData}
+              allCredentials={{
+                poaps,
+                gitcoinPassports,
+                kudos,
+              }}
+            />
+          )}
+          {tab === "Skills" && (
+            <Skills
+              userData={userData}
+              allCredentials={{
+                poaps,
+                gitcoinPassports,
+                kudos,
+              }}
+            />
+          )}
         </Box>
       )}
     </Box>

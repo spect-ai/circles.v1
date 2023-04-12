@@ -36,21 +36,15 @@ function PaymentCenterHeading({ paymentViewId, setPaymentViewId }: Props) {
   });
 
   return (
-    <Box
-      width="full"
-      display="flex"
-      flexDirection="column"
-      paddingLeft="3"
-      paddingRight="5"
-    >
+    <Box width="full" display="flex" flexDirection="column">
       <Hidden xs sm>
-        <Box marginLeft="4" marginTop="2">
+        <Box>
           {navigationBreadcrumbs && (
             <Breadcrumbs crumbs={navigationBreadcrumbs} />
           )}
         </Box>
       </Hidden>
-      <Box paddingTop="2" display="flex" flexDirection="row" width="full">
+      <Box display="flex" flexDirection="row" width="full">
         <Box
           display="flex"
           flexDirection={{
@@ -61,14 +55,10 @@ function PaymentCenterHeading({ paymentViewId, setPaymentViewId }: Props) {
           width="full"
         >
           <Stack direction="horizontal" align="center">
-            <Box
-              width="full"
-              paddingLeft={{
-                xs: "0",
-                md: "4",
-              }}
-            >
-              <Heading>Payment Center</Heading>
+            <Box width="full">
+              <Text size="headingThree" weight="semiBold" ellipsis>
+                Payment Center
+              </Text>
             </Box>
           </Stack>
         </Box>

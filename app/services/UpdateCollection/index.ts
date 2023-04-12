@@ -24,7 +24,7 @@ export const updateCollection = async (
     });
     return data;
   } else {
-    toast("Error updating", {
+    toast("Error updating, please refresh and try again", {
       theme: "dark",
     });
     return false;

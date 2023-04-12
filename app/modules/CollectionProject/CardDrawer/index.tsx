@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Drawer from "@/app/common/components/Drawer";
 import Editor from "@/app/common/components/Editor";
+import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { reorder } from "@/app/common/utils/utils";
 import {
@@ -9,7 +10,7 @@ import {
   updateCollectionDataGuarded,
   updateFormCollection,
 } from "@/app/services/Collection";
-import { MemberDetails, Option } from "@/app/types";
+import { Action, MemberDetails, Option } from "@/app/types";
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
@@ -22,6 +23,7 @@ import {
   IconChevronRight,
   IconClose,
   IconDotsVertical,
+  IconLockClosed,
   IconPlusSmall,
   Stack,
   Text,
@@ -41,10 +43,12 @@ import {
 } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import { Save } from "react-feather";
+import { BsArrowUpRight } from "react-icons/bs";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import AddField from "../../Collection/AddField";
+import CreateDiscordThread from "../../Collection/Automation/Actions/CreateDiscordThread";
 import { SnapshotModal } from "../../Collection/Common/SnapshotModal";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import SnapshotVoting from "../../Collection/Form/DataDrawer/VotingOnSnapshot";
@@ -65,6 +69,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
 
   const [value, setValue] = useState<any>(defaultValue || {});
   const [snapshotModal, setSnapshotModal] = useState(false);
+  const [discordThreadModal, setDiscordThreadModal] = useState(false);
 
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -128,6 +133,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
       res = await updateCollectionDataGuarded(collection.id, slug, update);
       if (!res) {
         updateCollection(tempColl);
+        return;
       }
       if (res.id) {
         updateCollection(res);
@@ -342,75 +348,6 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
             exit={{ opacity: 0 }}
           >
             <Container paddingX="8" paddingY="4" overflow="auto">
-              {value.slug &&
-                ["pending", "pendingSignature"].includes(
-                  collection.projectMetadata?.paymentStatus?.[value.slug] || ""
-                ) && (
-                  <Box
-                    display="flex"
-                    flexDirection="row"
-                    justifyContent="flex-end"
-                    alignItems="center"
-                    marginRight="4"
-                    gap="2"
-                    cursor="pointer"
-                    onClick={() => {
-                      if (collection.projectMetadata?.paymentIds?.[value.slug])
-                        push({
-                          pathname: "/[circle]",
-                          query: {
-                            circle: query.circle,
-                            tab: "payment",
-                            status: "pending",
-                            paymentId:
-                              collection.projectMetadata?.paymentIds?.[
-                                value.slug
-                              ],
-                          },
-                        });
-                    }}
-                  >
-                    {" "}
-                    <Text color="yellow">
-                      <ClockCircleOutlined />
-                    </Text>
-                    <Text variant="small">Pending Payment</Text>
-                  </Box>
-                )}
-              {value.slug &&
-                collection.projectMetadata?.paymentStatus?.[value.slug] ===
-                  "completed" && (
-                  <Box
-                    display="flex"
-                    flexDirection="row"
-                    justifyContent="flex-end"
-                    alignItems="center"
-                    marginRight="4"
-                    gap="2"
-                  >
-                    <Text color="green">
-                      <CheckCircleOutlined />
-                    </Text>
-
-                    <Text variant="small">Payment Completed</Text>
-                  </Box>
-                )}
-              {collection.data?.[cardSlug as string]?.__cardStatus__ ===
-                "closed" && (
-                <Box
-                  display="flex"
-                  flexDirection="row"
-                  justifyContent="flex-end"
-                  alignItems="center"
-                  marginRight="4"
-                  gap="2"
-                >
-                  <Text color="red">
-                    <InfoCircleOutlined />
-                  </Text>
-                  <Text variant="small">This card is closed</Text>
-                </Box>
-              )}
               <Stack space="1">
                 <Stack
                   direction="horizontal"
@@ -436,14 +373,157 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                       "closed"
                     }
                   />
+
                   {value.slug && (
                     <CardOptions
                       handleDrawerClose={closeCard}
                       cardSlug={value.slug}
                       setSnapshotModal={setSnapshotModal}
                       onChange={onChange}
+                      setDiscordThreadModal={setDiscordThreadModal}
                     />
                   )}
+                </Stack>
+                <Stack direction="horizontal" space="1">
+                  {collection.data?.[cardSlug as string]?.__cardStatus__ ===
+                    "closed" && (
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      alignItems="center"
+                      gap="2"
+                    >
+                      <CircularBox
+                        display="flex"
+                        flexDirection="row"
+                        mode={mode}
+                        gap="2"
+                      >
+                        <Text color="accent">
+                          <IconLockClosed />
+                        </Text>
+                        <Text variant="small">This card is closed</Text>
+                      </CircularBox>
+                    </Box>
+                  )}
+
+                  {value.slug &&
+                    collection.projectMetadata?.paymentStatus?.[value.slug] ===
+                      "completed" && (
+                      <Box
+                        display="flex"
+                        flexDirection="row"
+                        alignItems="center"
+                        gap="2"
+                      >
+                        <CircularBox
+                          display="flex"
+                          flexDirection="row"
+                          mode={mode}
+                          gap="2"
+                        >
+                          <Text color="green">
+                            <CheckCircleOutlined />
+                          </Text>
+
+                          <Text variant="small">Payment Completed</Text>
+                        </CircularBox>
+                      </Box>
+                    )}
+
+                  {value.slug &&
+                    ["pending", "pendingSignature"].includes(
+                      collection.projectMetadata?.paymentStatus?.[value.slug] ||
+                        ""
+                    ) && (
+                      <Box
+                        display="flex"
+                        flexDirection="row"
+                        alignItems="center"
+                        gap="2"
+                        cursor="pointer"
+                        onClick={() => {
+                          if (
+                            collection.projectMetadata?.paymentIds?.[value.slug]
+                          )
+                            push({
+                              pathname: "/[circle]",
+                              query: {
+                                circle: query.circle,
+                                tab: "payment",
+                                status: "pending",
+                                paymentId:
+                                  collection.projectMetadata?.paymentIds?.[
+                                    value.slug
+                                  ],
+                              },
+                            });
+                        }}
+                      >
+                        <CircularBox
+                          display="flex"
+                          flexDirection="row"
+                          mode={mode}
+                          gap="2"
+                        >
+                          {" "}
+                          <Text color="yellow">
+                            <ClockCircleOutlined />
+                          </Text>
+                          <Text variant="small">Pending Payment</Text>
+                        </CircularBox>
+                      </Box>
+                    )}
+
+                  {collection.discordThreadRef &&
+                    collection.discordThreadRef[value.slug] && (
+                      <Box
+                        display="flex"
+                        flexDirection="row"
+                        alignItems="center"
+                        width="full"
+                      >
+                        <CircularBox
+                          display="flex"
+                          flexDirection="row"
+                          mode={mode}
+                          gap="2"
+                          onClick={() => {
+                            if (collection.discordThreadRef[value.slug].private)
+                              window.open(
+                                `https://discord.com/channels/${
+                                  collection.discordThreadRef[value.slug]
+                                    .guildId
+                                }/${
+                                  collection.discordThreadRef[value.slug]
+                                    .threadId
+                                }`,
+                                "_blank"
+                              );
+                            else {
+                              window.open(
+                                `https://discord.com/channels/${
+                                  collection.discordThreadRef[value.slug]
+                                    .guildId
+                                }/${
+                                  collection.discordThreadRef[value.slug]
+                                    .channelId
+                                }/threads/${
+                                  collection.discordThreadRef[value.slug]
+                                    .threadId
+                                }`,
+                                "_blank"
+                              );
+                            }
+                          }}
+                        >
+                          <Text variant="small">Linked Discord thread</Text>
+                          <Text color="accent">
+                            <BsArrowUpRight />
+                          </Text>
+                        </CircularBox>
+                      </Box>
+                    )}
                 </Stack>
                 <DragDropContext onDragEnd={handleDragEnd}>
                   <Droppable
@@ -460,7 +540,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                 <Box
                   width={{
                     xs: "full",
-                    md: "1/3",
+                    md: "1/4",
                   }}
                 >
                   <PrimaryButton
@@ -528,6 +608,30 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
             />
           )}
         </AnimatePresence>
+        <AnimatePresence>
+          {discordThreadModal && (
+            <Modal
+              title="Link Discord Thread"
+              handleClose={() => {
+                setDiscordThreadModal(false);
+              }}
+              size="small"
+            >
+              <Box paddingX="8" paddingY="4">
+                <CreateDiscordThread
+                  collection={collection}
+                  actionMode="create"
+                  action={{} as Action}
+                  setAction={() => {}}
+                  manualAction={true}
+                  handleClose={() => {
+                    setDiscordThreadModal(false);
+                  }}
+                />
+              </Box>
+            </Modal>
+          )}
+        </AnimatePresence>
       </Drawer>
     </Box>
   );
@@ -564,4 +668,23 @@ const Container = styled(Box)`
   scrollbar-width: none;
 
   height: calc(100vh - 4rem);
+`;
+
+export const CircularBox = styled(Box)<{ mode: string }>`
+  border-radius: 1.5rem;
+  border: solid 2px
+    ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.05)"
+        : "rgb(20, 20, 20, 0.05)"};
+  &:hover {
+    border: solid 2px rgb(191, 90, 242);
+    transition-duration: 0.7s;
+    cursor: pointer;
+  }
+  transition: all 0.3s ease-in-out;
+  padding: 0.3rem 0.3rem;
+  justify-content: center;
+  align-items: center;
+  width: 12rem;
 `;

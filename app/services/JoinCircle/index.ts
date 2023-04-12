@@ -44,9 +44,9 @@ export const joinCircleFromDiscord = async (circleId: string) => {
     console.log({ data });
     return data;
   } else {
-    toast.error(
-      "Something went wrong, please ensure you have the required role"
-    );
+    // toast.error(
+    //   "Something went wrong, please ensure you have the required role"
+    // );
     return null;
   }
 };
@@ -70,9 +70,9 @@ export const joinCircleFromGuildxyz = async (circleId: string) => {
     console.log({ data });
     return data;
   } else {
-    toast.error(
-      "Something went wrong, please ensure you have the required role"
-    );
+    // toast.error(
+    //   "Something went wrong, please ensure you have the required role"
+    // );
     return null;
   }
 };
@@ -89,18 +89,21 @@ export const joinCirclesFromGuildxyz = async (ethAddress: string) => {
     }
   );
   if (res.ok) {
-    toast("You have joined circles successfully", {
-      theme: "dark",
-    });
+    // toast("You have joined circles successfully", {
+    //   theme: "dark",
+    // });
   } else {
-    toast.error(
-      "Something went wrong, please ensure you have the required Guild role"
-    );
+    // toast.error(
+    //   "Something went wrong, please ensure you have the required Guild role"
+    // );
     return null;
   }
 };
 
-export const joinCirclesFromDiscord = async (guildData: any, userId: string) => {
+export const joinCirclesFromDiscord = async (
+  guildData: any,
+  userId: string
+) => {
   const res = await fetch(
     `${process.env.API_HOST}/circle/v1/${userId}/joinMultipleCirclesUsingDiscord`,
     {
@@ -118,10 +121,11 @@ export const joinCirclesFromDiscord = async (guildData: any, userId: string) => 
     toast("You have joined circles successfully", {
       theme: "dark",
     });
+    return await res.json();
   } else {
-    toast.error(
-      "Something went wrong, please ensure you have the required  Discord role"
-    );
+    // toast.error(
+    //   "Something went wrong, please ensure you have the required  Discord role"
+    // );
     return null;
   }
 };

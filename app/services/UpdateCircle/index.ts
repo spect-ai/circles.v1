@@ -6,6 +6,7 @@ import {
   Option,
   Payment,
   SafeAddresses,
+  SidebarConfig,
   Trigger,
 } from "@/app/types";
 import { toast } from "react-toastify";
@@ -37,6 +38,7 @@ type CircleUpdateDTO = {
     network: string;
     symbol: string;
   };
+  sidebarConfig?: SidebarConfig;
 };
 
 type AddAutomationDto = {

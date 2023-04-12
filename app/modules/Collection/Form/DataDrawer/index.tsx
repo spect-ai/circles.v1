@@ -1,10 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Drawer, { slideHorizontal } from "@/app/common/components/Drawer";
+import Drawer from "@/app/common/components/Drawer";
 import { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import { MemberDetails, UserType } from "@/app/types";
-import { Avatar, Box, Button, IconChevronRight, Stack, Tag, Text } from "degen";
+import { MemberDetails } from "@/app/types";
+import {
+  Box,
+  Button,
+  IconChevronRight,
+  Stack,
+  Tag,
+  Text,
+  Avatar as DefaultAvatar,
+  useTheme,
+  Avatar as DegenAvatar,
+} from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -13,8 +23,9 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import DataActivity from "./DataActivity";
-import VotingActions from "./VotingActions";
 import SnapshotVoting from "./VotingOnSnapshot";
+import Avatar from "@/app/common/components/Avatar";
+import { smartTrim } from "@/app/common/utils/utils";
 
 type props = {
   expandedDataSlug: string;
@@ -27,18 +38,23 @@ export default function DataDrawer({
 }: props) {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
+  const { mode } = useTheme();
 
   const { registry } = useCircle();
 
   const router = useRouter();
   const { dataId: dataSlug, circle: cId } = router.query;
   const [data, setData] = useState({} as any);
+  const [dataIdx, setDataIdx] = useState(0);
 
   useEffect(() => {
     if (dataId && collection.data) {
       setTimeout(() => {
         setData(collection?.data?.[dataId]);
       }, 0);
+
+      const idx = Object.keys(collection.data).indexOf(dataId);
+      setDataIdx(idx + 1);
     }
   }, [collection?.data, dataId]);
 
@@ -80,7 +96,7 @@ export default function DataDrawer({
                 </Box>
               </Stack>
             </Button>
-            <VotingActions dataId={dataId} data={data} col={false} />
+            {/* <VotingActions dataId={dataId} data={data} col={false} /> */}
           </Stack>
         </Box>
       }
@@ -93,44 +109,15 @@ export default function DataDrawer({
         >
           <ScrollContainer paddingX="4" paddingY="2">
             <Stack space="5">
-              {collection.data?.[dataId]?.["anonymous"] === true ? (
-                <Stack direction="horizontal" align="center" space="2">
-                  <Avatar src="" label="" size="8" />
+              <Stack direction="horizontal" align="center" space="2">
+                <Box marginX="10" marginBottom="4">
+                  {" "}
                   <Text color="accentText" weight="semiBold">
-                    Anonymous user
+                    Response {dataIdx}
                   </Text>
-                </Stack>
-              ) : (
-                <a
-                  href={`/profile/${
-                    collection?.profiles?.[collection?.dataOwner[data?.slug]]
-                      ?.username
-                  }`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Stack direction="horizontal" align="center" space="2">
-                    <Avatar
-                      src={
-                        collection.profiles[collection.dataOwner[data.slug]]
-                          .avatar
-                      }
-                      address={
-                        collection.profiles[collection.dataOwner[data.slug]]
-                          .ethAddress
-                      }
-                      label=""
-                      size="8"
-                    />
-                    <Text color="accentText" weight="semiBold">
-                      {
-                        collection.profiles[collection.dataOwner[data.slug]]
-                          .username
-                      }
-                    </Text>
-                  </Stack>
-                </a>
-              )}
+                </Box>
+              </Stack>
+
               <Box
                 display="flex"
                 flexDirection={{
@@ -153,6 +140,7 @@ export default function DataDrawer({
                 <Box display="flex" flexDirection="column" width="3/4" gap="4">
                   {collection.propertyOrder.map((propertyName: string) => {
                     const property = collection.properties[propertyName];
+                    if (property.isPartOfFormView === false) return null;
                     if (!data[property.id || property.name])
                       return (
                         <Stack key={property.name} space="1">
@@ -175,8 +163,8 @@ export default function DataDrawer({
                           align={"center"}
                         >
                           <Text
-                            weight="bold"
-                            variant="extraLarge"
+                            weight="semiBold"
+                            variant="large"
                             color="accent"
                           >
                             {property.name}
@@ -191,211 +179,206 @@ export default function DataDrawer({
                             </Text>
                           )}
                         </Stack>
-                        {[
-                          "shortText",
-                          "ethAddress",
-                          "email",
-                          "number",
-                        ].includes(property.type) && (
-                          <Text size="small">
-                            {data[property.id || property.name]}
-                          </Text>
-                        )}
-                        {property?.type === "longText" && (
-                          <Editor value={data[property.name]} disabled />
-                        )}
-                        {property?.type == "singleURL" && (
-                          <Box
-                            onClick={() =>
-                              window.open(data[property.name], "_blank")
-                            }
-                            cursor="pointer"
-                          >
-                            <Text>{data[property.name]}</Text>
-                          </Box>
-                        )}
-                        {property?.type == "multiURL" && (
-                          <Stack direction="vertical">
-                            {data[property.name]?.map((url: OptionType) => (
-                              <Box key={url.value}>
-                                <Stack direction={"horizontal"}>
-                                  <Text>{url.label}</Text>
-                                  <Text>-</Text>
-                                  <Box
-                                    key={url.value}
-                                    onClick={() =>
-                                      window.open(url.value, "_blank")
-                                    }
-                                    cursor="pointer"
-                                  >
-                                    <Text>{url.value}</Text>
-                                  </Box>
-                                </Stack>
-                              </Box>
-                            ))}
-                          </Stack>
-                        )}
-                        {property?.type === "singleSelect" && (
-                          <Text>{data[property.name]?.label}</Text>
-                        )}
-                        {property?.type === "multiSelect" && (
-                          <Stack space="2" direction="horizontal" wrap>
-                            {data[property.name]?.map((option: OptionType) => (
-                              <Tag key={option.value} tone="accent" hover>
-                                {option.label}
-                              </Tag>
-                            ))}
-                          </Stack>
-                        )}
-                        {property?.type === "user" && (
-                          <Text>{data[property.name]?.label}</Text>
-                        )}
-                        {property?.type === "user[]" && (
-                          <Stack
-                            space="2"
-                            direction="horizontal"
-                            align="baseline"
-                            wrap
-                          >
-                            {data[property.name]?.map((option: OptionType) => (
-                              <Tag key={option.value} tone="accent" hover>
-                                {option.label}
-                              </Tag>
-                            ))}
-                          </Stack>
-                        )}
-                        {property?.type === "date" && (
-                          <Text>{data[property.name]?.toString()}</Text>
-                        )}
-                        {property?.type === "reward" && (
-                          <Text>
-                            {data[property.name]?.value}{" "}
-                            {data[property.name]?.token?.label} on{" "}
-                            {data[property.name]?.chain?.label}
-                          </Text>
-                        )}
-                        {property?.type === "payWall" && (
-                          <Stack>
-                            {[data[property.id || property.name]]?.map(
-                              (payment: {
-                                token: OptionType;
-                                chain: OptionType;
-                                value: number;
-                                txnHash: string;
-                              }) => {
-                                return (
-                                  <Text key={payment.token.label}>
+                        <ResponseFieldCard
+                          mode={mode}
+                          backgroundColor="foregroundTertiary"
+                        >
+                          {[
+                            "shortText",
+                            "ethAddress",
+                            "email",
+                            "number",
+                          ].includes(property.type) && (
+                            <Text size="small">
+                              {data[property.id || property.name]}
+                            </Text>
+                          )}
+                          {property?.type === "longText" && (
+                            <Editor value={data[property.name]} disabled />
+                          )}
+                          {property?.type == "singleURL" && (
+                            <Box
+                              onClick={() =>
+                                window.open(data[property.name], "_blank")
+                              }
+                              cursor="pointer"
+                            >
+                              <Text>{data[property.name]}</Text>
+                            </Box>
+                          )}
+                          {property?.type == "multiURL" && (
+                            <Stack direction="vertical">
+                              {data[property.name]?.map((url: OptionType) => (
+                                <Box key={url.value}>
+                                  <Stack direction={"horizontal"}>
+                                    <Text>{url.label}</Text>
+                                    <Text>-</Text>
+                                    <Box
+                                      key={url.value}
+                                      onClick={() =>
+                                        window.open(url.value, "_blank")
+                                      }
+                                      cursor="pointer"
+                                    >
+                                      <Text>{url.value}</Text>
+                                    </Box>
+                                  </Stack>
+                                </Box>
+                              ))}
+                            </Stack>
+                          )}
+                          {property?.type === "singleSelect" && (
+                            <Text>{data[property.name]?.label}</Text>
+                          )}
+                          {property?.type === "multiSelect" && (
+                            <Stack space="2" direction="horizontal" wrap>
+                              {data[property.name]?.map(
+                                (option: OptionType) => (
+                                  <Tag key={option.value} tone="accent" hover>
+                                    {option.label}
+                                  </Tag>
+                                )
+                              )}
+                            </Stack>
+                          )}
+                          {property?.type === "user" && (
+                            <Text>{data[property.name]?.label}</Text>
+                          )}
+                          {property?.type === "user[]" && (
+                            <Stack
+                              space="2"
+                              direction="horizontal"
+                              align="baseline"
+                              wrap
+                            >
+                              {data[property.name]?.map(
+                                (option: OptionType) => (
+                                  <Tag key={option.value} tone="accent" hover>
+                                    {option.label}
+                                  </Tag>
+                                )
+                              )}
+                            </Stack>
+                          )}
+                          {property?.type === "date" && (
+                            <Text>{data[property.name]?.toString()}</Text>
+                          )}
+                          {property?.type === "reward" && (
+                            <Text>
+                              {data[property.name]?.value}{" "}
+                              {data[property.name]?.token?.label} on{" "}
+                              {data[property.name]?.chain?.label}
+                            </Text>
+                          )}
+                          {property?.type === "payWall" && (
+                            <Stack>
+                              {[data[property.id || property.name]]?.map(
+                                (payment: {
+                                  token: OptionType;
+                                  chain: OptionType;
+                                  value: number;
+                                  txnHash: string;
+                                }) => {
+                                  return (
+                                    <Text key={payment.token.label}>
+                                      <Stack
+                                        direction="horizontal"
+                                        align="center"
+                                        space="0"
+                                      >
+                                        Paid {payment.value}{" "}
+                                        {payment.token.label} on{" "}
+                                        {payment.chain.label}
+                                        <a
+                                          href={`${
+                                            registry?.[payment.chain.value]
+                                              .blockExplorer
+                                          }tx/${payment.txnHash}`}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          style={{
+                                            marginLeft: "8px",
+                                          }}
+                                        >
+                                          <ExternalLink size={20} />
+                                        </a>
+                                      </Stack>
+                                    </Text>
+                                  );
+                                }
+                              )}
+                              {data[propertyName].length == 0 && "Unpaid"}
+                            </Stack>
+                          )}
+                          {property?.type === "milestone" && (
+                            <Stack>
+                              {data[property.name]?.map(
+                                (milestone: any, index: number) => (
+                                  <Stack key={milestone.id} space="2">
                                     <Stack
                                       direction="horizontal"
-                                      align="center"
-                                      space="0"
+                                      align="baseline"
+                                      wrap
                                     >
-                                      Paid {payment.value} {payment.token.label}{" "}
-                                      on {payment.chain.label}
-                                      <a
-                                        href={`${
-                                          registry?.[payment.chain.value]
-                                            .blockExplorer
-                                        }tx/${payment.txnHash}`}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        style={{
-                                          marginLeft: "8px",
-                                        }}
+                                      <Text variant="label">
+                                        Milestone {index + 1}
+                                      </Text>
+                                      <Text
+                                        weight="semiBold"
+                                        color="textPrimary"
                                       >
-                                        <ExternalLink size={20} />
-                                      </a>
+                                        {milestone.title}
+                                      </Text>
                                     </Stack>
-                                  </Text>
-                                );
-                              }
-                            )}
-                            {data[propertyName].length == 0 && "Unpaid"}
-                          </Stack>
-                        )}
-                        {property?.type === "milestone" && (
-                          <Stack>
-                            {data[property.name]?.map(
-                              (milestone: any, index: number) => (
-                                <Stack key={milestone.id} space="2">
-                                  <Stack
-                                    direction="horizontal"
-                                    align="baseline"
-                                    wrap
-                                  >
-                                    <Text variant="label">
-                                      Milestone {index + 1}
-                                    </Text>
-                                    <Text weight="semiBold" color="textPrimary">
-                                      {milestone.title}
-                                    </Text>
+                                    <Editor
+                                      value={
+                                        milestone.description ||
+                                        "No description added"
+                                      }
+                                      disabled
+                                    />
+                                    <Stack
+                                      direction="horizontal"
+                                      align="baseline"
+                                      wrap
+                                    >
+                                      <Text variant="label">Reward</Text>
+                                      <Text
+                                        weight="semiBold"
+                                        color="textPrimary"
+                                      >
+                                        {milestone.reward?.value &&
+                                        milestone.reward?.token.label &&
+                                        milestone.reward?.chain.label
+                                          ? `${milestone.reward?.value} ${milestone.reward?.token.label} on ${milestone.reward?.chain.label}`
+                                          : "No reward added"}
+                                      </Text>
+                                    </Stack>
+                                    <Stack
+                                      direction="horizontal"
+                                      align="baseline"
+                                      wrap
+                                    >
+                                      <Text variant="label">Due date</Text>
+                                      <Text
+                                        weight="semiBold"
+                                        color="textPrimary"
+                                      >
+                                        {milestone.dueDate ||
+                                          "No due date added"}
+                                      </Text>
+                                    </Stack>
                                   </Stack>
-                                  <Editor
-                                    value={
-                                      milestone.description ||
-                                      "No description added"
-                                    }
-                                    disabled
-                                  />
-                                  <Stack
-                                    direction="horizontal"
-                                    align="baseline"
-                                    wrap
-                                  >
-                                    <Text variant="label">Reward</Text>
-                                    <Text weight="semiBold" color="textPrimary">
-                                      {milestone.reward?.value &&
-                                      milestone.reward?.token.label &&
-                                      milestone.reward?.chain.label
-                                        ? `${milestone.reward?.value} ${milestone.reward?.token.label} on ${milestone.reward?.chain.label}`
-                                        : "No reward added"}
-                                    </Text>
-                                  </Stack>
-                                  <Stack
-                                    direction="horizontal"
-                                    align="baseline"
-                                    wrap
-                                  >
-                                    <Text variant="label">Due date</Text>
-                                    <Text weight="semiBold" color="textPrimary">
-                                      {milestone.dueDate || "No due date added"}
-                                    </Text>
-                                  </Stack>
-                                </Stack>
-                              )
-                            )}
-                          </Stack>
-                        )}
-                        {property?.type === "discord" && (
-                          <Box padding="0">
-                            <Stack direction="horizontal" align="center">
-                              <Avatar
-                                label="Discord Avatar"
-                                src={`https://cdn.discordapp.com/avatars/${data[propertyName].id}/${data[propertyName].avatar}.png`}
-                              />
-                              <Box>
-                                <Text
-                                  size="extraSmall"
-                                  font="mono"
-                                  weight="bold"
-                                >
-                                  {data[propertyName].username}
-                                </Text>
-                              </Box>
+                                )
+                              )}
                             </Stack>
-                          </Box>
-                        )}
-                        {property?.type === "github" && (
-                          <a
-                            href={data[propertyName].html_url}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
+                          )}
+                          {property?.type === "discord" && (
                             <Box padding="0">
                               <Stack direction="horizontal" align="center">
-                                <Avatar
+                                <DefaultAvatar
                                   label="Discord Avatar"
-                                  src={data[propertyName].avatar_url}
+                                  src={`https://cdn.discordapp.com/avatars/${data[propertyName].id}/${data[propertyName].avatar}.png`}
                                 />
                                 <Box>
                                   <Text
@@ -403,37 +386,155 @@ export default function DataDrawer({
                                     font="mono"
                                     weight="bold"
                                   >
-                                    {data[propertyName].login}
+                                    {data[propertyName].username}
                                   </Text>
                                 </Box>
                               </Stack>
                             </Box>
-                          </a>
-                        )}
-                        {property?.type === "telegram" && (
-                          // <a
-                          //   href={data[propertyName].html_url}
-                          //   target="_blank"
-                          //   rel="noreferrer"
-                          // >
-                          <Box padding="0">
-                            <Stack direction="horizontal" align="center">
-                              <Box>
-                                <Text
-                                  size="extraSmall"
-                                  font="mono"
-                                  weight="bold"
-                                >
-                                  {data[propertyName].username}
-                                </Text>
+                          )}
+                          {property?.type === "github" && (
+                            <a
+                              href={data[propertyName].html_url}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <Box padding="0">
+                                <Stack direction="horizontal" align="center">
+                                  <DefaultAvatar
+                                    label="Discord Avatar"
+                                    src={data[propertyName].avatar_url}
+                                  />
+                                  <Box>
+                                    <Text
+                                      size="extraSmall"
+                                      font="mono"
+                                      weight="bold"
+                                    >
+                                      {data[propertyName].login}
+                                    </Text>
+                                  </Box>
+                                </Stack>
                               </Box>
-                            </Stack>
-                          </Box>
-                          // </a>
-                        )}
+                            </a>
+                          )}
+                          {property?.type === "telegram" && (
+                            // <a
+                            //   href={data[propertyName].html_url}
+                            //   target="_blank"
+                            //   rel="noreferrer"
+                            // >
+                            <Box padding="0">
+                              <Stack direction="horizontal" align="center">
+                                <Box>
+                                  <Text
+                                    size="extraSmall"
+                                    font="mono"
+                                    weight="bold"
+                                  >
+                                    {data[propertyName].username}
+                                  </Text>
+                                </Box>
+                              </Stack>
+                            </Box>
+                            // </a>
+                          )}{" "}
+                        </ResponseFieldCard>
                       </Stack>
                     );
                   })}
+                  {collection.data?.[dataId]?.["anonymous"] === false && (
+                    <Stack space="1">
+                      <Text weight="semiBold" variant="large" color="accent">
+                        Responder
+                      </Text>
+                      <a
+                        href={`/profile/${
+                          collection?.profiles?.[
+                            collection?.dataOwner[data?.slug]
+                          ]?.username
+                        }`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <Stack direction="horizontal" align="center" space="2">
+                          <Avatar
+                            src={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].avatar
+                            }
+                            address={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].ethAddress
+                            }
+                            label=""
+                            size="6"
+                            username={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].username
+                            }
+                            userId={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].id
+                            }
+                            profile={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ]
+                            }
+                          />
+                          <Text color="accentText" weight="semiBold">
+                            {
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].username
+                            }
+                          </Text>
+                        </Stack>
+                      </a>
+                    </Stack>
+                  )}
+                  {collection.data?.[dataId]?.["__lookup__"] && (
+                    <Stack space="1">
+                      {/* <Text weight="semiBold" variant="large" color="accent">
+                        On Chain token balance
+                      </Text> */}
+                      <Stack direction="horizontal" wrap space="2">
+                        {collection.data?.[dataId]?.["__lookup__"].map(
+                          (token: any) => (
+                            <Box
+                              key={token.contractAddress}
+                              borderWidth="0.375"
+                              borderRadius="2xLarge"
+                              cursor="pointer"
+                              padding="2"
+                              style={{
+                                width: "32%",
+                              }}
+                            >
+                              <Stack align="center" space="2">
+                                <DegenAvatar
+                                  src={
+                                    token.metadata.image ||
+                                    `https://api.dicebear.com/5.x/initials/svg?seed=${token.metadata.name}`
+                                  }
+                                  label=""
+                                  shape="square"
+                                />
+                                <Text align="center">
+                                  {smartTrim(token.metadata.name, 20)}
+                                </Text>
+                                <Text align="center">{token.balance}</Text>
+                              </Stack>
+                            </Box>
+                          )
+                        )}
+                      </Stack>
+                    </Stack>
+                  )}
                 </Box>
                 {/* {!collection.voting?.periods?.[dataId]?.snapshot
                   ?.proposalId && <SpectVoting dataId={dataId} />} */}
@@ -447,7 +548,7 @@ export default function DataDrawer({
               borderTopWidth="0.375"
               marginY="4"
               borderRadius="full"
-              marginTop="8"
+              marginTop="24"
             />
             <Box paddingBottom="0">
               <DataActivity
@@ -476,4 +577,39 @@ const ScrollContainer = styled(Box)`
     width: 0.5rem;
     border-radius: 0rem;
   }
+`;
+
+const ResponseFieldCard = styled(Box)<{
+  mode: string;
+  width?: string;
+  height?: string;
+}>`
+  @media (max-width: 1420px) {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 0;
+    height: auto;
+    margin-top: 0.5rem;
+    align-items: flex-start;
+  }
+
+  width: 80%;
+  height: ${(props) => props.height || "auto"};
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0px 1px 6px
+    ${(props) =>
+      props.mode === "dark" ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0.1)"};
+  &:hover {
+    box-shadow: 0px 3px 10px
+      ${(props) =>
+        props.mode === "dark" ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.25)"};
+    transition-duration: 0.7s;
+  }
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  align-items: flex-start;
+  position: relative;
+  transition: all 0.5s ease-in-out;
 `;

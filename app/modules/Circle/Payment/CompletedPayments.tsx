@@ -26,6 +26,7 @@ export default function CompletedPayments() {
     }
   );
 
+  if (!circle) return null;
   return (
     <Stack>
       <Box>

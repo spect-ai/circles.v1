@@ -1,40 +1,32 @@
-import Accordian from "@/app/common/components/Accordian";
 import Modal from "@/app/common/components/Modal";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import CheckBox from "@/app/common/components/Table/Checkbox";
-import { updateFormCollection } from "@/app/services/Collection";
 import { createPoap } from "@/app/services/Poap";
 import { UserType } from "@/app/types";
 import {
   Box,
   Button,
-  FileInput,
-  IconClose,
   Input,
   MediaPicker,
   Stack,
   Text,
   Textarea,
   useTheme,
-  VisuallyHidden,
 } from "degen";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import ResponseMatchDistribution from "../common/ResponseMatchDistribution";
+import ImportClaimCodes from "./ImportClaimCodes";
 
 type Props = {
   handleClose: () => void;
 };
 
 export default function DistributePOAP({ handleClose }: Props) {
-  const { mode } = useTheme();
-
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const {} = useCircle();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);
@@ -59,227 +51,72 @@ export default function DistributePOAP({ handleClose }: Props) {
   const [virtual, setVirtual] = useState(true);
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
-
-  const [uploading, setUploading] = useState(false);
-  const [image, setImage] = useState("" as any);
-  const [numberOfPoaps, setNumberOfPoaps] = useState(1000);
-  const [assetUrl, setAssetUrl] = useState("");
-  const [modalMode, setModalMode] =
-    useState<"createPoapFromScratch" | "importClaimCodes">("importClaimCodes");
-  const [claimCodes, setClaimCodes] = useState([] as string[]);
-  const [rawClaimCodes, setRawClaimCodes] = useState(
-    collection?.formMetadata?.claimCodes?.join("\n") || ""
-  );
-  const [errorMessage, setErrorMessage] = useState("");
   const [poapEventId, setPoapEventId] = useState(
     collection.formMetadata?.poapEventId || ""
   );
   const [poapEditCode, setPoapEditCode] = useState(
     collection.formMetadata?.poapEditCode || ""
   );
+  const [uploading, setUploading] = useState(false);
+  const [image, setImage] = useState("" as any);
+  const [numberOfPoaps, setNumberOfPoaps] = useState(1000);
+  const [assetUrl, setAssetUrl] = useState("");
+  const [modalMode, setModalMode] =
+    useState<
+      | "createPoapFromScratch"
+      | "importClaimCodes"
+      | "distributePoapWhenResponsesMatch"
+      | "distributePoapOnDiscordCallAttendance"
+    >("importClaimCodes");
+  const [
+    minimumNumberOfAnswersThatNeedToMatch,
+    setMinimumNumberOfAnswersThatNeedToMatch,
+  ] = useState(
+    collection.formMetadata?.minimumNumberOfAnswersThatNeedToMatchForPoap || 0
+  );
 
-  const updateCodes = () => {
-    const codes = rawClaimCodes.trim().split("\n");
-    setClaimCodes(codes);
-    return codes;
-  };
-
-  const importCodes = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const codes = reader.result
-        ? reader.result.toString().trim().split("\n")
-        : [];
-      setRawClaimCodes([...claimCodes, ...codes].join("\n"));
-    };
-    reader.readAsText(file);
-  };
-
-  const validateClaimCodes = (codes: string[]) => {
-    console.log({ codes });
-    if (codes.length === 0) {
-      setErrorMessage("Please add at least one claim code");
-      return false;
-    }
-    for (const code of codes) {
-      if (!code.includes("http://POAP.xyz/claim/")) {
-        console.log({ code });
-        setErrorMessage(
-          "Please make sure all claim codes start with http://POAP.xyz/claim/"
-        );
-        return false;
-      }
-      if (code.split("http://POAP.xyz/claim/")[1].length !== 6) {
-        setErrorMessage(
-          "Please make sure all claim codes are 6 characters long"
-        );
-        return false;
-      }
-    }
-    setErrorMessage("");
-    return true;
-  };
-
-  if (modalMode === "importClaimCodes") {
+  const [responseData, setResponseData] = useState(
+    collection.formMetadata?.responseDataForPoap || {}
+  );
+  if (
+    ["importClaimCodes", "distributePoapWhenResponsesMatch"].includes(modalMode)
+  ) {
     return (
       <Modal
-        size="medium"
-        title="Import Claim Codes"
+        size={modalMode === "importClaimCodes" ? "small" : "medium"}
+        title="Import POAP Event 🏅"
         handleClose={handleClose}
         zIndex={2}
       >
         <Box padding="8">
-          <Stack direction="vertical" space="4">
-            <Stack direction="vertical" space="1">
-              <Text variant="label">Poap event id</Text>
-              <Input
-                label
-                value={poapEventId}
-                onChange={(e) => setPoapEventId(e.target.value)}
-              />
-            </Stack>
-            <Stack direction="vertical" space="1">
-              <Text variant="label">Poap edit code</Text>
-              <Input
-                label
-                value={poapEditCode}
-                onChange={(e) => setPoapEditCode(e.target.value)}
-              />
-            </Stack>
-            <Stack direction="vertical" space="2">
-              <Text variant="label">
-                Claim Codes (if adding manually, please make sure each code is
-                on a new line)
-              </Text>
-              <ClaimCodeContainer
-                placeholder="http://POAP.xyz/claim/jqmkmv"
-                rows={8}
-                mode={mode}
-                value={rawClaimCodes}
-                onChange={(e) => {
-                  setRawClaimCodes(e.target.value);
-                }}
-              />
-            </Stack>
-            <Box display="flex">
-              <FileInput
-                onChange={(file) => {
-                  importCodes(file);
-                }}
-              >
-                {(context) =>
-                  context.name ? (
-                    <Stack align="center" direction="horizontal">
-                      <Text>{context.name}</Text>
-                      <Button
-                        shape="circle"
-                        size="small"
-                        variant="transparent"
-                        onClick={context.reset}
-                      >
-                        <VisuallyHidden>Remove</VisuallyHidden>
-                        <IconClose />
-                      </Button>
-                    </Stack>
-                  ) : (
-                    <Box
-                      cursor="pointer"
-                      backgroundColor="foregroundSecondary"
-                      padding="4"
-                      borderRadius="medium"
-                    >
-                      <Text>Import claim codes from text file</Text>
-                    </Box>
-                  )
-                }
-              </FileInput>
-            </Box>
-          </Stack>
-          <Box display="flex" flexDirection="column" gap="2" marginTop="4">
-            <Box display="flex" flexDirection="row" justifyContent="flex-end">
-              <Text color="red">{errorMessage}</Text>
-            </Box>
-
-            <Box
-              display="flex"
-              flexDirection="row"
-              justifyContent="flex-end"
-              alignItems="flex-start"
-              gap="2"
-            >
-              <PrimaryButton
-                variant="tertiary"
-                loading={loading}
-                onClick={async () => {
-                  setLoading(true);
-                  const res = await updateFormCollection(collection.id, {
-                    formMetadata: {
-                      ...collection.formMetadata,
-                      claimCodes: [],
-                      poapDistributionEnabled: false,
-                      poapEventId: "",
-                    },
-                  });
-                  updateCollection({
-                    ...collection,
-                    formMetadata: {
-                      ...collection.formMetadata,
-                      claimCodes: [],
-                      poapDistributionEnabled: false,
-                      poapEventId: "",
-                      poapEditCode: "",
-                    },
-                  });
-                  if (res) {
-                    handleClose();
-                  }
-
-                  setLoading(false);
-                }}
-              >
-                Disable Claim Codes
-              </PrimaryButton>
-              <PrimaryButton
-                variant="secondary"
-                loading={loading}
-                onClick={async () => {
-                  setLoading(true);
-                  const codes = updateCodes();
-                  const valid = validateClaimCodes(codes);
-                  console.log({ valid });
-                  if (valid) {
-                    const res = await updateFormCollection(collection.id, {
-                      formMetadata: {
-                        ...collection.formMetadata,
-                        claimCodes: codes,
-                        poapDistributionEnabled: true,
-                        poapEventId,
-                        poapEditCode,
-                      },
-                    });
-                    updateCollection({
-                      ...collection,
-                      formMetadata: {
-                        ...collection.formMetadata,
-                        claimCodes: codes,
-                        poapDistributionEnabled: true,
-                        poapEventId,
-                        poapEditCode,
-                      },
-                    });
-                    if (res) {
-                      handleClose();
-                    }
-                  }
-                  setLoading(false);
-                }}
-              >
-                {collection?.formMetadata?.poapDistributionEnabled
-                  ? `Update Claim Codes`
-                  : `Add Claim Codes`}
-              </PrimaryButton>
-            </Box>
-          </Box>
+          {modalMode === "importClaimCodes" && (
+            <ImportClaimCodes
+              handleClose={handleClose}
+              setModalMode={setModalMode}
+              poapEditCode={poapEditCode}
+              setPoapEditCode={setPoapEditCode}
+              poapEventId={poapEventId}
+              setPoapEventId={setPoapEventId}
+              minimumNumberOfAnswersThatNeedToMatch={
+                minimumNumberOfAnswersThatNeedToMatch
+              }
+              responseData={responseData}
+            />
+          )}
+          {modalMode === "distributePoapWhenResponsesMatch" && (
+            <ResponseMatchDistribution
+              setModalModal={setModalMode as any}
+              data={responseData}
+              setData={setResponseData}
+              minimumNumberOfAnswersThatNeedToMatch={
+                minimumNumberOfAnswersThatNeedToMatch
+              }
+              setMinimumNumberOfAnswersThatNeedToMatch={
+                setMinimumNumberOfAnswersThatNeedToMatch
+              }
+              responseMatchConditionForPlugin="poap"
+            />
+          )}
         </Box>
       </Modal>
     );
@@ -442,38 +279,11 @@ export default function DistributePOAP({ handleClose }: Props) {
                     </Stack>
                   </Stack>
                 )}
-                <Accordian name="Advanced Settings" defaultOpen={false}>
-                  <Stack direction="horizontal" space="1">
-                    <Stack direction="vertical" space="1">
-                      <Text variant="label">Start Date</Text>
-                      <DateInput
-                        placeholder={`Enter Start Date`}
-                        value={startDate}
-                        type="date"
-                        mode={mode}
-                        onChange={(e) => {
-                          setStartDate(e.target.value);
-                        }}
-                      />
-                    </Stack>
-                    <Stack direction="vertical" space="1">
-                      <Text variant="label">End Date</Text>
-                      <DateInput
-                        placeholder={`Enter End Date`}
-                        value={endDate}
-                        type="date"
-                        mode={mode}
-                        onChange={(e) => {
-                          setEndDate(e.target.value);
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-                </Accordian>
               </Stack>
             </Box>
           </Box>
         </Box>
+
         <Box
           display="flex"
           flexDirection="row"
@@ -544,20 +354,20 @@ export const DateInput = styled.input<{ mode: string }>`
   transition: border-color 0.5s ease;
 `;
 
-const ClaimCodeContainer = styled.textarea<{ mode: string }>`
-  width: 100%;
-  border-radius: 1rem;
-  border 1px solid ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
-  background-color: ${(props) =>
-    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
-  padding: 1rem;
-  caret-color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
-  color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
-    line-height: 1.5;
-    font-size: 1rem;
-  font-family: Inter;
-resize: none;
-`;
+// const ClaimCodeContainer = styled.textarea<{ mode: string }>`
+//   width: 100%;
+//   border-radius: 1rem;
+//   border 1px solid ${(props) =>
+//     props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
+//   background-color: ${(props) =>
+//     props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
+//   padding: 1rem;
+//   caret-color: ${(props) =>
+//     props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
+//   color: ${(props) =>
+//     props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
+//     line-height: 1.5;
+//     font-size: 1rem;
+//   font-family: Inter;
+// resize: none;
+// `;

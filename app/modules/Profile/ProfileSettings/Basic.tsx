@@ -1,21 +1,17 @@
+import ConnectDiscordButton from "@/app/common/components/ConnectDiscordButton";
 import { UserType } from "@/app/types";
 import { GithubOutlined } from "@ant-design/icons";
-import { Box, Input, MediaPicker, Stack, Text, Button } from "degen";
+import { Button, Input, MediaPicker, Stack, Text } from "degen";
 import Link from "next/link";
-import React from "react";
-import { useQuery } from "react-query";
-import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
-import { isEmail } from "@/app/common/utils/utils";
-import { useProfile } from "./LocalProfileContext";
 import router from "next/router";
-import { useLocation } from "react-use";
-import ConnectDiscordButton from "@/app/common/components/ConnectDiscordButton";
+import { useEffect } from "react";
+import { useQuery } from "react-query";
+import { useProfile } from "./LocalProfileContext";
 
 export function BasicInfo() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const { hostname } = useLocation();
 
   const {
     setIsDirty,
@@ -26,7 +22,23 @@ export function BasicInfo() {
     uploading,
     username,
     uploadFile,
+    usernameError,
+    setUsernameError,
   } = useProfile();
+  const specialChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+  useEffect(() => {
+    if (username.length === 0) {
+      setUsernameError("Username cannot be empty");
+    } else if (username.length > 15) {
+      setUsernameError("Username cannot be longer than 15 characters");
+    } else if (
+      specialChars.test(username) ||
+      username.includes("~") ||
+      username.includes("`")
+    ) {
+      setUsernameError("Username cannot have special characters");
+    } else setUsernameError("");
+  }, [username]);
 
   return (
     <Stack>
@@ -62,6 +74,11 @@ export function BasicInfo() {
         }}
         required
       />
+      {usernameError && (
+        <Text color="red" variant="small">
+          {usernameError}
+        </Text>
+      )}
       <Text variant="label">ETH Address</Text>
       <Input
         label
@@ -76,23 +93,7 @@ export function BasicInfo() {
           md: "horizontal",
         }}
       >
-        {!currentUser?.discordUsername && (
-          <ConnectDiscordButton state={router.asPath} width="full"/>
-        )}
-        {currentUser?.discordUsername && (
-          <Button
-            disabled
-            width="full"
-            size="small"
-            prefix={
-              <Box marginTop="1">
-                <DiscordIcon />
-              </Box>
-            }
-          >
-            Discord Connected
-          </Button>
-        )}
+        <ConnectDiscordButton state={router.asPath} width="full" />
         {!currentUser?.githubId && (
           <Link
             href={`https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab`}

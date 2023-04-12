@@ -305,7 +305,15 @@ export interface CircleType {
     network: string;
     symbol: string;
   };
+  sidebarConfig?: SidebarConfig;
 }
+export type SidebarConfig = {
+  showPayment?: boolean;
+  showAutomation?: boolean;
+  showGovernance?: boolean;
+  showMembership?: boolean;
+  showDiscussion?: boolean;
+};
 
 // interface ProjectType {
 //   archived: boolean;
@@ -789,6 +797,17 @@ export interface CollectionType {
   archived: boolean;
   circleRolesToNotifyUponUpdatedResponse?: string[];
   circleRolesToNotifyUponNewResponse?: string[];
+  activity: MappedItem<CollectionActivity>;
+  activityOrder: string[];
+  viewConditions: Condition[];
+  discordThreadRef: {
+    [key: string]: {
+      threadId: string;
+      channelId: string;
+      guildId: string;
+      private: boolean;
+    };
+  };
 }
 
 export type PaymentConfig = {
@@ -830,11 +849,12 @@ export type FormMetadata = {
   canFillForm: boolean;
   hasPassedSybilCheck: boolean;
   previousResponses: any[];
-  kudosClaimedByUser: boolean;
+  hasClaimedKudos: boolean;
   hasRole: boolean;
   discordConnectionRequired: boolean;
   canClaimKudos: boolean;
   allowAnonymousResponses: boolean;
+  walletConnectionRequired: boolean;
   paymentConfig?: PaymentConfig;
   surveyTokenId?: number;
   surveyTokenClaimedByUser: boolean;
@@ -846,11 +866,50 @@ export type FormMetadata = {
   surveyLotteryWinner?: number;
   surveyDistributionType?: number;
   ceramicEnabled?: boolean;
+  captchaEnabled?: boolean;
   claimCodes?: string[];
   claimCode?: string;
-  poapDistributionEnabled?: boolean;
   poapEventId?: string;
   poapEditCode?: string;
+  transactionHashes?: {
+    [userAddress: string]: {
+      [transactionType: "surveyTokenClaim"]: string;
+    };
+  };
+  transactionHashesOfUser?: {
+    [transactionType: string]: string;
+  };
+  minimumNumberOfAnswersThatNeedToMatchForPoap: number;
+  responseDataForPoap: MappedItem<any>;
+  minimumNumberOfAnswersThatNeedToMatchForMintkudos: number;
+  responseDataForMintkudos: MappedItem<any>;
+  canClaimPoap: boolean;
+  matchCountForPoap?: number;
+  matchCountForKudos?: number;
+  pages: {
+    [pageId: string]: {
+      id: string;
+      name: string;
+      properties: string[];
+      movable?: boolean;
+    };
+  };
+  pageOrder: string[];
+  lookup?: {
+    tokens: LookupToken[];
+    snapshot: number;
+  };
+};
+
+export type LookupToken = {
+  tokenType: "erc20" | "erc721" | "erc1155" | "kudos" | "poap";
+  contractAddress: string;
+  metadata: {
+    name: string;
+    image: string;
+  };
+  chainId: number;
+  tokenId?: string;
 };
 
 export type ProjectMetadata = {
@@ -956,6 +1015,7 @@ export type Option = {
   label: string;
   value: string;
   data?: any;
+  color?: string;
 };
 
 export type FormUserType = "assignee" | "reviewer" | "grantee" | "applicant";
@@ -987,7 +1047,6 @@ export interface FormType {
   activity: MappedItem<CollectionActivity>;
   activityOrder: string[];
   name: string;
-  circleId: string;
   slug: string;
   private: boolean;
   description: string;
@@ -1002,8 +1061,6 @@ export interface FormType {
     slug: string;
   }[];
   defaultView: string;
-  isAnOpportunity: boolean;
-  opportunityInfo: OpportunityInfoType;
   viewConditions: Condition[];
   createdAt: string;
   updatedAt: string;
@@ -1221,9 +1278,17 @@ export type Credential = {
   name: string;
   description: string;
   imageUri: string;
-  type: "vc" | "soulbound";
+  type: "vc" | "soulbound" | "poap";
   service: string;
   metadata?: VerifiableCredential | SoulboundCredential;
+};
+
+export type PoapCredential = {
+  tokenId: string;
+  owner: string;
+  chain: string;
+  created: string;
+  event: POAPEventType;
 };
 
 export type Action = {
@@ -1232,7 +1297,11 @@ export type Action = {
   subType?: string;
   name: string;
   service: string;
+  group: string;
   data: any;
+  value: any;
+  icon: string;
+  label: string;
 };
 
 export type Trigger = {

@@ -19,6 +19,8 @@ export function RolesModal({ handleClose, user }: Props) {
   const { circle: cId } = router.query;
   const [userRoles, setUserRoles] = useState(circle?.memberRoles[user]);
 
+  if (!circle) return null;
+
   return (
     <Modal title="Select Roles" handleClose={handleClose} size="small">
       <Box style={{ margin: "1rem", marginTop: "1.5rem" }}>

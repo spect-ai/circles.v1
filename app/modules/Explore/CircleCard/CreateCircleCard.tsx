@@ -33,7 +33,6 @@ type CreateCircleDto = {
 const CreateCircleCard = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [visibilityTab, setVisibilityTab] = useState(0);
-  const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
   const close = () => setModalOpen(false);
   const open = () => setModalOpen(true);
 
@@ -43,6 +42,8 @@ const CreateCircleCard = () => {
   const [uploading, setUploading] = useState(false);
   const router = useRouter();
   const { mode } = useTheme();
+
+  const [loading, setLoading] = useState(false);
 
   const { mutateAsync } = useMutation((circle: CreateCircleDto) => {
     return fetch(`${process.env.API_HOST}/circle/v1`, {
@@ -81,7 +82,7 @@ const CreateCircleCard = () => {
         height="72"
         onClick={open}
       >
-        Create an Organization
+        Create a Space
       </Container>
       <AnimatePresence
         initial={false}
@@ -89,7 +90,7 @@ const CreateCircleCard = () => {
         onExitComplete={() => null}
       >
         {modalOpen && (
-          <Modal handleClose={close} title="Create Organization" zIndex={2}>
+          <Modal handleClose={close} title="Create Space" zIndex={2}>
             <Box width="full" padding="8">
               <Stack>
                 <Input
@@ -110,7 +111,7 @@ const CreateCircleCard = () => {
                     type: "image/png",
                     url: logo,
                   }}
-                  label="Select Org Avatar"
+                  label="Select Space Avatar"
                   uploaded={!!logo}
                   onChange={uploadFile}
                   uploading={uploading}
@@ -129,7 +130,9 @@ const CreateCircleCard = () => {
                     size="small"
                     variant="secondary"
                     disabled={uploading}
+                    loading={loading}
                     onClick={() => {
+                      setLoading(true);
                       const color1 = generateColorHEX();
                       const color2 = generateColorHEX();
                       const color3 = generateColorHEX();
@@ -151,11 +154,15 @@ const CreateCircleCard = () => {
                             void router.push(`/${resJson.slug}`);
                           }
                           close();
+                          setLoading(false);
                         })
-                        .catch((err) => console.log({ err }));
+                        .catch((err) => {
+                          console.log({ err });
+                          setLoading(false);
+                        });
                     }}
                   >
-                    Create Organization
+                    Create Space
                   </Button>
                 </Box>
               </Stack>

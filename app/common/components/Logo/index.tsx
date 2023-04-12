@@ -1,4 +1,4 @@
-import { Button, Avatar, Box } from "degen";
+import { Button, Avatar, Box, BoxProps } from "degen";
 import Link from "next/link";
 import styled from "styled-components";
 
@@ -6,6 +6,8 @@ type props = {
   href: string;
   src: string;
   gradient: string;
+  name?: string;
+  size?: BoxProps["height"];
 };
 
 const Placeholder = styled(Box)<{ gradient: string }>`
@@ -13,18 +15,23 @@ const Placeholder = styled(Box)<{ gradient: string }>`
   background-size: 180% 180%;
 `;
 
-export default function Logo({ href, src, gradient }: props) {
+export default function Logo({ href, src, gradient, name, size }: props) {
   return (
     <Link href={href || "/"} passHref>
       <Button shape="circle" variant="transparent" size="small">
-        {src ? (
+        {src || name ? (
           <Avatar
             label="logo"
-            src={src}
-            size={{
-              xs: "8",
-              md: "10",
-            }}
+            src={
+              src ||
+              `https://api.dicebear.com/5.x/initials/svg?seed=${name}&backgroundType=gradientLinear`
+            }
+            size={
+              size || {
+                xs: "8",
+                md: "10",
+              }
+            }
           />
         ) : (
           <Placeholder

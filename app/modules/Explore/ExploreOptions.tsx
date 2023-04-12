@@ -1,8 +1,7 @@
 import Popover from "@/app/common/components/Popover";
 import { Box, Text } from "degen";
 import React, { useState } from "react";
-
-import { PopoverOption } from "@/app/modules/Card/OptionPopover";
+import { PopoverOption } from "../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
 
 export default function ExploreOptions() {
   const [isOpen, setIsOpen] = useState(false);

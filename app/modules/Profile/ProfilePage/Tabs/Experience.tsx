@@ -1,6 +1,7 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { LensDate, LensExperience, UserType } from "@/app/types";
 import { Box, Text, useTheme } from "degen";
+import { AnimatePresence, motion } from "framer-motion";
 import { memo, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import AddExperienceModal from "../AddExperienceModal";
@@ -8,7 +9,13 @@ import LensImportModal from "../LensImportModal";
 import ViewExperienceModal from "../ViewExperienceModal";
 import { Card, ScrollContainer } from "./index";
 
-const Experience = ({ userData }: { userData: UserType }) => {
+const Experience = ({
+  userData,
+  allCredentials,
+}: {
+  userData: UserType;
+  allCredentials: { [id: string]: any[] };
+}) => {
   const { mode } = useTheme();
   const [addExperience, setAddExperience] = useState(false);
   const [addFromLens, setAddFromLens] = useState(false);
@@ -25,29 +32,36 @@ const Experience = ({ userData }: { userData: UserType }) => {
   };
 
   return (
-    <Box>
+    <Box width="full">
       {addFromLens && (
         <LensImportModal handleClose={() => setAddFromLens(false)} />
       )}
-      {addExperience && (
-        <AddExperienceModal
-          modalMode={modalMode}
-          experienceId={selectedExperienceId}
-          handleClose={() => setAddExperience(false)}
-        />
-      )}
-      {openExperienceView && (
-        <ViewExperienceModal
-          experienceId={selectedExperienceId}
-          handleClose={() => setOpenExperienceView(false)}
-          setEditExperience={(value) => {
-            if (value) {
-              setModalMode("edit");
-              setAddExperience(true);
-            }
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {addExperience && (
+          <AddExperienceModal
+            modalMode={modalMode}
+            experienceId={selectedExperienceId}
+            handleClose={() => setAddExperience(false)}
+            allCredentials={allCredentials}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {openExperienceView && (
+          <ViewExperienceModal
+            experienceId={selectedExperienceId}
+            handleClose={() => setOpenExperienceView(false)}
+            setEditExperience={(value) => {
+              if (value) {
+                setModalMode("edit");
+                setAddExperience(true);
+              }
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       <ScrollContainer>
         {!experiences?.length && (
           <Box style={{ margin: "35vh 15vw" }}>
@@ -70,7 +84,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
           </Box>
         )}
         {experiences?.length > 0 && (
-          <>
+          <Box width="full">
             {currentUser?.id === userData.id && (
               <Box
                 width={{
@@ -170,7 +184,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
                 </Card>
               );
             })}
-          </>
+          </Box>
         )}
       </ScrollContainer>
     </Box>

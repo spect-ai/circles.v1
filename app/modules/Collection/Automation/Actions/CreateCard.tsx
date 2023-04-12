@@ -6,6 +6,7 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 import { Box, Button, IconClose, Text } from "degen";
 import { useEffect, useState } from "react";
 import { Tooltip } from "react-tippy";
+import { toast } from "react-toastify";
 import { Field } from "./Field";
 
 type Props = {
@@ -106,7 +107,7 @@ export default function CreateCard({
     try {
       const data: CollectionType[] = await (
         await fetch(
-          `${process.env.API_HOST}/circle/v1/${circle.id}/allActiveCollections`
+          `${process.env.API_HOST}/circle/v1/${circle?.id}/allActiveCollections`
         )
       ).json();
       setCollectionOptions(
@@ -253,7 +254,7 @@ export default function CreateCard({
       width="full"
     >
       <Box marginBottom="2">
-        <Text variant="label">Pick Collection</Text>
+        <Text variant="label">Pick Project</Text>
       </Box>
       <Dropdown
         options={collectionOptions}
@@ -267,6 +268,7 @@ export default function CreateCard({
           }
         }}
         multiple={false}
+        portal={false}
       />
       {Object.keys(selectedCollection)?.length > 0 && (
         <Box width="full" marginTop="2">
@@ -330,6 +332,7 @@ export default function CreateCard({
                       }}
                       multiple={false}
                       isClearable={false}
+                      portal={false}
                     />
                   </Box>
                 </Box>
@@ -369,6 +372,7 @@ export default function CreateCard({
                         }}
                         multiple={false}
                         isClearable={false}
+                        portal={false}
                       />
                     </Box>
                   </Box>
@@ -405,6 +409,7 @@ export default function CreateCard({
                         }}
                         multiple={false}
                         isClearable={false}
+                        portal={false}
                       />
                     </Box>
                   </Box>
@@ -455,6 +460,7 @@ export default function CreateCard({
                             }}
                             multiple={false}
                             isClearable={false}
+                            portal={false}
                           />
                         </Box>
                       </Box>
@@ -547,11 +553,25 @@ export default function CreateCard({
             </PrimaryButton>
             <PrimaryButton
               variant="tertiary"
-              disabled={
-                collection.formMetadata &&
-                collection.formMetadata.allowAnonymousResponses
-              }
               onClick={() => {
+                if (
+                  collection.collectionType === 0 &&
+                  collection.formMetadata.allowAnonymousResponses
+                ) {
+                  toast.warning(
+                    "You can only map the responder if the form does not allow anonymous responses"
+                  );
+                  return;
+                }
+                if (
+                  collection.collectionType === 0 &&
+                  !collection.formMetadata.walletConnectionRequired
+                ) {
+                  toast.warning(
+                    "The selected form does not require wallet connection, so the responder cannot be mapped. Please change it in the form settings"
+                  );
+                  return;
+                }
                 setFieldType("responder");
                 setValues([
                   ...values,

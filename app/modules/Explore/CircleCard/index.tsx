@@ -1,10 +1,9 @@
 import type { FC } from "react";
 
-import { Avatar, Box, Button, Stack, Text } from "degen";
-import styled, { keyframes } from "styled-components";
-import Link from "next/link";
-import Image from "next/image";
 import { smartTrim } from "@/app/common/utils/utils";
+import { Avatar, Box, Stack, Text } from "degen";
+import Link from "next/link";
+import styled, { keyframes } from "styled-components";
 
 interface Props {
   href: string;
@@ -72,8 +71,15 @@ const CircleCard: FC<Props> = ({ href, gradient, logo, name, description }) => {
           gradient={gradient}
         />
         <LogoContainer marginBottom="4">
-          {logo ? (
-            <Avatar src={logo} size="24" label="" />
+          {logo || name ? (
+            <Avatar
+              src={
+                logo ||
+                `https://api.dicebear.com/5.x/initials/svg?seed=${name}&backgroundType=gradientLinear&fontFamily=sans-serif`
+              }
+              size="24"
+              label=""
+            />
           ) : (
             <Placeholder
               height="24"
@@ -84,8 +90,8 @@ const CircleCard: FC<Props> = ({ href, gradient, logo, name, description }) => {
           )}
         </LogoContainer>
         <Stack align="center">
-          <Text weight="semiBold" variant="large">
-            {name}
+          <Text weight="semiBold" variant="large" ellipsis>
+            {smartTrim(name, 18)}
           </Text>
           <Text align="center" variant="label">
             {smartTrim(description, 80)}

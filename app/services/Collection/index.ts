@@ -1,38 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  Condition,
-  FormUserType,
-  ProjectMetadata,
-  PayWallOptions,
-  Registry,
-  Voting,
-  FormPermissions,
-  MappedItem,
-  Property,
-  CollectionType,
-} from "@/app/types";
+import { Property, CollectionType, Option } from "@/app/types";
 
 export const addField = async (
   collectionId: string,
-  createDto: {
-    name: string;
-    type: string;
-    default?: string;
-    options?: { label: string; value: string }[];
-    rewardOptions?: Registry;
-    isPartOfFormView: boolean;
-    userType?: FormUserType;
-    onUpdateNotifyUserTypes?: FormUserType[];
-    required?: boolean;
-    description?: string;
-    milestoneFields?: string[];
-    viewConditions?: Condition[];
-    payWallOptions?: PayWallOptions;
-  }
+  createDto: Partial<Property>,
+  pageId?: string
 ) => {
   return await (
     await fetch(
-      `${process.env.API_HOST}/collection/v1/${collectionId}/addProperty`,
+      `${process.env.API_HOST}/collection/v1/${collectionId}/addProperty?pageId=${pageId}`,
       {
         method: "PATCH",
         headers: {
@@ -52,7 +28,7 @@ export const updateField = async (
 ) => {
   return await (
     await fetch(
-      `${process.env.API_HOST}/collection/v1/${collectionId}/updateProperty?propertyId=${name}`,
+      `${process.env.API_HOST}/collection/v1/${collectionId}/updateProperty`,
       {
         method: "PATCH",
         headers: {
@@ -61,6 +37,7 @@ export const updateField = async (
         credentials: "include",
         body: JSON.stringify({
           id: collectionId,
+          propertyId: name,
           ...update,
         }),
       }
@@ -71,13 +48,16 @@ export const updateField = async (
 export const deleteField = async (collectionId: string, name: string) => {
   return await (
     await fetch(
-      `${process.env.API_HOST}/collection/v1/${collectionId}/removeProperty?propertyId=${name}`,
+      `${process.env.API_HOST}/collection/v1/${collectionId}/removeProperty`,
       {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
+        body: JSON.stringify({
+          propertyId: name,
+        }),
       }
     )
   ).json();
@@ -417,7 +397,7 @@ export const sendFormComment = async (
 
 export const importFromCsv = async (payload: {
   data: any;
-  collectionName: string;
+  collectionId: string;
   collectionProperties: {
     [key: string]: Property;
   };
@@ -433,5 +413,31 @@ export const importFromCsv = async (payload: {
       credentials: "include",
       body: JSON.stringify(payload),
     })
+  ).json();
+};
+
+export const linkDiscord = async (
+  collectionId: string,
+  dataId: string,
+  payload: {
+    threadName: string;
+    selectedChannel: Option;
+    isPrivate: boolean;
+    rolesToAdd: { [key: string]: boolean };
+    stakeholdersToAdd: string[];
+  }
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/linkDiscord?dataId=${dataId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      }
+    )
   ).json();
 };

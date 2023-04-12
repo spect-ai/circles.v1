@@ -11,7 +11,7 @@ import { BigNumber, ethers, Signer } from "ethers";
 import { erc20ABI } from "wagmi";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
 import { toast } from "react-toastify";
-import { makePayments, updateMultiplePayments, updatePayment } from ".";
+import { updateMultiplePayments } from ".";
 import { gnosisPayment } from "../Gnosis";
 
 type WagmiBalanceObject = {

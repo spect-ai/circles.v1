@@ -20,7 +20,7 @@ import {
 } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
 import { Box, IconTrash, Input, Stack, Text, Textarea } from "degen";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useCircle } from "../../Circle/CircleContext";
 import { fieldOptionsDropdown, fields } from "../Constants";
@@ -36,17 +36,21 @@ import AddConditions from "../Common/AddConditions";
 import PayWall from "./PayWallOptions";
 import RewardTokenOptions from "./RewardTokenOptions";
 import { Field } from "../Automation/Actions/Field";
+import { useKeyPressEvent } from "react-use";
 
 type Props = {
   propertyName?: string;
+  pageId?: string;
   handleClose: () => void;
 };
 
-export default function AddField({ propertyName, handleClose }: Props) {
+export default function AddField({ propertyName, pageId, handleClose }: Props) {
   const {
     localCollection: collection,
     updateCollection,
     setProjectViewId,
+    reasonFieldNeedsAttention,
+    getIfFieldNeedsAttention,
   } = useLocalCollection();
   const { registry, circle } = useCircle();
   const [networks, setNetworks] = useState(registry);
@@ -60,7 +64,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const [description, setDescription] = useState("");
   const [type, setType] = useState({ label: "Short Text", value: "shortText" });
   const [required, setRequired] = useState(0);
-  const onRequiredTabClick = (id: number) => setRequired(id);
+
   const [defaultValue, setDefaultValue] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([
@@ -75,6 +79,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const [showSlugNameError, setShowSlugNameError] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showConfirmOnDelete, setShowConfirmOnDelete] = useState(false);
+  const [showConfirmOnClose, setShowConfirmOnClose] = useState(false);
+
   const [viewConditions, setViewConditions] = useState<Condition[]>(
     (propertyName && collection.properties[propertyName]?.viewConditions) || []
   );
@@ -84,11 +90,34 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const [advancedDefaultOpen, setAdvancedDefaultOpen] = useState(
     viewConditions?.length > 0 ? true : false
   );
+  const [reasonFieldNeedsUserAttention, setReasonFieldNeedsUserAttention] =
+    useState(propertyName ? reasonFieldNeedsAttention[propertyName] : "");
 
   const [cardOrder, setCardOrder] = useState<any>();
-
   const [maxSelections, setMaxSelections] = useState<number>();
-  const [allowCustom, setAllowCustom] = useState(true);
+  const [allowCustom, setAllowCustom] = useState(false);
+
+  const [isDirty, setIsDirty] = useState(false);
+
+  const onRequiredTabClick = (id: number) => {
+    setIsDirty(true);
+    setRequired(id);
+  };
+
+  useKeyPressEvent("Enter", () => {
+    if (name.trim() !== "" && !loading && !showNameCollissionError) {
+      if (
+        propertyName &&
+        !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
+          collection.properties[propertyName].type
+        ].includes(type.value)
+      ) {
+        setShowConfirm(true);
+      } else {
+        onSave();
+      }
+    }
+  });
 
   const onSave = async () => {
     setLoading(true);
@@ -134,21 +163,32 @@ export default function AddField({ propertyName, handleClose }: Props) {
         });
       }
     } else {
-      res = await addField(collection.id, {
-        name: name.trim(),
-        type: type.value,
-        isPartOfFormView: false,
-        description,
-        options: fieldOptions,
-        rewardOptions,
-        userType: userType,
-        default: defaultValue,
-        required: required === 1,
-        milestoneFields,
-        viewConditions,
-        payWallOptions,
-      });
+      if (!pageId && collection.collectionType === 0) {
+        toast.error("Pageid is missing, try again");
+        return;
+      }
+      res = await addField(
+        collection.id,
+        {
+          name: name.trim(),
+          type: type.value as PropertyType,
+          isPartOfFormView: false,
+          description,
+          options: fieldOptions,
+          rewardOptions,
+          userType: userType,
+          default: defaultValue,
+          required: required === 1,
+          milestoneFields,
+          viewConditions,
+          payWallOptions,
+          maxSelections,
+          allowCustom,
+        },
+        pageId
+      );
     }
+    setIsDirty(false);
     setLoading(false);
     if (res.id) {
       handleClose();
@@ -159,24 +199,26 @@ export default function AddField({ propertyName, handleClose }: Props) {
   };
 
   const updateRewardOptions = (property: Property) => {
-    if (property?.rewardOptions) {
-      setNetworks(property.rewardOptions);
-    } else {
-      if (
-        circle.defaultPayment?.chain?.chainId &&
-        circle.defaultPayment?.token?.address &&
-        registry
-      ) {
-        const chainId = circle.defaultPayment?.chain?.chainId;
-        const tokenAddress = circle.defaultPayment?.token?.address;
-        setNetworks({
-          [chainId]: {
-            ...(registry[chainId] || {}),
-            [tokenAddress]: {
-              ...(registry[chainId].tokenDetails[tokenAddress] || {}),
+    if (circle) {
+      if (property?.rewardOptions) {
+        setNetworks(property.rewardOptions);
+      } else {
+        if (
+          circle.defaultPayment?.chain?.chainId &&
+          circle.defaultPayment?.token?.address &&
+          registry
+        ) {
+          const chainId = circle.defaultPayment?.chain?.chainId;
+          const tokenAddress = circle.defaultPayment?.token?.address;
+          setNetworks({
+            [chainId]: {
+              ...(registry[chainId] || {}),
+              [tokenAddress]: {
+                ...(registry[chainId].tokenDetails[tokenAddress] || {}),
+              },
             },
-          },
-        });
+          });
+        }
       }
     }
   };
@@ -189,11 +231,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
     ) {
       setName(propertyName);
       setInitialName(propertyName);
-      // setNotifyUserType(
-      //   collection.properties[propertyName].onUpdateNotifyUserTypes?.map(
-      //     (type) => ({ label: type, value: type })
-      //   )
-      // );
       const property = collection.properties[propertyName];
       setDescription(property?.description || "");
       setRequired(property?.required ? 1 : 0);
@@ -243,6 +280,25 @@ export default function AddField({ propertyName, handleClose }: Props) {
     }
   }, [collection.projectMetadata?.cardOrders, propertyName]);
 
+  useEffect(() => {
+    if (viewConditions) {
+      const res = getIfFieldNeedsAttention({
+        name: name.trim(),
+        type: type.value as PropertyType,
+        isPartOfFormView: false,
+        description,
+        options: fieldOptions,
+        userType: userType,
+        default: defaultValue,
+        required: required === 1,
+        viewConditions,
+        maxSelections,
+        allowCustom,
+      });
+      setReasonFieldNeedsUserAttention(res?.reason);
+    }
+  }, [viewConditions]);
+
   return (
     <Box>
       <AnimatePresence>
@@ -279,10 +335,27 @@ export default function AddField({ propertyName, handleClose }: Props) {
             onCancel={() => setShowConfirmOnDelete(false)}
           />
         )}
+        {showConfirmOnClose && (
+          <ConfirmModal
+            title="You have unsaved changes. Are you sure you want to close?"
+            handleClose={() => setShowConfirmOnClose(false)}
+            onConfirm={() => {
+              setShowConfirmOnClose(false);
+              handleClose();
+            }}
+            onCancel={() => setShowConfirmOnClose(false)}
+          />
+        )}
       </AnimatePresence>
       <Modal
         title={propertyName ? "Edit Field" : "Add Field"}
-        handleClose={handleClose}
+        handleClose={() => {
+          if (isDirty) {
+            setShowConfirmOnClose(true);
+          } else {
+            handleClose();
+          }
+        }}
         size={modalSize}
       >
         <Box padding="8">
@@ -292,6 +365,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
               placeholder="Field Name"
               value={name}
               onChange={(e) => {
+                setIsDirty(true);
                 setName(e.target.value);
                 if (
                   collection.properties &&
@@ -324,6 +398,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 rows={2}
                 value={description}
                 onChange={(e) => {
+                  setIsDirty(true);
                   setDescription(e.target.value);
                 }}
               />
@@ -338,13 +413,10 @@ export default function AddField({ propertyName, handleClose }: Props) {
               />
             )}
             <Dropdown
-              options={
-                collection.collectionType === 0
-                  ? fieldOptionsDropdown
-                  : fieldOptionsDropdown.filter((option) => !option.onlyForm)
-              }
+              options={fieldOptionsDropdown}
               selected={type}
               onChange={(type) => {
+                setIsDirty(true);
                 setType(type);
               }}
               multiple={false}
@@ -362,6 +434,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 setMaxSelections={setMaxSelections}
                 setAllowCustom={setAllowCustom}
                 multiSelect={type.value === "multiSelect"}
+                setIsDirty={setIsDirty}
               />
             ) : null}
             {type.value === "user" || type.value === "user[]" ? (
@@ -389,10 +462,15 @@ export default function AddField({ propertyName, handleClose }: Props) {
               <RewardTokenOptions
                 networks={networks}
                 setNetworks={setNetworks}
+                setIsDirty={setIsDirty}
               />
             )}
             {type.value === "milestone" && (
-              <MilestoneOptions networks={networks} setNetworks={setNetworks} />
+              <MilestoneOptions
+                networks={networks}
+                setNetworks={setNetworks}
+                setIsDirty={setIsDirty}
+              />
             )}
             {type.value === "payWall" && (
               <PayWall
@@ -417,7 +495,10 @@ export default function AddField({ propertyName, handleClose }: Props) {
                   }}
                   type={type.value}
                   data={defaultValue}
-                  setData={setDefaultValue}
+                  setData={(data) => {
+                    setIsDirty(true);
+                    setDefaultValue(data);
+                  }}
                 />
               </Accordian>
             )}
@@ -426,9 +507,14 @@ export default function AddField({ propertyName, handleClose }: Props) {
               <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
                 <AddConditions
                   viewConditions={viewConditions}
-                  setViewConditions={setViewConditions}
-                  buttonText="Add Condition when field is visible"
+                  setViewConditions={(conditions) => {
+                    setIsDirty(true);
+                    setViewConditions(conditions);
+                  }}
+                  buttonText="Add Condition when Field is Visible"
                   collection={collection}
+                  buttonWidth="fit"
+                  dropDownPortal={true}
                 />
                 {/* {["shortText", "longText", "ethAddress"].includes(
                   type.value
@@ -452,11 +538,17 @@ export default function AddField({ propertyName, handleClose }: Props) {
               </Accordian>
             )}
 
+            {reasonFieldNeedsUserAttention && (
+              <Text color="yellow" size="small">
+                {reasonFieldNeedsUserAttention}
+              </Text>
+            )}
+
             <Box marginTop="8" display="flex" flexDirection="column" gap="2">
               <PrimaryButton
                 icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
                 loading={loading}
-                disabled={showNameCollissionError || !name}
+                disabled={showNameCollissionError || !name || !isDirty}
                 onClick={async () => {
                   if (
                     propertyName &&

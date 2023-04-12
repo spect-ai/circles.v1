@@ -4,7 +4,6 @@ import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
 import ProfileTabs from "@/app/modules/Profile/ProfilePage/Tabs";
-import { useGlobal } from "@/app/context/globalContext";
 import { useRouter } from "next/router";
 import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
@@ -17,19 +16,27 @@ import { AnimatePresence } from "framer-motion";
 import FAQModal from "@/app/modules/Dashboard/FAQModal";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import Help from "@/app/common/components/Help";
+import { useAtom } from "jotai";
+import {
+  connectedUserAtom,
+  isProfilePanelExpandedAtom,
+  isSidebarExpandedAtom,
+  userDataAtom,
+} from "@/app/state/global";
+import { ToastContainer } from "react-toastify";
 
 const ProfilePage: NextPage = () => {
   const router = useRouter();
   const [faqOpen, setFaqOpen] = useState(false);
   const username = router.query.user;
-  const {
-    isProfilePanelExpanded,
-    setIsSidebarExpanded,
-    connectedUser,
-    tab,
-    setUserData,
-    userData,
-  } = useGlobal();
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
+  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
+    isProfilePanelExpandedAtom
+  );
+  const [userData, setUserData] = useAtom(userDataAtom);
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -73,8 +80,8 @@ const ProfilePage: NextPage = () => {
   return (
     <>
       <MetaHead
-        title="Spect Circles"
-        description="Playground of coordination tools for DAO contributors to manage projects and fund each other"
+        title="Spect Profile"
+        description="Check out my profile on Spect"
         image="/og.jpg"
       />
       <PublicLayout>
@@ -96,6 +103,17 @@ const ProfilePage: NextPage = () => {
         )}
         {profile?.id && !isProfileLoading && (
           <ScrollContainer mode={mode}>
+            <ToastContainer
+              toastStyle={{
+                backgroundColor: `${
+                  mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+                }`,
+                color: `${
+                  mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+                }`,
+              }}
+            />
+
             <Stack
               direction={{
                 xs: "vertical",
@@ -104,8 +122,6 @@ const ProfilePage: NextPage = () => {
             >
               <ProfileCard />
               <ProfileTabs />
-              {!userData?.email &&
-                profile?.username === currentUser?.username && <NotifCard />}
             </Stack>
           </ScrollContainer>
         )}
@@ -114,21 +130,18 @@ const ProfilePage: NextPage = () => {
           {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
         </AnimatePresence>
       </PublicLayout>
-      {isProfilePanelExpanded && <NotificationPanel />}
     </>
   );
 };
 
 const ScrollContainer = styled(Box)<{ mode: string }>`
   ::-webkit-scrollbar {
-    width: 5px;
-    height: 2rem;
+    height: 0.5rem;
   }
   ::-webkit-scrollbar-thumb {
     background: ${(props) =>
       props.mode === "dark" ? "rgb(255, 255, 255, 0.3)" : "rgb(0, 0, 0, 0.2)"};
   }
-  max-height: 100vh;
   overflow-y: auto;
 `;
 

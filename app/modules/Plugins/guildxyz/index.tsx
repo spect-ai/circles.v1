@@ -86,9 +86,9 @@ export default function RoleGate({ handleClose }: Props) {
   }, [circle?.guildxyzId]);
 
   return (
-    <Modal title="Guild Integration" handleClose={handleClose} size="small">
+    <Modal title="Guild Plugin" handleClose={handleClose} size="small">
       <Box padding="8" width="full">
-        {!circle.guildxyzId ? (
+        {!circle?.guildxyzId ? (
           <Stack space="1">
             <Input
               label="Guild URL on Guild.xyz"
@@ -119,7 +119,7 @@ export default function RoleGate({ handleClose }: Props) {
                       {
                         guildxyzId: guildServer.id,
                       },
-                      circle?.id
+                      circle?.id || ""
                     );
                     console.log({ res });
                     setCircleData(res);
@@ -151,9 +151,9 @@ export default function RoleGate({ handleClose }: Props) {
           </Stack>
         ) : (
           <Stack>
-            <Box marginBottom="6">
+            <Box>
               {" "}
-              <Text>{`Pick guild.xyz roles that can submit a response to this form`}</Text>
+              <Text variant="label">{`Pick guild.xyz roles that can submit a response to this form`}</Text>
             </Box>
 
             <Stack direction="horizontal" wrap>
@@ -175,9 +175,16 @@ export default function RoleGate({ handleClose }: Props) {
                 </Box>
               ))}
             </Stack>
-            <Box padding="8" width="full">
+            <Box
+              width="full"
+              display="flex"
+              flexDirection="row"
+              gap="2"
+              justifyContent="flex-end"
+            >
               <PrimaryButton
                 loading={loading}
+                disabled={!selectedRoles?.length}
                 onClick={async () => {
                   setLoading(true);
                   const selectedRoleIds = guildRoles?.filter(
@@ -189,6 +196,7 @@ export default function RoleGate({ handleClose }: Props) {
                         formMetadata: {
                           ...collection.formMetadata,
                           formRoleGating: selectedRoleIds,
+                          walletConnectionRequired: true,
                         },
                       },
                       collection.id
@@ -201,6 +209,31 @@ export default function RoleGate({ handleClose }: Props) {
               >
                 Save
               </PrimaryButton>
+              {(collection.formMetadata?.formRoleGating?.length || 0) > 0 && (
+                <PrimaryButton
+                  loading={loading}
+                  variant="tertiary"
+                  onClick={async () => {
+                    setLoading(true);
+
+                    const res = await updateCollection(
+                      {
+                        formMetadata: {
+                          ...collection.formMetadata,
+                          formRoleGating: [],
+                        },
+                      },
+                      collection.id
+                    );
+                    setLocalCollection(res);
+
+                    setLoading(false);
+                    handleClose();
+                  }}
+                >
+                  Disable
+                </PrimaryButton>
+              )}
             </Box>
           </Stack>
         )}

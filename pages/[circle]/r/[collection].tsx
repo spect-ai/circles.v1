@@ -79,8 +79,8 @@ const CollectionPage: NextPage = () => {
   return (
     <>
       <MetaHead
-        title="Spect Circles"
-        description="Playground of coordination tools for DAO contributors to manage projects and fund each other"
+        title="Spect"
+        description="Helping organizations centralize context, decentralize decision making & operate with ease."
         image="/og.jpg"
       />
       <CircleContext.Provider value={circlecontext}>

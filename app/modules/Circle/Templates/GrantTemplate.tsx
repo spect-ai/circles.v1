@@ -12,39 +12,31 @@ import { createTemplateFlow } from "@/app/services/Templates";
 import { useRouter } from "next/router";
 import RewardTokenOptions from "../../Collection/AddField/RewardTokenOptions";
 import { useAtom } from "jotai";
-import { scribeOpenAtom, scribeUrlAtom } from "@/pages/_app";
 import { Scribes } from "@/app/common/utils/constants";
 import { Space } from "@/app/modules/Collection/VotingModule";
 import { useQuery } from "@apollo/client";
 import { updateCircle } from "@/app/services/UpdateCircle";
+import { scribeOpenAtom, scribeUrlAtom } from "@/app/state/global";
 
 interface Props {
   handleClose: (close: boolean) => void;
-  setLoading: (load: boolean) => void;
 }
 
-export default function GrantTemplate({ handleClose, setLoading }: Props) {
-  const {
-    localCircle: circle,
-    registry,
-    fetchCircle,
-    setCircleData,
-  } = useCircle();
-  const router = useRouter();
-
+export default function GrantTemplate({ handleClose }: Props) {
+  const { circle, registry, fetchCircle, setCircleData } = useCircle();
   const [step, setStep] = useState(0);
   const [snapshotSpace, setSnapshotSpace] = useState("");
   const [selectedRoles, setSelectedRoles] = useState([] as string[]);
   const [categoryOptions, setCategoryOptions] = useState<Option[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<Option>(
-    categoryOptions?.[0]
-  );
+
   const [networks, setNetworks] = useState<Registry | undefined>({
     "137": registry?.["137"],
   } as Registry);
 
   const [, setIsScribeOpen] = useAtom(scribeOpenAtom);
   const [, setScribeUrl] = useAtom(scribeUrlAtom);
+
+  const [loading, setLoading] = useState(false);
 
   const { loading: isLoading, data } = useQuery(Space, {
     variables: { id: snapshotSpace },
@@ -59,37 +51,39 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     }
   }, [circle?.discordGuildId]);
 
-  const [discordRoles, setDiscordRoles] = useState<
-    | {
-        id: string;
-        name: string;
-      }[]
-    | undefined
-  >();
+  const [discordRoles, setDiscordRoles] =
+    useState<
+      | {
+          id: string;
+          name: string;
+        }[]
+      | undefined
+    >();
 
   useEffect(() => {
-    const getGuildChannels = async () => {
-      const data = await fetchGuildChannels(
-        circle?.discordGuildId,
-        "GUILD_CATEGORY"
-      );
-      const categoryOptions = data.guildChannels?.map((channel: any) => ({
-        label: channel.name,
-        value: channel.id,
-      }));
-      setCategoryOptions(categoryOptions);
-    };
-    if (circle?.discordGuildId) void getGuildChannels();
-    const fetchGuildRoles = async () => {
-      const data = await getGuildRoles(circle?.discordGuildId);
-      data && setDiscordRoles(data.roles);
-      console.log({ data });
-    };
-    if (circle?.discordGuildId) void fetchGuildRoles();
+    if (circle) {
+      const getGuildChannels = async () => {
+        const data = await fetchGuildChannels(
+          circle?.discordGuildId,
+          "GUILD_CATEGORY"
+        );
+        const categoryOptions = data.guildChannels?.map((channel: any) => ({
+          label: channel.name,
+          value: channel.id,
+        }));
+        setCategoryOptions(categoryOptions);
+      };
+      if (circle?.discordGuildId) void getGuildChannels();
+      const fetchGuildRoles = async () => {
+        const data = await getGuildRoles(circle?.discordGuildId);
+        data && setDiscordRoles(data.roles);
+        console.log({ data });
+      };
+      if (circle?.discordGuildId) void fetchGuildRoles();
+    }
   }, [circle?.discordGuildId]);
 
   const useTemplate = async () => {
-    handleClose(false);
     setLoading(true);
     let roles = {};
     for (const i in selectedRoles) {
@@ -99,7 +93,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
       };
     }
     const res = await createTemplateFlow(
-      circle?.id,
+      circle?.id || "",
       {
         roles,
         registry: networks,
@@ -110,9 +104,11 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     if (res?.id) {
       setScribeUrl(Scribes.grants.using);
       setIsScribeOpen(true);
-      setLoading(false);
+      console.log("here");
       setCircleData(res);
     }
+    handleClose(false);
+    setLoading(false);
   };
 
   return (
@@ -134,7 +130,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                   }
                   onClick={() => {
                     window.open(
-                      `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}`,
+                      `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}`,
                       "_blank"
                     );
 
@@ -348,7 +344,8 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 Back
               </Button>
               <Button
-                onClick={() => useTemplate()}
+                loading={loading}
+                onClick={useTemplate}
                 variant="secondary"
                 size="small"
               >

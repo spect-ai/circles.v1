@@ -1,7 +1,8 @@
-import { useGlobal } from "@/app/context/globalContext";
+import { isSidebarExpandedAtom } from "@/app/state/global";
 import { DoubleRightOutlined } from "@ant-design/icons";
 import { Box, Button } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAtom } from "jotai";
 import React from "react";
 
 type Props = {
@@ -17,7 +18,9 @@ export default function CollapseButton({
   top,
   left,
 }: Props) {
-  const { isSidebarExpanded, setIsSidebarExpanded } = useGlobal();
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
   return (
     <AnimatePresence>
       {show && (

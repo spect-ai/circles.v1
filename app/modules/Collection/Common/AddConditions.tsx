@@ -13,6 +13,8 @@ type Props = {
   buttonText: string;
   firstRowMessage?: string;
   collection: CollectionType;
+  dropDownPortal: boolean;
+  buttonWidth?: string;
 };
 
 export default function AddConditions({
@@ -21,8 +23,9 @@ export default function AddConditions({
   firstRowMessage,
   buttonText,
   collection,
+  buttonWidth,
+  dropDownPortal,
 }: Props) {
-
   const fieldOptions = Object.entries(collection.properties)
     .filter((field) => !["multiURL"].includes(field[1].type))
     .map((field) => ({
@@ -33,11 +36,21 @@ export default function AddConditions({
     <Box>
       {viewConditions?.map((condition, index) => (
         <Box key={index} marginBottom="2">
-          <Stack direction="horizontal" align={"center"}>
+          <Stack
+            direction="horizontal"
+            align={{
+              xs: "flex-start",
+              md: "center",
+            }}
+          >
             <Box
               width={{
                 xs: "full",
                 md: "1/4",
+              }}
+              marginTop={{
+                xs: "2",
+                md: "0",
               }}
             >
               <Stack direction="horizontal" align="center" space="1">
@@ -60,7 +73,17 @@ export default function AddConditions({
                 </Text>
               </Stack>
             </Box>
-            <Box width="full" display="flex" gap="2" alignItems="center">
+            <Box
+              width="full"
+              display="flex"
+              flexDirection={{
+                xs: "column",
+                md: "row",
+              }}
+              gap="2"
+              alignItems="flex-start"
+              justifyContent="flex-start"
+            >
               <Box
                 width={{
                   xs: "full",
@@ -81,6 +104,7 @@ export default function AddConditions({
                   }}
                   multiple={false}
                   isClearable={false}
+                  portal={dropDownPortal}
                 />
               </Box>
               <Box
@@ -101,6 +125,7 @@ export default function AddConditions({
                   }}
                   multiple={false}
                   isClearable={false}
+                  portal={dropDownPortal}
                 />
               </Box>
               <Box
@@ -119,13 +144,14 @@ export default function AddConditions({
                   collection={collection}
                   propertyId={condition?.data?.field?.value}
                   comparatorValue={condition?.data?.comparator?.value}
+                  dropDownPortal={dropDownPortal}
                 />
               </Box>
             </Box>
           </Stack>
         </Box>
       ))}
-      <Box marginTop="8">
+      <Box marginTop="4" width={(buttonWidth as any) || "64"}>
         <PrimaryButton
           icon={<IconPlusSmall />}
           variant="tertiary"

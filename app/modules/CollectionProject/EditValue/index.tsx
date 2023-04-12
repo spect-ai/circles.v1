@@ -2,11 +2,13 @@
 import Popover from "@/app/common/components/Popover";
 import { updateField } from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Milestone } from "@/app/types";
-import { Box, IconClose, Stack, Tag, Text, useTheme } from "degen";
+import { MemberDetails, Milestone, UserType } from "@/app/types";
+import { Avatar, Box, IconClose, Stack, Tag, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { matchSorter } from "match-sorter";
+import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import uuid from "react-uuid";
 import styled from "styled-components";
@@ -26,40 +28,47 @@ type Props = {
 function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const fieldInput = useRef<any>();
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+  const {
+    localCollection: collection,
+    updateCollection,
+    colorMapping,
+  } = useLocalCollection();
   const property = collection.properties[propertyName];
   const [options, setOptions] = useState<any>([]);
   const [filteredOptions, setFilteredOptions] = useState<any>([]);
   const [tempValue, setTempValue] = useState<any>();
+  const router = useRouter();
 
   const { mode } = useTheme();
+  const { circle: cId } = router.query;
 
   const { formActions } = useRoleGate();
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
 
+  // TODO: Too many calls for no reason, can we pass this instead?
   useEffect(() => {
     if (property) {
       if (property.type === "singleSelect" || property.type === "multiSelect") {
         setOptions(property.options);
         setFilteredOptions(property.options);
       } else if (property.type === "user" || property.type === "user[]") {
-        void (async () => {
-          const res = await (
-            await fetch(
-              `${process.env.API_HOST}/circle/${
-                collection.parents[0].id || collection.parents[0]
-              }/memberDetails?circleIds=${
-                collection.parents[0].id || collection.parents[0]
-              }`
-            )
-          ).json();
-          const memberOptions = res.members?.map((member: string) => ({
-            label: res.memberDetails && res.memberDetails[member]?.username,
-            value: member,
-          }));
+        if (memberDetails) {
+          const memberOptions = memberDetails.members?.map(
+            (member: string) => ({
+              label:
+                memberDetails.memberDetails &&
+                memberDetails.memberDetails[member]?.username,
+              value: member,
+            })
+          );
           setOptions(memberOptions);
           setFilteredOptions(memberOptions);
-        })();
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,13 +100,17 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                   <Stack direction="horizontal" wrap space="2">
                     {["multiSelect", "user[]"].includes(property.type) &&
                       value?.map((val: any) => (
-                        <Tag tone="accent" hover key={val.value}>
+                        <CustomTag
+                          mode={mode}
+                          key={val.value}
+                          borderCol={colorMapping[val.value]}
+                        >
                           <Stack
                             direction="horizontal"
                             space="1"
                             align="center"
                           >
-                            {val.label}
+                            <Text>{val.label}</Text>
                             <Box
                               cursor="pointer"
                               onClick={() => {
@@ -110,7 +123,7 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                               <IconClose size="4" color="red" />
                             </Box>
                           </Stack>
-                        </Tag>
+                        </CustomTag>
                       ))}
                     <FieldInput
                       mode={mode}
@@ -156,9 +169,42 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                             }
                           }}
                         >
-                          <Tag key={val.value} tone="accent" hover>
-                            {val.label}
-                          </Tag>
+                          <CustomTag
+                            mode={mode}
+                            key={val.value}
+                            borderCol={colorMapping[val.value]}
+                          >
+                            {" "}
+                            {property.type === "multiSelect" && (
+                              <Text> {val.label}</Text>
+                            )}
+                            {property.type === "user[]" && (
+                              <Stack
+                                direction="horizontal"
+                                space="1"
+                                align="center"
+                              >
+                                <Avatar
+                                  src={
+                                    memberDetails?.memberDetails?.[val.value]
+                                      ?.avatar ||
+                                    `https://api.dicebear.com/5.x/thumbs/svg?seed=${
+                                      memberDetails?.memberDetails?.[val.value]
+                                        ?.id
+                                    }`
+                                  }
+                                  label=""
+                                  size="5"
+                                />
+                                <Text weight="semiBold">
+                                  {
+                                    memberDetails?.memberDetails?.[val.value]
+                                      ?.username
+                                  }
+                                </Text>
+                              </Stack>
+                            )}
+                          </CustomTag>
                         </Box>
                       ))
                     ) : (
@@ -175,9 +221,40 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                         }
                       }}
                     >
-                      <Tag tone="accent" hover>
-                        {value.label}
-                      </Tag>
+                      <CustomTag
+                        mode={mode}
+                        borderCol={colorMapping[value.value]}
+                      >
+                        {property.type === "user" && (
+                          <Stack
+                            direction="horizontal"
+                            space="1"
+                            align="center"
+                          >
+                            <Avatar
+                              src={
+                                memberDetails?.memberDetails?.[value.value]
+                                  ?.avatar ||
+                                `https://api.dicebear.com/5.x/thumbs/svg?seed=${
+                                  memberDetails?.memberDetails?.[value.value]
+                                    ?.id
+                                }`
+                              }
+                              label=""
+                              size="5"
+                            />
+                            <Text weight="semiBold">
+                              {
+                                memberDetails?.memberDetails?.[value.value]
+                                  ?.username
+                              }
+                            </Text>
+                          </Stack>
+                        )}
+                        {property.type === "singleSelect" && (
+                          <Text>{value.label}</Text>
+                        )}
+                      </CustomTag>
                     </Box>
                   ) : (
                     "Empty"
@@ -331,13 +408,62 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
               />
             </FieldInputContainer>
           ) : (
-            <FieldButton onClick={() => setIsEditing(true)} mode={mode}>
+            <FieldButton
+              onClick={() => {
+                if (disabled) {
+                  toast.error("You can't edit a closed card");
+                  return;
+                }
+                setIsEditing(true);
+              }}
+              mode={mode}
+            >
               {value ? (
                 <Text>
                   {property.type === "date"
                     ? new Date(value).toDateString()
                     : value}
                 </Text>
+              ) : (
+                "Empty"
+              )}
+            </FieldButton>
+          )}
+        </Box>
+      )}
+      {["discord", "telegram", "github"].includes(property?.type) && (
+        <Box>
+          {isEditing ? (
+            <FieldInputContainer>
+              <FieldInput
+                mode={mode}
+                autoFocus
+                ref={fieldInput}
+                defaultValue={value?.username || value?.login || value}
+                onChange={(e) => {
+                  setTempValue(e.target.value);
+                }}
+                onBlur={() => {
+                  setValue(tempValue);
+                  setIsEditing(false);
+                }}
+              />
+            </FieldInputContainer>
+          ) : (
+            <FieldButton
+              onClick={() => {
+                if (disabled) {
+                  toast.error("You can't edit a closed card");
+                  return;
+                }
+                if (Object.keys(value || {}).length === 0) {
+                  setIsEditing(true);
+                }
+              }}
+              mode={mode}
+            >
+              {value ? (
+                <Text>{value.username || value.login || value}</Text>
               ) : (
                 "Empty"
               )}
@@ -354,15 +480,32 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                 value={value}
                 propertyName={propertyName}
                 handleClose={(reward) => {
-                  console.log({ reward });
-                  setValue(reward);
                   setIsEditing(false);
+                  console.log({ reward });
+                  if (
+                    ((!reward.value && reward.value !== 0) ||
+                      !reward.token ||
+                      !reward.chain) &&
+                    dataId &&
+                    !collection.data?.[dataId]?.[propertyName]?.value
+                  )
+                    return;
+                  setValue(reward);
                 }}
                 dataId={dataId}
               />
             )}
           </AnimatePresence>
-          <FieldButton onClick={() => setIsEditing(true)} mode={mode}>
+          <FieldButton
+            onClick={() => {
+              if (disabled) {
+                toast.error("You can't edit a closed card");
+                return;
+              }
+              setIsEditing(true);
+            }}
+            mode={mode}
+          >
             {value?.value ? (
               <Text>{`${value.value} ${value.token.label} on ${value.chain.label} network`}</Text>
             ) : (
@@ -387,7 +530,16 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
               />
             )}
           </AnimatePresence>
-          <FieldButton onClick={() => setIsEditing(true)} mode={mode}>
+          <FieldButton
+            onClick={() => {
+              if (disabled) {
+                toast.error("You can't edit a closed card");
+                return;
+              }
+              setIsEditing(true);
+            }}
+            mode={mode}
+          >
             {value ? <Text>{`${value.length} Milestones`}</Text> : "Empty"}
           </FieldButton>
         </Box>
@@ -406,7 +558,16 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
               />
             )}
           </AnimatePresence>
-          <FieldButton onClick={() => setIsEditing(true)} mode={mode}>
+          <FieldButton
+            onClick={() => {
+              if (disabled) {
+                toast.error("You can't edit a closed card");
+                return;
+              }
+              setIsEditing(true);
+            }}
+            mode={mode}
+          >
             {value ? <Text ellipsis>{value}</Text> : "Empty"}
           </FieldButton>
         </Box>
@@ -484,4 +645,14 @@ export const MenuItem = styled(Box)`
     background: rgb(191, 90, 242, 0.1);
   }
   transition: background 0.2s ease;
+`;
+
+export const CustomTag = styled(Box)<{ mode: string; borderCol?: string }>`
+  border-radius: 1.5rem;
+  border: solid 2px ${(props) => props.borderCol || "rgb(191, 90, 242, 0.1)"};
+  transition: all 0.3s ease-in-out;
+  padding: 0.1rem 0.5rem;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
 `;

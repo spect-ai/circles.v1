@@ -1,14 +1,17 @@
 import { Box, Avatar, Tag, Text, Button, Stack } from "degen";
-import { useGlobal } from "@/app/context/globalContext";
 import { UserType } from "@/app/types";
 import Link from "next/link";
 import { useQuery } from "react-query";
 import React, { memo } from "react";
 import Logout from "@/app/common/components/LogoutButton";
 import { smartTrim } from "@/app/common/utils/utils";
+import { isProfilePanelExpandedAtom } from "@/app/state/global";
+import { useAtom } from "jotai";
 
 const TaskWalletHeader = () => {
-  const { setIsProfilePanelExpanded } = useGlobal();
+  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
+    isProfilePanelExpandedAtom
+  );
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -18,7 +21,10 @@ const TaskWalletHeader = () => {
       <Stack direction="horizontal" space="2">
         <Avatar
           label="profile-pic"
-          src={currentUser?.avatar}
+          src={
+            currentUser?.avatar ||
+            `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser?.id}`
+          }
           size="16"
           address={currentUser?.ethAddress}
         />

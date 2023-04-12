@@ -9,9 +9,10 @@ import PaymentCard from "./PaymentCard";
 import PaymentCardDrawer from "./PaymentCardDrawer";
 
 export default function PendingSignaturePayments() {
-  const { circle, setCircleData } = useCircle();
+  const { circle } = useCircle();
   const { isCardDrawerOpen, setIsCardDrawerOpen } = usePaymentViewCommon();
 
+  if (!circle) return null;
   return (
     <Stack>
       <AnimatePresence>

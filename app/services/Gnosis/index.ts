@@ -8,9 +8,8 @@ import { toast } from "react-toastify";
 import { fetchSigner } from "@wagmi/core";
 
 export async function getUserSafes(chainId: string) {
-  const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-  const safeOwner = provider.getSigner(0);
-  console.log(safeOwner);
+  const safeOwner = await fetchSigner();
+  if (!safeOwner) throw new Error("No signer found");
   const address = await safeOwner.getAddress();
   try {
     const ethAdapter = new EthersAdapter({
@@ -39,10 +38,8 @@ export async function gnosisPayment(
 ) {
   try {
     console.log(safeAddress);
-    const provider = new ethers.providers.Web3Provider(
-      (window as any).ethereum
-    );
-    const safeOwner = provider.getSigner(0);
+    const safeOwner = await fetchSigner();
+    if (!safeOwner) throw new Error("No signer found");
     const senderAddress = await safeOwner.getAddress();
     console.log(safeOwner);
     const ethAdapter = new EthersAdapter({
@@ -118,8 +115,8 @@ export async function gnosisPayment(
 }
 
 export async function getNonce(safeAddress: string) {
-  const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-  const safeOwner = provider.getSigner(0);
+  const safeOwner = await fetchSigner();
+  if (!safeOwner) throw new Error("No signer found");
   const ethAdapter = new EthersAdapter({
     ethers,
     signer: safeOwner,

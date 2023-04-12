@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import ClickableAvatar from "@/app/common/components/Avatar";
 import { smartTrim } from "@/app/common/utils/utils";
 import { updateField } from "@/app/services/Collection";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { Option } from "@/app/types";
+import { Option, UserType } from "@/app/types";
 import {
   Avatar,
+  AvatarGroup,
   Box,
   Button,
   IconPlusSmall,
@@ -20,6 +22,7 @@ import { Calendar, DollarSign } from "react-feather";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import { CustomTag } from "../EditValue";
 
 type Props = {
   column: Option;
@@ -34,8 +37,11 @@ export default function Column({
   setDefaultValue,
   cardIds,
 }: Props) {
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+  const {
+    localCollection: collection,
+    updateCollection,
+    colorMapping,
+  } = useLocalCollection();
   const { getMemberDetails } = useModalOptions();
 
   const [columnName, setColumnName] = useState(column.label);
@@ -155,8 +161,17 @@ export default function Column({
                         if (property.type === "singleSelect") {
                           return (
                             <Box key={propertyId}>
-                              {/* <Text weight="semiBold">{property.name}</Text> */}
-                              <Text variant="label">{value.label}</Text>
+                              <Stack direction="horizontal" wrap space="1">
+                                {" "}
+                                <CustomTag
+                                  key={propertyId}
+                                  mode={mode}
+                                  borderCol={colorMapping[value.value]}
+                                >
+                                  {/* <Text weight="semiBold">{property.name}</Text> */}
+                                  <Text variant="label">{value.label}</Text>
+                                </CustomTag>
+                              </Stack>
                             </Box>
                           );
                         }
@@ -166,9 +181,13 @@ export default function Column({
                               {/* <Text weight="semiBold">{property.name}</Text> */}
                               <Stack direction="horizontal" wrap space="1">
                                 {value.map((value: Option) => (
-                                  <Tag key={value.value} tone="accent">
-                                    {value.label}
-                                  </Tag>
+                                  <CustomTag
+                                    key={value.value}
+                                    mode={mode}
+                                    borderCol={colorMapping[value.value]}
+                                  >
+                                    <Text>{value.label}</Text>
+                                  </CustomTag>
                                 ))}
                               </Stack>
                             </Box>
@@ -187,7 +206,10 @@ export default function Column({
                                   <Avatar
                                     src={
                                       getMemberDetails(value.value || "")
-                                        ?.avatar
+                                        ?.avatar ||
+                                      `https://api.dicebear.com/5.x/thumbs/svg?seed=${
+                                        getMemberDetails(value.value || "")?.id
+                                      }`
                                     }
                                     label=""
                                     size="6"
@@ -206,20 +228,20 @@ export default function Column({
                         if (property.type === "user[]") {
                           return (
                             <Box key={propertyId}>
-                              {/* <Text weight="semiBold">{property.name}</Text> */}
                               <Stack direction="horizontal" wrap space="1">
-                                {value.map((value: Option) => (
-                                  <Box key={value.value}>
-                                    <Avatar
-                                      src={
-                                        getMemberDetails(value.value || "")
-                                          ?.avatar
-                                      }
-                                      label=""
-                                      size="6"
-                                    />
-                                  </Box>
-                                ))}
+                                <AvatarGroup
+                                  limit={3}
+                                  members={value.map((val: Option) => ({
+                                    label: getMemberDetails(val.value || "")
+                                      ?.username,
+                                    src:
+                                      getMemberDetails(val.value || "")
+                                        ?.avatar ||
+                                      `https://api.dicebear.com/5.x/thumbs/svg?seed=${
+                                        getMemberDetails(val.value || "")?.id
+                                      }`,
+                                  }))}
+                                />
                               </Stack>
                             </Box>
                           );

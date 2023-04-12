@@ -46,6 +46,11 @@ export default function DefaultPayment() {
     }
 
     setIsLoading(true);
+    if (!chain || !token) {
+      toast.error("Please select a chain and token");
+      setIsLoading(false);
+      return;
+    }
     const res = await updateCircle(
       {
         defaultPayment: {
@@ -54,7 +59,7 @@ export default function DefaultPayment() {
         },
         paymentAddress: circleAddress,
       },
-      circle?.id
+      circle?.id || ""
     );
     setIsDirty(false);
     setIsLoading(false);
@@ -67,11 +72,13 @@ export default function DefaultPayment() {
     <Container>
       <Stack space="4">
         <Box>
-          <Heading>Circle Payments</Heading>
-          <Text>Add your whitelisted tokens</Text>
+          <Text variant="extraLarge" weight="bold">
+            Payments
+          </Text>
+          <Text variant="label">Add your whitelisted tokens</Text>
         </Box>
         <Stack>
-          <Text size="extraLarge">Chain</Text>
+          <Text weight="semiBold">Chain</Text>
           <Stack direction="horizontal" wrap>
             {getFlattenedNetworks(registry as Registry)?.map((aChain) => (
               <Box
@@ -99,24 +106,25 @@ export default function DefaultPayment() {
               </Box>
             ))}
           </Stack>
-          <Text size="extraLarge">Whitelisted Tokens</Text>
+          <Text weight="semiBold">Whitelisted Tokens</Text>
           <Stack direction="horizontal" wrap>
-            {getFlattenedCurrencies(registry as Registry, chain?.chainId)?.map(
-              (aToken) => (
-                <Box
-                  cursor="pointer"
-                  key={aToken.address}
-                  onClick={() => {
-                    setIsDirty(true);
-                    setToken(aToken);
-                  }}
-                >
-                  <Tag hover>
-                    <Text>{aToken.symbol}</Text>
-                  </Tag>
-                </Box>
-              )
-            )}
+            {getFlattenedCurrencies(
+              registry as Registry,
+              chain?.chainId || ""
+            )?.map((aToken) => (
+              <Box
+                cursor="pointer"
+                key={aToken.address}
+                onClick={() => {
+                  setIsDirty(true);
+                  setToken(aToken);
+                }}
+              >
+                <Tag hover>
+                  <Text>{aToken.symbol}</Text>
+                </Tag>
+              </Box>
+            ))}
             <Box cursor="pointer" onClick={() => setIsAddTokenModalOpen(true)}>
               <Tag hover label="Add">
                 <Stack direction="horizontal" align="center" space="1">
@@ -127,8 +135,8 @@ export default function DefaultPayment() {
             <AnimatePresence>
               {isAddTokenModalOpen && (
                 <AddToken
-                  chainId={chain?.chainId}
-                  chainName={chain?.name}
+                  chainId={chain?.chainId || ""}
+                  chainName={chain?.name || ""}
                   handleClose={() => setIsAddTokenModalOpen(false)}
                 />
               )}

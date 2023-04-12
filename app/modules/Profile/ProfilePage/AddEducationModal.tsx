@@ -1,10 +1,12 @@
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import CheckBox from "@/app/common/components/Table/Checkbox";
-import { useGlobal } from "@/app/context/globalContext";
+
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
+import { userDataAtom } from "@/app/state/global";
 import { Credential } from "@/app/types";
 import { Box, Button, Input, Tag, Text, useTheme } from "degen";
+import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import LinkCredentialsModal from "./LinkCredentialsModal";
@@ -12,15 +14,17 @@ import LinkCredentialsModal from "./LinkCredentialsModal";
 type Props = {
   handleClose: () => void;
   modalMode: "add" | "edit";
+  allCredentials: { [id: string]: any[] };
   educationId?: number;
 };
 
 export default function AddEducationModal({
   handleClose,
   modalMode,
+  allCredentials,
   educationId,
 }: Props) {
-  const { userData } = useGlobal();
+  const [userData] = useAtom<any>(userDataAtom);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState(
@@ -282,6 +286,7 @@ export default function AddEducationModal({
           <LinkCredentialsModal
             credentials={linkedCredentials}
             setCredentials={setLinkedCredentials}
+            allCredentials={allCredentials}
           />
         </Box>
         <Box
@@ -300,19 +305,24 @@ export default function AddEducationModal({
             variant="secondary"
             size="small"
             width="32"
+            loading={loading}
             onClick={async () => {
-              console.log({ title, organization });
+              setLoading(true);
               if (!title || !organization) {
                 setRequiredFieldsNotSet({
                   ...requiredFieldsNotSet,
                   title: isEmpty("title", title),
                   organization: isEmpty("organization", organization),
                 });
+                setLoading(false);
+
                 return;
               }
               const dateIsInvalid = dateIsInvalidValid(startDate, endDate);
               if (dateIsInvalid) {
                 setDateError(true);
+                setLoading(false);
+
                 return;
               }
               if (modalMode === "add") {
@@ -328,6 +338,7 @@ export default function AddEducationModal({
                 });
               } else if (modalMode === "edit") {
                 if (!educationId && educationId !== 0) {
+                  setLoading(false);
                   return;
                 }
                 const res = await updateEducation(educationId?.toString(), {
@@ -341,6 +352,7 @@ export default function AddEducationModal({
                   linkedCredentials,
                 });
               }
+              setLoading(false);
               handleClose();
             }}
           >

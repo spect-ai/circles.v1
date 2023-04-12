@@ -1,7 +1,7 @@
 import Popover from "@/app/common/components/Popover";
-import { PopoverOption } from "@/app/modules/Card/OptionPopover";
-import { Box, Tag, Text } from "degen";
+import { Box, Tag, Text, useTheme } from "degen";
 import React, { useState } from "react";
+import styled from "styled-components";
 
 type Props = {
   roles: {
@@ -72,3 +72,41 @@ export default function RolePopover({
     </Popover>
   );
 }
+
+const PopoverOptionContainer = styled(Box)<{ mode: string }>`
+  &:hover {
+    // background-color: rgba(255, 255, 255, 0.1);
+    background-color: ${({ mode }) =>
+      mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(20, 20, 20, 0.1)"};
+  }
+`;
+
+type PopoverOptionProps = {
+  onClick: (e?: React.MouseEvent<HTMLElement>) => void;
+  children: React.ReactNode;
+  tourId?: string;
+};
+
+export const PopoverOption = ({
+  children,
+  onClick,
+  tourId,
+}: PopoverOptionProps) => {
+  const { mode } = useTheme();
+
+  return (
+    <PopoverOptionContainer
+      padding="4"
+      overflow="hidden"
+      cursor="pointer"
+      onClick={onClick}
+      borderRadius="2xLarge"
+      data-tour={tourId}
+      mode={mode}
+    >
+      <Text variant="small" weight="semiBold" ellipsis color="textSecondary">
+        {children}
+      </Text>
+    </PopoverOptionContainer>
+  );
+};

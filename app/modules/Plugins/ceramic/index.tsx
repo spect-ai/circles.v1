@@ -29,10 +29,12 @@ export default function Ceramic({ handleClose }: Props) {
                 formMetadata: {
                   ...collection.formMetadata,
                   ceramicEnabled: !collection.formMetadata.ceramicEnabled,
+                  walletConnectionRequired: true,
                 },
               });
               if (res.id) updateCollection(res);
-              else toast.error("Error updating collection");
+              else
+                toast.error("Error updating collection, refresh and try again");
               handleClose();
               setLoading(false);
             }}

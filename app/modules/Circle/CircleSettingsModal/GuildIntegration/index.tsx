@@ -48,7 +48,7 @@ export default function GuildIntegration() {
                         {
                           guildxyzId: guildServer.id,
                         },
-                        circle?.id
+                        circle?.id || ""
                       );
                       console.log({ res });
                       setLoading(false);

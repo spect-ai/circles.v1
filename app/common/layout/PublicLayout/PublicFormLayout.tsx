@@ -5,10 +5,17 @@ import { AnimatePresence } from "framer-motion";
 import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
 import Sidebar from "@/app/modules/Sidebar";
 import styled from "styled-components";
-import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { toast } from "react-toastify";
+import { useAtom } from "jotai";
+import {
+  connectedUserAtom,
+  isSidebarExpandedAtom,
+  socketAtom,
+} from "@/app/state/global";
+import { io } from "socket.io-client";
+import { useAccount, useConnect } from "wagmi";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -48,40 +55,33 @@ const getUser = async () => {
 
 function PublicLayout(props: PublicLayoutProps) {
   const { children } = props;
-  const {
-    isSidebarExpanded,
-    connectedUser,
-    connectUser,
-    setIsSidebarExpanded,
-  } = useGlobal();
-
+  const [socket, setSocket] = useAtom(socketAtom);
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { setMode } = useTheme();
 
-  const { data: currentUser, refetch } = useQuery<UserType>(
-    "getMyUser",
-    getUser,
-    {
-      enabled: false,
+  const { refetch } = useQuery<UserType>("getMyUser", getUser, {
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (!connectedUser) {
+      refetch()
+        .then((res) => {
+          const data = res.data;
+          if (data?.id) {
+            setConnectedUser(data.id);
+            console.log("CONNECT USER");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Could not fetch user data");
+        });
     }
-  );
-
-  useEffect(() => {
-    if (!connectedUser && currentUser?.id) connectUser(currentUser.id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser, connectedUser]);
-
-  useEffect(() => {
-    refetch()
-      .then((res) => {
-        const data = res.data;
-        if (data?.id) connectUser(data.id);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error("Could not fetch user data");
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -106,17 +106,43 @@ function PublicLayout(props: PublicLayoutProps) {
   }, []);
 
   useEffect(() => {
-    setIsSidebarExpanded(false);
+    isSidebarExpanded && setIsSidebarExpanded(false);
   }, [setIsSidebarExpanded]);
+
+  useEffect(() => {
+    const socket = io(process.env.API_HOST || "");
+    socket.on("connect", function () {
+      setSocket(socket);
+    });
+
+    socket.on("disconnect", function () {
+      console.log("Disconnected");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (socket?.connected && connectedUser) {
+      socket.emit("join", connectedUser);
+    }
+  }, [connectedUser, socket]);
+
+  const { connect, connectors } = useConnect();
+  const { address } = useAccount();
+
+  useEffect(() => {
+    if (!address && connectedUser) {
+      const connectorId = localStorage.getItem("connectorId");
+      console.log({ connectorId, connectors });
+      connect({ connector: connectors.find((c) => c.id === connectorId) });
+    }
+  }, [address, connectedUser]);
 
   return (
     <DesktopContainer backgroundColor="backgroundSecondary" id="public-layout">
-      <MobileContainer>
-        <Sidebar />
-        <AnimatePresence initial={false}>
-          {isSidebarExpanded && <ExtendedSidebar />}
-        </AnimatePresence>
-      </MobileContainer>
       <Box display="flex" flexDirection="column" width="full" overflow="hidden">
         <Container issidebarexpanded={isSidebarExpanded}>{children}</Container>
       </Box>

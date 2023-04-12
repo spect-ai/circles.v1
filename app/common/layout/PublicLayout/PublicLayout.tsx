@@ -5,7 +5,6 @@ import { AnimatePresence } from "framer-motion";
 import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
 import Sidebar from "@/app/modules/Sidebar";
 import styled from "styled-components";
-import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import { CircleType, UserType } from "@/app/types";
 import { toast } from "react-toastify";
@@ -13,6 +12,17 @@ import ConnectPage from "../../../modules/Dashboard/ConnectPage";
 import Onboard from "../../../modules/Dashboard/Onboard";
 import Loader from "@/app/common/components/Loader";
 import { useRouter } from "next/router";
+import { io } from "socket.io-client";
+import {
+  socketAtom,
+  connectedUserAtom,
+  isSidebarExpandedAtom,
+  isProfilePanelExpandedAtom,
+  userDataAtom,
+  profileLoadingAtom,
+} from "@/app/state/global";
+import { useAtom } from "jotai";
+import { useAccount, useConnect } from "wagmi";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -42,9 +52,18 @@ const getUser = async () => {
 
 function PublicLayout(props: PublicLayoutProps) {
   const { children } = props;
-  const { isSidebarExpanded, connectedUser, connectUser } = useGlobal();
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { setMode } = useTheme();
+  const [socket, setSocket] = useAtom(socketAtom);
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
+  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
+    isProfilePanelExpandedAtom
+  );
+  const [userData, setUserData] = useAtom(userDataAtom);
+  const [profileLoading, setProfileLoading] = useAtom(profileLoadingAtom);
 
   const {
     data: myCircles,
@@ -69,7 +88,7 @@ function PublicLayout(props: PublicLayoutProps) {
   });
 
   useEffect(() => {
-    if (!connectedUser && currentUser?.id) connectUser(currentUser.id);
+    if (!connectedUser && currentUser?.id) setConnectedUser(currentUser.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, connectedUser]);
 
@@ -78,7 +97,7 @@ function PublicLayout(props: PublicLayoutProps) {
       .then((res) => {
         const data = res.data;
 
-        if (data?.id) connectUser(data.id);
+        if (data?.id) setConnectedUser(data.id);
       })
       .catch((err) => {
         console.log(err);
@@ -87,8 +106,19 @@ function PublicLayout(props: PublicLayoutProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const { connect, connectors } = useConnect();
+  const { address } = useAccount();
+
+  useEffect(() => {
+    if (!address && connectedUser) {
+      const connectorId = localStorage.getItem("connectorId");
+      console.log({ connectorId, connectors });
+      connect({ connector: connectors.find((c) => c.id === connectorId) });
+    }
+  }, [address, connectedUser]);
+
   const router = useRouter();
-  const { inviteCode } = router.query;
+  const { inviteCode, circle } = router.query;
 
   const onboard =
     (currentUser?.skillsV2?.length == 0 || currentUser?.email?.length == 0) &&
@@ -99,7 +129,7 @@ function PublicLayout(props: PublicLayoutProps) {
     void fetchCircles();
     // void fetchNotifications();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser, connectedUser]);
+  }, [currentUser, connectedUser, circle]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -121,6 +151,27 @@ function PublicLayout(props: PublicLayoutProps) {
     }, 100);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const socket = io(process.env.API_HOST || "");
+    socket.on("connect", function () {
+      setSocket(socket);
+    });
+
+    socket.on("disconnect", function () {
+      console.log("Disconnected");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (socket?.connected && connectedUser) {
+      socket.emit("join", connectedUser);
+    }
+  }, [connectedUser, socket]);
 
   if (isLoading || loading)
     return (

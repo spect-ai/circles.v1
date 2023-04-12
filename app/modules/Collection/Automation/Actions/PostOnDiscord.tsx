@@ -1,7 +1,7 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import { fetchGuildChannels } from "@/app/services/Discord";
+import { fetchGuildChannels, guildIsConnected } from "@/app/services/Discord";
 import { Action, CollectionType, Option } from "@/app/types";
 import { Box, Input, Text } from "degen";
 import { useEffect, useState } from "react";
@@ -29,34 +29,46 @@ export default function PostCardOnDiscord({
   const [message, setMessage] = useState(action?.data?.message || "");
   const [title, setTitle] = useState(action?.data?.title || "");
   const [fields, setFields] = useState(action?.data?.fields || "");
+  const [discordIsConnected, setDiscordIsConnected] = useState(false);
 
-  const { circle } = useCircle();
+  const { circle, justAddedDiscordServer } = useCircle();
   const { hostname } = useLocation();
 
   useEffect(() => {
-    const getGuildChannels = async () => {
-      const data = await fetchGuildChannels(circle?.discordGuildId);
-      const categoryOptions = data.guildChannels?.map((channel: any) => ({
-        label: channel.name,
-        value: channel.id,
-      }));
-      setChannelOptions(categoryOptions);
-    };
-    if (circle?.discordGuildId) void getGuildChannels();
-  }, [circle?.discordGuildId]);
+    if (circle?.discordGuildId) {
+      const discordIsConnected = async () => {
+        const res = await guildIsConnected(circle?.discordGuildId);
+        console.log({ res });
+        setDiscordIsConnected(res);
+      };
+      void discordIsConnected();
+    }
+  }, [circle?.discordGuildId, justAddedDiscordServer]);
 
-  if (!circle.discordGuildId)
+  useEffect(() => {
+    if (discordIsConnected && circle?.discordGuildId) {
+      const getGuildChannels = async () => {
+        const data = await fetchGuildChannels(circle?.discordGuildId || "");
+        const categoryOptions = data.guildChannels?.map((channel: any) => ({
+          label: channel.name,
+          value: channel.id,
+        }));
+        setChannelOptions(categoryOptions);
+      };
+      if (circle?.discordGuildId) void getGuildChannels();
+    }
+  }, [discordIsConnected]);
+
+  if (!discordIsConnected)
     return (
       <Box
-        width={{
-          xs: "full",
-          md: "1/2",
-        }}
+        width="48"
+        paddingTop="4"
         onClick={() => {
-          console.log({ origin });
           window.open(
-            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}/r/${collection.slug}`,
-            "_blank"
+            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}/r/${collection.slug}`,
+            "popup",
+            "width=600,height=600"
           );
         }}
       >
@@ -71,8 +83,6 @@ export default function PostCardOnDiscord({
         </PrimaryButton>
       </Box>
     );
-
-  console.log(action);
 
   return (
     <Box
@@ -91,7 +101,7 @@ export default function PostCardOnDiscord({
       }}
       width="full"
     >
-      <Box marginBottom="2">
+      <Box>
         <Text variant="label">Channel Name</Text>
       </Box>
       <Dropdown
@@ -101,26 +111,19 @@ export default function PostCardOnDiscord({
           setSelectedChannel(value);
         }}
         multiple={false}
+        portal={false}
       />
-      <Box marginY="2">
-        <Text variant="label">Post Title</Text>
+      <Box marginTop="4" marginBottom="2">
+        <Text variant="label">Message</Text>
       </Box>
-      <Dropdown
-        options={
-          Object.entries(collection.properties)
-            .filter(([propertyId, property]) => property.type === "shortText")
-            .map(([propertyId, property]) => ({
-              label: `Map from value in "${property.name}"`,
-              value: property.name,
-            })) || []
-        }
-        selected={title}
-        onChange={(value) => {
-          setTitle(value);
-        }}
-        multiple={false}
+      <Input
+        label
+        hideLabel
+        onChange={(e) => setMessage(e.target.value)}
+        value={message}
+        placeholder="A new fren has joined us. Let's welcome them!"
       />
-      <Box marginY="2">
+      <Box marginTop="4">
         <Text variant="label">
           Select the properties you'd like to add in the post
         </Text>
@@ -146,17 +149,7 @@ export default function PostCardOnDiscord({
           setFields(f);
         }}
         multiple={true}
-      />
-
-      <Box marginY="2">
-        <Text variant="label">Message</Text>
-      </Box>
-      <Input
-        label
-        hideLabel
-        onChange={(e) => setMessage(e.target.value)}
-        value={message}
-        placeholder="Yeah, welcome these guys !"
+        portal={false}
       />
     </Box>
   );

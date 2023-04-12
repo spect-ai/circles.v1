@@ -12,7 +12,6 @@ import {
   useTheme,
   IconDotsHorizontal,
 } from "degen";
-import { useGlobal } from "@/app/context/globalContext";
 import { UserType, CircleType } from "@/app/types";
 import Link from "next/link";
 import { useQuery } from "react-query";
@@ -27,7 +26,6 @@ import ProfileModal from "../Profile/ProfileSettings";
 import { Hidden, Visible } from "react-grid-system";
 import { smartTrim } from "@/app/common/utils/utils";
 import Popover from "@/app/common/components/Popover";
-import { PopoverOption } from "../Card/OptionPopover";
 import { useRouter } from "next/router";
 import ResponsesTab from "./ResponsesTab";
 import FAQModal from "./FAQModal";
@@ -38,11 +36,15 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { useLocation } from "react-use";
 import ConnectDiscordButton from "@/app/common/components/ConnectDiscordButton";
 import Help from "@/app/common/components/Help";
+import { isProfilePanelExpandedAtom } from "@/app/state/global";
+import { useAtom } from "jotai";
+import { PopoverOption } from "../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
 
 function Dashboard() {
-  const { setIsProfilePanelExpanded } = useGlobal();
+  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
+    isProfilePanelExpandedAtom
+  );
   useJoinCircle();
-  const { hostname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [faqOpen, setFaqOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -61,11 +63,6 @@ function Dashboard() {
   const router = useRouter();
 
   const { tab } = router.query;
-
-  useEffect(() => {
-    if (tab) setPanelTab(tab as string);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   if (isLoading || !currentUser?.id)
     return <Loader loading={isLoading} text="Fetching circles" />;
@@ -149,7 +146,10 @@ function Dashboard() {
             <Stack direction="horizontal" align="center">
               <Avatar
                 label="profile-pic"
-                src={currentUser?.avatar}
+                src={
+                  currentUser?.avatar ||
+                  `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser.id}`
+                }
                 size={{
                   xs: "14",
                   md: "20",
@@ -291,7 +291,7 @@ function Dashboard() {
                 setPanelTab("circles");
               }}
             >
-              Organizations
+              Spaces
             </Button>
             <Button
               size="small"
@@ -337,16 +337,6 @@ function Dashboard() {
               />
             )}
             {panelTab === "responses" && <ResponsesTab />}
-            {/* {panelTab == "Project" && (
-              <YourProjects circles={circles} isLoading={isLoading} />
-            )} */}
-            {/* {panelTab == "Card" && (
-            <YourCards
-              circles={circles}
-              isLoading={isLoading}
-              currentUser={currentUser}
-            />
-          )} */}
           </Box>
         </Box>
         <Help setFaqOpen={setFaqOpen} />

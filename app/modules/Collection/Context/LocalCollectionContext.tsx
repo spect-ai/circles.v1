@@ -1,6 +1,7 @@
 import queryClient from "@/app/common/utils/queryClient";
-import { useGlobal } from "@/app/context/globalContext";
-import { CollectionType } from "@/app/types";
+import { connectedUserAtom, socketAtom } from "@/app/state/global";
+import { CollectionType, Property } from "@/app/types";
+import { useAtom } from "jotai";
 import _ from "lodash";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -28,6 +29,21 @@ type LocalCollectionContextType = {
   setPaymentFilter: React.Dispatch<
     React.SetStateAction<"none" | "Paid" | "Pending Signature" | "Pending">
   >;
+  fieldNeedsAttention: {
+    [key: string]: boolean;
+  };
+  reasonFieldNeedsAttention: {
+    [key: string]: string;
+  };
+  getIfFieldNeedsAttention: (value: Property) => {
+    needsAttention: boolean;
+    reason: string;
+  };
+  currentPage: string;
+  setCurrentPage: React.Dispatch<React.SetStateAction<string>>;
+  colorMapping: {
+    [key: string]: string;
+  };
 };
 
 export const LocalCollectionContext = createContext<LocalCollectionContextType>(
@@ -40,9 +56,14 @@ export function useProviderLocalCollection() {
   const { refetch: fetchCollection, data } = useQuery<CollectionType>(
     ["collection", colId],
     () =>
-      fetch(`${process.env.API_HOST}/collection/v1/slug/${colId as string}`, {
-        credentials: "include",
-      }).then((res) => {
+      fetch(
+        process.env.NEXT_PUBLIC_USE_WORKER === "true"
+          ? `https://worker.spect.network/collection/${colId}`
+          : `${process.env.API_HOST}/collection/v1/slug/${colId as string}`,
+        {
+          credentials: "include",
+        }
+      ).then((res) => {
         if (res.status === 403) return { unauthorized: true };
         return res.json();
       }),
@@ -57,17 +78,98 @@ export function useProviderLocalCollection() {
   const [localCollection, setLocalCollection] = useState({} as CollectionType);
   const [error, setError] = useState(false);
   const [view, setView] = useState(0);
-  const { socket, connectedUser } = useGlobal();
+  const [socket, setSocket] = useAtom(socketAtom);
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
   const [projectViewId, setProjectViewId] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
   const [showMyTasks, setShowMyTasks] = useState(false);
   const [paymentFilter, setPaymentFilter] =
     useState<"none" | "Paid" | "Pending Signature" | "Pending">("none");
+  const [fieldNeedsAttention, setFieldNeedsAttention] = useState(
+    {} as {
+      [key: string]: boolean;
+    }
+  );
+  const [reasonFieldNeedsAttention, setReasonFieldNeedsAttention] = useState(
+    {} as {
+      [key: string]: string;
+    }
+  );
+  const [colorMapping, setColorMapping] = useState(
+    {} as { [key: string]: string }
+  );
+
+  const [currentPage, setCurrentPage] = useState("start");
 
   const updateCollection = (collection: CollectionType) => {
     queryClient.setQueryData(["collection", colId], collection);
     setLocalCollection(collection);
   };
+
+  const getIfFieldNeedsAttention = (value: Property) => {
+    let res = { needsAttention: false, reason: "" };
+    if (value.viewConditions && value.viewConditions.length > 0) {
+      for (const condition of value.viewConditions) {
+        if (condition.type === "data") {
+          if (
+            condition.data?.field &&
+            !localCollection.properties[condition.data?.field?.value]
+          ) {
+            res = {
+              needsAttention: true,
+              reason: `"${condition.data?.field?.label}" field has been added to visibility conditions but doesn't exist on the form`,
+            };
+            break;
+          }
+          if (
+            condition.data?.field &&
+            !localCollection.properties[condition.data?.field?.value]
+              ?.isPartOfFormView
+          ) {
+            res = {
+              needsAttention: true,
+              reason: `"${condition.data?.field?.label}" field has been added to visibility conditions but is an internal field`,
+            };
+            break;
+          }
+        }
+      }
+    }
+    return res;
+  };
+
+  useEffect(() => {
+    let fieldsThatNeedAttention = {} as {
+      [key: string]: boolean;
+    };
+    let reasonFieldNeedsAttention = {} as {
+      [key: string]: string;
+    };
+    Object.entries(localCollection.properties || {}).forEach(([key, value]) => {
+      const res = getIfFieldNeedsAttention(value);
+      fieldsThatNeedAttention[key] = res?.needsAttention;
+      reasonFieldNeedsAttention[key] = res?.reason;
+    });
+    setFieldNeedsAttention(fieldsThatNeedAttention);
+    setReasonFieldNeedsAttention(reasonFieldNeedsAttention);
+
+    let colorMapping = {};
+    Object.entries(localCollection.properties || {}).forEach(([key, value]) => {
+      if (["singleSelect", "multiSelect"].includes(value.type)) {
+        if (value.options && value.options.length > 0) {
+          const colorMap = value.options.reduce((acc, option) => {
+            if (option.color) acc[option.value] = option.color;
+            return acc;
+          }, {} as { [key: string]: string });
+          colorMapping = {
+            ...colorMapping,
+            ...(colorMap || {}),
+          };
+        }
+      }
+    });
+    setColorMapping(colorMapping);
+  }, [localCollection.properties]);
 
   useEffect(() => {
     if (data) {
@@ -80,7 +182,6 @@ export function useProviderLocalCollection() {
       setLoading(true);
       fetchCollection()
         .then((res) => {
-          console.log({ res });
           if (res.data?.unauthorized) {
             setLoading(false);
             console.log("failed");
@@ -95,6 +196,12 @@ export function useProviderLocalCollection() {
           }
 
           if (res.data) {
+            res.data.parents = [
+              {
+                ...res.data.parents[0],
+                description: "",
+              },
+            ];
             setLocalCollection(res.data);
             if (res.data.collectionType === 1) {
               setProjectViewId(res.data.projectMetadata.viewOrder[0]);
@@ -160,6 +267,12 @@ export function useProviderLocalCollection() {
     setShowMyTasks,
     paymentFilter,
     setPaymentFilter,
+    fieldNeedsAttention,
+    reasonFieldNeedsAttention,
+    getIfFieldNeedsAttention,
+    currentPage,
+    setCurrentPage,
+    colorMapping,
   };
 }
 

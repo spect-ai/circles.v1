@@ -4,13 +4,11 @@ import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import styled from "styled-components";
-import RetroPage from "../Retro";
 import { useCircle } from "./CircleContext";
 import CircleDashboard from "./CircleOverview";
 import { useRouter } from "next/router";
 import { joinCircle } from "@/app/services/JoinCircle";
 import Roles from "./RolesTab";
-import { useGlobal } from "@/app/context/globalContext";
 import FAQModal from "../Dashboard/FAQModal";
 import Payment from "./Payment";
 import { QuestionCircleOutlined } from "@ant-design/icons";
@@ -19,6 +17,8 @@ import AutomationCenter from "./Automation";
 import Help from "@/app/common/components/Help";
 import Governance from "./Governance";
 import Membership from "./Membership";
+import { useAtom } from "jotai";
+import { connectedUserAtom } from "@/app/state/global";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 3.5rem);
@@ -36,7 +36,7 @@ export default function Circle() {
   const { mode } = useTheme();
   const [faqOpen, setFaqOpen] = useState(false);
   const router = useRouter();
-  const { connectedUser } = useGlobal();
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
 
   useEffect(() => {
     void fetchCircle();
@@ -141,7 +141,7 @@ export default function Circle() {
         xs: "2",
         md: "8",
       }}
-      paddingTop="4"
+      paddingTop="2"
       id="box-container"
     >
       <ToastContainer
@@ -155,7 +155,6 @@ export default function Circle() {
         }}
       />
       {page === "Overview" && <CircleDashboard />}
-      {page === "Retro" && <RetroPage />}
       <Help setFaqOpen={setFaqOpen} />
 
       <AnimatePresence>

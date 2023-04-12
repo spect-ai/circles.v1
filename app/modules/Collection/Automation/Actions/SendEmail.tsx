@@ -13,9 +13,14 @@ type Props = {
   collection: CollectionType;
 };
 
-export default function SendEmail({ setAction, actionMode, action, collection }: Props) {
+export default function SendEmail({
+  setAction,
+  actionMode,
+  action,
+  collection,
+}: Props) {
   const [propertyOptions, setPropertyOptions] = useState([] as Option[]);
-
+  const [messageError, setMessageError] = useState(false);
   const { circle } = useCircle();
 
   useEffect(() => {
@@ -59,13 +64,19 @@ export default function SendEmail({ setAction, actionMode, action, collection }:
               data: {
                 ...action.data,
                 toEmailProperties: value.map((property: any) => property.value),
-                circleId: circle.id,
+                circleId: circle?.id || "",
               },
             });
           }}
           multiple={true}
+          portal={false}
         />
         <Text variant="label">With message</Text>
+        {messageError && (
+          <Text variant="small" color="red">
+            Message is required
+          </Text>
+        )}
         <Textarea
           label
           hideLabel
@@ -80,9 +91,12 @@ export default function SendEmail({ setAction, actionMode, action, collection }:
               data: {
                 ...action.data,
                 message: e.target.value,
-                circleId: circle.id,
+                circleId: circle?.id || "",
               },
             });
+
+            if (e.target.value?.length > 0) setMessageError(false);
+            else setMessageError(true);
           }}
         />
       </Box>

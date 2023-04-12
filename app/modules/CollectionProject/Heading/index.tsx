@@ -1,8 +1,9 @@
+import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateFormCollection } from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { TableOutlined } from "@ant-design/icons";
+import { SendOutlined, TableOutlined } from "@ant-design/icons";
 import {
   Box,
   Heading,
@@ -24,6 +25,7 @@ import { Clock, Grid, List, Table, Trello } from "react-feather";
 import { Hidden, Visible } from "react-grid-system";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import { useCircle } from "../../Circle/CircleContext";
 import InviteMemberModal from "../../Circle/ContributorsModal/InviteMembersModal";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import AddView from "../AddView";
@@ -35,6 +37,7 @@ import Settings from "../Settings";
 import ViewSettings from "../ViewSettings";
 
 export default function ProjectHeading() {
+  const { navigationBreadcrumbs } = useCircle();
   const {
     localCollection: collection,
     projectViewId,
@@ -87,7 +90,7 @@ export default function ProjectHeading() {
         xs: "2",
         md: "8",
       }}
-      paddingTop="4"
+      paddingTop="2"
     >
       <AnimatePresence>
         {isAddViewModalOpen && (
@@ -101,6 +104,13 @@ export default function ProjectHeading() {
         )}
       </AnimatePresence>
       <Stack space="0">
+        <Hidden xs sm>
+          <Box>
+            {navigationBreadcrumbs && (
+              <Breadcrumbs crumbs={navigationBreadcrumbs} />
+            )}
+          </Box>
+        </Hidden>
         <Stack
           direction="horizontal"
           space={{
@@ -115,15 +125,33 @@ export default function ProjectHeading() {
               xs: "0",
               md: "2",
             }}
+            align="center"
           >
-            <Heading>{collection.name}</Heading>
+            <Text size="headingThree" weight="semiBold" ellipsis>
+              {collection.name}
+            </Text>
             <Settings />
           </Stack>
-          <Hidden xs sm>
+          {/* <Hidden xs sm>
             <Box width="32">
-              <InviteMemberModal />
+              <PrimaryButton
+                icon={
+                  <SendOutlined
+                    rotate={-40}
+                    style={{ marginBottom: "0.3rem" }}
+                  />
+                }
+                onClick={() => {
+                  void navigator.clipboard.writeText(
+                    `https://circles.spect.network/r/${collection?.slug}`
+                  );
+                  toast.success("Copied to clipboard");
+                }}
+              >
+                Share
+              </PrimaryButton>
             </Box>
-          </Hidden>
+          </Hidden> */}
         </Stack>
         <Box marginBottom="1" />
         <Hidden xs sm>

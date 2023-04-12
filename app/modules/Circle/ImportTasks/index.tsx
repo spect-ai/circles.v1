@@ -1,18 +1,18 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, IconCheck, Input, MediaPicker, Stack, Text } from "degen";
+import { Box, IconCheck, MediaPicker, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import { useState } from "react";
 import csvToJson from "csvtojson";
 import MapField from "./MapField";
 import { Property } from "@/app/types";
 import Dropdown from "@/app/common/components/Dropdown";
 import { convertToId, isEmail, isURL } from "@/app/common/utils/utils";
 import { useCircle } from "../CircleContext";
-import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { isAddress } from "ethers/lib/utils";
 import { importFromCsv } from "@/app/services/Collection";
+import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
 type Props = {};
 
@@ -26,15 +26,14 @@ export default function ImportTasks({}: Props) {
   const [properties, setProperties] = useState<{
     [key: string]: Property;
   }>({});
-
-  const [collectionName, setCollectionName] = useState("");
   const [groupByColumn, setGroupByColumn] = useState("");
   const [titleColumn, setTitleColumn] = useState("");
   const [descriptionColumn, setDescriptionColumn] = useState("");
 
-  const { circle, setLocalCircle } = useCircle();
+  const { circle } = useCircle();
 
-  const router = useRouter();
+  const { localCollection: collection, updateCollection } =
+    useLocalCollection();
 
   return (
     <Box>
@@ -116,7 +115,6 @@ export default function ImportTasks({}: Props) {
                       loading={loading}
                       onClick={() => {
                         setStep(step + 1);
-                        console.log({ properties });
                         // find a property called status or Status in the properties and set it as default group by column
                         const defaultGroupByColumn = Object.keys(
                           properties
@@ -151,11 +149,6 @@ export default function ImportTasks({}: Props) {
               )}
               {step === 2 && (
                 <Stack>
-                  <Input
-                    label="Collection Name"
-                    value={collectionName}
-                    onChange={(e) => setCollectionName(e.target.value)}
-                  />
                   <Dropdown
                     label="Group By Field"
                     onChange={(e) => setGroupByColumn(e.value)}
@@ -355,17 +348,15 @@ export default function ImportTasks({}: Props) {
                         console.log({ formattedData, properties });
                         const res = await importFromCsv({
                           data: formattedData,
-                          collectionName,
+                          collectionId: collection.id,
                           groupByColumn,
                           collectionProperties: properties,
-                          circleId: circle.id,
+                          circleId: circle?.id || "",
                         });
                         console.log({ res });
-                        setLocalCircle(res.circle);
-                        router.push(
-                          `/${router.query.circle}/r/${res.collection.slug}`
-                        );
+                        updateCollection(res.collection);
                         setLoading(false);
+                        setIsOpen(false);
                       }}
                     >
                       Finish

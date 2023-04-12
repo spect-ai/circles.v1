@@ -14,7 +14,6 @@ import {
   useProvider,
 } from "wagmi";
 import { fetchSigner } from "@wagmi/core";
-import { useGlobal } from "@/app/context/globalContext";
 
 export default function useERC20() {
   const router = useRouter();
@@ -22,7 +21,7 @@ export default function useERC20() {
   const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
   });
-  const { signer } = useGlobal();
+  const { data: signer } = useSigner();
   const { chain } = useNetwork();
   const { address } = useAccount();
   const { data: balance } = useBalance({
@@ -35,8 +34,9 @@ export default function useERC20() {
   }
 
   function getERC20Contract(address: string) {
-    // const provider = new ethers.providers.Web3Provider(window.ethereum as any);
-    return new ethers.Contract(address, erc20ABI, signer);
+    if (signer) {
+      return new ethers.Contract(address, erc20ABI, signer);
+    }
   }
 
   function getERC20ContractWithCustomProvider(
@@ -65,7 +65,7 @@ export default function useERC20() {
     const contract = getERC20Contract(erc20Address);
     if (!registry && !circleRegistry) return false;
     try {
-      const gasEstimate = await contract.estimateGas.approve(
+      const gasEstimate = await contract?.estimateGas.approve(
         circleRegistry && circleRegistry[chainId]
           ? circleRegistry[chainId].distributorAddress
           : registry && registry[chainId].distributorAddress,
@@ -80,7 +80,7 @@ export default function useERC20() {
         nonce,
       };
       if (safeAddress) {
-        const data = await contract.populateTransaction.approve(
+        const data = await contract?.populateTransaction.approve(
           circleRegistry && circleRegistry[chainId]
             ? circleRegistry[chainId].distributorAddress
             : registry && registry[chainId].distributorAddress,
@@ -95,7 +95,7 @@ export default function useERC20() {
         return;
       }
 
-      const tx = await contract.approve(
+      const tx = await contract?.approve(
         circleRegistry
           ? circleRegistry[chainId].distributorAddress
           : registry && registry[chainId].distributorAddress,
@@ -327,7 +327,7 @@ export default function useERC20() {
   async function balanceOf(erc20Address: string, ethAddress: string) {
     const contract = getERC20Contract(erc20Address);
     // eslint-disable-next-line no-return-await
-    return await contract.balanceOf(ethAddress);
+    return await contract?.balanceOf(ethAddress);
   }
 
   return {

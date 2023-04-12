@@ -55,7 +55,7 @@ export default function DataActivity({
     id: "anon",
     avatar: "",
     ethAddress: undefined,
-    username: "Anonymous User",
+    username: "Responder",
   };
 
   return (
@@ -65,16 +65,18 @@ export default function DataActivity({
           const activity = activities[activityId];
           const actor =
             collection.data?.[dataId]?.["anonymous"] === true &&
-            dataOwner.id === activity.ref.actor?.id
+            dataOwner?.id === activity.ref?.actor?.id
               ? anonActor
               : getMemberDetails(activity.ref.actor?.id) || dataOwner;
           return (
             <Box key={activityId}>
-              <Stack direction="horizontal" align="flex-start" space="2">
+              <Stack direction="horizontal" align="center" space="2">
                 <Avatar
                   label=""
-                  placeholder={!actor?.avatar}
-                  src={actor?.avatar}
+                  src={
+                    actor?.avatar ||
+                    `https://api.dicebear.com/5.x/thumbs/svg?seed=${actor?.id}`
+                  }
                   address={actor?.ethAddress}
                   size="8"
                 />
@@ -85,7 +87,7 @@ export default function DataActivity({
                   <Stack direction="horizontal">
                     <Text color="accentText" weight="semiBold">
                       {actor?.id === "anon" ? (
-                        "Anonymous User"
+                        "Responder"
                       ) : (
                         <a
                           href={`/profile/${actor?.username}`}
@@ -96,33 +98,36 @@ export default function DataActivity({
                         </a>
                       )}
                     </Text>
-                    <Box paddingTop="1">
+                    <Box>
+                      <Text variant="label">{activity.content}</Text>
+                    </Box>
+                    <Box>
                       <Text ellipsis size="label" color="textTertiary">
                         {timeSince(new Date(activity.timestamp))} ago
                       </Text>
                     </Box>
                   </Stack>
 
-                  {activity.comment ? (
+                  {/* {activity.comment ? (
                     <Editor value={activity.content} disabled />
                   ) : (
                     <Box marginTop="1">
                       <Text variant="label">{activity.content}</Text>
                     </Box>
-                  )}
+                  )} */}
                 </Stack>
               </Stack>
             </Box>
           );
         })}
         <Stack direction="horizontal" space="2">
-          <Avatar
+          {/* <Avatar
             label=""
             placeholder={!currentUser?.avatar}
             src={currentUser?.avatar}
             address={currentUser?.ethAddress}
             size="8"
-          />
+          /> */}
           <Box
             width="full"
             gap="2"
@@ -130,7 +135,7 @@ export default function DataActivity({
             display="flex"
             flexDirection="row"
           >
-            {!sendingComment && (
+            {/* {!sendingComment && (
               <Box height="40" overflow="auto" width="full">
                 <Editor
                   placeholder="Write a reply..."
@@ -142,7 +147,7 @@ export default function DataActivity({
                   setIsDirty={setIsDirty}
                 />
               </Box>
-            )}
+            )} */}
             {isDirty && currentUser && (
               <Button
                 variant="secondary"

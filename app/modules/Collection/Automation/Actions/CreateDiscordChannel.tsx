@@ -2,7 +2,11 @@ import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import { fetchGuildChannels, getGuildRoles } from "@/app/services/Discord";
+import {
+  fetchGuildChannels,
+  getGuildRoles,
+  guildIsConnected,
+} from "@/app/services/Discord";
 import { Action, CollectionType, Option } from "@/app/types";
 import { Box, Input, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
@@ -44,6 +48,13 @@ export default function CreateDiscordChannel({
   const [selectedRoles, setSelectedRoles] = useState(
     (action.data?.rolesToAdd || {}) as { [roleId: string]: boolean }
   );
+  const [addStakeholder, setAddStakeholder] = useState(
+    action?.data?.addStakeholder || false
+  );
+  const [stakeholdersToAdd, setStakeholdersToAdd] = useState(
+    action?.data?.stakeholdersToAdd || []
+  );
+  const [discordIsConnected, setDiscordIsConnected] = useState(false);
   const [discordRoles, setDiscordRoles] =
     useState<
       | {
@@ -53,7 +64,7 @@ export default function CreateDiscordChannel({
       | undefined
     >();
 
-  const { circle } = useCircle();
+  const { circle, justAddedDiscordServer } = useCircle();
   const toggleSelectedRole = (roleId: string) => {
     setSelectedRoles({
       ...selectedRoles,
@@ -62,6 +73,17 @@ export default function CreateDiscordChannel({
   };
 
   useEffect(() => {
+    if (circle?.discordGuildId) {
+      const discordIsConnected = async () => {
+        const res = await guildIsConnected(circle?.discordGuildId);
+        setDiscordIsConnected(res);
+      };
+      void discordIsConnected();
+    }
+  }, [circle?.discordGuildId, justAddedDiscordServer]);
+
+  useEffect(() => {
+    if (!discordIsConnected || !circle?.discordGuildId) return;
     const getGuildChannels = async () => {
       const data = await fetchGuildChannels(
         circle?.discordGuildId,
@@ -73,28 +95,34 @@ export default function CreateDiscordChannel({
       }));
       setCategoryOptions(categoryOptions);
     };
-    if (circle?.discordGuildId) void getGuildChannels();
+    void getGuildChannels();
 
     const fetchGuildRoles = async () => {
       const data = await getGuildRoles(circle?.discordGuildId);
       data && setDiscordRoles(data.roles);
       console.log({ data });
     };
-    if (circle?.discordGuildId) void fetchGuildRoles();
-  }, [circle?.discordGuildId]);
+    void fetchGuildRoles();
+  }, [discordIsConnected]);
 
-  if (!circle.discordGuildId)
+  const toggleSelectedProperty = (propertyName: string) => {
+    setStakeholdersToAdd(
+      stakeholdersToAdd.includes(propertyName)
+        ? stakeholdersToAdd.filter((p: string) => p !== propertyName)
+        : [...stakeholdersToAdd, propertyName]
+    );
+  };
+
+  if (!discordIsConnected)
     return (
       <Box
-        width={{
-          xs: "full",
-          md: "1/2",
-        }}
+        width="48"
+        paddingTop="4"
         onClick={() => {
-          console.log({ origin });
           window.open(
-            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}/r/${collection.slug}`,
-            "_blank"
+            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}`,
+            "popup",
+            "width=600,height=600"
           );
         }}
       >
@@ -123,24 +151,15 @@ export default function CreateDiscordChannel({
             isPrivate: isPrivate,
             addResponder: addResponder,
             rolesToAdd: selectedRoles,
-            circleId: circle.id,
+            addStakeholder,
+            stakeholdersToAdd,
+            circleId: circle?.id,
           },
         });
       }}
       width="full"
     >
       <Box marginBottom="2">
-        <Text variant="label">Channel Category</Text>
-      </Box>
-      <Dropdown
-        options={categoreyOptions}
-        selected={selectedCategory}
-        onChange={(value) => {
-          setSelectedCategory(value);
-        }}
-        multiple={false}
-      />
-      <Box marginTop="2" marginBottom="2">
         <Text variant="label">Channel Name</Text>
       </Box>
       <CreatableDropdown
@@ -154,11 +173,25 @@ export default function CreateDiscordChannel({
         }
         selected={channelName}
         onChange={(value) => {
-          if (collection.properties[value.value]) setChannelNameType("mapping");
+          if (collection.properties[value?.value])
+            setChannelNameType("mapping");
           else setChannelNameType("value");
           setChannelName(value);
         }}
         multiple={false}
+        portal={false}
+      />
+      <Box marginTop="2">
+        <Text variant="label">Channel Category</Text>
+      </Box>
+      <Dropdown
+        options={categoreyOptions}
+        selected={selectedCategory}
+        onChange={(value) => {
+          setSelectedCategory(value);
+        }}
+        multiple={false}
+        portal={false}
       />
       <Box
         display="flex"
@@ -202,33 +235,104 @@ export default function CreateDiscordChannel({
               );
             })}{" "}
           </Stack>
-          <Box
-            display="flex"
-            flexDirection="row"
-            gap="2"
-            justifyContent="flex-start"
-            alignItems="center"
-            marginTop="4"
-          >
-            <CheckBox
-              isChecked={addResponder}
-              onClick={() => {
-                setAddResponder(!addResponder);
-              }}
-            />
-            <Text variant="small">Add Responder</Text>
-          </Box>
+          {collection.collectionType === 0 && (
+            <Box
+              display="flex"
+              flexDirection="row"
+              gap="2"
+              justifyContent="flex-start"
+              alignItems="center"
+              marginTop="4"
+            >
+              <CheckBox
+                isChecked={addResponder}
+                onClick={() => {
+                  setAddResponder(!addResponder);
+                }}
+              />
+              <Text variant="small">Add Responder</Text>
+            </Box>
+          )}
 
           {addResponder && (
             <Box marginTop="4" marginBottom="-4">
               <Editor
                 value={
-                  ":::tip\nForm responder will be asked to connect Discord Account before filling up form."
+                  ":::tip\nEnsure you have a discord field in your form which the user will use to connect their discord account."
                 }
                 disabled={true}
               />
             </Box>
           )}
+          {collection.collectionType === 1 && (
+            <Box
+              display="flex"
+              flexDirection="row"
+              gap="2"
+              justifyContent="flex-start"
+              alignItems="center"
+              marginTop="4"
+            >
+              <CheckBox
+                isChecked={addStakeholder}
+                onClick={() => {
+                  setAddStakeholder(!addStakeholder);
+                }}
+              />
+              <Text variant="small">
+                Add stakeholders from cards dynamically
+              </Text>
+            </Box>
+          )}
+
+          {addStakeholder &&
+            !Object.values(collection.properties)?.some((p) =>
+              ["user", "user[]"].includes(p.type)
+            ) && (
+              <Box marginTop="4" marginBottom="2">
+                <Text variant="small" color="yellow">
+                  {`Looks like there are no user fields in ${collection.name} currently. Please add a field of type "user" or "user[]" to add stakeholders dynamically.`}
+                </Text>
+              </Box>
+            )}
+
+          {addStakeholder &&
+            isPrivate &&
+            Object.values(collection.properties)?.some((p) =>
+              ["user", "user[]"].includes(p.type)
+            ) && (
+              <>
+                <Box marginTop="4" marginBottom="2">
+                  <Text variant="label">
+                    Pick stakeholders to add to private thread from the user
+                    fields in the collection
+                  </Text>
+                </Box>
+                <Stack direction="horizontal" wrap>
+                  {Object.values(collection.properties)
+                    ?.filter((p) => ["user", "user[]"].includes(p.type))
+                    ?.map((p) => {
+                      return (
+                        <Box
+                          key={p.name}
+                          cursor="pointer"
+                          onClick={() => toggleSelectedProperty(p.name)}
+                        >
+                          {stakeholdersToAdd.includes(p.name) ? (
+                            <Tag tone={"accent"} hover>
+                              <Box paddingX="2">{p.name}</Box>
+                            </Tag>
+                          ) : (
+                            <Tag hover>
+                              <Box paddingX="2">{p.name}</Box>
+                            </Tag>
+                          )}
+                        </Box>
+                      );
+                    })}
+                </Stack>
+              </>
+            )}
         </>
       )}
     </Box>

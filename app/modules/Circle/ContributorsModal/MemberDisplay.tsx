@@ -80,7 +80,10 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
           onClick={() => canDo("manageMembers") && setIsOpen(!isOpen)}
         >
           <Avatar
-            src={memberDetails[member]?.avatar}
+            src={
+              memberDetails[member]?.avatar ||
+              `https://api.dicebear.com/5.x/thumbs/svg?seed=${memberDetails[member]?.id}`
+            }
             placeholder={!memberDetails[member]?.avatar}
             label="Avatar"
             address={memberDetails[member]?.ethAddress}
@@ -104,7 +107,10 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
         <Stack space="8">
           <Stack direction="horizontal" align="center">
             <Avatar
-              src={memberDetails[member]?.avatar}
+              src={
+                memberDetails[member]?.avatar ||
+                `https://api.dicebear.com/5.x/thumbs/svg?seed=${memberDetails[member]?.id}`
+              }
               label=""
               placeholder={!memberDetails[member]?.avatar}
               address={memberDetails[member]?.ethAddress}

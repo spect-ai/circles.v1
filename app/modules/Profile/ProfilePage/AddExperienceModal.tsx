@@ -2,7 +2,6 @@ import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { Milestone, Option, Registry, VerifiableCredential } from "@/app/types";
 import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
@@ -11,19 +10,24 @@ import styled from "styled-components";
 import LinkCredentialsModal from "./LinkCredentialsModal";
 import { Credential } from "@/app/types";
 import CheckBox from "@/app/common/components/Table/Checkbox";
+import { useAtom } from "jotai";
+import { userDataAtom } from "@/app/state/global";
 
 type Props = {
   handleClose: () => void;
   modalMode: "add" | "edit";
+  allCredentials: { [id: string]: any[] };
   experienceId?: number;
 };
 
 export default function AddExperienceModal({
   handleClose,
   modalMode,
+  allCredentials,
   experienceId,
 }: Props) {
-  const { userData } = useGlobal();
+  const [userData, setUserData] = useAtom(userDataAtom);
+
   const [role, setRole] = useState("");
   const [description, setDescription] = useState(
     experienceId || experienceId === 0
@@ -295,6 +299,7 @@ export default function AddExperienceModal({
           <LinkCredentialsModal
             setCredentials={setLinkedCredentials}
             credentials={linkedCredentials}
+            allCredentials={allCredentials}
           />
         </Box>
         <Box
@@ -314,19 +319,24 @@ export default function AddExperienceModal({
             size="small"
             width="32"
             disabled={dateError}
+            loading={loading}
             onClick={async () => {
-              console.log({ role, organization });
+              setLoading(true);
               if (!role || !organization) {
                 setRequiredFieldsNotSet({
                   ...requiredFieldsNotSet,
                   role: isEmpty("role", role),
                   organization: isEmpty("organization", organization),
                 });
+                setLoading(false);
+
                 return;
               }
               const dateIsInvalid = dateIsInvalidValid(startDate, endDate);
               if (dateIsInvalid) {
                 setDateError(true);
+                setLoading(false);
+
                 return;
               }
               if (modalMode === "add") {
@@ -343,6 +353,8 @@ export default function AddExperienceModal({
                 });
               } else if (modalMode === "edit") {
                 if (!experienceId && experienceId !== 0) {
+                  setLoading(false);
+
                   return;
                 }
                 const res = await updateExperience(experienceId?.toString(), {
@@ -356,6 +368,7 @@ export default function AddExperienceModal({
                   linkedCredentials: linkedCredentials,
                 });
               }
+              setLoading(false);
               handleClose();
             }}
           >

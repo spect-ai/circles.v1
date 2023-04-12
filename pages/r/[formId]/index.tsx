@@ -10,19 +10,23 @@ import {
   useProviderLocalProfile,
 } from "@/app/modules/Profile/ProfileSettings/LocalProfileContext";
 import PublicForm from "@/app/modules/PublicForm";
-import useConnectDiscordServer from "@/app/services/Discord/useConnectDiscordServer";
 import { NextPage } from "next";
+import React from "react";
 
 const FormPage: NextPage = () => {
-  useConnectDiscordServer();
+  // useConnectDiscordServer();
   const context = useProviderCircleContext();
   const profileContext = useProviderLocalProfile();
   return (
     <>
       <MetaHead
-        title={"Circle"}
-        description={"Circle Description"}
-        image={"Circle Avatar"}
+        title={"Spect Form"}
+        description={
+          "Incentivized forms for your community to collect feedback, run surveys, onboarding, and more."
+        }
+        image={
+          "https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset"
+        }
       />
       <LocalProfileContext.Provider value={profileContext}>
         <CircleContext.Provider value={context}>
@@ -35,4 +39,4 @@ const FormPage: NextPage = () => {
   );
 };
 
-export default FormPage;
+export default React.memo(FormPage);

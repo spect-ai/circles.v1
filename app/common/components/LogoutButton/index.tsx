@@ -1,16 +1,18 @@
 import { Button } from "degen";
 import queryClient from "@/app/common/utils/queryClient";
 import { useAtom } from "jotai";
-import { authStatusAtom } from "@/pages/_app";
-import { useGlobal } from "@/app/context/globalContext";
 import { useDisconnect } from "wagmi";
+import {
+  authStatusAtom,
+  connectedUserAtom,
+  isProfilePanelExpandedAtom,
+} from "@/app/state/global";
 
 export default function Logout() {
-  const { setIsProfilePanelExpanded, disconnectUser, connectedUser } =
-    useGlobal();
   const { disconnect } = useDisconnect();
-  const [authenticationStatus, setAuthenticationStatus] =
-    useAtom(authStatusAtom);
+  const [, setAuthenticationStatus] = useAtom(authStatusAtom);
+  const [, setConnectedUser] = useAtom(connectedUserAtom);
+  const [, setIsProfilePanelExpanded] = useAtom(isProfilePanelExpandedAtom);
   return (
     <Button
       size="small"
@@ -25,8 +27,9 @@ export default function Logout() {
         queryClient.setQueryData("getMyUser", null);
         void queryClient.invalidateQueries("getMyUser");
         setAuthenticationStatus("unauthenticated");
-        disconnectUser();
+        setConnectedUser("");
       }}
+      width="full"
     >
       Logout
     </Button>

@@ -4,7 +4,6 @@ import { CircleType, UserType } from "@/app/types";
 import {
   BankOutlined,
   DollarOutlined,
-  GatewayOutlined,
   ProjectOutlined,
 } from "@ant-design/icons";
 import {
@@ -29,13 +28,16 @@ import styled from "styled-components";
 import { useCircle } from "../Circle/CircleContext";
 import SettingsModal from "../Circle/CircleSettingsModal";
 import ContributorsModal from "../Circle/ContributorsModal";
-import CreateRetroModal from "../Retro/CreateRetro";
 import CircleOptions from "./CircleOptions";
 import { HeaderButton } from "./ExploreSidebar";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { smartTrim } from "@/app/common/utils/utils";
 import { getViewIcon } from "../CollectionProject/Heading";
 import { Table } from "react-feather";
+import InviteMemberModal, {
+  CustomButton,
+} from "../Circle/ContributorsModal/InviteMembersModal";
+import { BiBot } from "react-icons/bi";
 
 export const Container = styled(Box)<{ subH?: string }>`
   ::-webkit-scrollbar {
@@ -61,8 +63,8 @@ function CircleSidebar() {
   });
   const { setCircleData, setMemberDetailsData } = useCircle();
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [settingsModalInitialTab, setSettingsModalInitialTab] = useState(0);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
-  const [isRetroModalOpen, setIsRetroModalOpen] = useState(false);
   const { mode } = useTheme();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -111,15 +113,18 @@ function CircleSidebar() {
     <Box paddingY="2" paddingLeft="3" paddingRight="3">
       <AnimatePresence>
         {isSettingsModalOpen && (
-          <SettingsModal handleClose={() => setIsSettingsModalOpen(false)} />
+          <SettingsModal
+            handleClose={() => {
+              setIsSettingsModalOpen(false);
+              setSettingsModalInitialTab(0);
+            }}
+            initialTab={settingsModalInitialTab}
+          />
         )}
         {isContributorsModalOpen && (
           <ContributorsModal
             handleClose={() => setIsContributorsModalOpen(false)}
           />
-        )}
-        {isRetroModalOpen && (
-          <CreateRetroModal handleClose={() => setIsRetroModalOpen(false)} />
         )}
       </AnimatePresence>
       <Stack space="3">
@@ -168,8 +173,38 @@ function CircleSidebar() {
           </PrimaryButton>
         )}
 
-        <Container subH="9.5rem">
+        <Container subH="8.1rem">
           <Stack direction="vertical" space="2">
+            <Stack direction="horizontal" space="2">
+              <Box width="1/2">
+                <CustomButton
+                  mode={mode}
+                  onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Sidebar roles", {
+                        circle: circle?.slug,
+                        user: currentUser?.username,
+                      });
+                    setSettingsModalInitialTab(3);
+                    setIsSettingsModalOpen(true);
+                  }}
+                >
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    alignItems="center"
+                    gap="2"
+                  >
+                    <Text>
+                      <IconUserGroup size="4" />{" "}
+                    </Text>
+
+                    <Text>Roles</Text>
+                  </Box>
+                </CustomButton>
+              </Box>
+              <InviteMemberModal buttonIsSmallTransparent={true} />
+            </Stack>
             <Link href={`/${cId}`}>
               <PrimaryButton
                 center
@@ -180,6 +215,7 @@ function CircleSidebar() {
                     "credential",
                     "automation",
                     "governance",
+                    "membership",
                   ].includes(router.query?.tab as string) &&
                   !cSlug &&
                   !pId
@@ -195,84 +231,117 @@ function CircleSidebar() {
                     });
                 }}
               >
-                {circle?.parents?.length
-                  ? "Workstream Dashboard"
-                  : "Organization Dashboard"}
+                Dashboard
               </PrimaryButton>
             </Link>
-            <Link href={`/${cId}?tab=payment&status=pending`}>
-              <PrimaryButton
-                center
-                variant={
-                  cId && router.query?.tab === "payment" && !cSlug && !pId
-                    ? "tertiary"
-                    : "transparent"
-                }
-                icon={<DollarOutlined size={10} />}
-                onClick={() => {
-                  process.env.NODE_ENV === "production" &&
-                    mixpanel.track("Payment Center Button", {
-                      user: currentUser?.username,
-                      url: window.location.href,
-                    });
-                }}
-              >
-                Payment Center
-              </PrimaryButton>
-            </Link>
-            <Link href={`/${cId}?tab=automation`}>
-              <PrimaryButton
-                center
-                variant={
-                  cId && router.query?.tab === "automation" && !cSlug && !pId
-                    ? "tertiary"
-                    : "transparent"
-                }
-                icon={<GatewayOutlined size={10} />}
-              >
-                Automation Center
-              </PrimaryButton>
-            </Link>
-            <Box position="relative">
-              <Link href={`/${cId}?tab=governance&proposalStatus=Active`}>
+            {circle?.sidebarConfig?.showPayment && (
+              <Link href={`/${cId}?tab=payment&status=pending`}>
                 <PrimaryButton
                   center
                   variant={
-                    cId && router.query?.tab === "governance" && !cSlug && !pId
+                    cId && router.query?.tab === "payment" && !cSlug && !pId
                       ? "tertiary"
                       : "transparent"
                   }
-                  icon={<BankOutlined />}
+                  icon={<DollarOutlined size={10} />}
+                  onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Payment Center Button", {
+                        user: currentUser?.username,
+                        url: window.location.href,
+                      });
+                  }}
                 >
-                  Governance Center
+                  Payment Center
                 </PrimaryButton>
               </Link>
-              <Badge>
-                <Text color="accent" size="extraSmall">
-                  New
-                </Text>
-              </Badge>
-            </Box>
-            <Box position="relative">
-              <Link href={`/${cId}?tab=membership`}>
+            )}
+            {circle?.sidebarConfig?.showAutomation && (
+              <Link href={`/${cId}?tab=automation`}>
                 <PrimaryButton
                   center
                   variant={
-                    cId && router.query?.tab === "membership" && !cSlug && !pId
+                    cId && router.query?.tab === "automation" && !cSlug && !pId
                       ? "tertiary"
                       : "transparent"
                   }
-                  icon={<IconUserGroupSolid size="4" />}
+                  icon={<BiBot size={16} />}
+                  onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Automation Center Button", {
+                        user: currentUser?.username,
+                        url: window.location.href,
+                      });
+                  }}
                 >
-                  Membership Center
+                  Automation Center
                 </PrimaryButton>
               </Link>
-              <Badge>
-                <Text color="accent" size="extraSmall">
-                  Alpha
-                </Text>
-              </Badge>
-            </Box>
+            )}
+            {circle?.sidebarConfig?.showGovernance && (
+              <Box position="relative">
+                <Link href={`/${cId}?tab=governance&proposalStatus=Active`}>
+                  <PrimaryButton
+                    center
+                    variant={
+                      cId &&
+                      router.query?.tab === "governance" &&
+                      !cSlug &&
+                      !pId
+                        ? "tertiary"
+                        : "transparent"
+                    }
+                    icon={<BankOutlined />}
+                    onClick={() => {
+                      process.env.NODE_ENV === "production" &&
+                        mixpanel.track("Governance Center Button", {
+                          user: currentUser?.username,
+                          url: window.location.href,
+                        });
+                    }}
+                  >
+                    Governance Center
+                  </PrimaryButton>
+                </Link>
+                <Badge>
+                  <Text color="accent" size="extraSmall">
+                    New
+                  </Text>
+                </Badge>
+              </Box>
+            )}
+            {circle?.sidebarConfig?.showMembership && (
+              <Box position="relative">
+                <Link href={`/${cId}?tab=membership`}>
+                  <PrimaryButton
+                    center
+                    variant={
+                      cId &&
+                      router.query?.tab === "membership" &&
+                      !cSlug &&
+                      !pId
+                        ? "tertiary"
+                        : "transparent"
+                    }
+                    icon={<IconUserGroupSolid size="4" />}
+                    onClick={() => {
+                      process.env.NODE_ENV === "production" &&
+                        mixpanel.track("Membership Center Button", {
+                          user: currentUser?.username,
+                          url: window.location.href,
+                        });
+                    }}
+                  >
+                    Membership Center
+                  </PrimaryButton>
+                </Link>
+                <Badge>
+                  <Text color="accent" size="extraSmall">
+                    Alpha
+                  </Text>
+                </Badge>
+              </Box>
+            )}
             {/* <Link href={`/${cId}?tab=credential`}>
             <PrimaryButton
               variant={

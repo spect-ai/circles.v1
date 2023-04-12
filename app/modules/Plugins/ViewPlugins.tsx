@@ -1,9 +1,8 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Stack, Text } from "degen";
+import { Box, IconPlug, IconSearch, Input, Stack, Tag, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
-import { Cpu } from "react-feather";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useCircle } from "../Circle/CircleContext";
 import { useLocalCollection } from "../Collection/Context/LocalCollectionContext";
@@ -13,15 +12,19 @@ import SybilResistance from "./gtcpassport";
 import RoleGate from "./guildxyz";
 import SendKudos from "./mintkudos";
 import Payments from "./payments";
-import { SpectPlugin, spectPlugins } from "./Plugins";
+import { PluginType, SpectPlugin, spectPlugins } from "./Plugins";
 import { isWhitelisted } from "@/app/services/Whitelist";
 import {
   getSurveyConditionInfo,
   getSurveyDistributionInfo,
 } from "@/app/services/SurveyProtocol";
-import { BigNumber, ethers } from "ethers";
-import DistributePOAP from "./poap";
 import Poap from "./poap";
+import GoogleCaptcha from "./captcha";
+import { matchSorter } from "match-sorter";
+import ResponderProfile from "./responderProfile";
+import mixpanel from "mixpanel-browser";
+import { useQuery } from "react-query";
+import { UserType } from "@/app/types";
 
 type Props = {};
 
@@ -30,21 +33,30 @@ export default function ViewPlugins({}: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPluginOpen, setIsPluginOpen] = useState(false);
   const [pluginOpen, setPluginOpen] = useState("");
-  const [isWhitelistedSurveyProtocol, setIsWhitelistedSurveyProtocol] =
-    useState(false);
-
   const [surveyConditions, setSurveyConditions] = useState<any>({});
   const [surveyDistributionInfo, setSurveyDistributionInfo] = useState<any>({});
-
   const { localCollection: collection } = useLocalCollection();
+
+  const [searchText, setSearchText] = useState("");
+  const [filteredPlugins, setFilteredPlugins] = useState(
+    Object.keys(spectPlugins)
+  );
+  const [showAdded, setShowAdded] = useState(false);
+  const [numPluginsAdded, setNumPlugnsAdded] = useState(0);
+
+  const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
+    "getMyUser",
+    {
+      enabled: false,
+    }
+  );
+
+  useEffect(() => {
+    setFilteredPlugins(Object.keys(spectPlugins));
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
-      isWhitelisted("Survey Protocol").then((res) => {
-        if (res) {
-          setIsWhitelistedSurveyProtocol(true);
-        }
-      });
       if (
         (collection.formMetadata.surveyTokenId ||
           collection.formMetadata.surveyTokenId === 0) &&
@@ -55,26 +67,33 @@ export default function ViewPlugins({}: Props) {
           registry[collection.formMetadata.surveyChain?.value || "80001"]
             .surveyHubAddress,
           collection.formMetadata.surveyTokenId
-        ).then((res) => {
-          if (res) {
-            setSurveyConditions(res);
-          }
-        });
+        )
+          .then((res) => {
+            console.log({ res });
+            if (res) {
+              setSurveyConditions(res);
+            }
+          })
+          .catch((err) => console.log({ err }));
         getSurveyDistributionInfo(
           collection.formMetadata.surveyChain?.value || "80001",
           registry[collection.formMetadata.surveyChain?.value || "80001"]
             .surveyHubAddress,
           collection.formMetadata.surveyTokenId
-        ).then((res) => {
-          if (res) {
-            setSurveyDistributionInfo(res);
-          }
-        });
+        )
+          .then((res) => {
+            console.log({ res });
+
+            if (res) {
+              setSurveyDistributionInfo(res);
+            }
+          })
+          .catch((err) => console.log({ err }));
       }
     }
   }, [isOpen, collection]);
 
-  const onClick = (pluginName: string) => {
+  const onClick = (pluginName: PluginType) => {
     switch (pluginName) {
       case "poap":
       case "guildxyz":
@@ -83,6 +102,8 @@ export default function ViewPlugins({}: Props) {
       case "payments":
       case "erc20":
       case "ceramic":
+      case "googleCaptcha":
+      case "responderProfile":
         setIsPluginOpen(true);
         setPluginOpen(pluginName);
         break;
@@ -91,12 +112,12 @@ export default function ViewPlugins({}: Props) {
     }
   };
 
-  const isPluginAdded = (pluginName: string) => {
+  const isPluginAdded = (pluginName: PluginType) => {
     switch (pluginName) {
       case "poap":
-        return collection.formMetadata.poapDistributionEnabled === true;
+        return !!collection.formMetadata.poapEventId;
       case "guildxyz":
-        return !!collection.formMetadata.formRoleGating;
+        return !!collection.formMetadata.formRoleGating?.length;
       case "gtcpassport":
         return collection.formMetadata.sybilProtectionEnabled === true;
       case "mintkudos":
@@ -110,20 +131,42 @@ export default function ViewPlugins({}: Props) {
         );
       case "ceramic":
         return !!collection.formMetadata.ceramicEnabled;
+      case "googleCaptcha":
+        return collection.formMetadata.captchaEnabled === true;
+      case "responderProfile":
+        return collection.formMetadata.allowAnonymousResponses === false;
       default:
         return false;
     }
   };
 
+  useEffect(() => {
+    setNumPlugnsAdded(
+      Object.keys(spectPlugins).filter((pluginName) =>
+        isPluginAdded(pluginName as PluginType)
+      )?.length
+    );
+  }, [collection.formMetadata]);
+
   return (
     <Box>
       <PrimaryButton
+        variant={"tertiary"}
         onClick={() => {
+          process.env.NODE_ENV === "production" &&
+            mixpanel.track("Add Plugins", {
+              collection: collection.slug,
+              circle: collection.parents[0].slug,
+              user: currentUser?.username,
+            });
+
           setIsOpen(true);
         }}
-        icon={<Cpu />}
+        icon={<IconPlug color="text" />}
       >
-        Add Plugins
+        {numPluginsAdded > 0
+          ? ` Plugins (${numPluginsAdded} added)`
+          : `Add Plugins`}
       </PrimaryButton>
       <AnimatePresence>
         {isOpen && (
@@ -135,42 +178,73 @@ export default function ViewPlugins({}: Props) {
           >
             <Box padding="8">
               <Stack>
-                {/* <Text variant="label">Added Plugins</Text>
+                <Stack direction={"horizontal"} space="4" align="center">
+                  <Input
+                    placeholder="Search"
+                    value={searchText}
+                    onChange={(e) => {
+                      setSearchText(e.target.value);
+                      const filtered = matchSorter(
+                        Object.values(spectPlugins),
+                        e.target.value,
+                        {
+                          keys: ["name", "id", "tags"],
+                        }
+                      );
+                      console.log({ filtered });
+                      setFilteredPlugins(filtered.map((p) => p.id));
+                    }}
+                    label=""
+                    width="1/2"
+                    prefix={<IconSearch size="4" />}
+                  />
+                  <Box
+                    cursor="pointer"
+                    onClick={() => {
+                      if (!showAdded) {
+                        setFilteredPlugins(
+                          Object.keys(spectPlugins).filter((pluginName) =>
+                            isPluginAdded(pluginName as PluginType)
+                          )
+                        );
+                      } else {
+                        setFilteredPlugins(Object.keys(spectPlugins));
+                      }
+                      setShowAdded(!showAdded);
+                    }}
+                  >
+                    <Tag tone={showAdded ? "accent" : "secondary"} hover>
+                      {showAdded ? `Show All` : `Show Added`}
+                    </Tag>
+                  </Box>
+                </Stack>
                 <Stack direction="horizontal" wrap space="4">
-                  {Object.keys(spectPlugins).map((pluginName) => (
+                  {filteredPlugins.map((pluginName) => (
                     <PluginCard
                       key={pluginName}
                       plugin={spectPlugins[pluginName]}
-                      onClick={() => onClick(pluginName)}
-                      added={isPluginAdded(pluginName)}
-                    />
-                  ))}
-                </Stack> */}
-                <Text variant="label">Explore Plugins</Text>
-                <Stack direction="horizontal" wrap space="4">
-                  {Object.keys(spectPlugins).map((pluginName) => (
-                    <PluginCard
-                      key={pluginName}
-                      plugin={spectPlugins[pluginName]}
-                      onClick={() => {
-                        console.log("pluginName", pluginName);
-                        console.log({
-                          pluginName,
-                          isWhitelistedSurveyProtocol,
-                        });
-                        if (
-                          pluginName === "erc20" &&
-                          !isWhitelistedSurveyProtocol
-                        ) {
-                          window.open(
-                            "https://circles.spect.network/r/9991d6ed-f3c8-425a-8b9e-0f598514482c",
-                            "_blank"
-                          );
+                      onClick={async () => {
+                        process.env.NODE_ENV === "production" &&
+                          mixpanel.track(`${pluginName} plugin open`, {
+                            collection: collection.slug,
+                            circle: collection.parents[0].slug,
+                            user: currentUser?.username,
+                          });
+                        if (pluginName === "erc20") {
+                          const res = await isWhitelisted("Survey Protocol");
+                          if (!res) {
+                            window.open(
+                              "https://circles.spect.network/r/9991d6ed-f3c8-425a-8b9e-0f598514482c",
+                              "_blank"
+                            );
+                          } else {
+                            onClick(pluginName as PluginType);
+                          }
                         } else {
-                          onClick(pluginName);
+                          onClick(pluginName as PluginType);
                         }
                       }}
-                      added={isPluginAdded(pluginName)}
+                      added={isPluginAdded(pluginName as PluginType)}
                     />
                   ))}
                 </Stack>
@@ -211,6 +285,18 @@ export default function ViewPlugins({}: Props) {
         {isPluginOpen && pluginOpen === "poap" && (
           <Poap handleClose={() => setIsPluginOpen(false)} key="poap" />
         )}
+        {isPluginOpen && pluginOpen === "googleCaptcha" && (
+          <GoogleCaptcha
+            handleClose={() => setIsPluginOpen(false)}
+            key="googleCaptcha"
+          />
+        )}
+        {isPluginOpen && pluginOpen === "responderProfile" && (
+          <ResponderProfile
+            handleClose={() => setIsPluginOpen(false)}
+            key="responderProfile"
+          />
+        )}
       </AnimatePresence>
     </Box>
   );
@@ -234,7 +320,7 @@ const PluginCard = ({
     >
       {added && (
         <PluginAdded>
-          <Text color="accent" size="large">
+          <Text color="accent" size="large" weight="semiBold">
             Added
           </Text>
         </PluginAdded>
@@ -243,7 +329,7 @@ const PluginCard = ({
       <Box padding="4">
         <Stack>
           <Text weight="bold">{plugin.name}</Text>
-          <Text>{plugin.description}</Text>
+          <Text size="extraSmall">{plugin.description}</Text>
           {/* <a href={plugin.docs} target="_blank">
             <Text color="accent">View Docs</Text>
           </a> */}
@@ -254,6 +340,12 @@ const PluginCard = ({
 };
 
 const PluginContainer = styled(motion.div)`
+  @media (max-width: 768px) {
+    width: calc(100% / 2 - 1rem);
+  }
+  @media (max-width: 480px) {
+    width: 100%;
+  }
   width: calc(100% / 3 - 1rem);
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -271,7 +363,7 @@ const PluginAdded = styled.div`
   position: absolute;
   top: 0;
   right: 0;
-  background: rgba(20, 20, 20);
+  background: rgba(20, 20, 20, 0.8);
   padding: 0.5rem 1rem;
   border-radius: 0 1rem 0 1rem;
 `;

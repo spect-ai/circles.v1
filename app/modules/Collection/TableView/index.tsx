@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import _ from "lodash";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Column,
   DataSheetGrid,
@@ -22,6 +22,7 @@ import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import CardDrawer from "../../CollectionProject/CardDrawer";
 import Filtering from "../../CollectionProject/Filtering";
+import IncentiveFilter from "../../CollectionProject/Filtering/IncentiveFilter";
 import AddField from "../AddField";
 import {
   isMyCard,
@@ -363,6 +364,7 @@ export default function TableView() {
     collection.propertyOrder &&
     collection.propertyOrder
       .filter((prop) => prop !== "__cardStatus__")
+      .filter((prop) => !!collection.properties[prop])
       .map((propertyName: string) => {
         const property = collection.properties[propertyName];
         if (property.id === "__ceramic__") {
@@ -656,20 +658,42 @@ export default function TableView() {
           marginBottom="4"
         >
           <Filtering />
+          <IncentiveFilter />
           <PrimaryButton
             variant="tertiary"
             onClick={() => {
-              let out = [] as any[];
               const d = data?.map((da) => {
                 const csvData: {
                   [key: string]: string;
                 } = {};
                 Object.entries(da)
-                  .filter(
-                    ([key, value]) =>
-                      key !== "slug" && key !== "id" && key !== "anonymous"
-                  )
+                  .filter(([key, value]) => key !== "id")
                   .forEach(([key, value]: [string, any]) => {
+                    if (key === "slug") {
+                      csvData["Data Slug"] = value;
+                      return;
+                    }
+                    if (key === "__lookup__") {
+                      value = value.map((v: any) => ({
+                        contractAddress: undefined,
+                        tokenType: undefined,
+                        metadata: undefined,
+                        token: v.metadata?.name,
+                        balance: v.balance,
+                        chainId: v.chainId,
+                      }));
+                      csvData["Tokens Lookup"] = JSON.stringify(value);
+                      return;
+                    }
+                    if (key === "anonymous") {
+                      const value =
+                        collection?.profiles?.[collection?.dataOwner[da.slug]];
+                      csvData["Responder Profile"] = JSON.stringify({
+                        username: value?.username,
+                        ethAddress: value?.ethAddress,
+                      });
+                      return;
+                    }
                     if (!collection.properties[key]) return;
                     if (collection.properties[key].type === "reward") {
                       csvData[key] = JSON.stringify({
@@ -713,8 +737,6 @@ export default function TableView() {
                       csvData[key] = value;
                     }
                   });
-                // delete csvData["id"] && delete csvData["anonymous"];
-                csvData["slug"] = da.slug;
                 return csvData;
               });
               console.log({ d });

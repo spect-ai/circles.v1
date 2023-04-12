@@ -36,7 +36,7 @@ export default function GiveRole({ setAction, actionMode, action }: Props) {
           data: {
             ...action.data,
             roles: selectedRoles,
-            circleId: circle.id,
+            circleId: circle?.id || "",
           },
         });
       }}
@@ -45,7 +45,7 @@ export default function GiveRole({ setAction, actionMode, action }: Props) {
         <Text variant="label">Pick the roles to give</Text>
       </Box>
       <Stack direction="horizontal" wrap>
-        {Object.keys(circle.roles)?.map((role) => {
+        {Object.keys(circle?.roles || {})?.map((role) => {
           return (
             <Box
               key={role}

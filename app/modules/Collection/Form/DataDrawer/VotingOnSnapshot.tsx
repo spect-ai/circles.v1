@@ -86,7 +86,7 @@ export default function SnapshotVoting({
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { address } = useAccount();
-  const { localCircle: circle } = useCircle();
+  const { circle } = useCircle();
 
   const { castVote } = useSnapshot();
   const { hostname } = useLocation();

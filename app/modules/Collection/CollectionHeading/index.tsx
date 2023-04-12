@@ -1,7 +1,7 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Heading, IconDotsHorizontal, Stack, useTheme } from "degen";
+import { Box, Heading, IconDotsHorizontal, Stack, useTheme, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import { memo, useEffect, useState } from "react";
@@ -10,7 +10,6 @@ import Skeleton from "react-loading-skeleton";
 import { toast } from "react-toastify";
 import { useLocation } from "react-use";
 import styled from "styled-components";
-import { PopoverOption } from "../../Card/OptionPopover";
 import { useCircle } from "../../Circle/CircleContext";
 import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
@@ -19,9 +18,12 @@ import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Embed } from "../Embed";
-import { EyeOutlined, SendOutlined, ShareAltOutlined } from "@ant-design/icons";
+import { SendOutlined } from "@ant-design/icons";
 import { smartTrim } from "@/app/common/utils/utils";
 import FormSettings from "../Form/FormSettings";
+import WarnConnectWallet from "./WarnConnectWallet";
+import { PopoverOption } from "../../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
+import ViewPlugins from "../../Plugins/ViewPlugins";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -46,6 +48,7 @@ function CollectionHeading() {
   const { formActions } = useRoleGate();
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
+  const [isWarningOpened, setIsWarningOpened] = useState(false);
 
   const location = useLocation();
 
@@ -93,7 +96,9 @@ function CollectionHeading() {
                   md: "4",
                 }}
               >
-                <Heading>{smartTrim(collection?.name, 20)}</Heading>
+                <Text size="headingThree" weight="semiBold" ellipsis>
+                  {smartTrim(collection?.name, 20)}
+                </Text>
               </Box>
               <FormSettings />
               <Hidden xs sm>
@@ -101,6 +106,12 @@ function CollectionHeading() {
                   // icon={<IconPencil />}
                   variant={view === 0 ? "tertiary" : "transparent"}
                   onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Form Edit", {
+                        collection: collection?.slug,
+                        circle: collection?.parents[0].slug,
+                        user: currentUser?.username,
+                      });
                     void router.push(location.pathname as string);
                     setView(0);
                   }}
@@ -110,6 +121,12 @@ function CollectionHeading() {
                 <PrimaryButton
                   variant={view === 1 ? "tertiary" : "transparent"}
                   onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Form Responses", {
+                        collection: collection?.slug,
+                        circle: collection?.parents[0].slug,
+                        user: currentUser?.username,
+                      });
                     if (!formActions("viewResponses")) {
                       toast.error(
                         "Your role(s) doesn't have permissions to view responses of this form"
@@ -119,7 +136,7 @@ function CollectionHeading() {
                     setView(1);
                   }}
                 >
-                  Responses
+                  Responses ({Object.keys(collection.data || {})?.length})
                 </PrimaryButton>
                 {/* <PrimaryButton onClick={() => setIsAddFieldOpen(true)}>
                   Add Field
@@ -190,7 +207,7 @@ function CollectionHeading() {
                             setIsOpen(false);
                           }}
                         >
-                          Responses
+                          Responses {Object.keys(collection.data || {})?.length}
                         </PopoverOption>
                       )}
                       <a
@@ -220,6 +237,7 @@ function CollectionHeading() {
                 }}
                 align="center"
               >
+                <ViewPlugins />
                 <Popover
                   butttonComponent={
                     <PrimaryButton
@@ -230,6 +248,12 @@ function CollectionHeading() {
                         />
                       }
                       onClick={() => {
+                        process.env.NODE_ENV === "production" &&
+                          mixpanel.track("Share popover open", {
+                            collection: collection?.slug,
+                            circle: collection?.parents[0].slug,
+                            user: currentUser?.username,
+                          });
                         setIsShareOpen(!isShareOpen);
                       }}
                     >
@@ -262,6 +286,12 @@ function CollectionHeading() {
                     </PopoverOption>
                     <PopoverOption
                       onClick={() => {
+                        process.env.NODE_ENV === "production" &&
+                          mixpanel.track("Form Embed", {
+                            collection: collection?.slug,
+                            circle: collection?.parents[0].slug,
+                            user: currentUser?.username,
+                          });
                         setIsShareOpen(false);
                         setIsEmbedModalOpen(true);
                       }}
@@ -275,6 +305,12 @@ function CollectionHeading() {
                     >
                       <PopoverOption
                         onClick={() => {
+                          process.env.NODE_ENV === "production" &&
+                            mixpanel.track("Form Preview", {
+                              collection: collection?.slug,
+                              circle: collection?.parents[0].slug,
+                              user: currentUser?.username,
+                            });
                           setIsShareOpen(false);
                         }}
                       >
@@ -312,6 +348,17 @@ function CollectionHeading() {
             setIsOpen={setIsEmbedModalOpen}
             component="form"
             routeId={collection.slug}
+          />
+        )}
+        {isWarningOpened && (
+          <WarnConnectWallet
+            onYes={() => {
+              setIsWarningOpened(false);
+              setIsShareOpen(!isShareOpen);
+            }}
+            onNo={() => {
+              setIsWarningOpened(false);
+            }}
           />
         )}
       </AnimatePresence>

@@ -24,6 +24,7 @@ type Props = {
   customTooltip?: string;
   newTokenOpen?: boolean;
   singleSelect?: boolean;
+  setIsDirty?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function RewardTokenOptions({
@@ -33,6 +34,7 @@ export default function RewardTokenOptions({
   customTooltip,
   newTokenOpen,
   singleSelect,
+  setIsDirty,
 }: Props) {
   const { registry, circle, setRegistryData } = useCircle();
   const [newToken, setNewToken] = useState(newTokenOpen || false);
@@ -135,6 +137,7 @@ export default function RewardTokenOptions({
                               shape="circle"
                               cursor="pointer"
                               onClick={() => {
+                                setIsDirty && setIsDirty(true);
                                 const newNetworks = networks;
                                 delete newNetworks[chainId].tokenDetails[
                                   tokenAddress
@@ -263,7 +266,7 @@ export default function RewardTokenOptions({
                         address,
                       },
                     };
-                    const res = await addToken(circle?.id, {
+                    const res = await addToken(circle?.id || "", {
                       chainId: selectedChain.value as string,
                       address,
                       symbol: tokenSymbol,
@@ -334,6 +337,7 @@ export default function RewardTokenOptions({
                 variant="tertiary"
                 size="small"
                 onClick={() => {
+                  setIsDirty && setIsDirty(true);
                   setNewToken(true);
                 }}
                 disabled={tokenLoading}

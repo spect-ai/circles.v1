@@ -1,50 +1,64 @@
 import { PropertyType } from "@/app/types";
-import { IconEth } from "degen";
 import {
-  AlignCenter,
-  Aperture,
-  AtSign,
-  Calendar,
-  DollarSign,
-  Hash,
-  Link,
-  List,
-  Tag,
-  Type,
-  User,
-  Users,
-} from "react-feather";
+  AiOutlineCheckSquare,
+  AiOutlineLink,
+  AiOutlineMail,
+  AiOutlineNumber,
+} from "react-icons/ai";
+import { BiAperture, BiText } from "react-icons/bi";
+import {
+  BsConeStriped,
+  BsFillCalendarDateFill,
+  BsTextParagraph,
+  BsUiRadiosGrid,
+} from "react-icons/bs";
+import {
+  FaDiscord,
+  FaEthereum,
+  FaGithub,
+  FaTelegram,
+  FaUser,
+  FaUserFriends,
+} from "react-icons/fa";
+import { MdAddLink, MdOutlineAttachMoney } from "react-icons/md";
 
-export const getPropertyIcon = (type: PropertyType) => {
+export const getPropertyIcon = (type: PropertyType, size?: number) => {
   switch (type) {
     case "shortText":
-      return <Type size={18} />;
+      return <BiText size={size || 18} />;
     case "longText":
-      return <AlignCenter size={18} />;
+      return <BsTextParagraph size={size || 18} />;
     case "number":
-      return <Hash size={18} />;
+      return <AiOutlineNumber size={size || 18} />;
     case "singleSelect":
-      return <Aperture size={18} />;
+      return <BsUiRadiosGrid size={size || 18} />;
     case "multiSelect":
-      return <Tag size={18} />;
+      return <AiOutlineCheckSquare size={size || 18} />;
     case "singleURL":
+      return <AiOutlineLink size={size || 18} />;
     case "multiURL":
-      return <Link size={18} />;
+      return <MdAddLink size={size || 18} />;
     case "user":
-      return <User size={18} />;
+      return <FaUser size={size || 18} />;
     case "user[]":
-      return <Users size={18} />;
+      return <FaUserFriends size={size || 18} />;
     case "email":
-      return <AtSign size={18} />;
+      return <AiOutlineMail size={size || 18} />;
     case "ethAddress":
-      return <IconEth size="5" />;
+      return <FaEthereum size={size || 18} />;
     case "date":
-      return <Calendar size={18} />;
+      return <BsFillCalendarDateFill size={size || 18} />;
     case "reward":
-      return <DollarSign size={18} />;
+      return <MdOutlineAttachMoney size={size || 18} />;
     case "milestone":
-      return <List size={18} />;
+      return <BsConeStriped size={size || 18} />;
+    case "discord":
+      return <FaDiscord size={size || 18} />;
+    case "telegram":
+      return <FaTelegram size={size || 18} />;
+    case "github":
+      return <FaGithub size={size || 18} />;
     default:
-      return <Aperture size={18} />;
+      return <BiAperture size={size || 18} />;
   }
 };

@@ -1,13 +1,20 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { LensDate, LensEducation, UserType } from "@/app/types";
 import { Box, Text, useTheme } from "degen";
+import { AnimatePresence } from "framer-motion";
 import { memo, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import AddEducationModal from "../AddEducationModal";
 import ViewEducationModal from "../ViewEducationModal";
 import { Card, ScrollContainer } from "./index";
 
-const Education = ({ userData }: { userData: UserType }) => {
+const Education = ({
+  userData,
+  allCredentials,
+}: {
+  userData: UserType;
+  allCredentials: { [id: string]: any[] };
+}) => {
   const [openEducationModal, setOpenEducationModal] = useState(false);
   const [selectedEducationId, setSelectedEducationId] = useState<number>();
   const [openEducationView, setOpenEducationView] = useState(false);
@@ -26,25 +33,32 @@ const Education = ({ userData }: { userData: UserType }) => {
 
   return (
     <Box>
-      {openEducationView && (
-        <ViewEducationModal
-          educationId={selectedEducationId}
-          handleClose={() => setOpenEducationView(false)}
-          setEditEducation={(value) => {
-            if (value) {
-              setModalMode("edit");
-              setOpenEducationModal(true);
-            }
-          }}
-        />
-      )}
-      {openEducationModal && (
-        <AddEducationModal
-          modalMode={modalMode}
-          handleClose={() => setOpenEducationModal(false)}
-          educationId={selectedEducationId}
-        />
-      )}
+      <AnimatePresence>
+        {openEducationView && (
+          <ViewEducationModal
+            educationId={selectedEducationId}
+            handleClose={() => setOpenEducationView(false)}
+            setEditEducation={(value) => {
+              if (value) {
+                setModalMode("edit");
+                setOpenEducationModal(true);
+              }
+            }}
+          />
+        )}{" "}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {openEducationModal && (
+          <AddEducationModal
+            modalMode={modalMode}
+            handleClose={() => setOpenEducationModal(false)}
+            educationId={selectedEducationId}
+            allCredentials={allCredentials}
+          />
+        )}{" "}
+      </AnimatePresence>
+
       <ScrollContainer>
         {!education?.length && (
           <Box style={{ margin: "35vh 15vw" }}>

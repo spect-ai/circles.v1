@@ -6,24 +6,13 @@ import {
   DroppableProvided,
 } from "react-beautiful-dnd";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, IconTrash, Stack, useTheme, Button } from "degen";
+import { Box, IconTrash, Stack, useTheme, Button, Text } from "degen";
 import styled from "styled-components";
 import Card from "./card";
-import {
-  CircleType,
-  CollectionType,
-  ProjectType,
-  RetroType,
-} from "@/app/types";
+import { CircleType, ProjectType, RetroType } from "@/app/types";
 import { deleteFolder, updateFolder } from "@/app/services/Folders";
 import { useCircle } from "../../CircleContext";
-import { Col, Container, Row } from "react-grid-system";
-import CreateFolderItem from "./CreateFolderItem";
-import CreateProjectModal from "@/app/modules/Circle/CreateProjectModal";
-import CreateSpaceModal from "@/app/modules/Circle/CreateSpaceModal";
-import CreateRetroModal from "@/app/modules/Retro/CreateRetro";
-import { AnimatePresence } from "framer-motion";
-import CreateCollectionModal from "../../CreateCollectionModal";
+import { toast } from "react-toastify";
 
 interface Props {
   content: string[];
@@ -31,12 +20,12 @@ interface Props {
   name: string;
   id: string;
   index: number;
-  projects: { [key: string]: ProjectType };
-  workstreams: { [key: string]: CircleType };
-  retros: {
+  projects?: { [key: string]: ProjectType };
+  workstreams?: { [key: string]: CircleType };
+  retros?: {
     [key: string]: RetroType;
   };
-  collections: {
+  collections?: {
     [key: string]: {
       id: string;
       name: string;
@@ -88,22 +77,27 @@ const Folder = ({
   index,
   projects,
   workstreams,
-  retros,
   collections,
 }: Props) => {
   const { canDo } = useRoleGate();
   const { mode } = useTheme();
-  const { localCircle: circle, setCircleData } = useCircle();
+  const { circle, setCircleData } = useCircle();
   const [folderTitle, setFolderTitle] = useState(name);
-  const [projectModal, setProjectModal] = useState(false);
-  const [workstreamModal, setWorkstreamModal] = useState(false);
-  const [retroOpen, setRetroOpen] = useState(false);
-  const [collectionModal, setCollectionModal] = useState(false);
-  const [collectionProjectModal, setCollectionProjectModal] = useState(false);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const [hover, setHover] = useState(false);
   const ondeleteFolder = async () => {
-    const res = await deleteFolder(circle.id, id);
+    const unarchivedContent = content.filter(
+      (card) =>
+        (projects?.[card] && projects?.[card].archived !== true) ||
+        (workstreams?.[card] && workstreams?.[card].archived !== true) ||
+        (collections?.[card] && collections?.[card].archived !== true)
+    );
+    if (unarchivedContent.length > 0) {
+      toast.error(
+        "Please archive/move all cards from the folder before deleting it."
+      );
+      return;
+    }
+    const res = await deleteFolder(circle?.id || "", id);
     console.log({ res });
 
     if (res?.id) {
@@ -119,13 +113,12 @@ const Folder = ({
     }
     const updatedCircle = await updateFolder(
       { name: folderTitle },
-      circle.id,
+      circle?.id || "",
       id
     );
     if (updatedCircle?.id) {
       setCircleData(updatedCircle);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folderTitle]);
 
   const CardDraggable = (provided: DroppableProvided) => (
@@ -144,9 +137,6 @@ const Folder = ({
             <Card card={card} index={i} key={card} workstreams={workstreams} />
           );
         }
-        if (retros?.[card] && card) {
-          return <Card card={card} index={i} key={card} retros={retros} />;
-        }
         if (
           card &&
           collections?.[card] &&
@@ -161,13 +151,11 @@ const Folder = ({
     </ScrollContainer>
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const CardDraggableCallback = useCallback(CardDraggable, [
     content,
-    projects,
-    retros,
     workstreams,
     circle,
+    collections,
   ]);
 
   function DraggableContent(provided: DraggableProvided) {
@@ -179,6 +167,8 @@ const Folder = ({
         {...provided.draggableProps}
         {...provided.dragHandleProps}
         ref={provided.innerRef}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
       >
         <Stack direction={"horizontal"} align={"center"} space="1">
           <NameInput
@@ -189,31 +179,13 @@ const Folder = ({
             mode={mode}
             maxLength={20}
           />
-          {(canDo("createNewCircle") ||
-            canDo("createNewProject") ||
-            canDo("createNewRetro") ||
-            canDo("createNewForm")) && (
-            <CreateFolderItem
-              setProjectModal={setProjectModal}
-              setWorkstreamModal={setWorkstreamModal}
-              setRetroOpen={setRetroOpen}
-              setCollectionModal={setCollectionModal}
-              setCollectionProjectModal={setCollectionProjectModal}
-            />
-          )}
-          {avatar !== "All" &&
-            content?.length == 0 &&
-            canDo("manageCircleSettings") && (
-              <Button
-                data-tour="circle-create-folder-button"
-                size="small"
-                variant="transparent"
-                shape="circle"
-                onClick={ondeleteFolder}
-              >
+          {canDo("manageCircleSettings") && hover && (
+            <Box onClick={ondeleteFolder} cursor="pointer">
+              <Text variant="label">
                 <IconTrash size={"5"} />
-              </Button>
-            )}
+              </Text>
+            </Box>
+          )}
         </Stack>
         <Droppable droppableId={id} type="content" direction="horizontal">
           {CardDraggableCallback}
@@ -221,52 +193,16 @@ const Folder = ({
       </Box>
     );
   }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const DraggableContentCallback = useCallback(DraggableContent, [
     CardDraggableCallback,
     canDo,
     circle,
-    circle?.folderOrder,
-    circle?.folderDetails,
   ]);
 
   return (
-    <>
-      <Draggable draggableId={id} index={index}>
-        {DraggableContentCallback}
-      </Draggable>
-      <AnimatePresence>
-        {projectModal && (
-          <CreateProjectModal folderId={id} setModalOpen={setProjectModal} />
-        )}
-        {workstreamModal && (
-          <CreateSpaceModal
-            folderId={id}
-            setWorkstreamModal={setWorkstreamModal}
-          />
-        )}
-        {retroOpen && (
-          <CreateRetroModal
-            folderId={id}
-            handleClose={() => setRetroOpen(false)}
-          />
-        )}
-        {collectionModal && (
-          <CreateCollectionModal
-            folderId={id}
-            setCollectionModal={setCollectionModal}
-            collectionType={0}
-          />
-        )}
-        {collectionProjectModal && (
-          <CreateCollectionModal
-            folderId={id}
-            setCollectionModal={setCollectionProjectModal}
-            collectionType={1}
-          />
-        )}
-      </AnimatePresence>
-    </>
+    <Draggable draggableId={id} index={index}>
+      {DraggableContentCallback}
+    </Draggable>
   );
 };
 

@@ -33,12 +33,12 @@ function YourCircles({
 }) {
   const [circlesToShow, setCirclesToShow] = useState<CircleType[]>(circles);
   const [selectedFilter, setSelectedFilter] = useState<Option>({
-    label: "Only show organizations",
+    label: "Only show spaces",
     value: "onlyParents",
   });
   const options = [
-    { label: "Show Organizations and Workstreams", value: "all" },
-    { label: "Only show organizations", value: "onlyParents" },
+    { label: "Show Spaces and Workstreams", value: "all" },
+    { label: "Only show spaces", value: "onlyParents" },
   ];
 
   useEffect(() => {

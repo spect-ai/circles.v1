@@ -10,6 +10,7 @@ import { ethers } from "ethers";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 import { useCircle } from "../../Circle/CircleContext";
 import AddToken from "../../Circle/CircleSettingsModal/CirclePayment/AddToken";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -59,7 +60,7 @@ export default function DistributeERC20({
     enabled: false,
   });
   const networks = Object.keys(registry || {})
-    .filter((key) => ["137", "43113", "80001"].includes(key))
+    .filter((key) => ["137", "43113", "80001", "5"].includes(key))
     .map((key) => {
       return {
         label: (registry && registry[key].name) || "",
@@ -91,6 +92,10 @@ export default function DistributeERC20({
       : "minResponses"
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState({
+    amountPerResponse: false,
+    totalAmount: false,
+  });
 
   useEffect(() => {
     if (registry && selectedNetwork) {
@@ -109,7 +114,7 @@ export default function DistributeERC20({
       setSelectedToken(tokens[1]);
       setTokenOptions(tokens);
     }
-  }, [selectedNetwork]);
+  }, [selectedNetwork, registry]);
 
   useEffect(() => {
     if (distributionInfo?.amountPerResponse) {
@@ -122,6 +127,38 @@ export default function DistributeERC20({
       );
     }
   }, [distributionInfo?.amountPerResponse]);
+
+  useEffect(() => {
+    if (paymentType?.value === "lottery") {
+      setValuePerResponse(0);
+    } else if (paymentType?.value === "payPerResponse") {
+      setMinResponses(0);
+      setMinTimestamp(0);
+    }
+  }, [paymentType]);
+
+  useEffect(() => {
+    if (paymentType?.value === "payPerResponse") {
+      if (valuePerResponse > value) {
+        setIsError({
+          ...isError,
+          amountPerResponse: true,
+        });
+      } else {
+        setIsError({
+          ...isError,
+          amountPerResponse: false,
+          totalAmount: false,
+        });
+      }
+    } else {
+      setIsError({
+        ...isError,
+        totalAmount: false,
+        amountPerResponse: false,
+      });
+    }
+  }, [valuePerResponse, value]);
 
   return (
     <Modal handleClose={handleClose} title="Distribute Tokens">
@@ -183,6 +220,11 @@ export default function DistributeERC20({
                   units={selectedToken?.label}
                 />
               </Box>
+              {isError["totalAmount"] && (
+                <Text variant="small" color="red">
+                  Amount To Pay Per Response cannot be greater than Total Amount
+                </Text>
+              )}
             </Stack>
             <Stack space="2">
               <Stack space="1">
@@ -214,8 +256,15 @@ export default function DistributeERC20({
                     }}
                     type="number"
                     units={selectedToken?.label}
+                    error={valuePerResponse > value}
                   />
                 </Box>
+                {isError["amountPerResponse"] && (
+                  <Text variant="small" color="red">
+                    Amount To Pay Per Response cannot be greater than Total
+                    Amount
+                  </Text>
+                )}
               </Stack>
             )}
             <Stack space="0">
@@ -288,65 +337,88 @@ export default function DistributeERC20({
           display="flex"
           justifyContent="flex-end"
         >
-          <Box width="1/2">
+          <Box display="flex" flexDirection="column" gap="4" width="1/2">
+            {value > 0 && (
+              <Box marginRight="2">
+                <Text variant="base">
+                  {`${value} ${selectedToken?.label} will be escrowed for distribution`}
+                </Text>
+              </Box>
+            )}
             <PrimaryButton
               loading={isLoading}
+              disabled={
+                isLoading ||
+                value === 0 ||
+                isError["totalAmount"] ||
+                isError["amountPerResponse"] ||
+                (paymentType?.value === "payPerResponse" &&
+                  valuePerResponse === 0)
+              }
               onClick={async () => {
-                if (!registry) return;
-                if (
-                  selectedToken?.value !== "0x0" &&
-                  !currentUser?.ethAddress
-                ) {
-                  console.log("no eth address");
-                  return;
-                }
-                setIsLoading(true);
-                const tx = await createSurvey(
-                  selectedNetwork.value,
-                  registry[selectedNetwork.value].surveyHubAddress,
-                  selectedToken?.value,
-                  paymentType?.value === "payPerResponse" ? 1 : 0,
-                  value,
-                  currentUser?.ethAddress || "",
-                  valuePerResponse,
-                  minTimestamp,
-                  minResponses
-                );
-                if (!tx) {
+                try {
+                  setIsLoading(true);
+                  if (!registry) return;
+                  if (
+                    selectedToken?.value !== "0x0" &&
+                    !currentUser?.ethAddress
+                  ) {
+                    console.log("no eth address");
+                    setIsLoading(false);
+                    return;
+                  }
+
+                  const tx = await createSurvey(
+                    selectedNetwork.value,
+                    registry[selectedNetwork.value].surveyHubAddress,
+                    selectedToken?.value,
+                    paymentType?.value === "payPerResponse" ? 1 : 0,
+                    value,
+                    currentUser?.ethAddress || "",
+                    valuePerResponse,
+                    minTimestamp,
+                    minResponses
+                  );
+                  if (!tx) {
+                    setIsLoading(false);
+                    return;
+                  }
+                  console.log({ tx });
+                  let lastSurveyId;
+                  try {
+                    lastSurveyId = await getLastSurveyId(
+                      registry[selectedNetwork.value].surveyHubAddress,
+                      selectedNetwork?.value
+                    );
+                    console.log({ lastSurveyId });
+                  } catch (err) {
+                    console.log("Unable to fetch last survey with error", err);
+                    toast.error(
+                      "Plugin was added, but something went wrong while fetching the survey id. Please contact support."
+                    );
+                  }
+
+                  const res = await updateFormCollection(collection.id, {
+                    formMetadata: {
+                      ...collection.formMetadata,
+                      surveyTokenId: lastSurveyId,
+                      surveyChain: selectedNetwork,
+                      surveyToken: selectedToken,
+                      surveyTotalValue: value,
+                      surveyDistributionType:
+                        paymentType?.value === "payPerResponse" ? 1 : 0,
+                      walletConnectionRequired: true,
+                    },
+                  });
+                  updateCollection(res);
+                  console.log({ res });
                   setIsLoading(false);
-                  return;
+                  if (res) handleClose();
+                } catch (e) {
+                  console.log(e);
+                  setIsLoading(false);
+                  toast.error("Something went wrong");
                 }
-                console.log({ tx });
-                const lastSurveyId = await getLastSurveyId(
-                  registry[selectedNetwork.value].surveyHubAddress
-                );
-                console.log({ lastSurveyId });
-                const res = await updateFormCollection(collection.id, {
-                  formMetadata: {
-                    ...collection.formMetadata,
-                    surveyTokenId: lastSurveyId,
-                    surveyChain: selectedNetwork,
-                    surveyToken: selectedToken,
-                    surveyTotalValue: value,
-                    surveyDistributionType:
-                      paymentType?.value === "payPerResponse" ? 1 : 0,
-                  },
-                });
-                updateCollection({
-                  ...collection,
-                  formMetadata: {
-                    ...collection.formMetadata,
-                    surveyTokenId: lastSurveyId,
-                    surveyChain: selectedNetwork,
-                    surveyToken: selectedToken,
-                    surveyTotalValue: value,
-                    surveyDistributionType:
-                      paymentType?.value === "payPerResponse" ? 1 : 0,
-                  },
-                });
-                console.log({ res });
-                setIsLoading(false);
-                if (res) handleClose();
               }}
             >
               Confirm

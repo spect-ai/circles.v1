@@ -522,18 +522,24 @@ export default function Payments({ handleClose }: Props) {
                       return acc;
                     }, {}),
                   };
-                  console.log({ payload });
                   setUpdateLoading(true);
                   const res = await updateFormCollection(collection.id, {
                     formMetadata: {
                       ...collection.formMetadata,
                       paymentConfig: payload,
+                      walletConnectionRequired: true,
                     },
                   });
-                  console.log({ res });
-                  setUpdateLoading(false);
-                  updateCollection(res);
-                  handleClose();
+                  if (res.id) {
+                    console.log({ res });
+                    setUpdateLoading(false);
+                    updateCollection(res);
+                    handleClose();
+                  } else {
+                    toast.error(
+                      "Error updating payment config, refresh and try again"
+                    );
+                  }
                 }}
               >
                 {collection.formMetadata.paymentConfig ? "Update" : "Add"}{" "}
@@ -553,10 +559,17 @@ export default function Payments({ handleClose }: Props) {
                       paymentConfig: undefined,
                     },
                   });
-                  console.log({ res });
-                  setDeleteLoading(false);
-                  updateCollection(res);
-                  handleClose();
+
+                  if (res.id) {
+                    console.log({ res });
+                    setDeleteLoading(false);
+                    updateCollection(res);
+                    handleClose();
+                  } else {
+                    toast.error(
+                      "Error updating payment config, refresh and try again"
+                    );
+                  }
                 }}
               >
                 Disable Payment

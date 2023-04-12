@@ -55,11 +55,6 @@ export default function useViewCommon() {
   );
 
   useEffect(() => {
-    console.log({ view: view.groupByColumn });
-    console.log({
-      pj: collection.projectMetadata,
-      collection: collection.properties,
-    });
     let newCardOrder =
       collection.projectMetadata.cardOrders[view.groupByColumn];
     if (searchFilter) {

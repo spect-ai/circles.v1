@@ -40,6 +40,7 @@ export default function AddRole({ role }: props) {
     }
   }, [circle, role]);
 
+  if (!circle) return null;
   return (
     <Box>
       {!role ? (
@@ -51,24 +52,26 @@ export default function AddRole({ role }: props) {
           Add Role
         </PrimaryButton>
       ) : (
-        <Button
-          prefix={
-            circle.roles[role]?.mutable && canDo("manageRoles") ? (
-              <IconPencil size="5" />
-            ) : (
-              <EyeOutlined />
-            )
-          }
-          onClick={() => setIsOpen(true)}
-          variant="transparent"
-          width={"full"}
-          size="small"
-        >
-          {circle.roles[role]?.mutable && canDo("manageRoles")
-            ? "Edit"
-            : "View"}{" "}
-          Permissions
-        </Button>
+        <Box width="48">
+          <Button
+            prefix={
+              circle.roles[role]?.mutable && canDo("manageRoles") ? (
+                <IconPencil size="5" />
+              ) : (
+                <EyeOutlined />
+              )
+            }
+            onClick={() => setIsOpen(true)}
+            variant="transparent"
+            width={"full"}
+            size="small"
+          >
+            {circle.roles[role]?.mutable && canDo("manageRoles")
+              ? "Edit"
+              : "View"}{" "}
+            Permissions
+          </Button>
+        </Box>
       )}
 
       <AnimatePresence>
@@ -84,15 +87,16 @@ export default function AddRole({ role }: props) {
             handleClose={() => setIsOpen(false)}
           >
             <Box
-              padding={{
+              paddingX={{
                 xs: "4",
                 md: "8",
               }}
+              paddingY="4"
             >
-              <Stack space="2">
+              <Stack space="0">
                 {(!role || (role && circle.roles[role]?.mutable)) && (
                   <>
-                    <Box marginLeft="4">
+                    <Box>
                       <Text weight="semiBold">Role Name</Text>
                     </Box>
                     <Input
@@ -111,109 +115,123 @@ export default function AddRole({ role }: props) {
                   </Box>
                 )}
 
-                <Box marginLeft="4">
+                <Box marginTop="4" marginBottom="2">
                   <Text weight="semiBold">Permissions</Text>
                 </Box>
                 {/* <Stack direction="horizontal" wrap> */}
                 {permissions &&
-                  Object.keys(permissions)?.map((key) => (
-                    <Box key={key} paddingY="2">
-                      <Stack direction="horizontal" wrap>
-                        <Box
-                          width={{
-                            xs: "full",
-                            md: "1/2",
-                          }}
-                        >
-                          <Text variant="label">
-                            {(permissionText as any)?.[key]}
-                          </Text>
-                        </Box>
-                        {typeof (permissions as any)[key] === "boolean" ? (
-                          <CheckBox
-                            isChecked={(permissions as any)[key] as boolean}
-                            onClick={() => {
-                              setPermissions({
-                                ...permissions,
-                                [key]: !(permissions as any)[key],
-                              });
+                  Object.keys(permissions)?.map((key) => {
+                    if (!(permissionText as any)?.[key]) return null;
+                    return (
+                      <Box key={key} paddingY="2">
+                        <Stack direction="horizontal" wrap>
+                          <Box
+                            width={{
+                              xs: "full",
+                              md: "1/2",
                             }}
-                          />
-                        ) : (
-                          <Stack direction="horizontal">
-                            {Object.keys((permissions as any)[key]).map(
-                              (subKey) => (
-                                <Stack direction="horizontal" key={subKey}>
-                                  <Text>{subKey}</Text>
-                                  <CheckBox
-                                    // @ts-ignore
-                                    isChecked={permissions[key][subKey]}
-                                    onClick={() => {
-                                      setPermissions({
-                                        ...permissions,
-                                        [key]: {
-                                          // @ts-ignore
-                                          ...permissions[key],
-                                          // @ts-ignore
-                                          [subKey]: !permissions[key][subKey],
-                                        },
-                                      });
-                                    }}
-                                  />
-                                </Stack>
-                              )
-                            )}
-                          </Stack>
-                        )}
-                      </Stack>
-                    </Box>
-                  ))}
+                          >
+                            <Text variant="label">
+                              {(permissionText as any)?.[key]}
+                            </Text>
+                          </Box>
+                          {typeof (permissions as any)[key] === "boolean" &&
+                          key ? (
+                            <CheckBox
+                              isChecked={(permissions as any)[key] as boolean}
+                              onClick={() => {
+                                setPermissions({
+                                  ...permissions,
+                                  [key]: !(permissions as any)[key],
+                                });
+                              }}
+                            />
+                          ) : (
+                            <Stack direction="horizontal">
+                              {Object.keys((permissions as any)[key]).map(
+                                (subKey) => (
+                                  <Stack direction="horizontal" key={subKey}>
+                                    <Text>{subKey}</Text>
+                                    <CheckBox
+                                      // @ts-ignore
+                                      isChecked={permissions[key][subKey]}
+                                      onClick={() => {
+                                        setPermissions({
+                                          ...permissions,
+                                          [key]: {
+                                            // @ts-ignore
+                                            ...permissions[key],
+                                            // @ts-ignore
+                                            [subKey]: !permissions[key][subKey],
+                                          },
+                                        });
+                                      }}
+                                    />
+                                  </Stack>
+                                )
+                              )}
+                            </Stack>
+                          )}
+                        </Stack>
+                      </Box>
+                    );
+                  })}
                 {/* </Stack> */}
                 {(!role ||
                   (role &&
                     circle.roles[role]?.mutable &&
                     canDo("manageRoles"))) && (
-                  <PrimaryButton
-                    icon={<IconCheck />}
-                    loading={loading}
-                    onClick={async () => {
-                      setLoading(true);
-                      let res;
-                      if (role) {
-                        const payload = {
-                          name: name,
-                          description: role
-                            ? circle.roles[role]?.description
-                            : `${name} role`,
-                          selfAssignable: false,
-                          permissions,
-                        };
-                        console.log({ payload });
-                        res = await updateRole(circle?.id, role, payload);
-                      } else {
-                        const payload = {
-                          name: name,
-                          description: role
-                            ? circle.roles[role]?.description
-                            : `${name} role`,
-                          selfAssignable: false,
-                          permissions,
-                        };
-                        console.log({ payload });
-                        res = await addRole(circle?.id, payload);
-                      }
-                      console.log({ res });
-                      fetchCircle();
-                      setLoading(false);
-
-                      // reset
-                      setName("");
-                      setPermissions(defaultPermissions);
-                      res && setIsOpen(false);
-                    }}
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    marginTop="8"
+                    justifyContent="flex-end"
+                    alignItems="flex-end"
                   >
-                    Save
-                  </PrimaryButton>
+                    <Box width="48">
+                      <PrimaryButton
+                        icon={<IconCheck />}
+                        loading={loading}
+                        onClick={async () => {
+                          setLoading(true);
+                          let res;
+                          if (role) {
+                            const payload = {
+                              name: name,
+                              description: role
+                                ? circle.roles[role]?.description
+                                : `${name} role`,
+                              selfAssignable: false,
+                              permissions,
+                            };
+                            console.log({ payload });
+                            res = await updateRole(circle?.id, role, payload);
+                          } else {
+                            const payload = {
+                              name: name,
+                              description: role
+                                ? circle.roles[role]?.description
+                                : `${name} role`,
+                              selfAssignable: false,
+                              permissions,
+                            };
+                            console.log({ payload });
+                            res = await addRole(circle?.id, payload);
+                          }
+                          console.log({ res });
+                          fetchCircle();
+                          setLoading(false);
+
+                          // reset
+                          setName("");
+                          setPermissions(defaultPermissions);
+                          res && setIsOpen(false);
+                        }}
+                      >
+                        Save
+                      </PrimaryButton>
+                    </Box>
+                  </Box>
                 )}
               </Stack>
             </Box>

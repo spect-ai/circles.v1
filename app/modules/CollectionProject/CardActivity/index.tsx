@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Avatar from "@/app/common/components/Avatar";
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { timeSince } from "@/app/common/utils/utils";
@@ -6,8 +7,8 @@ import { sendFormComment } from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CollectionActivity, MappedItem, UserType } from "@/app/types";
 import { SendOutlined } from "@ant-design/icons";
-import { Avatar, Box, Button, Stack, Text } from "degen";
-import React, { useState } from "react";
+import { Box, Button, Stack, Text } from "degen";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -47,41 +48,47 @@ export default function CardActivity({
           const actor = getMemberDetails(activity?.ref?.actor?.id) || dataOwner;
           return (
             <Box key={activityId}>
-              <Stack direction="horizontal" align="flex-start" space="2">
-                <Avatar
-                  label=""
-                  placeholder={!actor?.avatar}
-                  src={actor?.avatar}
-                  address={actor?.ethAddress}
-                  size="8"
-                />
+              <Stack direction="vertical" align="flex-start" space="2">
+                <Stack direction="horizontal" align="center" space="2">
+                  <Avatar
+                    label=""
+                    placeholder={!actor?.avatar}
+                    src={
+                      actor?.avatar ||
+                      `https://api.dicebear.com/5.x/thumbs/svg?seed=${actor?.id}`
+                    }
+                    username={actor?.username}
+                    userId={actor?.id}
+                    address={actor?.ethAddress}
+                    size="8"
+                    profile={actor}
+                  />
+                  <Text color="text" weight="semiBold">
+                    <a
+                      href={`/profile/${actor?.username}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {actor?.username}
+                    </a>
+                  </Text>
+                  {!activity.comment && (
+                    <Box>
+                      <Text variant="label">{activity.content}</Text>
+                    </Box>
+                  )}
+                  <Box>
+                    <Text ellipsis size="label" color="textTertiary">
+                      {timeSince(new Date(activity.timestamp))} ago
+                    </Text>
+                  </Box>
+                </Stack>
                 <Stack
                   direction={activity.comment ? "vertical" : "horizontal"}
                   space="2"
                 >
-                  <Stack direction="horizontal">
-                    <Text color="text" weight="semiBold">
-                      <a
-                        href={`/profile/${actor?.username}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {actor?.username}
-                      </a>
-                    </Text>
-                    <Box paddingTop="1">
-                      <Text ellipsis size="label" color="textTertiary">
-                        {timeSince(new Date(activity.timestamp))} ago
-                      </Text>
-                    </Box>
-                  </Stack>
-
-                  {activity.comment ? (
+                  {activity.comment && (
                     <Editor value={activity.content} disabled />
-                  ) : (
-                    <Box marginTop="1">
-                      <Text variant="label">{activity.content}</Text>
-                    </Box>
                   )}
                 </Stack>
               </Stack>
@@ -92,9 +99,15 @@ export default function CardActivity({
           <Avatar
             label=""
             placeholder={!currentUser?.avatar}
-            src={currentUser?.avatar}
+            src={
+              currentUser?.avatar ||
+              `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser?.id}`
+            }
             address={currentUser?.ethAddress}
             size="8"
+            username={currentUser?.username as string}
+            userId={currentUser?.id as string}
+            profile={currentUser as UserType}
           />
           <Box
             width="full"
