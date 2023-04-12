@@ -3,12 +3,14 @@ import { Avatar, Box, Stack, Text } from "degen";
 import { useEffect, useState } from "react";
 import { FaDiscord } from "react-icons/fa";
 import { useLocation } from "react-use";
+import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 
 type Props = {
   setData: (data: any) => void;
   data: any;
   propertyName: string;
   updateRequiredFieldNotSet: (key: string, value: any) => void;
+  showAvatar?: boolean;
 };
 
 export default function DiscordField({
@@ -16,6 +18,7 @@ export default function DiscordField({
   setData,
   propertyName,
   updateRequiredFieldNotSet,
+  showAvatar,
 }: Props) {
   const { hostname } = useLocation();
   const [code, setCode] = useState("");
@@ -36,7 +39,6 @@ export default function DiscordField({
   useEffect(() => {
     (async () => {
       if (!code) return;
-      console.log({ code });
       const res = await fetch(
         `${process.env.BOT_HOST}/api/connectDiscord?code=${code}`
       );
@@ -57,11 +59,13 @@ export default function DiscordField({
     <Box marginTop="4" width="64">
       {data[propertyName] && data[propertyName].id ? (
         <Box borderWidth="0.375" borderRadius="2xLarge" padding="2">
-          <Stack direction="horizontal" align="center">
-            <Avatar
-              label="Discord Avatar"
-              src={`https://cdn.discordapp.com/avatars/${data[propertyName].id}/${data[propertyName].avatar}.png`}
-            />
+          <Stack direction="horizontal" align="center" justify="center">
+            {showAvatar && (
+              <Avatar
+                label="Discord Avatar"
+                src={`https://cdn.discordapp.com/avatars/${data[propertyName].id}/${data[propertyName].avatar}.png`}
+              />
+            )}
             <Box>
               <Text size="extraSmall" font="mono" weight="bold">
                 {data[propertyName].username}
@@ -74,7 +78,9 @@ export default function DiscordField({
           variant="tertiary"
           icon={<FaDiscord size={24} />}
           onClick={async () => {
-            const url = `https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
+            const url = `https://discord.com/api/oauth2/authorize?client_id=${
+              process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID
+            }&redirect_uri=${
               process.env.NODE_ENV === "development"
                 ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
                 : `https%3A%2F%2F${hostname}%2FlinkDiscord`

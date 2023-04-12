@@ -60,6 +60,47 @@ function Editor({
           onSave && onSave(content as string);
         }
       }}
+      embeds={[
+        {
+          title: "YouTube",
+          keywords: "youtube video",
+          icon: () => (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+            >
+              <path d="M0 0h24v24H0z" fill="none" />
+              <path d="M9 16.17V7.83L15.17 12 9 16.17zM15 3H9v2h6v12h2V3z" />
+            </svg>
+          ),
+          matcher: (url) => {
+            if (!url) return false;
+            return url.match(
+              /^https?:\/\/(www\.)?(youtube\.com|youtu\.?be)\/.+/
+            ) as RegExpMatchArray;
+          },
+          component: ({ url }) => {
+            console.log({ url });
+            if (!url) return null;
+            const id = url.match(
+              /^https?:\/\/(www\.)?(youtube\.com|youtu\.?be)\/.+/
+            )?.[0];
+            console.log({ id });
+            return (
+              <iframe
+                width="560"
+                height="315"
+                src={`https://www.youtube.com/embed/${id}`}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            );
+          },
+        },
+      ]}
     />
   );
 }

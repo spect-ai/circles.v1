@@ -96,7 +96,7 @@ export function BasicInfo() {
         <ConnectDiscordButton state={router.asPath} width="full" />
         {!currentUser?.githubId && (
           <Link
-            href={`https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab`}
+            href={`https://github.com/login/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID}`}
           >
             <Button
               data-tour="connect-github-button"

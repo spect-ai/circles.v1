@@ -441,3 +441,116 @@ export const linkDiscord = async (
     )
   ).json();
 };
+
+export const linkDiscordToCollection = async (
+  collectionId: string,
+  payload: {
+    threadName: string;
+    selectedChannel: Option;
+    isPrivate?: boolean;
+    rolesToAdd?: { [key: string]: boolean };
+    stakeholdersToAdd?: string[];
+  }
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/linkDiscordThreadToCollection`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      }
+    )
+  ).json();
+};
+
+export const postFormMessage = async (
+  collectionId: string,
+  payload: {
+    channelId: string;
+  }
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/postFormMessage`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      }
+    )
+  ).json();
+};
+
+export type PostSocialsPayload = {
+  discordId: string;
+  discord?: {
+    id: string;
+    username: string;
+  };
+  telegram?: {
+    id: string;
+    username: string;
+    first_name: string;
+  };
+  github?: {
+    id: string;
+    username: string;
+    name: string;
+  };
+  ethAddress?: string;
+};
+
+export const postSocials = async (
+  channelId: string,
+  payload: PostSocialsPayload
+) => {
+  console.log({ payload });
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${channelId}/saveAndPostSocials`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      }
+    )
+  ).json();
+};
+
+export type PostPaymentPayload = {
+  chain: Option;
+  token: Option;
+  value: string;
+  txnHash: string;
+};
+
+export const postFormPayment = async (
+  channelId: string,
+  payload: PostPaymentPayload,
+  discordId: string
+) => {
+  console.log({ payload });
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${channelId}/saveAndPostPayment?discordId=${discordId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      }
+    )
+  ).json();
+};

@@ -8,6 +8,7 @@ type Props = {
   data: any;
   propertyName: string;
   updateRequiredFieldNotSet: (key: string, value: any) => void;
+  showAvatar?: boolean;
 };
 
 export default function GithubField({
@@ -15,6 +16,7 @@ export default function GithubField({
   setData,
   propertyName,
   updateRequiredFieldNotSet,
+  showAvatar,
 }: Props) {
   const [code, setCode] = useState("");
 
@@ -58,7 +60,12 @@ export default function GithubField({
       {data[propertyName] && data[propertyName].id ? (
         <Box borderWidth="0.375" borderRadius="2xLarge" padding="2">
           <Stack direction="horizontal" align="center">
-            <Avatar label="Github Avatar" src={data[propertyName].avatar_url} />
+            {showAvatar && (
+              <Avatar
+                label="Github Avatar"
+                src={data[propertyName].avatar_url}
+              />
+            )}
             <Box>
               <Text size="extraSmall" font="mono" weight="bold">
                 {data[propertyName].login}

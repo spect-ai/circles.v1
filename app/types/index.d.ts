@@ -12,7 +12,11 @@ export interface UserType {
   discordId?: string;
   discordUsername?: string;
   githubId?: string;
+  githubUsername?: string;
   twitterId?: string;
+  twitterUsername?: string;
+  telegramId?: string;
+  telegramUsername?: string;
   _id: string;
   circles: string[];
   projects: string[];

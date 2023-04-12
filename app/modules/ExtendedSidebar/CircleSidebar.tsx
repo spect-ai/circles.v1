@@ -38,6 +38,7 @@ import InviteMemberModal, {
   CustomButton,
 } from "../Circle/ContributorsModal/InviteMembersModal";
 import { BiBot } from "react-icons/bi";
+import TemplateModal from "../Circle/CircleOverview/FolderView/TemplateModal";
 
 export const Container = styled(Box)<{ subH?: string }>`
   ::-webkit-scrollbar {
@@ -68,6 +69,8 @@ function CircleSidebar() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+  const [templateModalOpen, setTemplateModalOpen] = useState(false);
+
   if (isLoading) {
     return (
       <SkeletonGroup loading>
@@ -111,6 +114,13 @@ function CircleSidebar() {
   return (
     <Box paddingY="2" paddingLeft="3" paddingRight="3">
       <AnimatePresence>
+        {templateModalOpen && (
+          <TemplateModal
+            handleClose={() => {
+              setTemplateModalOpen(false);
+            }}
+          />
+        )}
         {isSettingsModalOpen && (
           <SettingsModal
             handleClose={() => {
@@ -167,7 +177,7 @@ function CircleSidebar() {
           </PrimaryButton>
         )}
 
-        <Container subH="8.1rem">
+        <Container subH="10.6rem">
           <Stack direction="vertical" space="2">
             <Stack direction="horizontal" space="2">
               <Box width="1/2">
@@ -487,6 +497,19 @@ function CircleSidebar() {
           </Stack>
         </Container>
       </Stack>
+      <PrimaryButton
+        variant="tertiary"
+        onClick={() => {
+          process.env.NODE_ENV === "production" &&
+            mixpanel.track("Use template", {
+              circle: circle?.slug,
+              user: currentUser?.username,
+            });
+          setTemplateModalOpen(true);
+        }}
+      >
+        Use a Template
+      </PrimaryButton>
     </Box>
   );
 }

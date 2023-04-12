@@ -31,7 +31,6 @@ function CreateCollectionModal({
   collectionType,
 }: Props) {
   const close = () => setCollectionModal(false);
-  const [templateModalOpen, setTemplateModalOpen] = useState(false);
   const [name, setName] = useState("");
   const router = useRouter();
   const { circle, fetchCircle } = useCircle();
@@ -120,63 +119,41 @@ function CreateCollectionModal({
 
   return (
     <Box>
-      <AnimatePresence>
-        {templateModalOpen && (
-          <TemplateModal
-            handleClose={() => {
-              close();
-            }}
-          />
-        )}
-      </AnimatePresence>
-      {!templateModalOpen && (
-        <Modal
-          handleClose={close}
-          title={
-            collectionType === 0 ? "Create a new form" : "Create a new project"
-          }
-        >
-          <Box width="full" padding="8">
+      <Modal
+        handleClose={close}
+        title={
+          collectionType === 0 ? "Create a new form" : "Create a new project"
+        }
+        size="small"
+      >
+        <Box width="full" padding="8">
+          <Stack>
+            <Input
+              label=""
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  onSubmit();
+                }
+              }}
+            />
             <Stack>
-              <Input
-                label=""
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    onSubmit();
-                  }
-                }}
-              />
-              <Stack>
-                <PrimaryButton
-                  onClick={onSubmit}
-                  disabled={name.length === 0}
-                  loading={loading}
-                >
-                  {collectionType === 0
-                    ? "Create empty form"
-                    : "Create empty project"}
-                </PrimaryButton>
-                <PrimaryButton
-                  onClick={() => {
-                    process.env.NODE_ENV === "production" &&
-                      mixpanel.track("Use template", {
-                        circle: circle?.slug,
-                        user: currentUser?.username,
-                      });
-                    setTemplateModalOpen(true);
-                  }}
-                >
-                  Use a template Instead
-                </PrimaryButton>
-              </Stack>
+              <PrimaryButton
+                onClick={onSubmit}
+                disabled={name.length === 0}
+                loading={loading}
+              >
+                {collectionType === 0
+                  ? "Create empty form"
+                  : "Create empty project"}
+              </PrimaryButton>
             </Stack>
-          </Box>
-        </Modal>
-      )}
+          </Stack>
+        </Box>
+      </Modal>
     </Box>
   );
 }

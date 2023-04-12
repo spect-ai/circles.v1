@@ -1,5 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Text } from "degen";
+import { Box, Stack, Text } from "degen";
 import { FaTelegram } from "react-icons/fa";
 
 type Props = {
@@ -19,11 +19,11 @@ export default function TelegramField({
     <Box marginTop="4" width="64">
       {data[propertyName] && data[propertyName].id ? (
         <Box borderWidth="0.375" borderRadius="2xLarge" padding="2">
-          <Box>
+          <Stack direction="horizontal" align="center" justify="center">
             <Text size="extraSmall" font="mono" weight="bold">
               {data[propertyName].username}
             </Text>
-          </Box>
+          </Stack>
         </Box>
       ) : (
         <PrimaryButton

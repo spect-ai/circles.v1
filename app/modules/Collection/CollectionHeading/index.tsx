@@ -24,6 +24,7 @@ import FormSettings from "../Form/FormSettings";
 import WarnConnectWallet from "./WarnConnectWallet";
 import { PopoverOption } from "../../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
 import ViewPlugins from "../../Plugins/ViewPlugins";
+import { ShareOnDiscord } from "../ShareOnDiscord";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -49,6 +50,7 @@ function CollectionHeading() {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
   const [isWarningOpened, setIsWarningOpened] = useState(false);
+  const [shareOnDiscordOpen, setShareOnDiscordOpen] = useState(false);
 
   const location = useLocation();
 
@@ -286,6 +288,14 @@ function CollectionHeading() {
                     </PopoverOption>
                     <PopoverOption
                       onClick={() => {
+                        setShareOnDiscordOpen(true);
+                        setIsShareOpen(false);
+                      }}
+                    >
+                      Share on Discord
+                    </PopoverOption>
+                    <PopoverOption
+                      onClick={() => {
                         process.env.NODE_ENV === "production" &&
                           mixpanel.track("Form Embed", {
                             collection: collection?.slug,
@@ -359,6 +369,12 @@ function CollectionHeading() {
             onNo={() => {
               setIsWarningOpened(false);
             }}
+          />
+        )}
+        {shareOnDiscordOpen && (
+          <ShareOnDiscord
+            isOpen={shareOnDiscordOpen}
+            setIsOpen={setShareOnDiscordOpen}
           />
         )}
       </AnimatePresence>

@@ -27,10 +27,7 @@ export default function useConnectDiscord() {
             ? undefined
             : data.userData.username + "#" + data.userData.discriminator,
       });
-      const circles = await joinCirclesFromDiscord(
-        data.guildData,
-        data.userData.id
-      );
+
       queryClient.refetchQueries("dashboardCircles");
       if (profileRes) {
         toast("Successfully linked your Discord account", {

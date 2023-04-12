@@ -19,7 +19,9 @@ export default function ConnectDiscordButton({ state, width, type }: Props) {
   return (
     <Link
       href={
-        `https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
+        `https://discord.com/api/oauth2/authorize?client_id=${
+          process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID
+        }&redirect_uri=${
           process.env.NODE_ENV === "development"
             ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
             : `https%3A%2F%2F${hostname}%2FlinkDiscord`
