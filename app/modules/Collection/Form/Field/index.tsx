@@ -12,7 +12,7 @@ import {
   useTheme,
 } from "degen";
 import { useRouter } from "next/router";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import {
   Draggable,
   DraggableProvided,
@@ -71,6 +71,18 @@ function FieldComponent({
     value: member,
   }));
 
+  const [forceRefresh, setForceRefresh] = useState(true);
+
+  useEffect(() => {
+    // force rerender of the editor component when the description changes
+    // this is a hack to get around the fact that the editor component
+    // doesn't rerender when the value prop changes
+    setForceRefresh(false);
+    setTimeout(() => {
+      setForceRefresh(true);
+    }, 100);
+  }, [collection.properties[id]?.description]);
+
   const DraggableContent = (
     provided: DraggableProvided,
     snapshot: DraggableStateSnapshot
@@ -124,9 +136,11 @@ function FieldComponent({
             <IconPencil color="accent" size="4" />
           </Box>
         </Stack>
-        {collection.properties[id]?.description && (
-          <Editor value={collection.properties[id]?.description} disabled />
-        )}
+        <Box>
+          {collection.properties[id]?.description && forceRefresh && (
+            <Editor value={collection.properties[id]?.description} disabled />
+          )}
+        </Box>
       </Stack>
       {collection.properties[id]?.type === "shortText" && (
         <Input
@@ -338,6 +352,7 @@ function FieldComponent({
     mode,
     formData,
     fieldNeedsAttention,
+    forceRefresh,
   ]);
 
   return (
