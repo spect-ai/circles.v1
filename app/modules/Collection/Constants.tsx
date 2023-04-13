@@ -29,6 +29,22 @@ export const fields = [
 
 export const fieldOptionsDropdown = [
   {
+    label: "Suggested",
+    options: [
+      { label: "Discord", value: "discord", icon: getPropertyIcon("discord") },
+      {
+        label: "Ethereum Address",
+        value: "ethAddress",
+        icon: getPropertyIcon("ethAddress"),
+      },
+      {
+        label: "Read Only (new)",
+        value: "readonly",
+        icon: getPropertyIcon("readonly"),
+      },
+    ],
+  },
+  {
     label: "Text",
     options: [
       {

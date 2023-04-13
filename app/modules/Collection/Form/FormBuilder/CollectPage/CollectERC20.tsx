@@ -42,8 +42,6 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
 
   const { address } = useAccount();
 
-  const [loading, setLoading] = useState(true);
-
   const { data: registry, refetch: fetchRegistry } = useQuery<Registry>(
     ["registry", form.parents[0].slug],
     () =>
@@ -296,7 +294,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                 </Text>
               </Stack>
             )}
-          {(preview ||
+          {((preview && form.formMetadata?.surveyTokenId) ||
             (form.formMetadata?.previousResponses?.length > 0 &&
               form.formMetadata?.surveyTokenId &&
               !surveyIsLotteryYetToBeDrawn &&
@@ -370,7 +368,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
               </Stack>
             </Stack>
           )}
-          {(preview ||
+          {((preview && form.formMetadata?.surveyTokenId) ||
             (form.formMetadata?.previousResponses?.length > 0 &&
               form.formMetadata?.surveyTokenId &&
               surveyIsLotteryYetToBeDrawn &&

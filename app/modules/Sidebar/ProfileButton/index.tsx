@@ -5,7 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { SettingOutlined } from "@ant-design/icons";
+import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
 import ProfileModal from "../../Profile/ProfileSettings";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useAtom } from "jotai";
@@ -13,6 +13,7 @@ import {
   isProfilePanelExpandedAtom,
   quickProfileUserAtom,
 } from "@/app/state/global";
+import Link from "next/link";
 
 const Container = styled(Box)<{ mode: string }>`
   cursor: pointer;
@@ -92,6 +93,24 @@ export default function ProfileButton() {
             </Stack>
           </Stack>
         </Container>
+        <Link href="/" passHref>
+          <Button
+            shape="circle"
+            variant="transparent"
+            size="small"
+            onClick={() => {
+              process.env.NODE_ENV === "production" &&
+                mixpanel.track("Home Button", {
+                  user: currentUser?.username,
+                  url: window.location.href,
+                });
+            }}
+          >
+            <Text color="accent">
+              <HomeOutlined style={{ fontSize: "1.3rem" }} />
+            </Text>
+          </Button>
+        </Link>
         <Button
           data-tour="profile-settings-button"
           shape="circle"

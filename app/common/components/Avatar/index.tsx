@@ -59,7 +59,7 @@ export default function ClickableAvatar({
         <Avatar
           label={label}
           src={
-            src || `https://api.dicebear.com/5.x/thumbs/svg?seed=${profile.id}`
+            src || `https://api.dicebear.com/5.x/thumbs/svg?seed=${profile?.id}`
           }
           size={size}
           address={address}

@@ -3,7 +3,7 @@ import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { CoverImage, StampCard } from "@/app/modules/PublicForm";
-import { updateFormCollection } from "@/app/services/Collection";
+import { deleteField, updateFormCollection } from "@/app/services/Collection";
 import { Box, Button, FileInput, Stack, Tag, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo, useCallback, useEffect, useState } from "react";
@@ -16,7 +16,7 @@ import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import Stepper from "@/app/common/components/Stepper";
-import { FormType, GuildRole, Stamp } from "@/app/types";
+import { CollectionType, FormType, GuildRole, Stamp } from "@/app/types";
 import { toast } from "react-toastify";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
@@ -25,6 +25,7 @@ import BuilderStartPage from "./StartPage/Builder";
 import CollectPayment from "@/app/modules/PublicForm/Fields/CollectPayment";
 import SubmittedPage from "./SubmittedPage";
 import { BiLogIn } from "react-icons/bi";
+import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 
 function FormBuilder() {
   const {
@@ -36,6 +37,7 @@ function FormBuilder() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [propertyName, setPropertyName] = useState("");
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
+  const [showConfirmOnDelete, setShowConfirmOnDelete] = useState(false);
 
   const [cover, setCover] = useState(collection.formMetadata?.cover || "");
   const [logo, setLogo] = useState(collection.formMetadata?.logo || "");
@@ -276,7 +278,11 @@ function FormBuilder() {
       );
     } else if (currentPage === "submitted") {
       return (
-        <SubmittedPage form={collection} setCurrentPage={setCurrentPage} />
+        <SubmittedPage
+          form={collection}
+          setCurrentPage={setCurrentPage}
+          preview
+        />
       );
     } else {
       const fields = pages[currentPage]?.properties;
@@ -291,14 +297,30 @@ function FormBuilder() {
                     index={idx}
                     key={field}
                     setIsEditFieldOpen={setIsEditFieldOpen}
+                    setIsAddFieldOpen={setIsAddFieldOpen}
                     setPropertyName={setPropertyName}
                     formData={formData}
                     setFormData={setFormData}
+                    setShowConfirmOnDelete={setShowConfirmOnDelete}
                   />
                 );
               }
             })}
             <Box height="4" />
+            {!fields?.length && (
+              <Stack align="center">
+                <Text variant="label">There are no fields in this page.</Text>
+                <Box width="1/3">
+                  <PrimaryButton
+                    onClick={() => {
+                      setIsAddFieldOpen(true);
+                    }}
+                  >
+                    Add a field
+                  </PrimaryButton>
+                </Box>
+              </Stack>
+            )}
             {provided.placeholder}
           </Box>
           {collection.formMetadata.paymentConfig &&
@@ -369,7 +391,29 @@ function FormBuilder() {
           />
         )}
         {isAddFieldOpen && (
-          <AddField handleClose={() => setIsAddFieldOpen(false)} />
+          <AddField
+            handleClose={() => setIsAddFieldOpen(false)}
+            pageId={currentPage}
+          />
+        )}
+        {showConfirmOnDelete && (
+          <ConfirmModal
+            title="This will remove existing data associated with this field, if you're looking to avoid this please set the field as inactive. Are you sure you want to delete this field?"
+            handleClose={() => setShowConfirmOnDelete(false)}
+            onConfirm={async () => {
+              setShowConfirmOnDelete(false);
+              const res: CollectionType = await deleteField(
+                collection.id,
+                (propertyName as string).trim()
+              );
+              if (res.id) {
+                updateCollection(res);
+              } else {
+                toast.error("Error deleting field");
+              }
+            }}
+            onCancel={() => setShowConfirmOnDelete(false)}
+          />
         )}
       </AnimatePresence>
       <Box
@@ -412,30 +456,33 @@ function FormBuilder() {
         </CoverImageButtonContainer>
         <CoverImage src={cover} backgroundColor="accentSecondary" />
         <Container>
-          <FormContainer
-            backgroundColor="background"
-            borderRadius="2xLarge"
-            padding="8"
-            display="flex"
-            flexDirection="column"
-            style={{
-              minHeight: "calc(100vh - 20rem)",
-            }}
-          >
-            <Stack align="center">
-              <Stepper
-                steps={pageOrder.length}
-                currentStep={pageOrder.indexOf(currentPage)}
-                onStepChange={(step) => {
-                  setCurrentPage(pageOrder[step]);
-                }}
-              />
-              <Box marginBottom="4" />
-            </Stack>
-            <Droppable droppableId="activeFields" type="field">
-              {FieldDraggableCallback}
-            </Droppable>
-          </FormContainer>
+          <Stack direction="horizontal">
+            <FormContainer
+              backgroundColor="background"
+              borderRadius="2xLarge"
+              padding="8"
+              display="flex"
+              flexDirection="column"
+              style={{
+                minHeight: "calc(100vh - 20rem)",
+              }}
+              width="full"
+            >
+              <Stack align="center">
+                <Stepper
+                  steps={pageOrder.length}
+                  currentStep={pageOrder.indexOf(currentPage)}
+                  onStepChange={(step) => {
+                    setCurrentPage(pageOrder[step]);
+                  }}
+                />
+                <Box marginBottom="4" />
+              </Stack>
+              <Droppable droppableId="activeFields" type="field">
+                {FieldDraggableCallback}
+              </Droppable>
+            </FormContainer>
+          </Stack>
         </Container>
       </Box>
     </>
