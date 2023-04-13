@@ -47,52 +47,12 @@ export default function AddOptions({
   return (
     <Box maxHeight="56" overflow="auto">
       <Stack>
-        {collection.collectionType === 0 && (
-          <Stack>
-            <Text variant="label">Settings</Text>
-            <Stack direction="horizontal" align="center" space="2">
-              <input
-                type="checkbox"
-                name={"Settings"}
-                checked={allowCustom}
-                onChange={() => {
-                  setIsDirty && setIsDirty(true);
-                  setAllowCustom(!allowCustom);
-                }}
-                style={{
-                  width: "16px",
-                  height: "16px",
-                  cursor: "pointer",
-                }}
-              />
-              <Text size="small" weight="light">
-                Allow custom answer
-              </Text>
-            </Stack>
-            {multiSelect && (
-              <Box marginTop="-2" marginRight="8">
-                <Input
-                  label=""
-                  type="number"
-                  value={maxSelections}
-                  onChange={(e) => {
-                    setIsDirty && setIsDirty(true);
-                    setMaxSelections(parseInt(e.target.value));
-                  }}
-                  placeholder="Max number of selections allowed"
-                  min={2}
-                  units="max selections"
-                />
-              </Box>
-            )}
-          </Stack>
-        )}
         <Text variant="label">{label}</Text>
         <Box display="flex" flexDirection="row" gap="4" width="full">
-          <Box display="flex" flexDirection="column" gap="4" width="2/3">
+          <Box display="flex" flexDirection="column" gap="4" width="full">
             {fieldOptions.map((option, index) => (
               <Box key={index}>
-                <Stack direction="horizontal" align="center">
+                <Stack direction="horizontal" align="center" space="1">
                   {collection.collectionType === 1 && (
                     <Box
                       style={{
@@ -110,7 +70,6 @@ export default function AddOptions({
                       }}
                     />
                   )}
-
                   <OptionInput
                     autoFocus={index === fieldOptions.length - 1}
                     value={option.label}
@@ -187,6 +146,7 @@ export default function AddOptions({
             </Popover>
           </Box>
         </Box>
+
         {!fieldOptions.length && (
           <Text variant="label">No options added yet</Text>
         )}
@@ -215,12 +175,52 @@ export default function AddOptions({
             </Button>
           </Box>
         )}
+        {collection.collectionType === 0 && (
+          <Stack>
+            <Text variant="label">Settings</Text>
+            <Stack direction="horizontal" align="center" space="2">
+              <input
+                type="checkbox"
+                name={"Settings"}
+                checked={allowCustom}
+                onChange={() => {
+                  setIsDirty && setIsDirty(true);
+                  setAllowCustom(!allowCustom);
+                }}
+                style={{
+                  width: "16px",
+                  height: "16px",
+                  cursor: "pointer",
+                }}
+              />
+              <Text size="small" weight="light">
+                Allow custom answer
+              </Text>
+            </Stack>
+            {multiSelect && (
+              <Box marginTop="-2" marginRight="8">
+                <Input
+                  label=""
+                  type="number"
+                  value={maxSelections}
+                  onChange={(e) => {
+                    setIsDirty && setIsDirty(true);
+                    setMaxSelections(parseInt(e.target.value));
+                  }}
+                  placeholder="Max number of selections allowed"
+                  min={2}
+                  units="max selections"
+                />
+              </Box>
+            )}
+          </Stack>
+        )}
       </Stack>
     </Box>
   );
 }
 
-const OptionInput = styled.input<{ mode: string }>`
+const OptionInput = styled.textarea<{ mode: string }>`
   width: 100%;
   background: transparent;
   border: 0;
@@ -235,6 +235,9 @@ const OptionInput = styled.input<{ mode: string }>`
     props.mode === "dark" ? "rgb(255, 255, 255, 0.8)" : "rgb(20, 20, 20, 0.8)"};
   font-weight: 500;
   padding: 0.1rem;
+
+  resize: none;
+  font-family: "Inter", sans-serif;
 
   :focus {
     background: rgba(255, 255, 255, 0.1);

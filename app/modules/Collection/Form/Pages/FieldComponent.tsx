@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import { smartTrim } from "@/app/common/utils/utils";
 
 type Props = {
   field: string;
@@ -65,7 +66,7 @@ const FieldComponent = ({
               }}
             >
               <Text color="accent">{getPropertyIcon(type, 14)}</Text>
-              <Text variant="label">{field}</Text>
+              <Text variant="label">{smartTrim(field, 30)}</Text>
             </PropertyButton>
             <Stack direction="horizontal" align="center" space="2">
               <Box />

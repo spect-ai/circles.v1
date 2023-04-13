@@ -50,9 +50,7 @@ export default function Messages({ form }: Props) {
           <Text weight="semiBold" color="accent">
             <WalletOutlined />
           </Text>{" "}
-          <Text weight="semiBold">
-            This form requires you to connect your wallet
-          </Text>
+          <Text weight="semiBold">This form requires you to sign in</Text>
         </Box>
       )}
     </Box>

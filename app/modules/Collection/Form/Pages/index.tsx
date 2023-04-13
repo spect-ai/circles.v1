@@ -27,6 +27,7 @@ export default function Pages() {
             Pages
           </Text>
           <PrimaryButton
+            size="extraSmall"
             variant="tertiary"
             onClick={async () => {
               process.env.NODE_ENV === "production" &&

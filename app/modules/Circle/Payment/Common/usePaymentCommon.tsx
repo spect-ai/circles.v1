@@ -297,7 +297,7 @@ export default function usePaymentViewCommon() {
           toast.error(
             "Please login to your wallet and connect it to Spect, wallet might be locked"
           );
-        } else toast.error("Something went wrong");
+        } else toast.error(e.message);
       }
     }
   };

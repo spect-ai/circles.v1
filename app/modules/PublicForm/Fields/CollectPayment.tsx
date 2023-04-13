@@ -84,7 +84,6 @@ export default function CollectPayment({
       paymentConfig.type === "paywall" &&
       circleRegistry
     ) {
-      console.log("here");
       if (token.address === "0x0") {
         const coinGeckoTokenId =
           circleRegistry[selectedNetwork.value].coinGeckoCurrencyId;
@@ -125,14 +124,11 @@ export default function CollectPayment({
     if (!(chain?.id.toString() == selectedNetwork.value)) {
       try {
         switchNetworkAsync &&
-          (await switchNetworkAsync(parseInt(selectedNetwork.value)).catch(
-            (err: any) => {
-              console.log(err.message);
-            }
-          ));
+          (await switchNetworkAsync(parseInt(selectedNetwork.value)));
       } catch (err: any) {
         console.log(err.message);
         toast.error(err.message);
+        throw err;
       }
     }
   };
@@ -367,8 +363,13 @@ export default function CollectPayment({
               icon={<DollarCircleOutlined />}
               variant="secondary"
               onClick={async () => {
-                // Checks if you are on the right network
-                await checkNetwork();
+                try {
+                  // Checks if you are on the right network
+                  await checkNetwork();
+                } catch (err) {
+                  console.log(err);
+                  return;
+                }
                 // Paying via Native Currency
                 if (
                   circleRegistry &&

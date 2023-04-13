@@ -19,7 +19,7 @@ import {
   PropertyType,
 } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
-import { Box, IconTrash, Input, Stack, Text, Textarea } from "degen";
+import { Box, IconTrash, Input, Stack, Text } from "degen";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useCircle } from "../../Circle/CircleContext";
@@ -437,7 +437,6 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
               multiple={false}
               isClearable={false}
             />
-
             {type.value === "singleSelect" || type.value === "multiSelect" ? (
               <AddOptions
                 fieldOptions={fieldOptions}

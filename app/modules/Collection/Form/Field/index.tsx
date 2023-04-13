@@ -3,8 +3,11 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { MemberDetails, Registry, UserType } from "@/app/types";
 import {
   Box,
+  Button,
+  IconDocumentAdd,
   IconPencil,
   IconPlusSmall,
+  IconTrash,
   Input,
   Stack,
   Tag,
@@ -32,26 +35,37 @@ import {
 import SingleSelect from "@/app/modules/PublicForm/Fields/SingleSelect";
 import MultiSelect from "@/app/modules/PublicForm/Fields/MultiSelect";
 import RewardField from "@/app/modules/PublicForm/Fields/RewardField";
+import { motion } from "framer-motion";
+import { updateFormCollection } from "@/app/services/Collection";
+import { toast } from "react-toastify";
 
 type Props = {
   id: string;
   index: number;
   setIsEditFieldOpen: (value: boolean) => void;
+  setIsAddFieldOpen: (value: boolean) => void;
   setPropertyName: (value: string) => void;
   formData: any;
   setFormData: (value: any) => void;
+  setShowConfirmOnDelete: (value: boolean) => void;
 };
 
 function FieldComponent({
   id,
   index,
   setIsEditFieldOpen,
+  setIsAddFieldOpen,
   setPropertyName,
   formData,
   setFormData,
+  setShowConfirmOnDelete,
 }: Props) {
-  const { localCollection: collection, fieldNeedsAttention } =
-    useLocalCollection();
+  const {
+    localCollection: collection,
+    fieldNeedsAttention,
+    updateCollection,
+    setCurrentPage,
+  } = useLocalCollection();
   const [hover, setHover] = useState(false);
   const { mode } = useTheme();
   const router = useRouter();
@@ -95,12 +109,6 @@ function FieldComponent({
       margin="1"
       borderRadius="large"
       isDragging={snapshot.isDragging}
-      onMouseEnter={() => {
-        setHover(true);
-      }}
-      onMouseLeave={() => {
-        setHover(false);
-      }}
       mode={mode}
     >
       <Stack direction="vertical" space="1">
@@ -356,9 +364,113 @@ function FieldComponent({
   ]);
 
   return (
-    <Draggable draggableId={id} index={index}>
-      {DraggableContentCallback}
-    </Draggable>
+    <Box
+      onMouseEnter={() => {
+        setHover(true);
+      }}
+      onMouseLeave={() => {
+        setHover(false);
+      }}
+    >
+      <Stack direction="horizontal">
+        <Box width="full">
+          <Draggable draggableId={id} index={index}>
+            {DraggableContentCallback}
+          </Draggable>
+        </Box>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: hover ? 1 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Box
+            backgroundColor="accentSecondary"
+            height="fit"
+            padding="1"
+            borderRadius="2xLarge"
+            marginTop="1"
+          >
+            <Stack space="3">
+              <Button
+                shape="circle"
+                size="extraSmall"
+                variant="transparent"
+                onClick={() => {
+                  setIsAddFieldOpen(true);
+                }}
+              >
+                <Text color="accent">
+                  <IconPlusSmall size="5" />
+                </Text>
+              </Button>
+              <Button
+                shape="circle"
+                size="extraSmall"
+                variant="transparent"
+                onClick={async () => {
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Add Page", {
+                      collection: collection.slug,
+                      circle: collection.parents[0].slug,
+                      user: currentUser?.username,
+                    });
+                  const pageOrder = collection.formMetadata.pageOrder;
+                  const lastIndex = collection.formMetadata.pages["collect"]
+                    ? pageOrder.length - 2
+                    : pageOrder.length - 1;
+                  const newPageId = `page-${lastIndex + 1}`;
+                  const res = await updateFormCollection(collection.id, {
+                    ...collection,
+                    formMetadata: {
+                      ...collection.formMetadata,
+                      pageOrder: [
+                        ...pageOrder.slice(0, lastIndex),
+                        newPageId,
+                        ...pageOrder.slice(lastIndex),
+                      ],
+                      pages: {
+                        ...collection.formMetadata.pages,
+                        [newPageId]: {
+                          id: newPageId,
+                          name: "New Page",
+                          properties: [],
+                          movable: true,
+                        },
+                      },
+                    },
+                  });
+                  setCurrentPage(newPageId);
+                  if (res.id) {
+                    updateCollection(res);
+                  } else {
+                    toast.error(
+                      "Error updating collection, refresh and try again"
+                    );
+                  }
+                }}
+              >
+                <Text color="accent">
+                  <IconDocumentAdd size="5" />
+                </Text>
+              </Button>
+              <Button
+                shape="circle"
+                size="extraSmall"
+                variant="transparent"
+                onClick={() => {
+                  setPropertyName(id);
+                  setShowConfirmOnDelete(true);
+                }}
+              >
+                <Text color="red">
+                  <IconTrash size="5" />
+                </Text>
+              </Button>
+            </Stack>
+          </Box>
+        </motion.div>
+      </Stack>
+    </Box>
   );
 }
 

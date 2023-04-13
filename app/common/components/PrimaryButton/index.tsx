@@ -18,6 +18,7 @@ interface Props {
   tourId?: string;
   suffix?: ReactNodeNoStrings;
   center?: boolean;
+  size?: "extraSmall" | "small" | "medium" | "large";
 }
 
 export const slide = {
@@ -62,6 +63,7 @@ const PrimaryButton: FC<Props> = ({
   suffix,
   tourId,
   center = false,
+  size = "small",
 }) => {
   return (
     <motion.div
@@ -77,7 +79,7 @@ const PrimaryButton: FC<Props> = ({
         disabled={disabled}
         loading={loading}
         width="full"
-        size="extraSmall"
+        size={size}
         variant={variant}
         prefix={icon}
         onClick={onClick}

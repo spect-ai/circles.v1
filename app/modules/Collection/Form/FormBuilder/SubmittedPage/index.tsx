@@ -11,6 +11,7 @@ type Props = {
   setCurrentPage: (page: string) => void;
   setUpdateResponse?: (updateResponse: boolean) => void;
   setSubmitted?: (submitted: boolean) => void;
+  preview?: boolean;
 };
 
 const SubmittedPage = ({
@@ -19,6 +20,7 @@ const SubmittedPage = ({
   setUpdateResponse,
   setData,
   setSubmitted,
+  preview,
 }: Props) => {
   const { mode } = useTheme();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -38,59 +40,61 @@ const SubmittedPage = ({
           {form.formMetadata.messageOnSubmission}
         </Text>
         <Box marginBottom="8" />
-        <Stack>
-          {/* <Image src="/spectDemo.gif" width="1727" height="1082" /> */}
-          <img
-            src="https://bafybeicot4vgylc7gimu5bzo7megpeo5po3ybp6lov3wft24b666wxzfh4.ipfs.w3s.link/spectDemoCompressed.gif"
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          />
-          <Stack align={"center"}>
-            <Text variant="label" align="center">
-              Powered By
-            </Text>
-            <a
-              href="https://spect.network/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {mode == "dark" ? (
-                <Image
-                  src={"/logo2.svg"}
-                  alt="dark-mode-logo"
-                  height={"35"}
-                  width="138"
-                />
-              ) : (
-                <Image
-                  src={"/logo1.svg"}
-                  alt="light-mode-logo"
-                  height={"35"}
-                  width="138"
-                />
-              )}
-            </a>{" "}
-            <Text variant="large" align="center">
-              💪 Powerful Web3 Forms, Projects and Automations 🤝
-            </Text>
-            <a href="/" target="_blank">
-              <PrimaryButton
-                onClick={() => {
-                  process.env.NODE_ENV === "production" &&
-                    mixpanel.track("Create your own form", {
-                      form: form?.name,
-                      sybilEnabled: form?.formMetadata.sybilProtectionEnabled,
-                      user: currentUser?.username,
-                    });
-                }}
+        {!preview && (
+          <Stack>
+            {/* <Image src="/spectDemo.gif" width="1727" height="1082" /> */}
+            <img
+              src="https://bafybeicot4vgylc7gimu5bzo7megpeo5po3ybp6lov3wft24b666wxzfh4.ipfs.w3s.link/spectDemoCompressed.gif"
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+            />
+            <Stack align={"center"}>
+              <Text variant="label" align="center">
+                Powered By
+              </Text>
+              <a
+                href="https://spect.network/"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                Build With Spect
-              </PrimaryButton>
-            </a>
+                {mode == "dark" ? (
+                  <Image
+                    src={"/logo2.svg"}
+                    alt="dark-mode-logo"
+                    height={"35"}
+                    width="138"
+                  />
+                ) : (
+                  <Image
+                    src={"/logo1.svg"}
+                    alt="light-mode-logo"
+                    height={"35"}
+                    width="138"
+                  />
+                )}
+              </a>{" "}
+              <Text variant="large" align="center">
+                💪 Powerful Web3 Forms, Projects and Automations 🤝
+              </Text>
+              <a href="/" target="_blank">
+                <PrimaryButton
+                  onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Create your own form", {
+                        form: form?.name,
+                        sybilEnabled: form?.formMetadata.sybilProtectionEnabled,
+                        user: currentUser?.username,
+                      });
+                  }}
+                >
+                  Build With Spect
+                </PrimaryButton>
+              </a>
+            </Stack>
           </Stack>
-        </Stack>
+        )}
       </Stack>
       <Box
         width="full"

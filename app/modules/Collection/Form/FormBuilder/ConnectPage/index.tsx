@@ -2,7 +2,7 @@ import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import Logout from "@/app/common/components/LogoutButton";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { StampCard } from "@/app/modules/PublicForm";
-import { getUser } from "@/app/modules/PublicForm/FormFields";
+import { NameInput, getUser } from "@/app/modules/PublicForm/FormFields";
 import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import { getForm } from "@/app/services/Collection";
 import {
@@ -17,7 +17,7 @@ import {
   Stamp,
   UserType,
 } from "@/app/types";
-import { Box, Button, Stack, Tag, Text, useTheme } from "degen";
+import { Avatar, Box, Button, Stack, Tag, Text, useTheme } from "degen";
 import { motion } from "framer-motion";
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
@@ -26,6 +26,7 @@ import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import ProfileInfo from "./ProfileInfo";
+import Editor from "@/app/common/components/Editor";
 
 type Props = {
   form: CollectionType;
@@ -122,9 +123,24 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
       justifyContent="space-between"
       overflow="auto"
     >
-      {currentUser?.id && (
+      {currentUser?.id ? (
         <Stack align="center">
           <ProfileInfo member={currentUser} />
+        </Stack>
+      ) : (
+        <Stack space="2">
+          {form.formMetadata.logo && (
+            <Avatar src={form.formMetadata.logo} label="" size="20" />
+          )}
+          <NameInput
+            autoFocus
+            value={form.name}
+            disabled
+            rows={Math.floor(form.name?.length / 20) + 1}
+          />
+          {form.description && (
+            <Editor value={form.description} isDirty={true} disabled />
+          )}
         </Stack>
       )}
       <motion.div

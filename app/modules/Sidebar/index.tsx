@@ -136,24 +136,6 @@ function Sidebar(): ReactElement {
                 <IconMenu size="5" />
               </Text>
             </Button>
-            <Link href="/" passHref>
-              <Button
-                shape="circle"
-                variant="transparent"
-                size="small"
-                onClick={() => {
-                  process.env.NODE_ENV === "production" &&
-                    mixpanel.track("Home Button", {
-                      user: currentUser?.username,
-                      url: window.location.href,
-                    });
-                }}
-              >
-                <Text color="accent">
-                  <HomeOutlined style={{ fontSize: "1.3rem" }} />
-                </Text>
-              </Button>
-            </Link>
           </Stack>
         </Box>
         {!isLoading && (
