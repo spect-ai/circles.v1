@@ -26,42 +26,42 @@ import { MdAddLink, MdOutlineAttachMoney } from "react-icons/md";
 export const getPropertyIcon = (type: PropertyType, size?: number) => {
   switch (type) {
     case "shortText":
-      return <BiText size={size || 24} />;
+      return <BiText size={size || 20} />;
     case "longText":
-      return <BsTextParagraph size={size || 24} />;
+      return <BsTextParagraph size={size || 20} />;
     case "number":
-      return <AiOutlineNumber size={size || 24} />;
+      return <AiOutlineNumber size={size || 20} />;
     case "singleSelect":
-      return <BsUiRadiosGrid size={size || 24} />;
+      return <BsUiRadiosGrid size={size || 20} />;
     case "multiSelect":
-      return <AiOutlineCheckSquare size={size || 24} />;
+      return <AiOutlineCheckSquare size={size || 20} />;
     case "singleURL":
-      return <AiOutlineLink size={size || 24} />;
+      return <AiOutlineLink size={size || 20} />;
     case "multiURL":
-      return <MdAddLink size={size || 24} />;
+      return <MdAddLink size={size || 20} />;
     case "user":
-      return <FaUser size={size || 24} />;
+      return <FaUser size={size || 20} />;
     case "user[]":
-      return <FaUserFriends size={size || 24} />;
+      return <FaUserFriends size={size || 20} />;
     case "email":
-      return <AiOutlineMail size={size || 24} />;
+      return <AiOutlineMail size={size || 20} />;
     case "ethAddress":
-      return <FaEthereum size={size || 24} />;
+      return <FaEthereum size={size || 20} />;
     case "date":
-      return <BsFillCalendarDateFill size={size || 24} />;
+      return <BsFillCalendarDateFill size={size || 20} />;
     case "reward":
-      return <MdOutlineAttachMoney size={size || 24} />;
+      return <MdOutlineAttachMoney size={size || 20} />;
     case "milestone":
-      return <BsConeStriped size={size || 24} />;
+      return <BsConeStriped size={size || 20} />;
     case "discord":
-      return <FaDiscord size={size || 24} />;
+      return <FaDiscord size={size || 20} />;
     case "telegram":
-      return <FaTelegram size={size || 24} />;
+      return <FaTelegram size={size || 20} />;
     case "github":
-      return <FaGithub size={size || 24} />;
+      return <FaGithub size={size || 20} />;
     case "readonly":
-      return <AiOutlineRead size={size || 24} />;
+      return <AiOutlineRead size={size || 20} />;
     default:
-      return <BiAperture size={size || 24} />;
+      return <BiAperture size={size || 20} />;
   }
 };

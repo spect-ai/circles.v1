@@ -162,6 +162,7 @@ export default function DataDrawer({
                   {collection.propertyOrder.map((propertyName: string) => {
                     const property = collection.properties[propertyName];
                     if (property.isPartOfFormView === false) return null;
+                    if (property.type === "readonly") return null;
                     if (!data[property.id || property.name])
                       return (
                         <Stack key={property.name} space="1">

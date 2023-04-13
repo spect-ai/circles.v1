@@ -33,7 +33,7 @@
     "chart.js": "^3.9.1",
     "csvtojson": "^2.0.10",
     "d3": "^7.7.0",
-    "degen": "^0.0.118",
+    "degen": "^0.0.129",
     "did-session": "^1.0.0",
     "ethers": "^5.7.1",
     "export-to-csv": "^0.2.1",

@@ -26,7 +26,7 @@ function FormSettings() {
     <Box>
       <Button
         shape="circle"
-        size="small"
+        size="extraSmall"
         variant="secondary"
         center
         onClick={() => {
@@ -44,7 +44,7 @@ function FormSettings() {
           }
         }}
       >
-        <IconCog />
+        <IconCog size="5" />
       </Button>
       <AnimatePresence>
         {isOpen && (

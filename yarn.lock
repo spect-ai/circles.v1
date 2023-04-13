@@ -8640,10 +8640,10 @@ define-property@^2.0.2:
     is-descriptor "^1.0.2"
     isobject "^3.0.1"
 
-degen@^0.0.118:
-  version "0.0.118"
-  resolved "https://registry.yarnpkg.com/degen/-/degen-0.0.118.tgz#d19d86493fc9c73c1c9ffdc8626f6fdebdecf8d9"
-  integrity sha512-RIsA0KI8LQFPF6G/A0n4AHEz4h2v4NS3BZg2aUu9q7IDzrej6fn0k8LabN7VPpp1d/M8+qzLuU+iK0i07uzSkw==
+degen@^0.0.129:
+  version "0.0.129"
+  resolved "https://registry.yarnpkg.com/degen/-/degen-0.0.129.tgz#76be881d5ffc27b3d55ed2f8387b30e15da7e660"
+  integrity sha512-yom0xnc56kTFkODFhYy5POiwSOvrmA8jOpiF2mUxdQ9kP3bBLz/1ejiaiGi3lxKAHNHZQlWt6qrrMrqXQ8KrKA==
   dependencies:
     "@vanilla-extract/css" "^1.6.3"
     "@vanilla-extract/css-utils" "^0.1.1"

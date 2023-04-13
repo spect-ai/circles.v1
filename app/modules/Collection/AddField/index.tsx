@@ -405,6 +405,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
                 borderWidth="0.375"
                 id="editorContainer"
                 padding="4"
+                key={type.value}
               >
                 <Editor
                   value={description}

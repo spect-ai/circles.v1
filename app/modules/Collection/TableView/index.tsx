@@ -365,6 +365,7 @@ export default function TableView() {
     collection.propertyOrder
       .filter((prop) => prop !== "__cardStatus__")
       .filter((prop) => !!collection.properties[prop])
+      .filter((prop) => collection.properties[prop].type !== "readonly")
       .map((propertyName: string) => {
         const property = collection.properties[propertyName];
         if (property.id === "__ceramic__") {
