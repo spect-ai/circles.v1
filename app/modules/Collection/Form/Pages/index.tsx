@@ -37,7 +37,6 @@ export default function Pages() {
                   circle: collection.parents[0].slug,
                   user: currentUser?.username,
                 });
-              throw new Error("test");
               const pageOrder = collection.formMetadata.pageOrder;
               const lastIndex = collection.formMetadata.pages["collect"]
                 ? pageOrder.length - 2

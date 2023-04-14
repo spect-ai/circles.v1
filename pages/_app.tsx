@@ -329,25 +329,25 @@ function MyApp({ Component, pageProps }: AppProps) {
             <ThemeProvider defaultAccent="purple" defaultMode="dark">
               <QueryClientProvider client={queryClient}>
                 <Hydrate state={pageProps}>
-                  <ErrorBoundary
-                    fallback={ErrorFallBack}
-                    showDialog
-                    dialogOptions={{
-                      title: "Oops!",
-                    }}
-                  >
-                    <ApolloProvider client={client}>
+                  <ApolloProvider client={client}>
+                    <ErrorBoundary
+                      fallback={ErrorFallBack}
+                      showDialog
+                      dialogOptions={{
+                        title: "Oops!",
+                      }}
+                    >
                       <Component {...pageProps} canonical={url} key={url} />
-                      <AnimatePresence>
-                        {isScribeOpen && (
-                          <ScribeEmbed
-                            handleClose={() => setIsScribeOpen(false)}
-                            src={scribeUrl}
-                          />
-                        )}
-                      </AnimatePresence>
-                    </ApolloProvider>
-                  </ErrorBoundary>
+                    </ErrorBoundary>
+                    <AnimatePresence>
+                      {isScribeOpen && (
+                        <ScribeEmbed
+                          handleClose={() => setIsScribeOpen(false)}
+                          src={scribeUrl}
+                        />
+                      )}
+                    </AnimatePresence>
+                  </ApolloProvider>
                 </Hydrate>
               </QueryClientProvider>
             </ThemeProvider>
