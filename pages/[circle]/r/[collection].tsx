@@ -86,7 +86,7 @@ const CollectionPage: NextPage = () => {
       <CircleContext.Provider value={circlecontext}>
         <LocalCollectionContext.Provider value={context}>
           <PublicLayout>
-            <Collection key={colId as string} />
+            <Collection key={(colId as any).asdas.dasda as string} />
           </PublicLayout>
         </LocalCollectionContext.Provider>
       </CircleContext.Provider>
