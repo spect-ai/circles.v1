@@ -86,7 +86,9 @@ export default function PublicField({
             {`This field is of type ${form.properties[propertyName].type}`}
           </Text>
         )}
-        <Editor value={form.properties[propertyName]?.description} disabled />
+        {form.properties[propertyName]?.description && (
+          <Editor value={form.properties[propertyName].description} disabled />
+        )}
       </Stack>
       {form.properties[propertyName]?.type === "shortText" && (
         <Input
