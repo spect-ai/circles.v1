@@ -81,9 +81,7 @@ export function Collection() {
           </Box>
         </Stack>
       )}
-      {(collection.collectionType as any).adsdas.dsadad === 1 && (
-        <CollectionProject />
-      )}
+      {collection.collectionType === 1 && <CollectionProject />}
       <Help setFaqOpen={setFaqOpen} />
     </>
   );
