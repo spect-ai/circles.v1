@@ -333,9 +333,9 @@ function MyApp({ Component, pageProps }: AppProps) {
                     <ErrorBoundary
                       fallback={ErrorFallBack}
                       showDialog
-                      dialogOptions={{
-                        title: "Oops!",
-                      }}
+                      // dialogOptions={{
+                      //   title: "Oops!",
+                      // }}
                     >
                       <Component {...pageProps} canonical={url} key={url} />
                     </ErrorBoundary>

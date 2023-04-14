@@ -20,7 +20,7 @@ const DesktopContainer = styled(Box)`
 `;
 
 export default function ErrorFallBack({ error }: Props) {
-  const { mode } = useTheme();
+  // const { mode } = useTheme();
   const href =
     process.env.NODE_ENV === "production"
       ? "https://circles.spect.network"
@@ -28,7 +28,7 @@ export default function ErrorFallBack({ error }: Props) {
   console.log(error.message);
   return (
     <DesktopContainer
-      backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
+      backgroundColor={"backgroundSecondary"}
       id="Error screen"
       position={"relative"}
     >
