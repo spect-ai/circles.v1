@@ -32,13 +32,13 @@ export function Collection() {
     else setView(0);
   }, [responses]);
 
-  if ((collection as any).guacamole.guacamole) {
-    return <SkeletonLoader />;
-  }
-
-  // if (!collection?.id && loading) {
+  // if ((collection as any).guacamole.guacamole) {
   //   return <SkeletonLoader />;
   // }
+
+  if (!collection?.id && loading) {
+    return <SkeletonLoader />;
+  }
 
   return (
     <>
