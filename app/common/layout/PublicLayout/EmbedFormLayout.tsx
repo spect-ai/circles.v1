@@ -13,6 +13,7 @@ import {
   socketAtom,
 } from "@/app/state/global";
 import { io } from "socket.io-client";
+import { H } from "highlight.run";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -123,6 +124,18 @@ function EmbedLayout(props: PublicLayoutProps) {
       socket.emit("join", connectedUser);
     }
   }, [connectedUser, socket]);
+
+  useEffect(() => {
+    if (currentUser) {
+      process.env.NODE_ENV === "production" &&
+        H.identify(currentUser.username || "", {
+          id: currentUser.id,
+          email: currentUser.email,
+          discord: currentUser.discordId || "",
+          ethAddress: currentUser.ethAddress || "",
+        });
+    }
+  }, [currentUser]);
 
   return (
     <DesktopContainer backgroundColor="transparent" id="public-layout">

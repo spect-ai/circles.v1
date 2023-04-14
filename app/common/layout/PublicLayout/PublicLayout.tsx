@@ -23,6 +23,7 @@ import {
 } from "@/app/state/global";
 import { useAtom } from "jotai";
 import { useAccount, useConnect } from "wagmi";
+import { H } from "highlight.run";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -172,6 +173,18 @@ function PublicLayout(props: PublicLayoutProps) {
       socket.emit("join", connectedUser);
     }
   }, [connectedUser, socket]);
+
+  useEffect(() => {
+    if (currentUser) {
+      process.env.NODE_ENV === "production" &&
+        H.identify(currentUser.username || "", {
+          id: currentUser.id,
+          email: currentUser.email,
+          discord: currentUser.discordId || "",
+          ethAddress: currentUser.ethAddress || "",
+        });
+    }
+  }, [currentUser]);
 
   if (isLoading || loading)
     return (

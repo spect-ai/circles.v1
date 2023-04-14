@@ -1,3 +1,5 @@
+import { H } from "highlight.run";
+
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 export const reorder = (
   list: string[],
@@ -148,4 +150,8 @@ export const convertToId = (text: string) => {
     .toLowerCase()
     .replace(/ /g, "_")
     .replace(/[^\w-]+/g, "");
+};
+
+export const trackError = (error: string) => {
+  process.env.NODE_ENV === "production" && H.consumeError(new Error(error));
 };

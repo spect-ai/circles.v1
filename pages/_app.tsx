@@ -38,7 +38,6 @@ import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import queryClient from "@/app/common/utils/queryClient";
 import { useEffect } from "react";
-import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallBack from "@/app/common/components/Error";
 import * as gtag from "../lib/gtag";
 
@@ -71,6 +70,8 @@ import {
 import { ArcanaConnector } from "@arcana/auth-wagmi";
 import { metaMaskWallet, rainbowWallet } from "@rainbow-me/rainbowkit/wallets";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
+import { H } from "highlight.run";
+import { ErrorBoundary } from "@highlight-run/react";
 
 const ArcanaRainbowConnector = ({ chains }: any) => {
   return {
@@ -179,6 +180,15 @@ const wagmiClient = createClient({
   connectors: connectors(chains),
   provider,
 });
+
+process.env.NODE_ENV === "production" &&
+  H.init("neyjm1e4", {
+    tracingOrigins: true,
+    networkRecording: {
+      enabled: true,
+      recordHeadersAndBody: true,
+    },
+  });
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -319,7 +329,13 @@ function MyApp({ Component, pageProps }: AppProps) {
             <ThemeProvider defaultAccent="purple" defaultMode="dark">
               <QueryClientProvider client={queryClient}>
                 <Hydrate state={pageProps}>
-                  <ErrorBoundary FallbackComponent={ErrorFallBack}>
+                  <ErrorBoundary
+                    fallback={ErrorFallBack}
+                    showDialog
+                    dialogOptions={{
+                      title: "Oops!",
+                    }}
+                  >
                     <ApolloProvider client={client}>
                       <Component {...pageProps} canonical={url} key={url} />
                       <AnimatePresence>

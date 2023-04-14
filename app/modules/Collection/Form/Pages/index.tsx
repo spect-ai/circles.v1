@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import mixpanel from "mixpanel-browser";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
+import { trackError } from "@/app/common/utils/utils";
 
 export default function Pages() {
   const { localCollection: collection, updateCollection } =
@@ -42,7 +43,7 @@ export default function Pages() {
                 : pageOrder.length - 1;
               console.log(lastIndex);
               const newPageId = `page-${lastIndex + 1}`;
-              const res = await updateFormCollection(collection.id, {
+              const res = await updateFormCollection(null as any, {
                 ...collection,
                 formMetadata: {
                   ...collection.formMetadata,
@@ -66,6 +67,7 @@ export default function Pages() {
                 updateCollection(res);
               } else {
                 toast.error("Error updating collection, refresh and try again");
+                trackError("Error when adding new page");
               }
             }}
           >

@@ -16,6 +16,7 @@ import {
 } from "@/app/state/global";
 import { io } from "socket.io-client";
 import { useAccount, useConnect } from "wagmi";
+import { H } from "highlight.run";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -133,6 +134,10 @@ function PublicLayout(props: PublicLayoutProps) {
   const { connect, connectors } = useConnect();
   const { address } = useAccount();
 
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
+
   useEffect(() => {
     if (!address && connectedUser) {
       const connectorId = localStorage.getItem("connectorId");
@@ -140,6 +145,18 @@ function PublicLayout(props: PublicLayoutProps) {
       connect({ connector: connectors.find((c) => c.id === connectorId) });
     }
   }, [address, connectedUser]);
+
+  useEffect(() => {
+    if (currentUser) {
+      process.env.NODE_ENV === "production" &&
+        H.identify(currentUser.username || "", {
+          id: currentUser.id,
+          email: currentUser.email,
+          discord: currentUser.discordId || "",
+          ethAddress: currentUser.ethAddress || "",
+        });
+    }
+  }, [currentUser]);
 
   return (
     <DesktopContainer backgroundColor="backgroundSecondary" id="public-layout">
