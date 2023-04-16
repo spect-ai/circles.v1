@@ -27,9 +27,14 @@ const Input = styled.input`
 type Props = {
   networks?: Registry;
   setNetworks: React.Dispatch<React.SetStateAction<Registry | undefined>>;
+  setIsDirty?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function MilestoneOptions({ networks, setNetworks }: Props) {
+export default function MilestoneOptions({
+  networks,
+  setNetworks,
+  setIsDirty,
+}: Props) {
   const [title, setTitle] = useState(true);
   const [description, setDescription] = useState(true);
   const [dueDate, setDueDate] = useState(true);
@@ -80,7 +85,11 @@ export default function MilestoneOptions({ networks, setNetworks }: Props) {
           />
         </Box>
       </Stack>
-      <RewardTokenOptions networks={networks} setNetworks={setNetworks} />
+      <RewardTokenOptions
+        networks={networks}
+        setNetworks={setNetworks}
+        setIsDirty={setIsDirty}
+      />
     </Box>
   );
 }
