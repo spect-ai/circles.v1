@@ -1,5 +1,6 @@
 import { PassportStampIcons } from "@/app/assets";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { logError } from "@/app/common/utils/utils";
 import { getPoap } from "@/app/services/Poap";
 import { CollectionType, POAPEventType } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
@@ -200,13 +201,13 @@ export default function CollectPoap({
                               "All POAPs have been claimed for this form, please ask the form creator to request more"
                             );
                           else
-                            toast.error(
-                              "Something went wrong, please try again later"
+                            logError(
+                              "Something went wrong in claiming POAP, please try again later"
                             );
                         }
                       } catch (e: any) {
-                        toast.error(
-                          "Something went wrong, please try again later"
+                        logError(
+                          "Something went wrong in claiming POAP, please try again later"
                         );
                       }
 

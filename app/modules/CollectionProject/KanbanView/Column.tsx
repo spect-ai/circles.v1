@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import ClickableAvatar from "@/app/common/components/Avatar";
-import { smartTrim } from "@/app/common/utils/utils";
+import { logError, smartTrim } from "@/app/common/utils/utils";
 import { updateField } from "@/app/services/Collection";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { Option, UserType } from "@/app/types";
@@ -70,7 +70,7 @@ export default function Column({
                 ),
               });
               if (res.id) updateCollection(res);
-              else toast.error("Error renaming column");
+              else logError("Error renaming column");
             }}
             disabled={column.value === "__unassigned__"}
           />

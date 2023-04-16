@@ -5,6 +5,7 @@ import { Box } from "degen";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   handleClose: () => void;
@@ -32,8 +33,7 @@ export default function GoogleCaptcha({ handleClose }: Props) {
                 },
               });
               if (res.id) updateCollection(res);
-              else
-                toast.error("Error updating collection, refresh and try again");
+              else logError("Error updating collection");
               handleClose();
               setLoading(false);
             }}

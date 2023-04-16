@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import { Archive as ArchiveIcon } from "react-feather";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {};
 
@@ -39,7 +40,7 @@ export default function Archive({}: Props) {
                   setIsConfirmOpen(false);
                   void router.push(`/${router.query.circle}`);
                 } else {
-                  toast.error("Error archiving");
+                  logError("Error archiving collection");
                 }
               });
             }}

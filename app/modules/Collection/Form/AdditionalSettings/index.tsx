@@ -10,6 +10,7 @@ import { Tooltip } from "react-tippy";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import { logError } from "@/app/common/utils/utils";
 
 const Input = styled.input`
   background-color: transparent;
@@ -94,7 +95,7 @@ export function AdditionalSettings() {
                   });
 
                   if (res.id) updateCollection(res);
-                  else toast.error("Something went wrong");
+                  else logError("Update collection failed");
                 }
               }}
             />
@@ -119,7 +120,7 @@ export function AdditionalSettings() {
                     },
                   });
                   if (res.id) updateCollection(res);
-                  else toast.error("Something went wrong");
+                  else logError("Update collection failed");
                 }
               }}
             />
@@ -199,7 +200,7 @@ export function AdditionalSettings() {
                     },
                   });
                   if (res.id) updateCollection(res);
-                  else toast.error("Something went wrong");
+                  else logError("Update collection failed");
                 }
               }}
             />

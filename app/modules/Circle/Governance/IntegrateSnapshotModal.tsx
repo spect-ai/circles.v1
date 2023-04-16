@@ -8,6 +8,7 @@ import { Box, Input, Text } from "degen";
 import { useCircle } from "../CircleContext";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { toast } from "react-toastify";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   handleClose: () => void;
@@ -37,7 +38,7 @@ export default function IntegrateSnapshotModal({ handleClose }: Props) {
     if (res) {
       setCircleData(res);
       handleClose();
-    } else toast.error("Error adding snapshot url");
+    } else logError("Error adding snapshot url");
   };
 
   return (

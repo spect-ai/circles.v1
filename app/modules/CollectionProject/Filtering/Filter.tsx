@@ -9,6 +9,7 @@ import { Hidden } from "react-grid-system";
 import { toast } from "react-toastify";
 import AddConditions from "../../Collection/Common/AddConditions";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import { logError } from "@/app/common/utils/utils";
 
 function Filter() {
   const {
@@ -90,7 +91,7 @@ function Filter() {
                   updateCollection(res);
                 })
                 .catch(() => {
-                  toast.error("Error updating filters");
+                  logError("Error updating filters");
                 });
             }}
           >

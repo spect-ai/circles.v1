@@ -6,6 +6,7 @@ import { SafeTransactionDataPartial } from "@gnosis.pm/safe-core-sdk-types";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import { fetchSigner } from "@wagmi/core";
+import { logError } from "@/app/common/utils/utils";
 
 export async function getUserSafes(chainId: string) {
   const safeOwner = await fetchSigner();
@@ -27,7 +28,7 @@ export async function getUserSafes(chainId: string) {
     return safes;
   } catch (e) {
     console.log(e);
-    toast.error("Failed to fetch safes on the provided chain");
+    logError("Failed to fetch safes on the provided chain");
   }
 }
 

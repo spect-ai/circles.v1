@@ -23,6 +23,7 @@ import {
   quickProfileUserAtom,
   socketAtom,
 } from "@/app/state/global";
+import { logError } from "@/app/common/utils/utils";
 
 export const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -179,7 +180,7 @@ function Sidebar(): ReactElement {
                   }
                 })().catch((err) => {
                   console.error(err);
-                  toast.error(
+                  logError(
                     "Something went wrong while updating unread notifications"
                   );
                 });

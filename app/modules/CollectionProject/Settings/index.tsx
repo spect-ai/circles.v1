@@ -11,6 +11,7 @@ import { useLocalCollection } from "../../Collection/Context/LocalCollectionCont
 import Archive from "./Archive";
 import General from "./General";
 import Payments from "./Payments";
+import { logError } from "@/app/common/utils/utils";
 
 export default function Settings() {
   const [isOpen, setIsOpen] = useState(false);
@@ -81,10 +82,10 @@ export default function Settings() {
                 .then((res) => {
                   console.log({ res });
                   if (res.id) updateCollection(res);
-                  else toast.error("Error updating collection name");
+                  else logError("Error updating collection name");
                 })
                 .catch(() => {
-                  toast.error("Error updating collection name");
+                  logError("Error updating collection name");
                 });
               setIsOpen(false);
             }}

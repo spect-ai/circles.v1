@@ -13,6 +13,7 @@ import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
 import { toast } from "react-toastify";
 import { updateMultiplePayments } from ".";
 import { gnosisPayment } from "../Gnosis";
+import { logError } from "@/app/common/utils/utils";
 
 type WagmiBalanceObject = {
   decimals: number;
@@ -370,7 +371,7 @@ export const approveOneUsingGnosis = async (
   console.log({ data });
   const res = await gnosisPayment(gnosisSafeAddress, data, chainId);
   if (res) toast.success("Transaction sent to your safe", { theme: "dark" });
-  else toast.error("Error Occurred while sending your transation to safe");
+  else logError("Error Occurred while sending your transation to safe");
 };
 
 export const approveUsingGnosis = async (

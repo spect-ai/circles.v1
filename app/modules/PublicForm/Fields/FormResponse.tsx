@@ -23,6 +23,7 @@ import { useRouter } from "next/router";
 import _ from "lodash";
 import { useAtom } from "jotai";
 import { connectedUserAtom, socketAtom } from "@/app/state/global";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   form: FormType;
@@ -368,8 +369,8 @@ export default function FormResponse({
                                 }
                               } catch (e) {
                                 console.log(e);
-                                toast.error(
-                                  "Something went wrong, please try again later"
+                                logError(
+                                  "Something went wrong claiming survey tokens"
                                 );
                               }
 

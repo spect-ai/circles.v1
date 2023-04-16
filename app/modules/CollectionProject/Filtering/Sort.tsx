@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { MenuContainer, MenuItem } from "../EditValue";
+import { logError } from "@/app/common/utils/utils";
 
 export default function Sort() {
   const {
@@ -129,8 +130,7 @@ export default function Sort() {
                             else throw new Error("Error updating collection");
                           })
                           .catch((err) => {
-                            console.log(err);
-                            toast.error("Error updating collection");
+                            logError("Error updating collection");
                           });
                       }}
                     >
@@ -173,7 +173,7 @@ export default function Sort() {
                   }
                 })
                 .catch((err) => {
-                  toast.error("Error updating collection");
+                  logError("Error updating collection");
                 });
             }}
           >

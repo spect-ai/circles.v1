@@ -14,6 +14,7 @@ import {
   useProvider,
 } from "wagmi";
 import { fetchSigner } from "@wagmi/core";
+import { logError } from "@/app/common/utils/utils";
 
 export default function useERC20() {
   const router = useRouter();
@@ -89,8 +90,7 @@ export default function useERC20() {
         const res = await gnosisPayment(safeAddress, data, chainId);
         if (res)
           toast.success("Transaction sent to your safe", { theme: "dark" });
-        else
-          toast.error("Error Occurred while sending your transation to safe");
+        else logError("Error Occurred while sending your transation to safe");
 
         return;
       }
@@ -105,9 +105,7 @@ export default function useERC20() {
       return true;
     } catch (err: any) {
       console.error(err);
-      toast.error(err.message, {
-        theme: "dark",
-      });
+      logError(err.message);
       return false;
     }
   }

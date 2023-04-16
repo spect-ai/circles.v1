@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import useProfileUpdate from "../Profile/useProfileUpdate";
+import { logError } from "@/app/common/utils/utils";
 
 export default function useConnectGithub() {
   const router = useRouter();
@@ -27,10 +28,7 @@ export default function useConnectGithub() {
         });
       }
     } else {
-      toast.error(
-        "Something went wrong while getting data from the GitHub bot",
-        { theme: "dark" }
-      );
+      logError("Something went wrong while getting data from the GitHub bot");
     }
   };
   useEffect(() => {

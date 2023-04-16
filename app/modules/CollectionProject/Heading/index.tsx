@@ -35,6 +35,7 @@ import MyTasks from "../Filtering/MyTasks";
 import Sort from "../Filtering/Sort";
 import Settings from "../Settings";
 import ViewSettings from "../ViewSettings";
+import { logError } from "@/app/common/utils/utils";
 
 export default function ProjectHeading() {
   const { navigationBreadcrumbs } = useCircle();
@@ -81,7 +82,7 @@ export default function ProjectHeading() {
         viewOrder: newViewOrder,
       },
     });
-    if (!res.id) toast.error("Error updating view order");
+    if (!res.id) logError("Error updating view order");
   };
 
   return (

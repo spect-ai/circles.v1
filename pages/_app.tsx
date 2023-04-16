@@ -188,6 +188,11 @@ process.env.NODE_ENV === "production" &&
       enabled: true,
       recordHeadersAndBody: true,
     },
+    integrations: {
+      mixpanel: {
+        projectToken: process.env.MIXPANEL_TOKEN,
+      },
+    },
   });
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -330,13 +335,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               <QueryClientProvider client={queryClient}>
                 <Hydrate state={pageProps}>
                   <ApolloProvider client={client}>
-                    <ErrorBoundary
-                      fallback={ErrorFallBack}
-                      showDialog
-                      // dialogOptions={{
-                      //   title: "Oops!",
-                      // }}
-                    >
+                    <ErrorBoundary fallback={ErrorFallBack}>
                       <Component {...pageProps} canonical={url} key={url} />
                     </ErrorBoundary>
                     <AnimatePresence>

@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Footer from "./Footer";
 import Messages from "./Messages";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   form: CollectionType | undefined;
@@ -28,7 +29,7 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
         const res: FormType = await getForm(formId as string);
         if (res.id) {
           setForm(res);
-        } else toast.error("Error fetching form");
+        } else logError("Error fetching form");
       }
     })();
   }, [formId]);

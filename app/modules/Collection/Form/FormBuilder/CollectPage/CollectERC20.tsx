@@ -1,4 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { logError } from "@/app/common/utils/utils";
 import {
   getEscrowBalance,
   getSurveyDistributionInfo,
@@ -354,8 +355,8 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                         }
                       } catch (e) {
                         console.log(e);
-                        toast.error(
-                          "Something went wrong, please try again later"
+                        logError(
+                          "Something went wrong in claiming, please try again later"
                         );
                       }
 

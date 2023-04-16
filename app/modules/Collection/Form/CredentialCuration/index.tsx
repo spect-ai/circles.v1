@@ -6,6 +6,7 @@ import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
+import { logError } from "@/app/common/utils/utils";
 
 export default function CredentialCuration() {
   const { localCollection: collection, updateCollection } =
@@ -58,7 +59,7 @@ export default function CredentialCuration() {
               )
             ).json();
             if (res.id) updateCollection(res);
-            else toast.error("Something went wrong");
+            else logError("Update collection failed");
           }}
         >
           {collection.formMetadata.credentialCurationEnabled

@@ -6,6 +6,7 @@ import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { toast } from "react-toastify";
 import { AnimatePresence } from "framer-motion";
+import { logError } from "@/app/common/utils/utils";
 
 interface Props {
   permissions: string[];
@@ -86,7 +87,9 @@ export default function FormRoles() {
   return (
     <>
       <Box width="full" display="flex" flexDirection={"column"} gap="4">
-        <Text variant="label">Configure granular permissions using Circle Roles</Text>
+        <Text variant="label">
+          Configure granular permissions using Circle Roles
+        </Text>
         <PrimaryButton
           icon={<IconUserGroupSolid />}
           onClick={() => setRoleModal(true)}
@@ -162,7 +165,7 @@ export default function FormRoles() {
                     )
                   ).json();
                   if (res.id) updateCollection(res);
-                  else toast.error("Something went wrong");
+                  else logError("Update collection failed");
                   setLoading(false);
                   setRoleModal(false);
                 }}

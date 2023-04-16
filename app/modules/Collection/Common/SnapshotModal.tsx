@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Modal from "@/app/common/components/Modal";
 import { DateInput } from "@/app/modules/Profile/ProfilePage/AddExperienceModal";
-import { dateIsInvalid, smartTrim } from "@/app/common/utils/utils";
+import { dateIsInvalid, logError, smartTrim } from "@/app/common/utils/utils";
 import useSnapshot from "@/app/services/Snapshot/useSnapshot";
 import { useQuery as useApolloQuery } from "@apollo/client";
 import { CollectionType, Option } from "@/app/types";
@@ -230,7 +230,7 @@ export const SnapshotModal = ({
               });
 
               if (!snapRes?.id) {
-                toast.error(
+                logError(
                   "Couldn't create Proposal : " +
                     snapRes.error +
                     " - " +
@@ -247,7 +247,7 @@ export const SnapshotModal = ({
                   }
                 );
                 if (!res.id) {
-                  toast.error(
+                  logError(
                     "Something went wrong while recording snapshot proposal"
                   );
                 } else updateCollection(res);

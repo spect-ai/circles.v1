@@ -1,6 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { smartTrim } from "@/app/common/utils/utils";
+import { logError, smartTrim } from "@/app/common/utils/utils";
 import { updateFormCollection } from "@/app/services/Collection";
 import { LookupToken } from "@/app/types";
 import { Avatar, Box, Stack, Text } from "degen";
@@ -42,7 +42,7 @@ export default function ResponderProfile({ handleClose }: Props) {
             },
           });
           if (res.id) updateCollection(res);
-          else toast.error("Error updating collection, refresh and try again");
+          else logError("Error updating collection");
           handleClose();
           setLoading(false);
         } else {
@@ -137,8 +137,7 @@ export default function ResponderProfile({ handleClose }: Props) {
               });
               setUpdated(true);
               if (res.id) updateCollection(res);
-              else
-                toast.error("Error updating collection, refresh and try again");
+              else logError("Error updating collection");
               handleClose();
               setLoading(false);
             }}

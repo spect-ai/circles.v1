@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import { expiryOptions, usesOptions } from "./constants";
 import mixpanel from "@/app/common/utils/mixpanel";
 import styled from "styled-components";
+import { logError } from "@/app/common/utils/utils";
 
 function InviteMemberModal({
   buttonIsSmallTransparent,
@@ -245,9 +246,7 @@ function InviteMemberModal({
                             setIsLoading(false);
                             setIsOpen(false);
                           } else {
-                            toast.error("Something went wrong", {
-                              theme: "dark",
-                            });
+                            logError("Something went wrong generating invite");
                             setIsLoading(false);
                           }
                         })

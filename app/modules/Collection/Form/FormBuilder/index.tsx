@@ -26,6 +26,7 @@ import CollectPayment from "@/app/modules/PublicForm/Fields/CollectPayment";
 import SubmittedPage from "./SubmittedPage";
 import { BiLogIn } from "react-icons/bi";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
+import { logError } from "@/app/common/utils/utils";
 
 function FormBuilder() {
   const {
@@ -409,7 +410,7 @@ function FormBuilder() {
               if (res.id) {
                 updateCollection(res);
               } else {
-                toast.error("Error deleting field");
+                logError("Error deleting field");
               }
             }}
             onCancel={() => setShowConfirmOnDelete(false)}

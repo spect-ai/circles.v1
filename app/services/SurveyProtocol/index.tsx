@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { erc20ABI } from "wagmi";
 import { readContract } from "@wagmi/core";
 import { getPredictedGas } from "../GasPrediction";
+import { logError } from "@/app/common/utils/utils";
 
 // const localAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
 
@@ -162,7 +163,7 @@ export const createSurvey = async (
       toast.error(
         "Sometimes, all you need is a second try, please click the button again 🙏. If this error persists, please report it to us."
       );
-    } else toast.error("Error creating survey");
+    } else logError("Error creating survey");
   }
 };
 

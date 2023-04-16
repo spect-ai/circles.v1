@@ -1,3 +1,4 @@
+import { logError } from "@/app/common/utils/utils";
 import { toast } from "react-toastify";
 
 type UpdateRoleDTO = {
@@ -22,10 +23,10 @@ export async function addRole(circleId: string, body: any) {
       toast("Role added successfully", { theme: "dark" });
       return response;
     } else {
-      toast.error("Error adding role", { theme: "dark" });
+      logError("Error adding role");
     }
   } catch (error) {
-    toast.error("Error adding role", { theme: "dark" });
+    logError("Error adding role");
     return error;
   }
 }
@@ -47,10 +48,10 @@ export async function updateRole(circleId: string, role: string, body: any) {
       const response = await res.json();
       return response;
     } else {
-      toast.error("Error updating role", { theme: "dark" });
+      logError("Error updating role");
     }
   } catch (error) {
-    toast.error("Error updating role", { theme: "dark" });
+    logError("Error updating role");
     return error;
   }
 }
@@ -76,7 +77,7 @@ export async function updateMemberRole(
     console.log({ data });
     return data;
   } else {
-    toast.error("Something went wrong updating the member role");
+    logError("Something went wrong updating the member role");
     return null;
   }
 }
@@ -97,7 +98,7 @@ export async function removeMember(circleId: string, member: string) {
     console.log({ data });
     return data;
   } else {
-    toast.error("Something went wrong removing the member");
+    logError("Something went wrong removing the member");
     return null;
   }
 }

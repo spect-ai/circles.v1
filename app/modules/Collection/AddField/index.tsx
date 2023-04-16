@@ -37,6 +37,7 @@ import PayWall from "./PayWallOptions";
 import RewardTokenOptions from "./RewardTokenOptions";
 import { useKeyPressEvent } from "react-use";
 import Editor from "@/app/common/components/Editor";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   propertyName?: string;
@@ -168,7 +169,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
       }
     } else {
       if (!pageId && collection.collectionType === 0) {
-        toast.error("Pageid is missing, try again");
+        logError("Pageid is missing in update, try again");
         return;
       }
       res = await addField(
@@ -198,7 +199,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
       handleClose();
       updateCollection(res);
     } else {
-      toast.error(res.message.toString());
+      logError(res.message.toString());
     }
   };
 
@@ -334,7 +335,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
                 handleClose();
                 updateCollection(res);
               } else {
-                toast.error("Error deleting field");
+                logError("Error deleting field");
               }
               setDeleteLoading(false);
             }}

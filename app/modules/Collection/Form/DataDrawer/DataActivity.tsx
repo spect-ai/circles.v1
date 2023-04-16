@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { timeSince } from "@/app/common/utils/utils";
+import { logError, timeSince } from "@/app/common/utils/utils";
 import { sendFormComment } from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import {
@@ -183,7 +183,7 @@ export default function DataActivity({
                     setForm(res);
                     setComment("");
                     setIsDirty(false);
-                  } else toast.error("Something went wrong");
+                  } else logError("Update collection failed");
                   setSendingComment(false);
                 }}
               >

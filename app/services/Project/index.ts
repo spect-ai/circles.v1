@@ -1,3 +1,4 @@
+import { logError } from "@/app/common/utils/utils";
 import { ProjectType } from "@/app/types";
 import { toast } from "react-toastify";
 
@@ -22,7 +23,7 @@ export const createProject = async (body: CreateProjectDto) => {
     const data = await res.json();
     return data;
   }
-  toast.error("Error updating project");
+  logError("Error updating project");
   return null;
 };
 
@@ -42,7 +43,7 @@ export const patchProject = async (
     const data = await res.json();
     return data;
   }
-  toast.error("Error updating project");
+  logError("Error updating project");
   return null;
 };
 
@@ -61,6 +62,6 @@ export const archiveProject = async (projectId: string) => {
     const data = await res.json();
     return data;
   }
-  toast.error("Error updating project");
+  logError("Error updating project");
   return null;
 };

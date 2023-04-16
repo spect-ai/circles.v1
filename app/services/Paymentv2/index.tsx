@@ -1,3 +1,4 @@
+import { logError } from "@/app/common/utils/utils";
 import { Option } from "@/app/types";
 import { toast } from "react-toastify";
 
@@ -184,9 +185,7 @@ export const makePayments = async (circleId: string, body: PaymentIdsDto) => {
     console.log({ data });
     return data;
   }
-  toast.error("Error updating payment status", {
-    theme: "dark",
-  });
+  logError("Error updating payment status");
   return undefined;
 };
 
@@ -209,8 +208,6 @@ export const cancelPayments = async (circleId: string, body: PaymentIdsDto) => {
     console.log({ data });
     return data;
   }
-  toast.error("Error updating payment status", {
-    theme: "dark",
-  });
+  logError("Error updating payment status");
   return undefined;
 };

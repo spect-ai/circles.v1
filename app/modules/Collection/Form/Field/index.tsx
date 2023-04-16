@@ -38,6 +38,7 @@ import RewardField from "@/app/modules/PublicForm/Fields/RewardField";
 import { motion } from "framer-motion";
 import { updateFormCollection } from "@/app/services/Collection";
 import { toast } from "react-toastify";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   id: string;
@@ -443,9 +444,7 @@ function FieldComponent({
                   if (res.id) {
                     updateCollection(res);
                   } else {
-                    toast.error(
-                      "Error updating collection, refresh and try again"
-                    );
+                    logError("Update collection failed");
                   }
                 }}
               >

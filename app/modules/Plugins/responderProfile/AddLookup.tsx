@@ -1,7 +1,7 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
-import { smartTrim } from "@/app/common/utils/utils";
+import { logError, smartTrim } from "@/app/common/utils/utils";
 import { LookupToken } from "@/app/types";
 import { Avatar, Box, IconPlusSmall, Input, Spinner, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
@@ -169,7 +169,7 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
           })
           .catch((err) => {
             console.log(err);
-            toast.error("Error fetching tokens");
+            logError("Error fetching tokens");
             setLoading(false);
           });
       })();

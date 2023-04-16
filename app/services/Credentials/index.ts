@@ -7,6 +7,7 @@ import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import { useNetwork, useSwitchNetwork } from "wagmi";
 import { signTypedData } from "@wagmi/core";
+import { logError } from "@/app/common/utils/utils";
 
 const chainId = "137";
 const domainInfo = {
@@ -101,9 +102,7 @@ export default function useCredentials() {
           const data = await res.json();
           return data;
         } else {
-          toast.error("Error creating kudos", {
-            theme: mode,
-          });
+          logError("Error creating kudos");
           return false;
         }
       } catch (error: any) {
@@ -113,7 +112,7 @@ export default function useCredentials() {
           );
           return;
         }
-        toast.error(error.message);
+        logError(error.message);
         console.log({ error });
         return;
       }
@@ -221,7 +220,7 @@ export default function useCredentials() {
                       theme: mode,
                     });
                   } else {
-                    toast.error("Something went wrong, refresh and try again!");
+                    logError("Something went wron creating kudos");
                   }
                 })
                 .catch((err) => console.log(err));
@@ -288,8 +287,7 @@ export default function useCredentials() {
           return data;
         }
       } catch (error: any) {
-        toast.error(error.message);
-        console.log(error);
+        logError(error.message);
         return;
       }
     }
@@ -352,7 +350,7 @@ export default function useCredentials() {
     if (res.ok) {
       return await res.json();
     } else {
-      toast.error("Something went wrong while fetching your kudos");
+      logError("Something went wrong while fetching your kudos");
       console.log(res);
       return [];
     }
@@ -365,7 +363,7 @@ export default function useCredentials() {
     if (res.ok) {
       return await res.json();
     } else {
-      toast.error("Something went wrong while fetching your kudos");
+      logError("Something went wrong while fetching your kudos");
       console.log(res);
       return [];
     }
@@ -386,7 +384,7 @@ export default function useCredentials() {
     if (res.ok) {
       return await res.json();
     } else {
-      toast.error("Something went wrong while adding custom design");
+      logError("Something went wrong while adding custom design");
       console.log(res);
       return [];
     }
@@ -399,9 +397,7 @@ export default function useCredentials() {
     if (res.ok) {
       return await res.json();
     } else {
-      toast.error(
-        "Something went wrong while fetching community kudos designs"
-      );
+      logError("Something went wrong while fetching community kudos designs");
       console.log(res);
       return [];
     }

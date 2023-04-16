@@ -18,6 +18,7 @@ import { linkDiscord } from "@/app/services/Collection";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   actionMode: "edit" | "create";
@@ -416,7 +417,7 @@ export default function CreateDiscordThread({
                     if (handleClose) handleClose();
                   }
                 } catch (e) {
-                  toast.error("Something went wrong while linking discord");
+                  logError("Something went wrong while linking discord");
                   console.log(e);
                 }
                 setLinking(false);

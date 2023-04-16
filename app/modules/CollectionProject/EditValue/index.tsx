@@ -16,6 +16,7 @@ import { useLocalCollection } from "../../Collection/Context/LocalCollectionCont
 import MultiMilestoneModal from "../../Collection/TableView/MultiMilestoneModal";
 import RewardModal from "../../Collection/TableView/RewardModal";
 import LongTextModal from "./LongTextModal";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   value: any;
@@ -316,15 +317,10 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                           ],
                         });
                         if (!res.id) {
-                          toast.error("Failed to update field");
-                          return;
-                        }
-                        if (!res.id) {
-                          toast.error("Failed to update collection");
+                          logError("Failed to update field");
                           return;
                         }
                         updateCollection(res);
-
                         setOptions([
                           ...options,
                           { label: tempValue, value: newId },

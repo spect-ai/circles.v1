@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { Archive } from "react-feather";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   handleClose: () => void;
@@ -42,10 +43,10 @@ export default function ViewSettings({ handleClose }: Props) {
         })
           .then((res) => {
             if (res.id) updateCollection(res);
-            else toast.error("Error updating view name");
+            else logError("Error updating view name");
           })
           .catch(() => {
-            toast.error("Error updating view name");
+            logError("Error updating view name");
           });
       }}
     >
@@ -93,7 +94,7 @@ export default function ViewSettings({ handleClose }: Props) {
                     setProjectViewId("0x0");
                     updateCollection(res);
                   } else {
-                    toast.error("Error deleting view");
+                    logError("Error deleting view");
                   }
                   setLoading(false);
                 }}

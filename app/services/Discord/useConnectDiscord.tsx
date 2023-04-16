@@ -6,6 +6,7 @@ import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { joinCirclesFromDiscord } from "../JoinCircle";
 import useProfileUpdate from "../Profile/useProfileUpdate";
+import { logError } from "@/app/common/utils/utils";
 
 export default function useConnectDiscord() {
   const router = useRouter();
@@ -40,10 +41,7 @@ export default function useConnectDiscord() {
         }
       }
     } else {
-      toast.error(
-        "Something went wrong while getting data from the discord bot",
-        { theme: "dark" }
-      );
+      logError("Something went wrong while getting data from the discord bot");
     }
   };
   useEffect(() => {

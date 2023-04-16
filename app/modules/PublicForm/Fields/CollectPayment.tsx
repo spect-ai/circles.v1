@@ -1,5 +1,6 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { logError } from "@/app/common/utils/utils";
 import {
   getCurrencyPrice,
   getPlatformTokenPrice,
@@ -127,7 +128,7 @@ export default function CollectPayment({
           (await switchNetworkAsync(parseInt(selectedNetwork.value)));
       } catch (err: any) {
         console.log(err.message);
-        toast.error(err.message);
+        logError(err.message);
         throw err;
       }
     }

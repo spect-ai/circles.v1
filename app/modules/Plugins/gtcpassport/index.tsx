@@ -21,6 +21,7 @@ import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import Editor from "@/app/common/components/Editor";
 import { updateFormCollection } from "@/app/services/Collection";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   handleClose: () => void;
@@ -240,8 +241,7 @@ export default function SybilResistance({ handleClose }: Props) {
                     updateCollection(res);
                     handleClose();
                     setLoading(false);
-                  } else
-                    toast.error("Something went wrong, refresh and try again");
+                  } else logError("Update collection failed");
                 }}
               >
                 Disable Sybil Protection
@@ -275,7 +275,7 @@ export default function SybilResistance({ handleClose }: Props) {
                   if (res.id) {
                     updateCollection(res);
                   } else {
-                    toast.error("Something went wrong, refresh and try again");
+                    logError("Update collection failed");
                   }
                   handleClose();
                   setLoading(false);

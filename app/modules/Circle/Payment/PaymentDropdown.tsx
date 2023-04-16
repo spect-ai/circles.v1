@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { updatePayment } from "@/app/services/Paymentv2";
 import { useCircle } from "../CircleContext";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   options: Option[];
@@ -237,7 +238,7 @@ export default function PaymentDropdown({
                       circle?.id || ""
                     );
                     if (!res.id) {
-                      toast.error("Failed to update label options");
+                      logError("Failed to update label options");
                       return;
                     }
                     const newOptions = [

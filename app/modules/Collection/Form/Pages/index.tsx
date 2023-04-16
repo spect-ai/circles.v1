@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import mixpanel from "mixpanel-browser";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
-import { trackError } from "@/app/common/utils/utils";
+import { logError } from "@/app/common/utils/utils";
 
 export default function Pages() {
   const { localCollection: collection, updateCollection } =
@@ -66,8 +66,7 @@ export default function Pages() {
               if (res.id) {
                 updateCollection(res);
               } else {
-                toast.error("Error updating collection, refresh and try again");
-                trackError("Error when adding new page");
+                logError("Error when adding new page");
               }
             }}
           >
