@@ -12,6 +12,7 @@ import styled from "styled-components";
 import AddField from "../../Collection/AddField";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { getPropertyIcon } from "./Utils";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   propertyName: string;
@@ -57,7 +58,7 @@ function EditProperty({ propertyName, disabled }: Props) {
                     setProjectViewId(res.projectMetadata.viewOrder[0]);
                   updateCollection(res);
                 } else {
-                  toast.error("Error deleting field");
+                  logError("Error deleting field");
                 }
               }}
               onCancel={() => setshowConfirmOnDelete(false)}
@@ -73,7 +74,7 @@ function EditProperty({ propertyName, disabled }: Props) {
               <PropertyButton
                 onClick={() => {
                   if (disabled) {
-                    toast.error("You can't edit a closed card")
+                    toast.error("You can't edit a closed card");
                     return;
                   }
                   setIsMenuOpen(true);

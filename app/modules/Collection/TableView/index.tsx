@@ -47,6 +47,7 @@ import RewardComponent from "./RewardComponent";
 import RewardModal from "./RewardModal";
 import SelectComponent from "./SelectComponent";
 import TelegramComponent from "./TelegramComponent";
+import { logError } from "@/app/common/utils/utils";
 
 export default function TableView() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
@@ -99,7 +100,7 @@ export default function TableView() {
       updateCollection(res);
       return true;
     } else {
-      toast.error(res.error || "Error updating data");
+      logError(res.error || "Error updating data");
       return false;
     }
   }, []);

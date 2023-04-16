@@ -1,4 +1,5 @@
 import queryClient from "@/app/common/utils/queryClient";
+import { logError } from "@/app/common/utils/utils";
 import { connectedUserAtom, socketAtom } from "@/app/state/global";
 import { CollectionType, Property } from "@/app/types";
 import { useAtom } from "jotai";
@@ -212,9 +213,7 @@ export function useProviderLocalCollection() {
         })
         .catch((err) => {
           console.error(err);
-          toast.error("Something went wrong", {
-            theme: "dark",
-          });
+          logError("Something went wrong while fetching collection");
           setLoading(false);
         });
     }

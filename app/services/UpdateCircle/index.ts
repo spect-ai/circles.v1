@@ -1,3 +1,4 @@
+import { logError } from "@/app/common/utils/utils";
 import {
   Action,
   DiscordChannel,
@@ -192,9 +193,7 @@ export const addAutomation = async (
 
     return data;
   } else {
-    toast.error("Error adding automation", {
-      theme: "dark",
-    });
+    logError("Error adding automation");
     return false;
   }
 };
@@ -221,9 +220,7 @@ export const updateAutomation = async (
 
     return data;
   } else {
-    toast.error("Error updating automation", {
-      theme: "dark",
-    });
+    logError("Error updating automation");
     return false;
   }
 };
@@ -248,9 +245,7 @@ export const removeAutomation = async (
 
     return data;
   } else {
-    toast.error("Error removing automation", {
-      theme: "dark",
-    });
+    logError("Error updating automation");
     return false;
   }
 };

@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import uuid from "react-uuid";
 import { toast } from "react-toastify";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   viewType: "kanban" | "list" | "grid";
@@ -156,8 +157,7 @@ export default function AddView({ viewType, handleClose }: Props) {
                 updateCollection(res);
                 handleClose();
               } else {
-                console.error(res);
-                toast.error("Error creating view");
+                logError("Error creating view");
               }
               setLoading(false);
             }}

@@ -12,6 +12,7 @@ import InviteMemberModal from "../../Circle/ContributorsModal/InviteMembersModal
 import CardDrawer from "../CardDrawer";
 import useViewCommon from "../Common/useViewCommon";
 import Column from "./Column";
+import { logError } from "@/app/common/utils/utils";
 
 export default function ListView() {
   const {
@@ -97,7 +98,7 @@ export default function ListView() {
                   });
                   setLoading(false);
                   if (res.id) updateCollection(res);
-                  else toast.error("Error adding column");
+                  else logError("Error adding column");
                 }}
               >
                 {`Add ${property.name}`}

@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { joinCircleFromInvite } from ".";
+import { logError } from "@/app/common/utils/utils";
 
 export default function useJoinCircle() {
   const router = useRouter();
@@ -24,9 +25,7 @@ export default function useJoinCircle() {
             theme: "dark",
           });
         } else {
-          toast.error("Something went wrong", {
-            theme: "dark",
-          });
+          logError("Something went wrong joining the circle");
         }
       };
       void asyncJoin();

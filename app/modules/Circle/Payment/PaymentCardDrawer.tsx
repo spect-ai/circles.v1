@@ -5,7 +5,7 @@ import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { smartTrim } from "@/app/common/utils/utils";
+import { logError, smartTrim } from "@/app/common/utils/utils";
 import {
   addManualPayment,
   cancelPayments,
@@ -218,9 +218,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
         })
         .catch((err) => {
           console.error(err);
-          toast.error("Something went wrong while fetching cards", {
-            theme: "dark",
-          });
+          logError("Something went wrong while fetching payment cards");
         });
     }
   }, [value.collection]);

@@ -1,3 +1,4 @@
+import { logError } from "@/app/common/utils/utils";
 import { CardType } from "@/app/types";
 import { toast } from "react-toastify";
 
@@ -9,7 +10,7 @@ export const getLensProfileHandles = async () => {
     const data = await res.json();
     return data.data.profiles.items;
   }
-  toast.error("Error getting profile handles");
+  logError("Error getting profile handles");
   return null;
 };
 
@@ -23,6 +24,6 @@ export const updateProfileData = async (body: object) => {
     const data = await res.json();
     return data;
   }
-  toast.error("Error updating profile handles");
+  logError("Error updating profile handles");
   return null;
 };

@@ -4,7 +4,7 @@ import Drawer from "@/app/common/components/Drawer";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { reorder } from "@/app/common/utils/utils";
+import { logError, reorder } from "@/app/common/utils/utils";
 import {
   addCollectionData,
   updateCollectionDataGuarded,
@@ -137,7 +137,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
       }
       if (res.id) {
         updateCollection(res);
-      } else toast.error(res.error || "Error updating card");
+      } else logError(res.error || "Error updating card");
     }
   };
 
@@ -173,7 +173,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
       propertyOrder: newPropertyOrder,
     });
     if (res.id) updateCollection(res);
-    else toast.error("Something went wrong while updating property order");
+    else logError("Something went wrong while updating property order");
   };
 
   const PropertyDraggable = ({
@@ -325,7 +325,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                       if (res.id) {
                         updateCollection(res);
                         closeCard();
-                      } else toast.error("Error adding card");
+                      } else logError("Error adding card");
                     }}
                   >
                     Create Card

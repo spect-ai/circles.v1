@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { Credential } from "@/app/types";
 import { useAtom } from "jotai";
 import { userDataAtom } from "@/app/state/global";
+import { logError } from "@/app/common/utils/utils";
 
 interface UpdateProfileDTO {
   username?: string;
@@ -134,9 +135,7 @@ export default function useProfileUpdate() {
 
       return true;
     } else {
-      toast.error("Error updating profile", {
-        theme: "dark",
-      });
+      logError("Error updating profile");
       return false;
     }
   };
@@ -164,9 +163,8 @@ export default function useProfileUpdate() {
       setUserData(data);
       return true;
     } else {
-      toast.error("Error updating profile", {
-        theme: "dark",
-      });
+      logError("Error updating profile");
+
       return false;
     }
   };
@@ -191,9 +189,8 @@ export default function useProfileUpdate() {
 
       return true;
     } else {
-      toast.error("Error updating profile", {
-        theme: "dark",
-      });
+      logError("Error updating profile");
+
       return false;
     }
   };
@@ -216,9 +213,7 @@ export default function useProfileUpdate() {
 
       return true;
     } else {
-      toast.error("Error updating profile", {
-        theme: "dark",
-      });
+      logError("Error updating profile");
       return false;
     }
   };
@@ -247,9 +242,7 @@ export default function useProfileUpdate() {
 
       return true;
     } else {
-      toast.error("Error updating profile", {
-        theme: "dark",
-      });
+      logError("Error updating profile");
       return false;
     }
   };
@@ -274,9 +267,7 @@ export default function useProfileUpdate() {
 
       return true;
     } else {
-      toast.error("Error updating profile", {
-        theme: "dark",
-      });
+      logError("Error updating profile");
       return false;
     }
   };

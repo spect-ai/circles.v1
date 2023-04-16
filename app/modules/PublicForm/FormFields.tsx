@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { isEmail, isURL } from "@/app/common/utils/utils";
+import { isEmail, isURL, logError } from "@/app/common/utils/utils";
 import {
   addData,
   getForm,
@@ -246,7 +246,7 @@ function FormFields({ form, setForm }: Props) {
         data["__ceramic__"] = streamId;
       } catch (err) {
         console.log(err);
-        toast.error("Could not upload data to Ceramic");
+        logError("Could not upload data to Ceramic");
         setSubmitting(false);
         return;
       }
@@ -299,7 +299,7 @@ function FormFields({ form, setForm }: Props) {
       );
       setUpdateResponse(false);
     } else {
-      toast.error("Error adding data");
+      logError("Error adding data");
     }
     process.env.NODE_ENV === "production" &&
       mixpanel.track("Form Submit", {

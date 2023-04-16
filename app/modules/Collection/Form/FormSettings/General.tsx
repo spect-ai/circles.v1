@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { AdditionalSettings } from "../AdditionalSettings";
 import { Notifications } from "../Notifications";
+import { logError } from "@/app/common/utils/utils";
 
 export default function General() {
   const { localCollection: collection, updateCollection } =
@@ -41,7 +42,7 @@ export default function General() {
               },
             });
             if (res.id) updateCollection(res);
-            else toast.error("Something went wrong, refresh and try again");
+            else logError("Error updating collection");
           }}
         />
       </Stack>

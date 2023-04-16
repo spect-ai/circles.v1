@@ -15,6 +15,7 @@ import styled from "styled-components";
 import { useCircle } from "../../CircleContext";
 import CreateCollectionModal from "../../CreateCollectionModal";
 import CreateSpaceModal from "../../CreateSpaceModal";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {};
 
@@ -52,7 +53,7 @@ export default function CreateItems({}: Props) {
       if (res?.id) {
         setCircleData(res);
       } else {
-        toast.error("Something went wrong while creating a new folder");
+        logError("Something went wrong while creating a new folder");
       }
       setLoading(false);
     }

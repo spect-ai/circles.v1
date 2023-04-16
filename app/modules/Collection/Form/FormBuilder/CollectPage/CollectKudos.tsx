@@ -1,4 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { logError } from "@/app/common/utils/utils";
 import { CollectionType, KudosType } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
 import { Box, Stack, Text } from "degen";
@@ -208,8 +209,8 @@ const CollectKudos = ({ form, setClaimedJustNow, preview }: Props) => {
                         }
                       } catch (e) {
                         console.log(e);
-                        toast.error(
-                          "Something went wrong, please try again later"
+                        logError(
+                          "Something went wrong claiming kudos, please try again later"
                         );
                       }
 

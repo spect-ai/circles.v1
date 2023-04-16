@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import { useCircle } from "../../Circle/CircleContext";
 import AddToken from "../../Circle/CircleSettingsModal/CirclePayment/AddToken";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import { logError } from "@/app/common/utils/utils";
 
 export type DistributionInfo = {
   distributionType: 0 | 1 | null;
@@ -393,7 +394,7 @@ export default function DistributeERC20({
                     console.log({ lastSurveyId });
                   } catch (err) {
                     console.log("Unable to fetch last survey with error", err);
-                    toast.error(
+                    logError(
                       "Plugin was added, but something went wrong while fetching the survey id. Please contact support."
                     );
                   }
@@ -417,7 +418,7 @@ export default function DistributeERC20({
                 } catch (e) {
                   console.log(e);
                   setIsLoading(false);
-                  toast.error("Something went wrong");
+                  logError("Update collection failed");
                 }
               }}
             >

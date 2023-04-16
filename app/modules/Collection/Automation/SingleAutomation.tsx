@@ -29,6 +29,7 @@ import { getAutomationActionOptions } from "./utils";
 import { validateActions } from "./Validation/ActionValidations";
 import { validateConditions } from "./Validation/ConditionValidations";
 import { validateTrigger } from "./Validation/TriggerValidations";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   automation: any;
@@ -229,9 +230,7 @@ export default function SingleAutomation({
         })
         .catch((err) => {
           console.error(err);
-          toast.error("Something went wrong", {
-            theme: "dark",
-          });
+          logError("Something went wrong while fetching collection");
         });
   }, [actions, trigger, conditions, name, collectionOption]);
 
@@ -352,7 +351,7 @@ export default function SingleAutomation({
               if (automationMode === "create") handleClose();
             } catch (err) {
               console.error(err);
-              toast.error("Something went wrong while saving automation");
+              logError("Something went wrong while saving automation");
             } finally {
               setSaving(false);
             }
@@ -371,7 +370,7 @@ export default function SingleAutomation({
                 setDisabling(false);
               } catch (err) {
                 console.error(err);
-                toast.error("Something went wrong while disabling automation");
+                logError("Something went wrong while disabling automation");
               } finally {
                 setDisabling(false);
               }
@@ -405,7 +404,7 @@ export default function SingleAutomation({
                 });
               } catch (err) {
                 console.error(err);
-                toast.error("Something went wrong while deleting automation");
+                logError("Something went wrong while deleting automation");
               } finally {
                 setDeleting(false);
               }

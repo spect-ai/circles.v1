@@ -15,6 +15,7 @@ import SingleChoiceVotingOnSingleResponse from "./SingleChoiceVotingOnSingleResp
 import { useQuery, gql } from "@apollo/client";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { updateCircle } from "@/app/services/UpdateCircle";
+import { logError } from "@/app/common/utils/utils";
 
 export const Space = gql`
   query Space($id: String!) {
@@ -318,7 +319,7 @@ export default function VotingModule() {
                         if (res.id) {
                           setIsOpen(false);
                           setLocalCollection(res);
-                        } else toast.error("Something went wrong");
+                        } else logError("Update collection failed");
                       }}
                     >
                       Enable Voting
@@ -343,7 +344,7 @@ export default function VotingModule() {
                         if (res.id) {
                           setIsOpen(false);
                           setLocalCollection(res);
-                        } else toast.error("Something went wrong");
+                        } else logError("Update collection failed");
                       }}
                     >
                       Disable Voting

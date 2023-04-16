@@ -28,6 +28,7 @@ import { useLocalCollection } from "../../Collection/Context/LocalCollectionCont
 import ResponseMatchDistribution, {
   quizValidFieldTypes,
 } from "../common/ResponseMatchDistribution";
+import { logError } from "@/app/common/utils/utils";
 
 const ScrollContainer = styled(Box)`
   overflow-x: auto;
@@ -433,9 +434,7 @@ export default function SendKudos({ handleClose }: Props) {
                     if (res.id) {
                       updateCollection(res);
                     } else {
-                      toast.error(
-                        "Something went wrong, refresh and try again"
-                      );
+                      logError("Update collection failed");
                     }
                     setLoading(false);
                     handleClose();

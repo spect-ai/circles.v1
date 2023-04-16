@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import PublicField from "../../PublicForm/Fields/PublicField";
+import { logError } from "@/app/common/utils/utils";
 
 export type Props = {
   setModalModal: (mode: string) => void;
@@ -159,9 +160,7 @@ export default function ResponseMatchDistribution({
                 if (res.id) {
                   updateCollection(res);
                 } else {
-                  toast.error(
-                    "Error updating form collection, refresh and try again"
-                  );
+                  logError("Error updating collection");
                 }
               } else if (
                 responseMatchConditionForPlugin === "mintkudos" &&
@@ -178,9 +177,7 @@ export default function ResponseMatchDistribution({
                 if (res.id) {
                   updateCollection(res);
                 } else {
-                  toast.error(
-                    "Error updating form collection, refresh and try again"
-                  );
+                  logError("Error updating collection");
                 }
               }
               setMinimumNumberOfAnswersThatNeedToMatch(minNumOfAnswers);

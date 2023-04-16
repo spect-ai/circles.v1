@@ -18,6 +18,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { logError } from "@/app/common/utils/utils";
 
 ChartJS.register(
   CategoryScale,
@@ -140,7 +141,7 @@ export default function SpectVoting({
                       tab
                     );
                     if (!res.id) {
-                      toast.error("Something went wrong");
+                      logError("Voting failed");
                       setVote(tempTab);
                     } else {
                       col ? setCollection(res) : updateCollection(res);

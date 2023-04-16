@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { useLocalCollection } from "../../../Context/LocalCollectionContext";
 import Footer from "./Footer";
 import Messages from "./Messages";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   setCurrentPage: (page: string) => void;
@@ -51,7 +52,7 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
                 },
               });
               if (!newCollection.id) {
-                toast.error("Error updating collection, refresh and try again");
+                logError("Error updating collection");
               } else updateCollection(newCollection);
             }
           }}

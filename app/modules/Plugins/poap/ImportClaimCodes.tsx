@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { quizValidFieldTypes } from "../common/ResponseMatchDistribution";
+import { logError } from "@/app/common/utils/utils";
 
 export type Props = {
   setModalMode: (
@@ -141,7 +142,7 @@ export default function ImportClaimCodes({
                   },
                 });
                 if (!res?.id) {
-                  toast.error("Something went wrong, refresh and try again");
+                  logError("Update collection failed");
                   setLoading(false);
                   return;
                 }
@@ -172,7 +173,7 @@ export default function ImportClaimCodes({
                   },
                 });
                 if (!res?.formMetadata?.poapEventId) {
-                  toast.error("Something went wrong,refresh and try again ");
+                  logError("Update collection failed");
                   setLoading(false);
                   return;
                 }

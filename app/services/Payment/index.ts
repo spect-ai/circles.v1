@@ -1,3 +1,4 @@
+import { logError } from "@/app/common/utils/utils";
 import { BatchPayInfo } from "@/app/types";
 import { toast } from "react-toastify";
 
@@ -57,9 +58,7 @@ export const updatePaymentInfo = async (
     const data = await res.json();
     return data;
   }
-  toast.error("Error updating payment info", {
-    theme: "dark",
-  });
+  logError("Error updating payment info");
   return undefined;
 };
 
@@ -81,8 +80,6 @@ export const addToken = async (circleId: string, body: AddTokenDTO) => {
     console.log({ data });
     return data;
   }
-  toast.error("Error updating adding token", {
-    theme: "dark",
-  });
+  logError("Error updating adding token");
   return undefined;
 };

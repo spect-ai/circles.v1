@@ -29,6 +29,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useCircle } from "../../CircleContext";
+import { logError } from "@/app/common/utils/utils";
 
 export default function usePaymentViewCommon() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -297,7 +298,7 @@ export default function usePaymentViewCommon() {
           toast.error(
             "Please login to your wallet and connect it to Spect, wallet might be locked"
           );
-        } else toast.error(e.message);
+        } else logError(e.message);
       }
     }
   };

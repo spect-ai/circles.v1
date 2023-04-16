@@ -11,6 +11,7 @@ import { useCircle } from "../../Circle/CircleContext";
 import AddToken from "../../Circle/CircleSettingsModal/CirclePayment/AddToken";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import Chain from "./Chain";
+import { logError } from "@/app/common/utils/utils";
 type Props = {
   handleClose: () => void;
 };
@@ -536,9 +537,7 @@ export default function Payments({ handleClose }: Props) {
                     updateCollection(res);
                     handleClose();
                   } else {
-                    toast.error(
-                      "Error updating payment config, refresh and try again"
-                    );
+                    logError("Error updating payment config");
                   }
                 }}
               >
@@ -566,7 +565,7 @@ export default function Payments({ handleClose }: Props) {
                     updateCollection(res);
                     handleClose();
                   } else {
-                    toast.error(
+                    logError(
                       "Error updating payment config, refresh and try again"
                     );
                   }

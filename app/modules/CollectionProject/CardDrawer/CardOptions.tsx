@@ -28,6 +28,7 @@ import { useCircle } from "../../Circle/CircleContext";
 import { useAccount } from "wagmi";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import IntegrateSnapshotModal from "../../Circle/Governance/IntegrateSnapshotModal";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   handleDrawerClose: () => void;
@@ -211,7 +212,7 @@ export default function CardOptions({
                     toast.success(
                       "Added to pending payments, you can view it in the payments center"
                     );
-                  else toast.error("Error adding to pending payments");
+                  else logError("Error adding to pending payments");
                 }}
               >
                 <Stack direction="horizontal" align="center" space="2">
@@ -296,7 +297,7 @@ export default function CardOptions({
                 if (res.id) {
                   updateCollection(res);
                 } else {
-                  toast.error("Error updating collection");
+                  logError("Error updating collection");
                 }
               }}
             >

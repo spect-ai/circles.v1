@@ -11,6 +11,7 @@ import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { gnosisPayment } from "../Gnosis";
 import useDistributor from "./useDistributor";
 import useERC20 from "./useERC20";
+import { logError } from "@/app/common/utils/utils";
 
 declare let window: any;
 
@@ -195,7 +196,7 @@ export default function usePaymentGateway(
       const res = await gnosisPayment(safeAddress, data, chainId);
       if (res)
         toast.success("Transaction sent to your safe", { theme: "dark" });
-      else toast.error("Error Occurred while sending your transation to safe");
+      else logError("Error Occurred while sending your transation to safe");
       return res;
     } else if (paymentType === "currency") {
       const contractdata = await distributeEther({
@@ -212,7 +213,7 @@ export default function usePaymentGateway(
       const res = await gnosisPayment(safeAddress, contractdata, chainId);
       if (res)
         toast.success("Transaction sent to your safe", { theme: "dark" });
-      else toast.error("Error Occurred while sending your transation to safe");
+      else logError("Error Occurred while sending your transation to safe");
       return res;
     }
     return false;

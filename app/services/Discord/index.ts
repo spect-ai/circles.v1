@@ -1,3 +1,4 @@
+import { logError } from "@/app/common/utils/utils";
 import { toast } from "react-toastify";
 
 export const guildIsConnected = async (guildId: string) => {
@@ -24,7 +25,7 @@ export const getGuildRoles = async (guildId: string) => {
     const data = await res.json();
     return data;
   }
-  toast.error("Error getting guild roles");
+  logError("Error getting guild roles");
   return null;
 };
 
@@ -39,5 +40,5 @@ export const fetchGuildChannels = async (
     const data = await res.json();
     return data;
   }
-  toast.error("Error getting guild channels");
+  logError("Error getting guild channels");
 };

@@ -2,7 +2,7 @@
 import Avatar from "@/app/common/components/Avatar";
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { timeSince } from "@/app/common/utils/utils";
+import { logError, timeSince } from "@/app/common/utils/utils";
 import { sendFormComment } from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CollectionActivity, MappedItem, UserType } from "@/app/types";
@@ -164,7 +164,7 @@ export default function CardActivity({
                     updateCollection(res);
                     setComment("");
                     setIsDirty(false);
-                  } else toast.error("Something went wrong");
+                  } else logError("Sending comment failed");
                   setSendingComment(false);
                 }}
               >
