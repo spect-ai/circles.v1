@@ -121,7 +121,7 @@ export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
             }}
             loading={loading}
           >
-            Create Thread & Share
+            Share
           </PrimaryButton>
         </Box>
       </Box>
