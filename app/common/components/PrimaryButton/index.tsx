@@ -3,6 +3,7 @@ import type { FC } from "react";
 import { Button } from "degen";
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { motion } from "framer-motion";
+import { Hidden, Visible } from "react-grid-system";
 
 interface Props {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
@@ -74,23 +75,44 @@ const PrimaryButton: FC<Props> = ({
       variants={animationMapping[animation]}
       transition={{ duration: 0.3 }}
     >
-      <Button
-        data-tour={tourId}
-        disabled={disabled}
-        loading={loading}
-        width="full"
-        size={size}
-        variant={variant}
-        prefix={icon}
-        onClick={onClick}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        tone={tone as any}
-        type={type}
-        suffix={suffix}
-        center={center}
-      >
-        {children}
-      </Button>
+      <Hidden xs sm md>
+        <Button
+          data-tour={tourId}
+          disabled={disabled}
+          loading={loading}
+          width="full"
+          size={"small"}
+          variant={variant}
+          prefix={icon}
+          onClick={onClick}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          tone={tone as any}
+          type={type}
+          suffix={suffix}
+          center={center}
+        >
+          {children}
+        </Button>
+      </Hidden>
+      <Visible xs sm md>
+        <Button
+          data-tour={tourId}
+          disabled={disabled}
+          loading={loading}
+          width="full"
+          size={"extraSmall"}
+          variant={variant}
+          prefix={icon}
+          onClick={onClick}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          tone={tone as any}
+          type={type}
+          suffix={suffix}
+          center={center}
+        >
+          {children}
+        </Button>
+      </Visible>
     </motion.div>
   );
 };

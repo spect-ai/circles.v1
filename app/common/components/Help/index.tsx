@@ -1,7 +1,7 @@
 import { QuestionCircleOutlined, TwitterOutlined } from "@ant-design/icons";
 import { Box, Button, Stack } from "degen";
-import React from "react";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import { Hidden } from "react-grid-system";
 
 type Props = {
   setFaqOpen: (value: boolean) => void;
@@ -9,48 +9,50 @@ type Props = {
 
 export default function Help({ setFaqOpen }: Props) {
   return (
-    <Box
-      style={{
-        position: "absolute",
-        right: "2rem",
-        bottom: "0.5rem",
-        zIndex: "11",
-      }}
-    >
-      <Stack
-        justify={"center"}
-        direction="horizontal"
-        align={"center"}
-        space="2"
+    <Hidden xs sm>
+      <Box
+        style={{
+          position: "absolute",
+          right: "2rem",
+          bottom: "0.5rem",
+          zIndex: "11",
+        }}
       >
-        <a
-          href={"https://twitter.com/joinSpect"}
-          target="_blank"
-          rel="noreferrer"
+        <Stack
+          justify={"center"}
+          direction="horizontal"
+          align={"center"}
+          space="2"
         >
-          <Button shape="circle" size="small" variant="transparent">
-            <TwitterOutlined style={{ fontSize: "1.3rem" }} />
-          </Button>
-        </a>
+          <a
+            href={"https://twitter.com/joinSpect"}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Button shape="circle" size="small" variant="transparent">
+              <TwitterOutlined style={{ fontSize: "1.3rem" }} />
+            </Button>
+          </a>
 
-        <a
-          href={"https://discord.gg/AF2qRMMpZ9"}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <Button shape="circle" size="small" variant="transparent">
-            <DiscordIcon />
+          <a
+            href={"https://discord.gg/AF2qRMMpZ9"}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Button shape="circle" size="small" variant="transparent">
+              <DiscordIcon />
+            </Button>
+          </a>
+          <Button
+            shape="circle"
+            size="small"
+            variant="transparent"
+            onClick={() => setFaqOpen(true)}
+          >
+            <QuestionCircleOutlined style={{ fontSize: "1.3rem" }} />
           </Button>
-        </a>
-        <Button
-          shape="circle"
-          size="small"
-          variant="transparent"
-          onClick={() => setFaqOpen(true)}
-        >
-          <QuestionCircleOutlined style={{ fontSize: "1.3rem" }} />
-        </Button>
-      </Stack>
-    </Box>
+        </Stack>
+      </Box>
+    </Hidden>
   );
 }

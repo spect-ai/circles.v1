@@ -92,6 +92,10 @@ export const CoverImage = styled(Box)<{ src: string }>`
   background-image: url(${(props) => props.src});
   background-size: cover;
   z-index: -1;
+
+  @media (max-width: 768px) {
+    height: 12rem;
+  }
 `;
 
 const FormContainer = styled(Box)`

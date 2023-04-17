@@ -48,13 +48,17 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
     <Box
       display={"flex"}
       flexDirection="column"
-      gap={"5"}
       alignItems="center"
-      marginTop={"48"}
+      marginTop={{
+        xs: "24",
+        md: "48",
+      }}
     >
       <Stack align="center">
         {/* <IconTokens color={"accent"} size="8" /> */}
-        <Heading>Let&apos;s create a space for you & your frens</Heading>
+        <Heading align="center">
+          Let&apos;s create a space for you & your frens
+        </Heading>
         <Text color="accent">
           <MdGroupWork size="40" />
         </Text>

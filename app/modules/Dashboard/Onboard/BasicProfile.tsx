@@ -27,36 +27,15 @@ export const NameInput = styled.input`
 `;
 
 export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
-  // const { updateProfile } = useProfileUpdate();
-  // const [userName, setUserName] = useState("");
-  // const [part, setPart] = useState(0);
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
-  // const updateUser = async () => {
-  //   const res = await updateProfile({
-  //     username: userName,
-  //   });
-  //   if (res) {
-  //     setStep(1);
-  //   } else {
-  //     toast.error("Username already taken");
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (currentUser?.discordUsername) setPart(1);
-  // }, []);
   return (
     <Box
-      display={"flex"}
-      flexDirection="column"
-      gap={"5"}
       width={{ xs: "full", md: "fit", lg: "128" }}
-      alignItems="center"
-      marginTop={"60"}
+      marginTop={{
+        xs: "32",
+        md: "60",
+      }}
     >
-      <Stack align="center">
+      <Stack align="center" space="6">
         <Stack
           direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}
           align="center"
@@ -122,7 +101,7 @@ const ConnectDiscordButton = ({
             data.userData.username === undefined
               ? undefined
               : data.userData.username + "#" + data.userData.discriminator,
-          username: data.userData.username + "_" + random2Digit,
+          username: data.userData.username + "" + random2Digit,
         });
         console.log({ profileRes });
         setLoading(false);

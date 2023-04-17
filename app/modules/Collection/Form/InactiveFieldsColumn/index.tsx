@@ -7,12 +7,7 @@ import AddField from "../../AddField";
 import Pages from "../Pages";
 
 const Container = styled(Box)`
-  width: 25%;
-  @media (max-width: 992px) {
-    width: 100%;
-    margin-bottom: 2rem;
-  }
-  padding: 0rem;
+  width: 100%;
   margin-top: -1rem;
 `;
 
@@ -21,7 +16,16 @@ function InactiveFieldsColumnComponent() {
   const [propertyName, setPropertyName] = useState("");
 
   return (
-    <>
+    <Box
+      marginTop={{
+        xs: "12",
+        md: "0",
+      }}
+      paddingX={{
+        xs: "4",
+        md: "0",
+      }}
+    >
       <AnimatePresence>
         {isEditFieldOpen && (
           <AddField
@@ -31,17 +35,14 @@ function InactiveFieldsColumnComponent() {
         )}
       </AnimatePresence>
       <Container>
-        <Stack>
-          {/* <Box marginTop="2">
+        <Box marginTop="2">
+          <Stack>
             <ViewPlugins />
-          </Box> */}
-          <Box marginTop="2">
-            {" "}
             <Pages />
-          </Box>
-        </Stack>
+          </Stack>
+        </Box>
       </Container>
-    </>
+    </Box>
   );
 }
 

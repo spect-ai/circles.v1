@@ -119,7 +119,12 @@ export default function GrantTemplate({ handleClose }: Props) {
             <Heading color={"accent"} align="left">
               Integrate Discord
             </Heading>
-            <Box width="1/3">
+            <Box
+              width={{
+                xs: "full",
+                md: "1/3",
+              }}
+            >
               <Stack direction="vertical">
                 <PrimaryButton
                   disabled={!!circle?.discordGuildId}
@@ -240,7 +245,10 @@ export default function GrantTemplate({ handleClose }: Props) {
             <Input
               label
               hideLabel
-              width={"1/2"}
+              width={{
+                xs: "full",
+                md: "1/2",
+              }}
               prefix="https://snapshot.org/#/"
               value={snapshotSpace}
               placeholder="your-space.eth"
@@ -257,7 +265,12 @@ export default function GrantTemplate({ handleClose }: Props) {
               ) : (
                 <Text color={"red"}>Incorrect URL</Text>
               ))}
-            <Stack direction={"horizontal"}>
+            <Stack
+              direction={{
+                xs: "vertical",
+                md: "horizontal",
+              }}
+            >
               <Button
                 variant="transparent"
                 size="small"
@@ -332,7 +345,7 @@ export default function GrantTemplate({ handleClose }: Props) {
                 variant="transparent"
                 size="small"
                 onClick={() => {
-                  if (!circle?.snapshot.id) {
+                  if (!circle?.snapshot?.id) {
                     setStep(2);
                   } else if (!circle?.discordGuildId) {
                     setStep(0);

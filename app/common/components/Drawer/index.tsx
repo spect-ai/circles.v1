@@ -58,6 +58,7 @@ function Drawer({
         animate="visible"
         exit="exit"
         width={width}
+        closeOnOutsideClick={closeOnOutsideClick}
         onClick={(e) => {
           e.stopPropagation();
         }}
@@ -107,7 +108,10 @@ const Container = styled(Box)`
   // }
 `;
 
-export const MotionContainer = styled(motion.div)<{ width?: string }>`
+export const MotionContainer = styled(motion.div)<{
+  width?: string;
+  closeOnOutsideClick?: boolean;
+}>`
   height: 100%;
   width: ${({ width }) => width || "70%"};
   position: fixed;
@@ -121,7 +125,8 @@ export const MotionContainer = styled(motion.div)<{ width?: string }>`
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
 
   @media (max-width: 768px) {
-    width: 100%;
+    width: ${({ closeOnOutsideClick, width }) =>
+      closeOnOutsideClick ? width : "100%"};
   }
 
   @media (min-width: 768px) and (max-width: 1024px) {

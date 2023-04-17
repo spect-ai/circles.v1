@@ -202,7 +202,6 @@ function CircleSidebar() {
                     <Text>
                       <IconUserGroup size="4" />{" "}
                     </Text>
-
                     <Text>Roles</Text>
                   </Box>
                 </CustomButton>
@@ -256,7 +255,7 @@ function CircleSidebar() {
                       });
                   }}
                 >
-                  Payment Center
+                  Payments
                 </PrimaryButton>
               </Link>
             )}
@@ -278,7 +277,7 @@ function CircleSidebar() {
                       });
                   }}
                 >
-                  Automation Center
+                  Automations
                 </PrimaryButton>
               </Link>
             )}
@@ -304,14 +303,9 @@ function CircleSidebar() {
                         });
                     }}
                   >
-                    Governance Center
+                    Governance
                   </PrimaryButton>
                 </Link>
-                <Badge>
-                  <Text color="accent" size="extraSmall">
-                    New
-                  </Text>
-                </Badge>
               </Box>
             )}
             {circle?.sidebarConfig?.showMembership && (
@@ -336,14 +330,9 @@ function CircleSidebar() {
                         });
                     }}
                   >
-                    Membership Center
+                    Memberships
                   </PrimaryButton>
                 </Link>
-                <Badge>
-                  <Text color="accent" size="extraSmall">
-                    Alpha
-                  </Text>
-                </Badge>
               </Box>
             )}
             {/* <Link href={`/${cId}?tab=credential`}>

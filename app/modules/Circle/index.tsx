@@ -11,7 +11,6 @@ import { joinCircle } from "@/app/services/JoinCircle";
 import Roles from "./RolesTab";
 import FAQModal from "../Dashboard/FAQModal";
 import Payment from "./Payment";
-import { QuestionCircleOutlined } from "@ant-design/icons";
 import Credential from "./Credential";
 import AutomationCenter from "./Automation";
 import Help from "@/app/common/components/Help";

@@ -275,15 +275,15 @@ export const CustomButton = styled(Box)<{ mode: string }>`
   border: solid 2px
     ${(props) =>
       props.mode === "dark"
-        ? "rgb(255, 255, 255, 0.05)"
-        : "rgb(20, 20, 20, 0.05)"};
+        ? "rgb(255, 255, 255, 0.1)"
+        : "rgb(20, 20, 20, 0.1)"};
   &:hover {
     border: solid 2px rgb(191, 90, 242);
-    transition-duration: 0.7s;
+    transition-duration: 0.5s;
     cursor: pointer;
   }
   transition: all 0.3s ease-in-out;
-  padding: 0.5rem 0.5rem;
+  padding: 0.4rem 0.5rem;
   justify-content: center;
   align-items: center;
   display: flex;

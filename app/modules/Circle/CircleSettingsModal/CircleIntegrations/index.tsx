@@ -79,43 +79,43 @@ export default function CircleIntegrations() {
             Setup integration with discord. Connect your discord server to setup
             role gating.
           </Text>
-        </Stack>
-        <Stack
-          direction={{
-            xs: "vertical",
-            md: "horizontal",
-          }}
-        >
-          <Link
-            href={`https://discord.com/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID}&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${cId}`}
+          <Stack
+            direction={{
+              xs: "vertical",
+              md: "horizontal",
+            }}
           >
+            <Link
+              href={`https://discord.com/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID}&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${cId}`}
+            >
+              <Box
+                width={{
+                  xs: "full",
+                  md: "1/3",
+                }}
+              >
+                <PrimaryButton
+                  icon={
+                    <Box marginTop="1">
+                      <DiscordIcon />
+                    </Box>
+                  }
+                >
+                  {circle?.discordGuildId
+                    ? "Discord Connected"
+                    : "Connect Discord"}
+                </PrimaryButton>
+              </Box>
+            </Link>
             <Box
               width={{
                 xs: "full",
                 md: "1/3",
               }}
             >
-              <PrimaryButton
-                icon={
-                  <Box marginTop="1">
-                    <DiscordIcon />
-                  </Box>
-                }
-              >
-                {circle?.discordGuildId
-                  ? "Discord Connected"
-                  : "Connect Discord"}
-              </PrimaryButton>
+              <DiscordRoleMapping />
             </Box>
-          </Link>
-          <Box
-            width={{
-              xs: "full",
-              md: "1/3",
-            }}
-          >
-            <DiscordRoleMapping />
-          </Box>
+          </Stack>
         </Stack>
         <Stack space="1">
           <Text variant="extraLarge" weight="bold">
@@ -125,7 +125,13 @@ export default function CircleIntegrations() {
             Enter your snapshot space to create and vote on proposals from Spect
           </Text>
           <Stack direction={"horizontal"} space="2" align={"center"}>
-            <Box width="1/2" marginTop="1">
+            <Box
+              width={{
+                xs: "full",
+                md: "1/2",
+              }}
+              marginTop="1"
+            >
               <Input
                 label
                 hideLabel
@@ -206,7 +212,6 @@ export default function CircleIntegrations() {
               xs: "full",
               md: "1/3",
             }}
-            marginTop="6"
           >
             <ConnectGnosis />
           </Box>

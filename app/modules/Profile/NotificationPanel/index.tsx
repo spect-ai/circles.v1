@@ -37,7 +37,7 @@ export default function NotificationPanel() {
     <Box>
       <Drawer
         handleClose={handleClose}
-        width="700px"
+        width={["xs", "sm"].includes(screenClass) ? "250px" : "700px"}
         header={
           <Box paddingY="4">
             <TaskWalletHeader />

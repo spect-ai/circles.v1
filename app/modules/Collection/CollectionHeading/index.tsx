@@ -98,7 +98,14 @@ function CollectionHeading() {
                   md: "4",
                 }}
               >
-                <Text size="headingThree" weight="semiBold" ellipsis>
+                <Text
+                  size={{
+                    xs: "small",
+                    md: "headingThree",
+                  }}
+                  weight="semiBold"
+                  ellipsis
+                >
                   {smartTrim(collection?.name, 20)}
                 </Text>
               </Box>
@@ -166,52 +173,45 @@ function CollectionHeading() {
                       borderWidth="0.5"
                       borderRadius="2xLarge"
                     >
-                      <PopoverOption onClick={() => {}}>
-                        <PrimaryButton
-                          onClick={() => {
-                            void navigator.clipboard.writeText(
-                              `https://circles.spect.network/r/${collection?.slug}`
-                            );
-                            toast.success("Copied to clipboard");
-                            process.env.NODE_ENV === "production" &&
-                              mixpanel.track("Share Form", {
-                                user: currentUser?.username,
-                                form: collection?.name,
-                              });
-                          }}
-                        >
-                          Share
-                        </PrimaryButton>
+                      <PopoverOption
+                        onClick={() => {
+                          void navigator.clipboard.writeText(
+                            `https://circles.spect.network/r/${collection?.slug}`
+                          );
+                          toast.success("Copied to clipboard");
+                          process.env.NODE_ENV === "production" &&
+                            mixpanel.track("Share Form", {
+                              user: currentUser?.username,
+                              form: collection?.name,
+                            });
+                        }}
+                      >
+                        Share link
                       </PopoverOption>
                       <PopoverOption
                         onClick={() => {
-                          setIsAddFieldOpen(true);
-                          setIsOpen(false);
+                          setShareOnDiscordOpen(true);
+                          setIsShareOpen(false);
                         }}
                       >
-                        Add Field
+                        Share on Discord
+                      </PopoverOption>
+                      <PopoverOption
+                        onClick={() => {
+                          process.env.NODE_ENV === "production" &&
+                            mixpanel.track("Form Embed", {
+                              collection: collection?.slug,
+                              circle: collection?.parents[0].slug,
+                              user: currentUser?.username,
+                            });
+                          setIsShareOpen(false);
+                          setIsEmbedModalOpen(true);
+                        }}
+                      >
+                        Embed
                       </PopoverOption>
                       {/* <Embed /> */}
-                      {view === 1 && (
-                        <PopoverOption
-                          onClick={() => {
-                            setView(0);
-                            setIsOpen(false);
-                          }}
-                        >
-                          Edit Form
-                        </PopoverOption>
-                      )}
-                      {view === 0 && (
-                        <PopoverOption
-                          onClick={() => {
-                            setView(1);
-                            setIsOpen(false);
-                          }}
-                        >
-                          Responses {Object.keys(collection.data || {})?.length}
-                        </PopoverOption>
-                      )}
+
                       <a
                         href={`/r/${collection?.slug}`}
                         target="_blank"
@@ -225,6 +225,26 @@ function CollectionHeading() {
                           Preview
                         </PopoverOption>
                       </a>
+                      {view === 0 && (
+                        <PopoverOption
+                          onClick={() => {
+                            setView(1);
+                            setIsOpen(false);
+                          }}
+                        >
+                          Responses
+                        </PopoverOption>
+                      )}
+                      {view === 1 && (
+                        <PopoverOption
+                          onClick={() => {
+                            setView(0);
+                            setIsOpen(false);
+                          }}
+                        >
+                          Edit Form
+                        </PopoverOption>
+                      )}
                     </Box>
                   </Popover>
                 </Box>
@@ -239,7 +259,7 @@ function CollectionHeading() {
                 }}
                 align="center"
               >
-                <ViewPlugins />
+                {/* <ViewPlugins /> */}
                 <Popover
                   butttonComponent={
                     <PrimaryButton

@@ -176,7 +176,12 @@ export default function ViewPlugins({}: Props) {
             size="large"
             key="plugins"
           >
-            <Box padding="8">
+            <Box
+              padding={{
+                xs: "4",
+                md: "8",
+              }}
+            >
               <Stack>
                 <Stack direction={"horizontal"} space="4" align="center">
                   <Input
@@ -326,10 +331,19 @@ const PluginCard = ({
         </PluginAdded>
       )}
       <PluginImage src={plugin.image} />
-      <Box padding="4">
+      <Box
+        padding={{
+          xs: "2",
+          md: "4",
+        }}
+      >
         <Stack>
-          <Text weight="bold">{plugin.name}</Text>
-          <Text size="extraSmall">{plugin.description}</Text>
+          <Text weight="bold" align="center">
+            {plugin.name}
+          </Text>
+          <Text size="extraSmall" align="center">
+            {plugin.description}
+          </Text>
           {/* <a href={plugin.docs} target="_blank">
             <Text color="accent">View Docs</Text>
           </a> */}
@@ -341,10 +355,7 @@ const PluginCard = ({
 
 const PluginContainer = styled(motion.div)`
   @media (max-width: 768px) {
-    width: calc(100% / 2 - 1rem);
-  }
-  @media (max-width: 480px) {
-    width: 100%;
+    width: calc(100% / 2 - 0.5rem);
   }
   width: calc(100% / 3 - 1rem);
   border-radius: 1rem;
@@ -357,6 +368,10 @@ const PluginImage = styled.img`
   height: 14rem;
   object-fit: cover;
   border-radius: 1rem 1rem 0 0;
+
+  @media (max-width: 768px) {
+    height: 7rem;
+  }
 `;
 
 const PluginAdded = styled.div`

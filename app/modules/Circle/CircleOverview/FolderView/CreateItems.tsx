@@ -16,6 +16,7 @@ import { useCircle } from "../../CircleContext";
 import CreateCollectionModal from "../../CreateCollectionModal";
 import CreateSpaceModal from "../../CreateSpaceModal";
 import { logError } from "@/app/common/utils/utils";
+import { Hidden } from "react-grid-system";
 
 type Props = {};
 
@@ -138,10 +139,12 @@ const Item = ({ name, Icon, description, onClick }: any) => {
             <Text color="accent">
               <Icon size={32} />
             </Text>
-            <Text>{name}</Text>
-            <Text variant="label" align="center">
-              {description}
-            </Text>
+            <Text align="center">{name}</Text>
+            <Hidden xs sm>
+              <Text variant="label" align="center">
+                {description}
+              </Text>
+            </Hidden>
           </Stack>
         </Box>
       </motion.div>

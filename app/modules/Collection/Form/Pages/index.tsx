@@ -1,5 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Stack, Text } from "degen";
+import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { updateFormCollection } from "@/app/services/Collection";
@@ -23,13 +23,14 @@ export default function Pages() {
   return (
     <Box>
       <Stack>
-        <Stack direction="horizontal" space="4" align="center">
+        <Stack direction="horizontal" space="2" align="center">
           <Text size="headingThree" weight="semiBold" ellipsis>
             Pages
           </Text>
-          <PrimaryButton
+          <Button
+            shape="circle"
             size="extraSmall"
-            variant="tertiary"
+            variant="transparent"
             onClick={async () => {
               process.env.NODE_ENV === "production" &&
                 mixpanel.track("Add Page", {
@@ -71,9 +72,11 @@ export default function Pages() {
             }}
           >
             <Box display="flex" flexDirection="row" gap="1" alignItems="center">
-              <Text color="accent">Add Page</Text>
+              <Text color="accent">
+                <IconPlusSmall size="5" />
+              </Text>
             </Box>
-          </PrimaryButton>
+          </Button>
         </Stack>
         <PagesContainer>
           <PageLine />

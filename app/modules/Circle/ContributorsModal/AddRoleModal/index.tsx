@@ -20,6 +20,7 @@ import React, { useEffect, useState } from "react";
 import { useCircle } from "../../CircleContext";
 import { defaultPermissions, permissionText } from "./contants";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { Hidden } from "react-grid-system";
 
 type props = {
   role?: string;
@@ -68,8 +69,10 @@ export default function AddRole({ role }: props) {
           >
             {circle.roles[role]?.mutable && canDo("manageRoles")
               ? "Edit"
-              : "View"}{" "}
-            Permissions
+              : "View"}
+            <Hidden xs sm>
+              Permissions
+            </Hidden>
           </Button>
         </Box>
       )}

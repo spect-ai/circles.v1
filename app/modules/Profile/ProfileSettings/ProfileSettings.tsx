@@ -12,8 +12,11 @@ import { Notification } from "./Notificaton";
 import { Socials } from "./Socials";
 
 const ScrollContainer = styled(Box)`
+  @media (max-width: 768px) {
+    overflow-y: visible;
+  }
   ::-webkit-scrollbar {
-    width: 10px;
+    overflow-y: visible;
   }
   height: 35rem;
   overflow-y: auto;
@@ -49,8 +52,21 @@ export default function ProfileSettings({ setIsOpen, openTab }: Props) {
       zIndex={2}
       height="calc(100% - 20rem)"
     >
-      <Box display="flex">
-        <Box width="1/4" paddingY="8" paddingRight="1">
+      <Box
+        display="flex"
+        flexDirection={{
+          xs: "column",
+          md: "row",
+        }}
+      >
+        <Box
+          width={{
+            xs: "full",
+            md: "1/4",
+          }}
+          paddingY="8"
+          paddingRight="1"
+        >
           <Tabs
             selectedTab={tab}
             onTabClick={onTabClick}
@@ -61,7 +77,10 @@ export default function ProfileSettings({ setIsOpen, openTab }: Props) {
           />
         </Box>
         <ScrollContainer
-          width="3/4"
+          width={{
+            xs: "full",
+            md: "3/4",
+          }}
           paddingX={{
             xs: "2",
             md: "4",
