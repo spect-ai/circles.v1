@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from "react";
 import { ReactNodeNoStrings } from "degen/dist/types/types";
-import { Box, useTheme } from "degen";
+import { Box, Button, IconMenu, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
 import Sidebar from "@/app/modules/Sidebar";
@@ -24,12 +24,19 @@ import {
 import { useAtom } from "jotai";
 import { useAccount, useConnect } from "wagmi";
 import { H } from "highlight.run";
+import { Hidden, Visible } from "react-grid-system";
+import mixpanel from "mixpanel-browser";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
 };
 
 const Container = styled(Box)<{ issidebarexpanded: boolean }>`
+  @media (max-width: 992px) {
+    max-width: ${(props) =>
+      props.issidebarexpanded ? "calc(100vw - 22rem)" : "calc(100vw - 0rem)"};
+  }
+
   max-width: ${(props) =>
     props.issidebarexpanded ? "calc(100vw - 22rem)" : "calc(100vw - 2rem)"};
   flex-grow: 1;
@@ -198,7 +205,9 @@ function PublicLayout(props: PublicLayoutProps) {
       {connectedUser && currentUser?.id ? (
         !onboard ? (
           <>
-            <Sidebar />
+            <Hidden xs sm>
+              <Sidebar />
+            </Hidden>
             <AnimatePresence initial={false}>
               {isSidebarExpanded && <ExtendedSidebar />}
             </AnimatePresence>
@@ -208,6 +217,35 @@ function PublicLayout(props: PublicLayoutProps) {
               width="full"
               overflow="hidden"
             >
+              <Visible xs sm>
+                <Box
+                  padding="2"
+                  style={{
+                    position: "absolute",
+                    bottom: "0",
+                    right: "0",
+                    zIndex: 5,
+                  }}
+                >
+                  <Button
+                    shape="circle"
+                    variant={isSidebarExpanded ? "secondary" : "tertiary"}
+                    size="extraSmall"
+                    onClick={() => {
+                      setIsSidebarExpanded(!isSidebarExpanded);
+                      process.env.NODE_ENV === "production" &&
+                        mixpanel.track("Expand Sidebar Button", {
+                          user: currentUser?.username,
+                          url: window.location.href,
+                        });
+                    }}
+                  >
+                    <Text color="accent">
+                      <IconMenu size="4" />
+                    </Text>
+                  </Button>
+                </Box>
+              </Visible>
               <Container issidebarexpanded={isSidebarExpanded}>
                 {children}
               </Container>

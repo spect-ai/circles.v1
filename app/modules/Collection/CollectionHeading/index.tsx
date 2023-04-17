@@ -72,7 +72,10 @@ function CollectionHeading() {
       display="flex"
       flexDirection="column"
       paddingLeft="3"
-      paddingRight="8"
+      paddingRight={{
+        xs: "3",
+        md: "8",
+      }}
     >
       <Hidden xs sm>
         <Box marginLeft="4" marginTop="2">
@@ -100,7 +103,7 @@ function CollectionHeading() {
               >
                 <Text
                   size={{
-                    xs: "small",
+                    xs: "large",
                     md: "headingThree",
                   }}
                   weight="semiBold"
@@ -259,7 +262,7 @@ function CollectionHeading() {
                 }}
                 align="center"
               >
-                {/* <ViewPlugins /> */}
+                <ViewPlugins />
                 <Popover
                   butttonComponent={
                     <PrimaryButton
@@ -351,6 +354,9 @@ function CollectionHeading() {
                 </Popover>
               </Stack>
             </Hidden>
+            <Visible xs sm>
+              <ViewPlugins />
+            </Visible>
           </Stack>
         )}
         {loading && (

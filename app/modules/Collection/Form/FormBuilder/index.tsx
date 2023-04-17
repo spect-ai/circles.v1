@@ -540,7 +540,7 @@ const Container = styled(Box)`
 
   @media (max-width: 768px) {
     padding: 0rem 1%;
-    margin-top: -5rem;
+    margin-top: -6rem;
   }
 
   @media (min-width: 768px) and (max-width: 1024px) {

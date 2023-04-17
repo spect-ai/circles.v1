@@ -20,6 +20,9 @@ import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 
 const BoxContainer = styled(Box)`
+  @media (max-width: 992px) {
+    width: calc(100vw - 0rem);
+  }
   width: calc(100vw - 3.5rem);
 `;
 
@@ -155,7 +158,6 @@ export default function Circle() {
       />
       {page === "Overview" && <CircleDashboard />}
       <Help setFaqOpen={setFaqOpen} />
-
       <AnimatePresence>
         {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
       </AnimatePresence>

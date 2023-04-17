@@ -98,7 +98,7 @@ const ScrollContainer = styled(Box)`
     flex-direction: column;
     padding: 0.5rem;
     margin-top: 0rem;
-    height: calc(100vh - 4rem);
+    height: calc(100vh - 9rem);
   }
   flex-direction: row;
   padding: 1.5rem;

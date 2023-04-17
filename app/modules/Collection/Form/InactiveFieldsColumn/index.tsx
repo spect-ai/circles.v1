@@ -37,7 +37,6 @@ function InactiveFieldsColumnComponent() {
       <Container>
         <Box marginTop="2">
           <Stack>
-            <ViewPlugins />
             <Pages />
           </Stack>
         </Box>
