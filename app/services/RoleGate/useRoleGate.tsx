@@ -118,6 +118,13 @@ export default function useRoleGate() {
         ) {
           return true;
         }
+
+        if (!collection.permissions) {
+          if (userRoles.length > 0) {
+            return true;
+          }
+        }
+
         return false;
 
       default:

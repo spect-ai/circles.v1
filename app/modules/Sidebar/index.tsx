@@ -31,7 +31,7 @@ export const ScrollContainer = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 15rem);
+  height: calc(100vh - 10rem);
   overflow-y: auto;
 `;
 

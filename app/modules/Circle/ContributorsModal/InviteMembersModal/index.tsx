@@ -47,7 +47,7 @@ function InviteMemberModal({
 
   const roleOptions =
     circle &&
-    Object.keys(circle.roles).map((role) => ({
+    Object.keys(circle.roles || {}).map((role) => ({
       name: role,
       role: role,
     }));

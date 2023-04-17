@@ -125,7 +125,9 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
     >
       {currentUser?.id ? (
         <Stack align="center">
-          <ProfileInfo member={currentUser} />
+          <Box width="80">
+            <ProfileInfo member={currentUser} />
+          </Box>
         </Stack>
       ) : (
         <Stack space="2">
