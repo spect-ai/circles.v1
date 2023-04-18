@@ -28,14 +28,14 @@ export const AutomationHeading = () => {
           }}
           justifyContent="space-between"
           width="full"
+          gap={{
+            xs: "4",
+            md: "0",
+          }}
         >
-          <Stack direction="horizontal" align="center">
-            <Box width="full">
-              <Text size="headingThree" weight="semiBold" ellipsis>
-                Automation Center
-              </Text>
-            </Box>
-          </Stack>
+          <Text size="headingThree" weight="semiBold" ellipsis>
+            Automation Center
+          </Text>
           <Box display="flex" flexDirection="column" justifyContent="flex-end">
             <PrimaryButton
               variant="secondary"

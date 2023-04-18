@@ -44,9 +44,7 @@ function FormSettings() {
           }
         }}
       >
-        <Text color="accent">
-          <IconCog size="5" />
-        </Text>
+        <IconCog size="5" color="text" />
       </Button>
       <AnimatePresence>
         {isOpen && (

@@ -33,6 +33,11 @@ const Container = styled(Box)<{ mode: string }>`
   padding: 1rem;
   margin-bottom: 0.5rem;
   height: 4rem;
+
+  @media (max-width: 768px) {
+    width: 90%
+  }
+
 `;
 
 export default function AutomationCenter() {
@@ -55,9 +60,14 @@ export default function AutomationCenter() {
           }}
         />{" "}
         <AutomationModal />
-        <Box marginX={"8"} marginTop="2">
+        <Box
+          marginX={{
+            xs: "4",
+            md: "8",
+          }}
+          marginTop="2"
+        >
           <AutomationHeading />
-
           {(circle?.automations === undefined ||
             Object.entries(circle?.automations).length == 0) && (
             <Box

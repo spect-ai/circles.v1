@@ -1,7 +1,16 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Heading, IconDotsHorizontal, Stack, useTheme, Text } from "degen";
+import {
+  Box,
+  Heading,
+  IconDotsHorizontal,
+  Stack,
+  useTheme,
+  Text,
+  Button,
+  IconPlug,
+} from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import { memo, useEffect, useState } from "react";
@@ -23,8 +32,9 @@ import { smartTrim } from "@/app/common/utils/utils";
 import FormSettings from "../Form/FormSettings";
 import WarnConnectWallet from "./WarnConnectWallet";
 import { PopoverOption } from "../../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
-import ViewPlugins from "../../Plugins/ViewPlugins";
+import ViewPlugins, { isPluginAdded } from "../../Plugins/ViewPlugins";
 import { ShareOnDiscord } from "../ShareOnDiscord";
+import { PluginType, spectPlugins } from "../../Plugins/Plugins";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -51,6 +61,8 @@ function CollectionHeading() {
   const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
   const [isWarningOpened, setIsWarningOpened] = useState(false);
   const [shareOnDiscordOpen, setShareOnDiscordOpen] = useState(false);
+  const [isViewPluginsOpen, setIsViewPluginsOpen] = useState(false);
+  const [numPluginsAdded, setNumPlugnsAdded] = useState(0);
 
   const location = useLocation();
 
@@ -65,6 +77,24 @@ function CollectionHeading() {
       }, 500);
     }
   }, [dataId, setView]);
+
+  useEffect(() => {
+    setNumPlugnsAdded(
+      Object.keys(spectPlugins).filter((pluginName) =>
+        isPluginAdded(pluginName as PluginType, collection)
+      )?.length
+    );
+  }, [collection.formMetadata]);
+
+  const onViewPluginsOpen = () => {
+    process.env.NODE_ENV === "production" &&
+      mixpanel.track("Add Plugins", {
+        collection: collection.slug,
+        circle: collection.parents[0].slug,
+        user: currentUser?.username,
+      });
+    setIsViewPluginsOpen(true);
+  };
 
   return (
     <Box
@@ -93,7 +123,7 @@ function CollectionHeading() {
             }}
             justify="space-between"
           >
-            <Stack direction="horizontal" align="center">
+            <Stack direction="horizontal" align="center" space="2">
               <Box
                 width="full"
                 paddingLeft={{
@@ -112,6 +142,17 @@ function CollectionHeading() {
                   {smartTrim(collection?.name, 20)}
                 </Text>
               </Box>
+              <Visible xs sm>
+                <Button
+                  shape="circle"
+                  size="small"
+                  variant="transparent"
+                  center
+                  onClick={onViewPluginsOpen}
+                >
+                  <IconPlug color="accent" />
+                </Button>
+              </Visible>
               <FormSettings />
               <Hidden xs sm>
                 <PrimaryButton
@@ -213,8 +254,16 @@ function CollectionHeading() {
                       >
                         Embed
                       </PopoverOption>
-                      {/* <Embed /> */}
-
+                      <PopoverOption
+                        onClick={() => {
+                          onViewPluginsOpen();
+                          setIsOpen(false);
+                        }}
+                      >
+                        {numPluginsAdded > 0
+                          ? ` Plugins (${numPluginsAdded} added)`
+                          : `Add Plugins`}
+                      </PopoverOption>
                       <a
                         href={`/r/${collection?.slug}`}
                         target="_blank"
@@ -262,7 +311,15 @@ function CollectionHeading() {
                 }}
                 align="center"
               >
-                <ViewPlugins />
+                <PrimaryButton
+                  variant={"tertiary"}
+                  onClick={onViewPluginsOpen}
+                  icon={<IconPlug color="text" />}
+                >
+                  {numPluginsAdded > 0
+                    ? ` Plugins (${numPluginsAdded} added)`
+                    : `Add Plugins`}
+                </PrimaryButton>
                 <Popover
                   butttonComponent={
                     <PrimaryButton
@@ -354,9 +411,6 @@ function CollectionHeading() {
                 </Popover>
               </Stack>
             </Hidden>
-            <Visible xs sm>
-              <ViewPlugins />
-            </Visible>
           </Stack>
         )}
         {loading && (
@@ -402,6 +456,9 @@ function CollectionHeading() {
             isOpen={shareOnDiscordOpen}
             setIsOpen={setShareOnDiscordOpen}
           />
+        )}
+        {isViewPluginsOpen && (
+          <ViewPlugins handleClose={() => setIsViewPluginsOpen(false)} />
         )}
       </AnimatePresence>
     </Box>

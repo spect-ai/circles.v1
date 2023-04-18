@@ -1,6 +1,5 @@
 import Modal from "@/app/common/components/Modal";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, IconPlug, IconSearch, Input, Stack, Tag, Text } from "degen";
+import { Box, IconSearch, Input, Stack, Tag, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -24,13 +23,45 @@ import { matchSorter } from "match-sorter";
 import ResponderProfile from "./responderProfile";
 import mixpanel from "mixpanel-browser";
 import { useQuery } from "react-query";
-import { UserType } from "@/app/types";
+import { CollectionType, UserType } from "@/app/types";
 
-type Props = {};
+type Props = {
+  handleClose: () => void;
+};
 
-export default function ViewPlugins({}: Props) {
+export const isPluginAdded = (
+  pluginName: PluginType,
+  collection: CollectionType
+) => {
+  switch (pluginName) {
+    case "poap":
+      return !!collection.formMetadata.poapEventId;
+    case "guildxyz":
+      return !!collection.formMetadata.formRoleGating?.length;
+    case "gtcpassport":
+      return collection.formMetadata.sybilProtectionEnabled === true;
+    case "mintkudos":
+      return !!collection.formMetadata.mintkudosTokenId;
+    case "payments":
+      return !!collection.formMetadata.paymentConfig;
+    case "erc20":
+      return !!(
+        collection.formMetadata.surveyTokenId ||
+        collection.formMetadata.surveyTokenId === 0
+      );
+    case "ceramic":
+      return !!collection.formMetadata.ceramicEnabled;
+    case "googleCaptcha":
+      return collection.formMetadata.captchaEnabled === true;
+    case "responderProfile":
+      return collection.formMetadata.allowAnonymousResponses === false;
+    default:
+      return false;
+  }
+};
+
+export default function ViewPlugins({ handleClose }: Props) {
   const { registry } = useCircle();
-  const [isOpen, setIsOpen] = useState(false);
   const [isPluginOpen, setIsPluginOpen] = useState(false);
   const [pluginOpen, setPluginOpen] = useState("");
   const [surveyConditions, setSurveyConditions] = useState<any>({});
@@ -42,7 +73,6 @@ export default function ViewPlugins({}: Props) {
     Object.keys(spectPlugins)
   );
   const [showAdded, setShowAdded] = useState(false);
-  const [numPluginsAdded, setNumPlugnsAdded] = useState(0);
 
   const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
     "getMyUser",
@@ -56,42 +86,40 @@ export default function ViewPlugins({}: Props) {
   }, []);
 
   useEffect(() => {
-    if (isOpen) {
-      if (
-        (collection.formMetadata.surveyTokenId ||
-          collection.formMetadata.surveyTokenId === 0) &&
-        registry
-      ) {
-        getSurveyConditionInfo(
-          collection.formMetadata.surveyChain?.value || "80001",
-          registry[collection.formMetadata.surveyChain?.value || "80001"]
-            .surveyHubAddress,
-          collection.formMetadata.surveyTokenId
-        )
-          .then((res) => {
-            console.log({ res });
-            if (res) {
-              setSurveyConditions(res);
-            }
-          })
-          .catch((err) => console.log({ err }));
-        getSurveyDistributionInfo(
-          collection.formMetadata.surveyChain?.value || "80001",
-          registry[collection.formMetadata.surveyChain?.value || "80001"]
-            .surveyHubAddress,
-          collection.formMetadata.surveyTokenId
-        )
-          .then((res) => {
-            console.log({ res });
+    if (
+      (collection.formMetadata.surveyTokenId ||
+        collection.formMetadata.surveyTokenId === 0) &&
+      registry
+    ) {
+      getSurveyConditionInfo(
+        collection.formMetadata.surveyChain?.value || "80001",
+        registry[collection.formMetadata.surveyChain?.value || "80001"]
+          .surveyHubAddress,
+        collection.formMetadata.surveyTokenId
+      )
+        .then((res) => {
+          console.log({ res });
+          if (res) {
+            setSurveyConditions(res);
+          }
+        })
+        .catch((err) => console.log({ err }));
+      getSurveyDistributionInfo(
+        collection.formMetadata.surveyChain?.value || "80001",
+        registry[collection.formMetadata.surveyChain?.value || "80001"]
+          .surveyHubAddress,
+        collection.formMetadata.surveyTokenId
+      )
+        .then((res) => {
+          console.log({ res });
 
-            if (res) {
-              setSurveyDistributionInfo(res);
-            }
-          })
-          .catch((err) => console.log({ err }));
-      }
+          if (res) {
+            setSurveyDistributionInfo(res);
+          }
+        })
+        .catch((err) => console.log({ err }));
     }
-  }, [isOpen, collection]);
+  }, [collection]);
 
   const onClick = (pluginName: PluginType) => {
     switch (pluginName) {
@@ -112,151 +140,95 @@ export default function ViewPlugins({}: Props) {
     }
   };
 
-  const isPluginAdded = (pluginName: PluginType) => {
-    switch (pluginName) {
-      case "poap":
-        return !!collection.formMetadata.poapEventId;
-      case "guildxyz":
-        return !!collection.formMetadata.formRoleGating?.length;
-      case "gtcpassport":
-        return collection.formMetadata.sybilProtectionEnabled === true;
-      case "mintkudos":
-        return !!collection.formMetadata.mintkudosTokenId;
-      case "payments":
-        return !!collection.formMetadata.paymentConfig;
-      case "erc20":
-        return !!(
-          collection.formMetadata.surveyTokenId ||
-          collection.formMetadata.surveyTokenId === 0
-        );
-      case "ceramic":
-        return !!collection.formMetadata.ceramicEnabled;
-      case "googleCaptcha":
-        return collection.formMetadata.captchaEnabled === true;
-      case "responderProfile":
-        return collection.formMetadata.allowAnonymousResponses === false;
-      default:
-        return false;
-    }
-  };
-
-  useEffect(() => {
-    setNumPlugnsAdded(
-      Object.keys(spectPlugins).filter((pluginName) =>
-        isPluginAdded(pluginName as PluginType)
-      )?.length
-    );
-  }, [collection.formMetadata]);
-
   return (
-    <Box>
-      <PrimaryButton
-        variant={"tertiary"}
-        onClick={() => {
-          process.env.NODE_ENV === "production" &&
-            mixpanel.track("Add Plugins", {
-              collection: collection.slug,
-              circle: collection.parents[0].slug,
-              user: currentUser?.username,
-            });
-
-          setIsOpen(true);
-        }}
-        icon={<IconPlug color="text" />}
+    <>
+      <Modal
+        handleClose={handleClose}
+        title="Plugins"
+        size="large"
+        key="plugins"
       >
-        {numPluginsAdded > 0
-          ? ` Plugins (${numPluginsAdded} added)`
-          : `Add Plugins`}
-      </PrimaryButton>
-      <AnimatePresence>
-        {isOpen && (
-          <Modal
-            handleClose={() => setIsOpen(false)}
-            title="Plugins"
-            size="large"
-            key="plugins"
-          >
-            <Box
-              padding={{
-                xs: "4",
-                md: "8",
-              }}
-            >
-              <Stack>
-                <Stack direction={"horizontal"} space="4" align="center">
-                  <Input
-                    placeholder="Search"
-                    value={searchText}
-                    onChange={(e) => {
-                      setSearchText(e.target.value);
-                      const filtered = matchSorter(
-                        Object.values(spectPlugins),
-                        e.target.value,
-                        {
-                          keys: ["name", "id", "tags"],
-                        }
-                      );
-                      console.log({ filtered });
-                      setFilteredPlugins(filtered.map((p) => p.id));
-                    }}
-                    label=""
-                    width="1/2"
-                    prefix={<IconSearch size="4" />}
-                  />
-                  <Box
-                    cursor="pointer"
-                    onClick={() => {
-                      if (!showAdded) {
-                        setFilteredPlugins(
-                          Object.keys(spectPlugins).filter((pluginName) =>
-                            isPluginAdded(pluginName as PluginType)
-                          )
+        <Box
+          padding={{
+            xs: "4",
+            md: "8",
+          }}
+        >
+          <Stack>
+            <Stack direction={"horizontal"} space="4" align="center">
+              <Input
+                placeholder="Search"
+                value={searchText}
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                  const filtered = matchSorter(
+                    Object.values(spectPlugins),
+                    e.target.value,
+                    {
+                      keys: ["name", "id", "tags"],
+                    }
+                  );
+                  console.log({ filtered });
+                  setFilteredPlugins(filtered.map((p) => p.id));
+                }}
+                label=""
+                width="1/2"
+                prefix={<IconSearch size="4" />}
+              />
+              <Box
+                cursor="pointer"
+                onClick={() => {
+                  if (!showAdded) {
+                    setFilteredPlugins(
+                      Object.keys(spectPlugins).filter((pluginName) =>
+                        isPluginAdded(pluginName as PluginType, collection)
+                      )
+                    );
+                  } else {
+                    setFilteredPlugins(Object.keys(spectPlugins));
+                  }
+                  setShowAdded(!showAdded);
+                }}
+              >
+                <Tag tone={showAdded ? "accent" : "secondary"} hover>
+                  {showAdded ? `Show All` : `Show Added`}
+                </Tag>
+              </Box>
+            </Stack>
+            <Stack direction="horizontal" wrap space="4">
+              {filteredPlugins.map((pluginName) => (
+                <PluginCard
+                  key={pluginName}
+                  plugin={spectPlugins[pluginName]}
+                  onClick={async () => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track(`${pluginName} plugin open`, {
+                        collection: collection.slug,
+                        circle: collection.parents[0].slug,
+                        user: currentUser?.username,
+                      });
+                    if (pluginName === "erc20") {
+                      const res = await isWhitelisted("Survey Protocol");
+                      if (!res) {
+                        window.open(
+                          "https://circles.spect.network/r/9991d6ed-f3c8-425a-8b9e-0f598514482c",
+                          "_blank"
                         );
                       } else {
-                        setFilteredPlugins(Object.keys(spectPlugins));
+                        onClick(pluginName as PluginType);
                       }
-                      setShowAdded(!showAdded);
-                    }}
-                  >
-                    <Tag tone={showAdded ? "accent" : "secondary"} hover>
-                      {showAdded ? `Show All` : `Show Added`}
-                    </Tag>
-                  </Box>
-                </Stack>
-                <Stack direction="horizontal" wrap space="4">
-                  {filteredPlugins.map((pluginName) => (
-                    <PluginCard
-                      key={pluginName}
-                      plugin={spectPlugins[pluginName]}
-                      onClick={async () => {
-                        process.env.NODE_ENV === "production" &&
-                          mixpanel.track(`${pluginName} plugin open`, {
-                            collection: collection.slug,
-                            circle: collection.parents[0].slug,
-                            user: currentUser?.username,
-                          });
-                        if (pluginName === "erc20") {
-                          const res = await isWhitelisted("Survey Protocol");
-                          if (!res) {
-                            window.open(
-                              "https://circles.spect.network/r/9991d6ed-f3c8-425a-8b9e-0f598514482c",
-                              "_blank"
-                            );
-                          } else {
-                            onClick(pluginName as PluginType);
-                          }
-                        } else {
-                          onClick(pluginName as PluginType);
-                        }
-                      }}
-                      added={isPluginAdded(pluginName as PluginType)}
-                    />
-                  ))}
-                </Stack>
-              </Stack>
-            </Box>
-          </Modal>
-        )}
+                    } else {
+                      onClick(pluginName as PluginType);
+                    }
+                  }}
+                  added={isPluginAdded(pluginName as PluginType, collection)}
+                />
+              ))}
+            </Stack>
+          </Stack>
+        </Box>
+      </Modal>
+      <AnimatePresence>
         {isPluginOpen && pluginOpen === "guildxyz" && (
           <RoleGate handleClose={() => setIsPluginOpen(false)} key="guildxyz" />
         )}
@@ -303,7 +275,7 @@ export default function ViewPlugins({}: Props) {
           />
         )}
       </AnimatePresence>
-    </Box>
+    </>
   );
 }
 

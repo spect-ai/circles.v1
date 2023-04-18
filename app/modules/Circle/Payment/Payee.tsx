@@ -118,10 +118,16 @@ export default function Payee({
       {mode === "edit" && (
         <Box
           display="flex"
-          flexDirection="row"
+          flexDirection={{
+            xs: "column",
+            md: "row",
+          }}
           justifyContent="flex-end"
           alignItems="center"
-          gap="4"
+          gap={{
+            xs: "2",
+            md: "4",
+          }}
         >
           <Text>Payment On</Text>
           <Dropdown

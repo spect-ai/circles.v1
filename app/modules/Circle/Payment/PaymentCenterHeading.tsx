@@ -68,10 +68,20 @@ function PaymentCenterHeading({ paymentViewId, setPaymentViewId }: Props) {
       </Box>
       <ViewTabsContainer
         backgroundColor="background"
-        paddingX="4"
+        paddingX={{
+          xs: "0",
+          md: "4",
+        }}
         borderTopRadius="large"
         display="flex"
-        flexDirection="row"
+        flexDirection={{
+          xs: "column",
+          md: "row",
+        }}
+        gap={{
+          xs: "2",
+          md: "0",
+        }}
       >
         <Link href={`/${cId}?tab=payment&status=pending`}>
           <ViewTab
@@ -165,6 +175,10 @@ export const ViewTabsContainer = styled(Box)`
 `;
 
 export const ViewTab = styled(Box)`
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+
   max-width: 200px;
   display: flex;
   align-items: center;

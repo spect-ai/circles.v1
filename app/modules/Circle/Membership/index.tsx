@@ -41,7 +41,13 @@ export default function Membership({}: Props) {
   });
 
   return (
-    <Box marginX="8" marginTop="2">
+    <Box
+      marginX={{
+        xs: "4",
+        md: "8",
+      }}
+      marginTop="2"
+    >
       <AnimatePresence>
         {isEmebedOpen && (
           <Embed
@@ -75,6 +81,10 @@ export default function Membership({}: Props) {
               }}
               justifyContent="space-between"
               width="full"
+              gap={{
+                xs: "4",
+                md: "0",
+              }}
             >
               <Stack direction="horizontal" space="4" align="center">
                 <Text size="headingThree" weight="semiBold" ellipsis>

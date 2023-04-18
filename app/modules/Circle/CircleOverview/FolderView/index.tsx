@@ -40,7 +40,7 @@ const ScrollContainer = styled(Box)`
   -ms-overflow-style: none;
   scrollbar-width: none;
   @media (max-width: 768px) {
-    height: calc(100vh - 1rem);
+    height: calc(100vh - 3rem);
   }
   height: calc(100vh - 4rem);
 `;
