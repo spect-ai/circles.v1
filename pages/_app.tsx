@@ -182,7 +182,7 @@ const wagmiClient = createClient({
 });
 
 process.env.NODE_ENV === "production" &&
-  H.init("neyjm1e4", {
+  H.init(process.env.NEXT_PUBLIC_HIGHLIGHT_CLIENT_ID || "", {
     tracingOrigins: true,
     networkRecording: {
       enabled: true,
