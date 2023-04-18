@@ -66,6 +66,7 @@ export function satisfiesConditions(
           case "is one of":
             // eslint-disable-next-line no-case-declarations
             const values = value?.map((v: any) => v.value);
+            if (!data) return false;
             return values.includes(data[propertyId]?.value);
           default:
             return false;
