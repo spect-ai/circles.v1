@@ -218,7 +218,7 @@ function PublicLayout(props: PublicLayoutProps) {
               overflow="hidden"
             >
               <Visible xs sm>
-                <Box padding="2" marginBottom="-4">
+                <Box padding="2" marginBottom="-2">
                   <Button
                     shape="circle"
                     variant={isSidebarExpanded ? "secondary" : "tertiary"}

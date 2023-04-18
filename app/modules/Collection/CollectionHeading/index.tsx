@@ -196,18 +196,19 @@ function CollectionHeading() {
                 </PrimaryButton> */}
               </Hidden>
               <Visible xs sm>
-                <Box width="5">
+                <Box width="8">
                   <Popover
                     butttonComponent={
-                      <Box
-                        cursor="pointer"
+                      <Button
+                        shape="circle"
+                        size="small"
+                        variant="transparent"
                         onClick={() => setIsOpen(!isOpen)}
-                        id="icondots"
                       >
                         <Heading>
                           <IconDotsHorizontal />
                         </Heading>
-                      </Box>
+                      </Button>
                     }
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}

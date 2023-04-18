@@ -41,6 +41,10 @@ import { BiBot } from "react-icons/bi";
 import TemplateModal from "../Circle/CircleOverview/FolderView/TemplateModal";
 
 export const Container = styled(Box)<{ subH?: string }>`
+  @media (max-width: 768px) {
+    height: calc(100vh - 16.1rem);
+  }
+
   ::-webkit-scrollbar {
     display: none;
   }
