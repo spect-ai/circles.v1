@@ -11,8 +11,11 @@ import { UserType } from "@/app/types";
 import { logError } from "@/app/common/utils/utils";
 
 export default function Pages() {
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+  const {
+    localCollection: collection,
+    updateCollection,
+    setCurrentPage,
+  } = useLocalCollection();
 
   const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
     "getMyUser",
@@ -42,9 +45,8 @@ export default function Pages() {
               const lastIndex = collection.formMetadata.pages["collect"]
                 ? pageOrder.length - 2
                 : pageOrder.length - 1;
-              console.log(lastIndex);
               const newPageId = `page-${lastIndex + 1}`;
-              const res = await updateFormCollection(null as any, {
+              const res = await updateFormCollection(collection.id, {
                 ...collection,
                 formMetadata: {
                   ...collection.formMetadata,
@@ -66,6 +68,7 @@ export default function Pages() {
               });
               if (res.id) {
                 updateCollection(res);
+                setCurrentPage(newPageId);
               } else {
                 logError("Error when adding new page");
               }
