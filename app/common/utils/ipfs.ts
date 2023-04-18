@@ -44,9 +44,12 @@ export async function storeImage(imageFile: File) {
 
   // return { imageGatewayURL: `https://spect.infura-ipfs.io/ipfs/${res.cid}` };
 
+  const randomId = Math.random().toString(36).substring(2, 15);
+  console.log({ randomId });
+
   const res = await imagekit.upload({
     file: imageFile,
-    fileName: imageFile.name,
+    fileName: imageFile.name + randomId,
   });
   console.log({ res });
   return { imageGatewayURL: res.url };

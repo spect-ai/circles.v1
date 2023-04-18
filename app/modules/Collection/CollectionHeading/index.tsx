@@ -236,7 +236,7 @@ function CollectionHeading() {
                       <PopoverOption
                         onClick={() => {
                           setShareOnDiscordOpen(true);
-                          setIsShareOpen(false);
+                          setIsOpen(false);
                         }}
                       >
                         Share on Discord
@@ -249,7 +249,7 @@ function CollectionHeading() {
                               circle: collection?.parents[0].slug,
                               user: currentUser?.username,
                             });
-                          setIsShareOpen(false);
+                          setIsOpen(false);
                           setIsEmbedModalOpen(true);
                         }}
                       >
