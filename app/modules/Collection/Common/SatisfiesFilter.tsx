@@ -12,6 +12,7 @@ export function satisfiesConditions(
     const comparatorValue = comparator?.value;
     const property = properties[propertyId];
     if (!property) return false;
+    if (!data) return false;
     switch (property.type) {
       case "shortText":
       case "longText":
@@ -66,7 +67,6 @@ export function satisfiesConditions(
           case "is one of":
             // eslint-disable-next-line no-case-declarations
             const values = value?.map((v: any) => v.value);
-            if (!data) return false;
             return values.includes(data[propertyId]?.value);
           default:
             return false;
