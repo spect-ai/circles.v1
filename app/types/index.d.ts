@@ -272,6 +272,7 @@ export interface CircleType {
     [key: string]: RetroType;
   };
   safeAddresses: SafeAddresses;
+  whitelistedAddresses: SafeAddresses;
   toBeClaimed: boolean;
   qualifiedClaimee: string[];
   unauthorized?: boolean;
