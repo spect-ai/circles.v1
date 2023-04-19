@@ -37,6 +37,7 @@ import { BiLogIn } from "react-icons/bi";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { logError } from "@/app/common/utils/utils";
 import { Hidden, Visible } from "react-grid-system";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 function FormBuilder() {
   const {
@@ -85,6 +86,7 @@ function FormBuilder() {
   };
 
   const { mode } = useTheme();
+  const { formActions } = useRoleGate();
 
   useEffect(() => {
     if (connectedUser) {
@@ -326,6 +328,12 @@ function FormBuilder() {
                 <Box width="1/3">
                   <PrimaryButton
                     onClick={() => {
+                      if (!formActions("addAndEditFields")) {
+                        toast.error(
+                          "You do not have permission to add fields, make sure you have the right role"
+                        );
+                        return;
+                      }
                       setIsAddFieldOpen(true);
                     }}
                   >
@@ -352,6 +360,12 @@ function FormBuilder() {
             <Box width="full" marginY="4" paddingX="3">
               <PrimaryButton
                 onClick={() => {
+                  if (!formActions("addAndEditFields")) {
+                    toast.error(
+                      "You do not have permission to add fields, make sure you have the right role"
+                    );
+                    return;
+                  }
                   setIsAddFieldOpen(true);
                 }}
                 icon={<IconPlusSmall size="4" />}
@@ -382,20 +396,6 @@ function FormBuilder() {
               </PrimaryButton>
             </Box>
           </Stack>
-          {/* <Box paddingX="5" paddingBottom="4">
-            <PrimaryButton
-              icon={<IconPlusSmall />}
-              onClick={() => {
-                setIsAddFieldOpen(true);
-                process.env.NODE_ENV === "production" &&
-                  mixpanel.track("Add Field Button", {
-                    user: currentUser?.username,
-                  });
-              }}
-            >
-              Add Field
-            </PrimaryButton>
-          </Box> */}
         </FormBuilderContainer>
       );
     }

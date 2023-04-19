@@ -24,6 +24,8 @@ import ResponderProfile from "./responderProfile";
 import mixpanel from "mixpanel-browser";
 import { useQuery } from "react-query";
 import { CollectionType, UserType } from "@/app/types";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { toast } from "react-toastify";
 
 type Props = {
   handleClose: () => void;
@@ -81,6 +83,8 @@ export default function ViewPlugins({ handleClose }: Props) {
     }
   );
 
+  const { formActions } = useRoleGate();
+
   useEffect(() => {
     setFilteredPlugins(Object.keys(spectPlugins));
   }, []);
@@ -127,11 +131,20 @@ export default function ViewPlugins({ handleClose }: Props) {
       case "guildxyz":
       case "gtcpassport":
       case "mintkudos":
-      case "payments":
       case "erc20":
       case "ceramic":
       case "googleCaptcha":
       case "responderProfile":
+        setIsPluginOpen(true);
+        setPluginOpen(pluginName);
+        break;
+      case "payments":
+        if (!formActions("manageSettings")) {
+          toast.error(
+            "Your role(s) doesn't have permissions to edit this plugin, ensure you have the permission to manage form settings"
+          );
+          return;
+        }
         setIsPluginOpen(true);
         setPluginOpen(pluginName);
         break;

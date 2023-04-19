@@ -9,6 +9,7 @@ import mixpanel from "mixpanel-browser";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { logError } from "@/app/common/utils/utils";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 export default function Pages() {
   const {
@@ -16,6 +17,7 @@ export default function Pages() {
     updateCollection,
     setCurrentPage,
   } = useLocalCollection();
+  const { formActions } = useRoleGate();
 
   const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
     "getMyUser",
@@ -35,6 +37,12 @@ export default function Pages() {
             size="extraSmall"
             variant="transparent"
             onClick={async () => {
+              if (!formActions("addAndEditFields")) {
+                toast.error(
+                  "You do not have permission to add fields, make sure you have the right role"
+                );
+                return;
+              }
               process.env.NODE_ENV === "production" &&
                 mixpanel.track("Add Page", {
                   collection: collection.slug,

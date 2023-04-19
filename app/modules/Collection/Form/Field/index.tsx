@@ -42,6 +42,7 @@ import { logError } from "@/app/common/utils/utils";
 import { Hidden } from "react-grid-system";
 import { useAtom } from "jotai";
 import { isSidebarExpandedAtom } from "@/app/state/global";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 type Props = {
   id: string;
@@ -94,6 +95,7 @@ function FieldComponent({
   );
 
   const [forceRefresh, setForceRefresh] = useState(true);
+  const { formActions } = useRoleGate();
 
   useEffect(() => {
     // force rerender of the editor component when the description changes
@@ -416,6 +418,12 @@ function FieldComponent({
                   size="extraSmall"
                   variant="transparent"
                   onClick={() => {
+                    if (!formActions("addAndEditFields")) {
+                      toast.error(
+                        "You do not have permission to add fields, make sure you have the right role"
+                      );
+                      return;
+                    }
                     setIsAddFieldOpen(true);
                   }}
                 >
@@ -428,6 +436,12 @@ function FieldComponent({
                   size="extraSmall"
                   variant="transparent"
                   onClick={async () => {
+                    if (!formActions("addAndEditFields")) {
+                      toast.error(
+                        "You do not have permission to add fields, make sure you have the right role"
+                      );
+                      return;
+                    }
                     process.env.NODE_ENV === "production" &&
                       mixpanel.track("Add Page", {
                         collection: collection.slug,
@@ -476,6 +490,12 @@ function FieldComponent({
                   size="extraSmall"
                   variant="transparent"
                   onClick={() => {
+                    if (!formActions("addAndEditFields")) {
+                      toast.error(
+                        "You do not have permission to edit fields, make sure you have the right role"
+                      );
+                      return;
+                    }
                     setPropertyName(id);
                     setShowConfirmOnDelete(true);
                   }}

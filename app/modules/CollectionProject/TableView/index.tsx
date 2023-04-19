@@ -11,6 +11,8 @@ import CardDrawer from "../CardDrawer";
 import { useRouter } from "next/router";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import ImportTasks from "../../Circle/ImportTasks";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { toast } from "react-toastify";
 
 export default function ProjectTableView() {
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
@@ -24,6 +26,7 @@ export default function ProjectTableView() {
   const { mode } = useTheme();
 
   const { localCollection: collection } = useLocalCollection();
+  const { formActions } = useRoleGate();
 
   const [refreshTable, setRefreshTable] = useState(false);
   useEffect(() => {
@@ -62,6 +65,12 @@ export default function ProjectTableView() {
               <AddFieldButton
                 mode={mode}
                 onClick={() => {
+                  if (!formActions("addAndEditFields")) {
+                    toast.error(
+                      "You do not have permission to add fields, make sure you have the right role"
+                    );
+                    return;
+                  }
                   setIsAddFieldOpen(true);
                   process.env.NODE_ENV === "production" &&
                     mixpanel.track("Add Field Button", {

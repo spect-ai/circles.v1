@@ -65,7 +65,6 @@ function CollectionHeading() {
   const [numPluginsAdded, setNumPlugnsAdded] = useState(0);
 
   const location = useLocation();
-
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -87,6 +86,12 @@ function CollectionHeading() {
   }, [collection.formMetadata]);
 
   const onViewPluginsOpen = () => {
+    if (!formActions("addAndEditFields")) {
+      toast.error(
+        "Your role(s) doesn't have permissions to add plugins, ensure you have the permission to add and edit fields"
+      );
+      return;
+    }
     process.env.NODE_ENV === "production" &&
       mixpanel.track("Add Plugins", {
         collection: collection.slug,
@@ -235,6 +240,12 @@ function CollectionHeading() {
                       </PopoverOption>
                       <PopoverOption
                         onClick={() => {
+                          if (!formActions("manageSettings")) {
+                            toast.error(
+                              "You don't have permissions to share this form, your role needs to have manage settings permissions"
+                            );
+                            return;
+                          }
                           setShareOnDiscordOpen(true);
                           setIsOpen(false);
                         }}
@@ -369,6 +380,12 @@ function CollectionHeading() {
                     </PopoverOption>
                     <PopoverOption
                       onClick={() => {
+                        if (!formActions("manageSettings")) {
+                          toast.error(
+                            "You don't have permissions to share this form, your role needs to have manage settings permissions"
+                          );
+                          return;
+                        }
                         setShareOnDiscordOpen(true);
                         setIsShareOpen(false);
                       }}

@@ -950,13 +950,15 @@ export type FormPermissions = {
   updateResponsesManually: string[];
   viewResponses: string[];
   addComments: string[];
+  addAndEditFields: string[];
 };
 
 export type CollectionPermissions =
   | "manageSettings"
   | "updateResponsesManually"
   | "viewResponses"
-  | "addComments";
+  | "addComments"
+  | "addAndEditFields";
 
 export type PayWallOptions = {
   network: Registry;
