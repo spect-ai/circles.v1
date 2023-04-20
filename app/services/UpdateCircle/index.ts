@@ -1,6 +1,7 @@
 import { logError } from "@/app/common/utils/utils";
 import {
   Action,
+  CircleType,
   DiscordChannel,
   DiscordRoleMappingType,
   GuildxyzToCircleRoles,
@@ -11,36 +12,6 @@ import {
   Trigger,
 } from "@/app/types";
 import { toast } from "react-toastify";
-
-type CircleUpdateDTO = {
-  name: string;
-  description: string;
-  avatar: string;
-  private: boolean;
-  defaultPayment: Payment;
-  discordGuildId: string;
-  discordToCircleRoles: DiscordRoleMappingType;
-  githubRepos: string[];
-  gradient: string;
-  safeAddresses: SafeAddresses;
-  labels: string[];
-  guildxyzId: number;
-  guildxyzToCircleRoles: GuildxyzToCircleRoles;
-  paymentAddress: string;
-  questbookWorkspaceId: string;
-  questbookWorkspaceUrl: string;
-  grantMilestoneProject: string;
-  grantApplicantProject: string;
-  grantNotificationChannel: DiscordChannel;
-  paymentLabelOptions: Option[];
-  snapshot: {
-    name: string;
-    id: string;
-    network: string;
-    symbol: string;
-  };
-  sidebarConfig?: SidebarConfig;
-};
 
 type AddAutomationDto = {
   name: string;
@@ -60,18 +31,34 @@ type UpdateAutomationDto = {
 };
 
 export const updateCircle = async (
-  circleUpdate: Partial<CircleUpdateDTO>,
+  circleUpdate: Partial<CircleType>,
   circleId: string
 ) => {
-  const res = await fetch(`${process.env.API_HOST}/circle/v1/${circleId}`, {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    method: "PATCH",
-    body: JSON.stringify(circleUpdate),
-    credentials: "include",
-  });
+  let res;
+  if (circleUpdate.whitelistedAddresses) {
+    res = await fetch(
+      `${process.env.API_HOST}/circle/v1/${circleId}/whitelistAddresses`,
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        method: "PATCH",
+        body: JSON.stringify(circleUpdate),
+        credentials: "include",
+      }
+    );
+  } else {
+    res = await fetch(`${process.env.API_HOST}/circle/v1/${circleId}`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "PATCH",
+      body: JSON.stringify(circleUpdate),
+      credentials: "include",
+    });
+  }
   if (res.ok) {
     const data = await res.json();
     toast("Updated successfully", {
