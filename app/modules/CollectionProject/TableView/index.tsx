@@ -65,9 +65,9 @@ export default function ProjectTableView() {
               <AddFieldButton
                 mode={mode}
                 onClick={() => {
-                  if (!formActions("addAndEditFields")) {
+                  if (!formActions("manageSettings")) {
                     toast.error(
-                      "You do not have permission to add fields, make sure you have the right role"
+                      "You do not have permission to add fields, make sure your role has permission to manage settings"
                     );
                     return;
                   }

@@ -80,9 +80,6 @@ export default function FormRoles() {
   const [addComments, setAddComments] = useState<string[]>(
     collection?.permissions?.addComments || []
   );
-  const [addAndEditFields, setAddAndEditFields] = useState<string[]>(
-    collection?.permissions?.addAndEditFields || []
-  );
 
   const [isDirty, setIsDirty] = useState(false);
 
@@ -118,12 +115,6 @@ export default function FormRoles() {
         setPermissions={setViewResponses}
         setIsDirty={setIsDirty}
       />
-      <RoleChunks
-        permissionText={"Edit and add fields"}
-        permissions={addAndEditFields}
-        setPermissions={setAddAndEditFields}
-        setIsDirty={setIsDirty}
-      />
       {/* <RoleChunks
         permissionText="Add Comments"
         permissions={addComments}
@@ -145,7 +136,6 @@ export default function FormRoles() {
                     updateResponsesManually: updateResponses,
                     viewResponses: viewResponses,
                     addComments: addComments,
-                    addAndEditFields: addAndEditFields,
                   },
                 }),
                 headers: {
