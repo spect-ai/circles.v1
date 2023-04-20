@@ -37,16 +37,12 @@ export const defaultPermissions: Permissions = {
 };
 
 export const permissionText = {
-  createNewCircle: "Create New Workstream",
-  manageCircleSettings: "Manage Workstream Settings",
-  createNewProject: "Create New Project",
-  manageProjectSettings: "Manage Project Settings",
+  createNewCircle: "Create New Space",
+  manageCircleSettings: "Manage Space Settings",
   managePaymentOptions: "Manage Payment Options",
   makePayment: "Make Payment",
   inviteMembers: "Invite Members",
   manageRoles: "Manage Roles",
   manageMembers: "Manage Members",
   createNewForm: "Create New Form",
-  manageCardProperties: "Manage Card Properties",
-  createNewCard: "Create New Card",
 };
