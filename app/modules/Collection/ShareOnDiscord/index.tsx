@@ -39,8 +39,8 @@ export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
   useEffect(() => {
     if (circle?.discordGuildId && discordIsConnected) {
       const getGuildChannels = async () => {
-        const data = await fetchGuildChannels(circle?.discordGuildId);
-        const channelOptions = data.guildChannels?.map((channel: any) => ({
+        const channels = await fetchGuildChannels(circle?.discordGuildId);
+        const channelOptions = channels?.map((channel: any) => ({
           label: channel.name,
           value: channel.id,
         }));

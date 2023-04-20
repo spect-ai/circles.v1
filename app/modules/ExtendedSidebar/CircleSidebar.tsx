@@ -339,11 +339,6 @@ function CircleSidebar() {
                     Membership Center
                   </PrimaryButton>
                 </Link>
-                <Badge>
-                  <Text color="accent" size="extraSmall">
-                    Alpha
-                  </Text>
-                </Badge>
               </Box>
             )}
             {/* <Link href={`/${cId}?tab=credential`}>

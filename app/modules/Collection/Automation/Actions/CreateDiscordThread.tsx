@@ -105,8 +105,8 @@ export default function CreateDiscordThread({
   useEffect(() => {
     if (circle?.discordGuildId && discordIsConnected) {
       const getGuildChannels = async () => {
-        const data = await fetchGuildChannels(circle?.discordGuildId);
-        const channelOptions = data.guildChannels?.map((channel: any) => ({
+        const channels = await fetchGuildChannels(circle?.discordGuildId);
+        const channelOptions = channels?.map((channel: any) => ({
           label: channel.name,
           value: channel.id,
         }));
@@ -115,9 +115,8 @@ export default function CreateDiscordThread({
       void getGuildChannels();
 
       const fetchGuildRoles = async () => {
-        const data = await getGuildRoles(circle?.discordGuildId);
-        data && setDiscordRoles(data.roles);
-        console.log({ data });
+        const roles = await getGuildRoles(circle?.discordGuildId);
+        roles && setDiscordRoles(roles);
       };
       void fetchGuildRoles();
     }

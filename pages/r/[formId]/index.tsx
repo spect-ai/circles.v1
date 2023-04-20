@@ -22,7 +22,7 @@ const FormPage: NextPage = () => {
       <MetaHead
         title={"Spect Form"}
         description={
-          "Incentivized forms for your community to collect feedback, run surveys, onboarding, and more."
+          "Incentivized forms for communities to collect feedback, run surveys, onboarding, and more."
         }
         image={
           "https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset"

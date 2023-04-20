@@ -17,6 +17,7 @@ import { Space } from "@/app/modules/Collection/VotingModule";
 import { useQuery } from "@apollo/client";
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { scribeOpenAtom, scribeUrlAtom } from "@/app/state/global";
+import { ChannelType } from "discord-api-types/v10";
 
 interface Props {
   handleClose: (close: boolean) => void;
@@ -63,11 +64,11 @@ export default function GrantTemplate({ handleClose }: Props) {
   useEffect(() => {
     if (circle) {
       const getGuildChannels = async () => {
-        const data = await fetchGuildChannels(
+        const channels = await fetchGuildChannels(
           circle?.discordGuildId,
-          "GUILD_CATEGORY"
+          ChannelType.GuildCategory
         );
-        const categoryOptions = data.guildChannels?.map((channel: any) => ({
+        const categoryOptions = channels?.map((channel: any) => ({
           label: channel.name,
           value: channel.id,
         }));
@@ -75,9 +76,8 @@ export default function GrantTemplate({ handleClose }: Props) {
       };
       if (circle?.discordGuildId) void getGuildChannels();
       const fetchGuildRoles = async () => {
-        const data = await getGuildRoles(circle?.discordGuildId);
-        data && setDiscordRoles(data.roles);
-        console.log({ data });
+        const roles = await getGuildRoles(circle?.discordGuildId);
+        roles && setDiscordRoles(roles);
       };
       if (circle?.discordGuildId) void fetchGuildRoles();
     }

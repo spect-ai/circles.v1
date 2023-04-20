@@ -1,12 +1,10 @@
 import { logError } from "@/app/common/utils/utils";
+import { ChannelType } from "discord-api-types/v10";
 import { toast } from "react-toastify";
 
 export const guildIsConnected = async (guildId: string) => {
   const res = await fetch(
-    `${process.env.BOT_HOST}/api/guildExists?guildId=${guildId}`,
-    {
-      method: "GET",
-    }
+    `${process.env.BOT_HOST}/api/guilds/${guildId}/exists`
   );
   if (res.ok) {
     return true;
@@ -16,10 +14,7 @@ export const guildIsConnected = async (guildId: string) => {
 
 export const getGuildRoles = async (guildId: string) => {
   const res = await fetch(
-    `${process.env.BOT_HOST}/api/guildRoles?guildId=${guildId}`,
-    {
-      method: "GET",
-    }
+    `${process.env.BOT_HOST}/api/guilds/${guildId}/roles`
   );
   if (res.ok) {
     const data = await res.json();
@@ -31,10 +26,10 @@ export const getGuildRoles = async (guildId: string) => {
 
 export const fetchGuildChannels = async (
   guildId: string,
-  channelType?: string
+  channelType: ChannelType = ChannelType.GuildText
 ) => {
   const res = await fetch(
-    `${process.env.BOT_HOST}/api/guildChannels?guildId=${guildId}&channelType=${channelType}`
+    `${process.env.BOT_HOST}/api/channels/multiple?guildId=${guildId}&channelType=${channelType}`
   );
   if (res.ok) {
     const data = await res.json();
