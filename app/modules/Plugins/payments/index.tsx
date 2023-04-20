@@ -12,6 +12,10 @@ import AddToken from "../../Circle/CircleSettingsModal/CirclePayment/AddToken";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import Chain from "./Chain";
 import { logError } from "@/app/common/utils/utils";
+import { updateCircle } from "@/app/services/UpdateCircle";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { ethers } from "ethers";
+
 type Props = {
   handleClose: () => void;
 };
@@ -29,7 +33,7 @@ export default function Payments({ handleClose }: Props) {
     value: "paywall",
   });
 
-  const { registry } = useCircle();
+  const { registry, circle, setCircleData } = useCircle();
 
   const networks = Object.keys(registry || {}).map((key) => {
     return {
@@ -41,6 +45,7 @@ export default function Payments({ handleClose }: Props) {
 
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
+  const { canDo } = useRoleGate();
 
   const initTokens: {
     [key: string]: { label: string; value: string }[];
@@ -386,7 +391,7 @@ export default function Payments({ handleClose }: Props) {
                   }}
                   onUpdateToken={(token, index) => {
                     console.log({ token, index });
-                    if (token.value === "custom") {
+                    if (token.value === "__custom__") {
                       setIsAddTokenOpen(true);
                       return;
                     }
@@ -446,7 +451,48 @@ export default function Payments({ handleClose }: Props) {
                       },
                     });
                   }}
-                  onUpdateReceiverAddress={(address) => {
+                  onUpdateReceiverAddress={async (address) => {
+                    console.log({ address });
+                    if (ethers.utils.isAddress(address) === false) {
+                      toast.error(
+                        "Invalid address, please enter a valid ethereum address"
+                      );
+                      return;
+                    }
+                    if (
+                      circle &&
+                      !circle.whitelistedAddresses?.[network.value]?.includes(
+                        address
+                      )
+                    ) {
+                      console.log("inside");
+                      if (!canDo("managePaymentOptions")) {
+                        toast.error(
+                          "You don't have permission to do this, your role needs to have permission to manage payment options"
+                        );
+                        return;
+                      }
+                      const res = await updateCircle(
+                        {
+                          whitelistedAddresses: {
+                            ...circle?.whitelistedAddresses,
+                            [network.value]: [
+                              ...(circle?.whitelistedAddresses?.[
+                                network.value
+                              ] || []),
+                              address,
+                            ],
+                          },
+                        },
+                        circle?.id || ""
+                      );
+                      console.log({ res });
+                      if (res) {
+                        setCircleData(res);
+                      } else {
+                        logError("Error updating whitelisted addresses");
+                      }
+                    }
                     setReceiverAddresses({
                       ...receiverAddresses,
                       [network.value]: address,

@@ -6,13 +6,15 @@ import {
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { Registry } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
-import { Box, Heading, Input, Stack, Tag, Text } from "degen";
+import { Box, Heading, IconTrash, Input, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../CircleContext";
 import AddToken from "./AddToken";
+import AddAddress from "./AddAddress";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -33,6 +35,7 @@ export default function DefaultPayment() {
   const [isDirty, setIsDirty] = useState(false);
 
   const [isAddTokenModalOpen, setIsAddTokenModalOpen] = useState(false);
+  const [isAddAddressOpen, setIsAddAddressOpen] = useState(false);
 
   const [circleAddress, setCircleAddress] = useState(
     circle?.paymentAddress || ""
@@ -67,6 +70,8 @@ export default function DefaultPayment() {
       setCircleData(res);
     }
   };
+
+  const { canDo } = useRoleGate();
 
   return (
     <Container>
@@ -140,20 +145,61 @@ export default function DefaultPayment() {
                   handleClose={() => setIsAddTokenModalOpen(false)}
                 />
               )}
+              {isAddAddressOpen && (
+                <AddAddress
+                  chainId={chain?.chainId || ""}
+                  chainName={chain?.name || ""}
+                  handleClose={() => setIsAddAddressOpen(false)}
+                />
+              )}
             </AnimatePresence>
           </Stack>
           <Text weight="semiBold">Whitelisted Addresses</Text>
           <Stack direction="horizontal" wrap>
             {circle?.whitelistedAddresses?.[chain?.chainId || ""].map(
               (address) => (
-                <Box cursor="pointer" key={address}>
-                  <Tag hover>
+                <Box cursor="pointer">
+                  <Tag>
                     <Text>{address}</Text>
+                    <Box
+                      onClick={() => {
+                        updateCircle(
+                          {
+                            whitelistedAddresses: {
+                              [chain?.chainId || ""]:
+                                circle?.whitelistedAddresses?.[
+                                  chain?.chainId || ""
+                                ].filter((a) => a !== address),
+                            },
+                          },
+                          circle?.id || ""
+                        ).then((res) => {
+                          if (res) {
+                            setCircleData(res);
+                          }
+                        });
+                      }}
+                    >
+                      <Tag hover tone="red">
+                        <IconTrash size="4" />
+                      </Tag>
+                    </Box>
                   </Tag>
                 </Box>
               )
             )}
-            <Box cursor="pointer" onClick={() => setIsAddTokenModalOpen(true)}>
+            <Box
+              cursor="pointer"
+              onClick={() => {
+                if (!canDo("managePaymentOptions")) {
+                  toast.error(
+                    "You don't have permission to do this, your role needs to have permission to manage payment options"
+                  );
+                  return;
+                }
+                setIsAddAddressOpen(true);
+              }}
+            >
               <Tag hover label="Add">
                 <Stack direction="horizontal" align="center" space="1">
                   <Text>Address</Text>
@@ -186,7 +232,7 @@ export default function DefaultPayment() {
             }}
           />
         </Stack> */}
-        <Box width="1/3" marginTop="2" paddingLeft="1">
+        {/* <Box width="1/3" marginTop="2" paddingLeft="1">
           {isDirty && (
             <PrimaryButton
               icon={<SaveOutlined />}
@@ -197,7 +243,7 @@ export default function DefaultPayment() {
               Save
             </PrimaryButton>
           )}
-        </Box>
+        </Box> */}
       </Stack>
     </Container>
   );

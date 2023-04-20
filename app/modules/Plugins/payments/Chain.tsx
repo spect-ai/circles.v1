@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { ChevronRight } from "react-feather";
 import { useCircle } from "../../Circle/CircleContext";
 import Token from "./Token";
+import { smartTrim } from "@/app/common/utils/utils";
 
 export type Option = {
   label: string;
@@ -62,8 +63,16 @@ export default function Chain({
 
   tokenOptions.unshift({
     label: "Add Token from address",
-    value: "custom",
+    value: "__custom__",
   });
+
+  const { circle } = useCircle();
+
+  const whitelistedAddress =
+    circle?.whitelistedAddresses?.[network.value]?.map((address) => ({
+      label: address,
+      value: address,
+    })) || [];
 
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -88,11 +97,25 @@ export default function Chain({
             />
           </Box>
           <Box width="2/3">
-            <Input
+            {/* <Input
               value={receiverAddress}
               onChange={(e) => onUpdateReceiverAddress(e.target.value)}
               label=""
               placeholder="Receiving Address"
+            /> */}
+            <Dropdown
+              options={whitelistedAddress || []}
+              selected={whitelistedAddress?.find(
+                (address) => address.value === receiverAddress
+              )}
+              onChange={(address) => onUpdateReceiverAddress(address.value)}
+              multiple={false}
+              isClearable={false}
+              placeholder="Receiving Address"
+              creatable
+              formatCreateLabel={(inputValue) =>
+                `Whitelist ${smartTrim(inputValue, 14)}`
+              }
             />
           </Box>
           <Button
