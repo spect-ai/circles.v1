@@ -167,7 +167,7 @@ const connectors = (chains: any) =>
   connectorsForWallets([
     {
       groupName: "Social Auth",
-      wallets: [ArcanaRainbowConnector({ chains })],
+      wallets: [ArcanaRainbowConnector({ chains }) as any],
     },
     {
       groupName: "Wallets",

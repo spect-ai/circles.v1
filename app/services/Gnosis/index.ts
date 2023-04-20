@@ -15,7 +15,7 @@ export async function getUserSafes(chainId: string) {
   try {
     const ethAdapter = new EthersAdapter({
       ethers,
-      signer: safeOwner,
+      signerOrProvider: safeOwner,
     });
 
     const safeService = new SafeServiceClient({
@@ -45,7 +45,7 @@ export async function gnosisPayment(
     console.log(safeOwner);
     const ethAdapter = new EthersAdapter({
       ethers,
-      signer: safeOwner,
+      signerOrProvider: safeOwner,
     });
 
     const safeService = new SafeServiceClient({
@@ -120,7 +120,7 @@ export async function getNonce(safeAddress: string) {
   if (!safeOwner) throw new Error("No signer found");
   const ethAdapter = new EthersAdapter({
     ethers,
-    signer: safeOwner,
+    signerOrProvider: safeOwner,
   });
 
   const safeSdk = await Safe.create({
