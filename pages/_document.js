@@ -39,6 +39,11 @@ export default class MyDocument extends Document {
             async
             src="https://telegram.org/js/telegram-widget.js"
           ></script>
+          <script
+            async
+            src="https://platform.twitter.com/widgets.js"
+            charset="utf-8"
+          ></script>
         </Head>
         <body>
           <Main />

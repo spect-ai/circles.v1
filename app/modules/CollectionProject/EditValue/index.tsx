@@ -459,7 +459,11 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
               mode={mode}
             >
               {value ? (
-                <Text>{value.username || value.login || value}</Text>
+                <Text>
+                  {value.username
+                    ? `${value.username}#${value.discriminator}`
+                    : value.login || value}
+                </Text>
               ) : (
                 "Empty"
               )}

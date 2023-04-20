@@ -36,6 +36,7 @@
     "d3": "^7.7.0",
     "degen": "^0.0.129",
     "did-session": "^1.0.0",
+    "discord-api-types": "^0.37.39",
     "ethers": "^5.7.1",
     "export-to-csv": "^0.2.1",
     "framer-motion": "^6.3.11",

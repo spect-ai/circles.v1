@@ -11,7 +11,6 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import ConnectGnosis from "../ConnectGnosis";
 import GuildIntegration from "../GuildIntegration";
 import GuildRoleMapping from "../GuildIntegration/GuildRoleMapping";
-import ConnectQuestbook from "../QuestbookIntegration";
 import { useLocation } from "react-use";
 import { useQuery as useApolloQuery, gql } from "@apollo/client";
 import { Space } from "@/app/modules/Collection/VotingModule";

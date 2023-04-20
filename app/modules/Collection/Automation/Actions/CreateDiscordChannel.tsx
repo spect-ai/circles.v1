@@ -16,6 +16,7 @@ import CheckBox from "@/app/common/components/Table/Checkbox";
 import CreatableDropdown from "@/app/common/components/CreatableDropdown";
 import Editor from "@/app/common/components/Editor";
 import { useLocation } from "react-use";
+import { ChannelType } from "discord-api-types/v10";
 
 type Props = {
   actionMode: "edit" | "create";
@@ -85,11 +86,11 @@ export default function CreateDiscordChannel({
   useEffect(() => {
     if (!discordIsConnected || !circle?.discordGuildId) return;
     const getGuildChannels = async () => {
-      const data = await fetchGuildChannels(
+      const channels = await fetchGuildChannels(
         circle?.discordGuildId,
-        "GUILD_CATEGORY"
+        ChannelType.GuildCategory
       );
-      const categoryOptions = data.guildChannels?.map((channel: any) => ({
+      const categoryOptions = channels?.map((channel: any) => ({
         label: channel.name,
         value: channel.id,
       }));
@@ -98,9 +99,8 @@ export default function CreateDiscordChannel({
     void getGuildChannels();
 
     const fetchGuildRoles = async () => {
-      const data = await getGuildRoles(circle?.discordGuildId);
-      data && setDiscordRoles(data.roles);
-      console.log({ data });
+      const roles = await getGuildRoles(circle?.discordGuildId);
+      roles && setDiscordRoles(roles);
     };
     void fetchGuildRoles();
   }, [discordIsConnected]);

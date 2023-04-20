@@ -48,8 +48,8 @@ export default function PostCardOnDiscord({
   useEffect(() => {
     if (discordIsConnected && circle?.discordGuildId) {
       const getGuildChannels = async () => {
-        const data = await fetchGuildChannels(circle?.discordGuildId || "");
-        const categoryOptions = data.guildChannels?.map((channel: any) => ({
+        const channels = await fetchGuildChannels(circle?.discordGuildId);
+        const categoryOptions = channels?.map((channel: any) => ({
           label: channel.name,
           value: channel.id,
         }));

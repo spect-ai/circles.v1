@@ -5,7 +5,11 @@ import { CellProps } from "react-datasheet-grid";
 const DiscordComponent = ({ rowData }: CellProps) => {
   return (
     <Box padding="2">
-      <Text variant="small">{rowData?.username || rowData}</Text>
+      <Text variant="small">
+        {rowData?.username
+          ? `${rowData.username}#${rowData.discriminator}`
+          : rowData}
+      </Text>
     </Box>
   );
 };
