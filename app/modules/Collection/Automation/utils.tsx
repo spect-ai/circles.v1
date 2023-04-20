@@ -31,6 +31,7 @@ export const getAutomationActionOptions = (
             "closeCard",
             "createCard",
             "postOnDiscord",
+            "giveDiscordRole",
             "createDiscordThread",
             "createDiscordChannel",
             "postOnDiscordThread",

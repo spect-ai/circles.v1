@@ -100,7 +100,7 @@ export default function TableView() {
       updateCollection(res);
       return true;
     } else {
-      logError(res.error || "Error updating data");
+      logError(res.message || "Error updating data");
       return false;
     }
   }, []);

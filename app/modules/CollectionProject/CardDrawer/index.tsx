@@ -137,7 +137,9 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
       }
       if (res.id) {
         updateCollection(res);
-      } else logError(res.error || "Error updating card");
+      } else {
+        logError(res.message || "Error updating card");
+      }
     }
   };
 
@@ -325,7 +327,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                       if (res.id) {
                         updateCollection(res);
                         closeCard();
-                      } else logError("Error adding card");
+                      } else logError(res.message || "Error adding card");
                     }}
                   >
                     Create Card
@@ -551,6 +553,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                       collection.data?.[cardSlug as string]?.__cardStatus__ ===
                       "closed"
                     }
+                    size="extraSmall"
                   >
                     Add Field
                   </PrimaryButton>
