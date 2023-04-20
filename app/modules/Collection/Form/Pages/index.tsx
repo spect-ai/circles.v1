@@ -1,5 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Stack, Text } from "degen";
+import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { updateFormCollection } from "@/app/services/Collection";
@@ -9,10 +9,15 @@ import mixpanel from "mixpanel-browser";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { logError } from "@/app/common/utils/utils";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 export default function Pages() {
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+  const {
+    localCollection: collection,
+    updateCollection,
+    setCurrentPage,
+  } = useLocalCollection();
+  const { formActions } = useRoleGate();
 
   const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
     "getMyUser",
@@ -23,14 +28,21 @@ export default function Pages() {
   return (
     <Box>
       <Stack>
-        <Stack direction="horizontal" space="4" align="center">
+        <Stack direction="horizontal" space="2" align="center">
           <Text size="headingThree" weight="semiBold" ellipsis>
             Pages
           </Text>
-          <PrimaryButton
+          <Button
+            shape="circle"
             size="extraSmall"
-            variant="tertiary"
+            variant="transparent"
             onClick={async () => {
+              if (!formActions("addAndEditFields")) {
+                toast.error(
+                  "You do not have permission to add fields, make sure you have the right role"
+                );
+                return;
+              }
               process.env.NODE_ENV === "production" &&
                 mixpanel.track("Add Page", {
                   collection: collection.slug,
@@ -41,9 +53,8 @@ export default function Pages() {
               const lastIndex = collection.formMetadata.pages["collect"]
                 ? pageOrder.length - 2
                 : pageOrder.length - 1;
-              console.log(lastIndex);
               const newPageId = `page-${lastIndex + 1}`;
-              const res = await updateFormCollection(null as any, {
+              const res = await updateFormCollection(collection.id, {
                 ...collection,
                 formMetadata: {
                   ...collection.formMetadata,
@@ -65,15 +76,18 @@ export default function Pages() {
               });
               if (res.id) {
                 updateCollection(res);
+                setCurrentPage(newPageId);
               } else {
                 logError("Error when adding new page");
               }
             }}
           >
             <Box display="flex" flexDirection="row" gap="1" alignItems="center">
-              <Text color="accent">Add Page</Text>
+              <Text color="accent">
+                <IconPlusSmall size="5" />
+              </Text>
             </Box>
-          </PrimaryButton>
+          </Button>
         </Stack>
         <PagesContainer>
           <PageLine />

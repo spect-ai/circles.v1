@@ -39,7 +39,7 @@ interface Props {
 
 const NameInput = styled.input<{ mode: string }>`
   @media (max-width: 768px) {
-    width: 5rem;
+    width: 20rem;
   }
   width: 12rem;
   background: transparent;

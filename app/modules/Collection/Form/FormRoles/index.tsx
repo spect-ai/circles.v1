@@ -80,103 +80,93 @@ export default function FormRoles() {
   const [addComments, setAddComments] = useState<string[]>(
     collection?.permissions?.addComments || []
   );
+  const [addAndEditFields, setAddAndEditFields] = useState<string[]>(
+    collection?.permissions?.addAndEditFields || []
+  );
+
   const [isDirty, setIsDirty] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
   return (
-    <>
-      <Box width="full" display="flex" flexDirection={"column"} gap="4">
-        <Text variant="label">
-          Configure granular permissions using Circle Roles
-        </Text>
-        <PrimaryButton
-          icon={<IconUserGroupSolid />}
-          onClick={() => setRoleModal(true)}
-        >
-          Configure access
-        </PrimaryButton>
-      </Box>
-      <AnimatePresence>
-        {roleModal && (
-          <Modal
-            title="Granular Access"
-            handleClose={() => setRoleModal(false)}
-          >
-            <Box padding="6" display={"flex"} flexDirection="column" gap={"4"}>
-              <RoleChunks
-                permissionText={
-                  collection?.collectionType === 0
-                    ? "Manage Form Settings"
-                    : "Manage Collection Settings"
-                }
-                permissions={manageSettings}
-                setPermissions={setManageSettings}
-                setIsDirty={setIsDirty}
-              />
-              <RoleChunks
-                permissionText={
-                  collection?.collectionType === 0
-                    ? "Update Responses Manually"
-                    : "Update Cards"
-                }
-                permissions={updateResponses}
-                setPermissions={setUpdateResponses}
-                setIsDirty={setIsDirty}
-              />
-              <RoleChunks
-                permissionText={
-                  collection?.collectionType === 0
-                    ? "View Responses"
-                    : "View Cards"
-                }
-                permissions={viewResponses}
-                setPermissions={setViewResponses}
-                setIsDirty={setIsDirty}
-              />
-              <RoleChunks
-                permissionText="Add Comments"
-                permissions={addComments}
-                setPermissions={setAddComments}
-                setIsDirty={setIsDirty}
-              />
-              <PrimaryButton
-                loading={loading}
-                onClick={async () => {
-                  setLoading(true);
-                  const res = await (
-                    await fetch(
-                      `${process.env.API_HOST}/collection/v1/${collection.id}`,
-                      {
-                        method: "PATCH",
-                        body: JSON.stringify({
-                          permissions: {
-                            manageSettings: manageSettings,
-                            updateResponsesManually: updateResponses,
-                            viewResponses: viewResponses,
-                            addComments: addComments,
-                          },
-                        }),
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        credentials: "include",
-                      }
-                    )
-                  ).json();
-                  if (res.id) updateCollection(res);
-                  else logError("Update collection failed");
-                  setLoading(false);
-                  setRoleModal(false);
-                }}
-                disabled={!isDirty}
-              >
-                Save Permissions
-              </PrimaryButton>
-            </Box>
-          </Modal>
-        )}
-      </AnimatePresence>
-    </>
+    <Stack>
+      <RoleChunks
+        permissionText={
+          collection?.collectionType === 0
+            ? "Manage Form Settings"
+            : "Manage Collection Settings"
+        }
+        permissions={manageSettings}
+        setPermissions={setManageSettings}
+        setIsDirty={setIsDirty}
+      />
+      <RoleChunks
+        permissionText={
+          collection?.collectionType === 0
+            ? "Update Responses Manually"
+            : "Update Cards"
+        }
+        permissions={updateResponses}
+        setPermissions={setUpdateResponses}
+        setIsDirty={setIsDirty}
+      />
+      <RoleChunks
+        permissionText={
+          collection?.collectionType === 0 ? "View Responses" : "View Cards"
+        }
+        permissions={viewResponses}
+        setPermissions={setViewResponses}
+        setIsDirty={setIsDirty}
+      />
+      <RoleChunks
+        permissionText={"Edit and add fields"}
+        permissions={addAndEditFields}
+        setPermissions={setAddAndEditFields}
+        setIsDirty={setIsDirty}
+      />
+      {/* <RoleChunks
+        permissionText="Add Comments"
+        permissions={addComments}
+        setPermissions={setAddComments}
+        setIsDirty={setIsDirty}
+      /> */}
+      <PrimaryButton
+        loading={loading}
+        onClick={async () => {
+          setLoading(true);
+          const res = await (
+            await fetch(
+              `${process.env.API_HOST}/collection/v1/${collection.id}`,
+              {
+                method: "PATCH",
+                body: JSON.stringify({
+                  permissions: {
+                    manageSettings: manageSettings,
+                    updateResponsesManually: updateResponses,
+                    viewResponses: viewResponses,
+                    addComments: addComments,
+                    addAndEditFields: addAndEditFields,
+                  },
+                }),
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                credentials: "include",
+              }
+            )
+          ).json();
+          if (res.id) {
+            toast.success("Updated Permissions");
+            updateCollection(res);
+            setIsDirty(false);
+          } else logError("Update collection failed");
+          setLoading(false);
+          setRoleModal(false);
+        }}
+        disabled={!isDirty}
+      >
+        Save Permissions
+      </PrimaryButton>
+    </Stack>
   );
 }

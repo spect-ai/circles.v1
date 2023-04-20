@@ -456,10 +456,15 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
               <RewardTokenOptions
                 networks={networks}
                 setNetworks={setNetworks}
+                setIsDirty={setIsDirty}
               />
             )}
             {type.value === "milestone" && (
-              <MilestoneOptions networks={networks} setNetworks={setNetworks} />
+              <MilestoneOptions
+                networks={networks}
+                setNetworks={setNetworks}
+                setIsDirty={setIsDirty}
+              />
             )}
             {type.value === "payWall" && (
               <PayWall

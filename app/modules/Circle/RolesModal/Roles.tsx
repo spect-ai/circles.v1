@@ -16,7 +16,13 @@ export default function Roles() {
   }, [circle?.roles]);
 
   return (
-    <Box paddingX="8" paddingY="4">
+    <Box
+      paddingX={{
+        xs: "2",
+        md: "8",
+      }}
+      paddingY="4"
+    >
       <Stack>
         <Stack
           direction={{
@@ -57,7 +63,7 @@ export default function Roles() {
                 <Box width="1/3">
                   <Text variant="label">{circle.roles[role].name}</Text>
                 </Box>
-                <Box width="1/3">
+                <Box width="1/4">
                   <Text>
                     <Stack direction="horizontal" space="1" align="center">
                       {Object.values(circle.memberRoles).reduce(

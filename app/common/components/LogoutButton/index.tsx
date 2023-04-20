@@ -7,6 +7,7 @@ import {
   connectedUserAtom,
   isProfilePanelExpandedAtom,
 } from "@/app/state/global";
+import PrimaryButton from "../PrimaryButton";
 
 export default function Logout() {
   const { disconnect } = useDisconnect();
@@ -14,8 +15,7 @@ export default function Logout() {
   const [, setConnectedUser] = useAtom(connectedUserAtom);
   const [, setIsProfilePanelExpanded] = useAtom(isProfilePanelExpandedAtom);
   return (
-    <Button
-      size="small"
+    <PrimaryButton
       variant="tertiary"
       onClick={async () => {
         setIsProfilePanelExpanded(false);
@@ -29,9 +29,8 @@ export default function Logout() {
         setAuthenticationStatus("unauthenticated");
         setConnectedUser("");
       }}
-      width="full"
     >
       Logout
-    </Button>
+    </PrimaryButton>
   );
 }

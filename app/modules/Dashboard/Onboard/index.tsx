@@ -46,7 +46,7 @@ const Onboard = () => {
   }, [currentUser, connectedUser, onboardType, refetch, myCircles?.length]);
 
   return (
-    <Box position={"relative"} display="flex" width={"full"} gap="11">
+    <Box position={"relative"} display="flex" width={"full"}>
       <ToastContainer
         toastStyle={{
           backgroundColor: `${

@@ -63,7 +63,7 @@ export function Collection() {
         {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
       </AnimatePresence>
       {collection.collectionType === 0 && (
-        <Stack space={"0"}>
+        <Stack space="4">
           <CollectionHeading />
           {view === 0 && <Form />}
           <Box
@@ -77,11 +77,7 @@ export function Collection() {
             }}
             marginTop="4"
           >
-            {view === 1 && (
-              <>
-                <TableView />
-              </>
-            )}
+            {view === 1 && <TableView />}
           </Box>
         </Stack>
       )}

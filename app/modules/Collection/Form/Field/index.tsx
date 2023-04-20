@@ -39,6 +39,10 @@ import { motion } from "framer-motion";
 import { updateFormCollection } from "@/app/services/Collection";
 import { toast } from "react-toastify";
 import { logError } from "@/app/common/utils/utils";
+import { Hidden } from "react-grid-system";
+import { useAtom } from "jotai";
+import { isSidebarExpandedAtom } from "@/app/state/global";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 type Props = {
   id: string;
@@ -86,7 +90,12 @@ function FieldComponent({
     value: member,
   }));
 
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
+
   const [forceRefresh, setForceRefresh] = useState(true);
+  const { formActions } = useRoleGate();
 
   useEffect(() => {
     // force rerender of the editor component when the description changes
@@ -106,8 +115,10 @@ function FieldComponent({
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       ref={provided.innerRef}
-      padding="4"
-      margin="1"
+      padding={{
+        xs: "2",
+        md: "4",
+      }}
       borderRadius="large"
       isDragging={snapshot.isDragging}
       mode={mode}
@@ -226,16 +237,16 @@ function FieldComponent({
           marginTop="4"
           width="full"
           borderWidth="0.375"
-          padding="4"
+          padding={{
+            xs: "2",
+            md: "4",
+          }}
           borderRadius="large"
           maxHeight="64"
           overflow="auto"
           id="editorContainer"
         >
-          <Editor
-            placeholder={`Enter long text, use / for commands`}
-            isDirty={true}
-          />
+          <Editor placeholder={`Use / for commands`} isDirty={true} />
         </Box>
       )}
       {(collection.properties[id]?.type === "singleSelect" ||
@@ -379,95 +390,124 @@ function FieldComponent({
             {DraggableContentCallback}
           </Draggable>
         </Box>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: hover ? 1 : 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <Box
-            backgroundColor="accentSecondary"
-            height="fit"
-            padding="1"
-            borderRadius="2xLarge"
-            marginTop="1"
+        <Hidden xs sm>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: hover ? 1 : 0 }}
+            transition={{ duration: 0.2 }}
+            style={{
+              marginLeft: "-1rem",
+            }}
           >
-            <Stack space="3">
-              <Button
-                shape="circle"
-                size="extraSmall"
-                variant="transparent"
-                onClick={() => {
-                  setIsAddFieldOpen(true);
-                }}
-              >
-                <Text color="accent">
-                  <IconPlusSmall size="5" />
-                </Text>
-              </Button>
-              <Button
-                shape="circle"
-                size="extraSmall"
-                variant="transparent"
-                onClick={async () => {
-                  process.env.NODE_ENV === "production" &&
-                    mixpanel.track("Add Page", {
-                      collection: collection.slug,
-                      circle: collection.parents[0].slug,
-                      user: currentUser?.username,
-                    });
-                  const pageOrder = collection.formMetadata.pageOrder;
-                  const lastIndex = collection.formMetadata.pages["collect"]
-                    ? pageOrder.length - 2
-                    : pageOrder.length - 1;
-                  const newPageId = `page-${lastIndex + 1}`;
-                  const res = await updateFormCollection(collection.id, {
-                    ...collection,
-                    formMetadata: {
-                      ...collection.formMetadata,
-                      pageOrder: [
-                        ...pageOrder.slice(0, lastIndex),
-                        newPageId,
-                        ...pageOrder.slice(lastIndex),
-                      ],
-                      pages: {
-                        ...collection.formMetadata.pages,
-                        [newPageId]: {
-                          id: newPageId,
-                          name: "New Page",
-                          properties: [],
-                          movable: true,
+            <Box
+              backgroundColor="accentSecondary"
+              height="fit"
+              padding="1"
+              borderRadius="2xLarge"
+              marginTop="1"
+              style={{
+                // position it on the right side of the screen
+                position: "absolute",
+                // position it 1rem below the top of the screen
+                marginLeft: "2rem",
+              }}
+            >
+              <Stack space="3">
+                <Button
+                  shape="circle"
+                  size="extraSmall"
+                  variant="transparent"
+                  onClick={() => {
+                    if (!formActions("addAndEditFields")) {
+                      toast.error(
+                        "You do not have permission to add fields, make sure you have the right role"
+                      );
+                      return;
+                    }
+                    setIsAddFieldOpen(true);
+                  }}
+                >
+                  <Text color="accent">
+                    <IconPlusSmall size="5" />
+                  </Text>
+                </Button>
+                <Button
+                  shape="circle"
+                  size="extraSmall"
+                  variant="transparent"
+                  onClick={async () => {
+                    if (!formActions("addAndEditFields")) {
+                      toast.error(
+                        "You do not have permission to add fields, make sure you have the right role"
+                      );
+                      return;
+                    }
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Add Page", {
+                        collection: collection.slug,
+                        circle: collection.parents[0].slug,
+                        user: currentUser?.username,
+                      });
+                    const pageOrder = collection.formMetadata.pageOrder;
+                    const lastIndex = collection.formMetadata.pages["collect"]
+                      ? pageOrder.length - 2
+                      : pageOrder.length - 1;
+                    const newPageId = `page-${lastIndex + 1}`;
+                    const res = await updateFormCollection(collection.id, {
+                      ...collection,
+                      formMetadata: {
+                        ...collection.formMetadata,
+                        pageOrder: [
+                          ...pageOrder.slice(0, lastIndex),
+                          newPageId,
+                          ...pageOrder.slice(lastIndex),
+                        ],
+                        pages: {
+                          ...collection.formMetadata.pages,
+                          [newPageId]: {
+                            id: newPageId,
+                            name: "New Page",
+                            properties: [],
+                            movable: true,
+                          },
                         },
                       },
-                    },
-                  });
-                  setCurrentPage(newPageId);
-                  if (res.id) {
-                    updateCollection(res);
-                  } else {
-                    logError("Update collection failed");
-                  }
-                }}
-              >
-                <Text color="accent">
-                  <IconDocumentAdd size="5" />
-                </Text>
-              </Button>
-              <Button
-                shape="circle"
-                size="extraSmall"
-                variant="transparent"
-                onClick={() => {
-                  setPropertyName(id);
-                  setShowConfirmOnDelete(true);
-                }}
-              >
-                <Text color="red">
-                  <IconTrash size="5" />
-                </Text>
-              </Button>
-            </Stack>
-          </Box>
-        </motion.div>
+                    });
+                    setCurrentPage(newPageId);
+                    if (res.id) {
+                      updateCollection(res);
+                    } else {
+                      logError("Update collection failed");
+                    }
+                  }}
+                >
+                  <Text color="accent">
+                    <IconDocumentAdd size="5" />
+                  </Text>
+                </Button>
+                <Button
+                  shape="circle"
+                  size="extraSmall"
+                  variant="transparent"
+                  onClick={() => {
+                    if (!formActions("addAndEditFields")) {
+                      toast.error(
+                        "You do not have permission to edit fields, make sure you have the right role"
+                      );
+                      return;
+                    }
+                    setPropertyName(id);
+                    setShowConfirmOnDelete(true);
+                  }}
+                >
+                  <Text color="red">
+                    <IconTrash size="5" />
+                  </Text>
+                </Button>
+              </Stack>
+            </Box>
+          </motion.div>
+        </Hidden>
       </Stack>
     </Box>
   );

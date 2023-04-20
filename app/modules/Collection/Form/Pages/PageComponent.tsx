@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import FieldComponent from "./FieldComponent";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 type Props = {
   id: string;
@@ -41,6 +42,8 @@ export const PageComponent = ({
 
   const pages = collection.formMetadata.pages;
   const pageOrder = collection.formMetadata.pageOrder;
+
+  const { formActions } = useRoleGate();
 
   const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
     "getMyUser",
@@ -99,6 +102,12 @@ export const PageComponent = ({
                   <Box
                     cursor="pointer"
                     onClick={() => {
+                      if (!formActions("addAndEditFields")) {
+                        toast.error(
+                          "You do not have permission to edit fields, make sure you have the right role"
+                        );
+                        return;
+                      }
                       const newPages = { ...pages };
                       const page = newPages[id];
                       if (page.properties.length > 0) {
@@ -156,6 +165,12 @@ export const PageComponent = ({
                     marginLeft="6"
                     cursor="pointer"
                     onClick={() => {
+                      if (!formActions("addAndEditFields")) {
+                        toast.error(
+                          "You do not have permission to add fields, make sure you have the right role"
+                        );
+                        return;
+                      }
                       process.env.NODE_ENV === "production" &&
                         mixpanel.track("Add field on page", {
                           collection: collection.slug,

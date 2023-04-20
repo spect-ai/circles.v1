@@ -125,6 +125,14 @@ export default function useRoleGate() {
           }
         }
 
+      case "addAndEditFields":
+        if (connectedUser == collection.creator) return true;
+        if (collection?.permissions?.addAndEditFields?.length > 0) {
+          for (const role of userRoles) {
+            if (collection?.permissions?.addAndEditFields?.includes(role))
+              return true;
+          }
+        }
         return false;
 
       default:

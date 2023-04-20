@@ -11,7 +11,6 @@ import { joinCircle } from "@/app/services/JoinCircle";
 import Roles from "./RolesTab";
 import FAQModal from "../Dashboard/FAQModal";
 import Payment from "./Payment";
-import { QuestionCircleOutlined } from "@ant-design/icons";
 import Credential from "./Credential";
 import AutomationCenter from "./Automation";
 import Help from "@/app/common/components/Help";
@@ -21,6 +20,9 @@ import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 
 const BoxContainer = styled(Box)`
+  @media (max-width: 992px) {
+    width: calc(100vw - 0rem);
+  }
   width: calc(100vw - 3.5rem);
 `;
 
@@ -156,7 +158,6 @@ export default function Circle() {
       />
       {page === "Overview" && <CircleDashboard />}
       <Help setFaqOpen={setFaqOpen} />
-
       <AnimatePresence>
         {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
       </AnimatePresence>

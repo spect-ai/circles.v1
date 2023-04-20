@@ -37,7 +37,7 @@ export default function Tabs({
       padding="1"
     >
       {tabs.map((tab, index) => (
-        <Box width="full" marginX="0.5" key={tab}>
+        <Box width="full" key={tab}>
           <Button
             data-tour={tabTourIds?.[index]}
             variant={selectedTab === index ? selectedColor : unselectedColor}
@@ -45,7 +45,7 @@ export default function Tabs({
             shape={shape as any}
             width="full"
             onClick={() => onTabClick(index)}
-            size="small"
+            size="extraSmall"
           >
             {tab}
           </Button>

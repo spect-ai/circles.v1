@@ -40,7 +40,7 @@ const ScrollContainer = styled(Box)`
   -ms-overflow-style: none;
   scrollbar-width: none;
   @media (max-width: 768px) {
-    height: calc(100vh - 12rem);
+    height: calc(100vh - 3rem);
   }
   height: calc(100vh - 4rem);
 `;
@@ -103,9 +103,9 @@ export const FolderView = ({
       ref={provided.innerRef}
       paddingTop="4"
     >
-      <Stack direction="horizontal" align="baseline">
-        <CreateItems />
-      </Stack>
+      {/* <Stack direction="horizontal" align="baseline"> */}
+      <CreateItems />
+      {/* </Stack> */}
       {circle?.folderOrder?.map((folder, i) => {
         const folderDetail = circle?.folderDetails?.[folder];
         return (

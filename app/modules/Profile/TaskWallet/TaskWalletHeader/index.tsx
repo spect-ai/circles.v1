@@ -7,6 +7,7 @@ import Logout from "@/app/common/components/LogoutButton";
 import { smartTrim } from "@/app/common/utils/utils";
 import { isProfilePanelExpandedAtom } from "@/app/state/global";
 import { useAtom } from "jotai";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 
 const TaskWalletHeader = () => {
   const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
@@ -17,7 +18,13 @@ const TaskWalletHeader = () => {
   });
 
   return (
-    <Stack direction="horizontal" justify="space-between">
+    <Stack
+      direction={{
+        xs: "vertical",
+        md: "horizontal",
+      }}
+      justify="space-between"
+    >
       <Stack direction="horizontal" space="2">
         <Avatar
           label="profile-pic"
@@ -39,15 +46,14 @@ const TaskWalletHeader = () => {
       </Stack>
       <Stack direction="horizontal">
         <Link href={`/profile/${currentUser?.username}`}>
-          <Button
-            size="small"
+          <PrimaryButton
             variant="secondary"
             onClick={() => {
               setIsProfilePanelExpanded(false);
             }}
           >
             View Profile
-          </Button>
+          </PrimaryButton>
         </Link>
         {currentUser?.id == currentUser?.id && <Logout />}
       </Stack>

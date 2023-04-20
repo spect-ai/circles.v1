@@ -24,6 +24,7 @@ type Props = {
   customTooltip?: string;
   newTokenOpen?: boolean;
   singleSelect?: boolean;
+  setIsDirty?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function RewardTokenOptions({
@@ -33,6 +34,7 @@ export default function RewardTokenOptions({
   customTooltip,
   newTokenOpen,
   singleSelect,
+  setIsDirty,
 }: Props) {
   const { registry, circle, setRegistryData } = useCircle();
   const [newToken, setNewToken] = useState(newTokenOpen || false);
@@ -135,6 +137,7 @@ export default function RewardTokenOptions({
                               shape="circle"
                               cursor="pointer"
                               onClick={() => {
+                                setIsDirty && setIsDirty(true);
                                 const newNetworks = networks;
                                 delete newNetworks[chainId].tokenDetails[
                                   tokenAddress
@@ -162,7 +165,14 @@ export default function RewardTokenOptions({
         {newToken && (
           <Box display="flex" flexDirection="column" marginTop="4">
             <Text variant="label">Add new token</Text>
-            <Stack direction="horizontal" space="1" align="center">
+            <Stack
+              direction={{
+                xs: "vertical",
+                md: "horizontal",
+              }}
+              space="1"
+              align="center"
+            >
               <Dropdown
                 options={options}
                 selected={selectedChain}
@@ -241,9 +251,8 @@ export default function RewardTokenOptions({
               gap="2"
               padding="1"
             >
-              <Button
+              <PrimaryButton
                 variant="secondary"
-                size="small"
                 loading={loading || tokenLoading}
                 onClick={async () => {
                   setLoading(true);
@@ -290,7 +299,7 @@ export default function RewardTokenOptions({
                 disabled={isDisabled()}
               >
                 Add
-              </Button>
+              </PrimaryButton>
               <PrimaryButton
                 tone="red"
                 onClick={() => {
@@ -334,6 +343,7 @@ export default function RewardTokenOptions({
                 variant="tertiary"
                 size="small"
                 onClick={() => {
+                  setIsDirty && setIsDirty(true);
                   setNewToken(true);
                 }}
                 disabled={tokenLoading}

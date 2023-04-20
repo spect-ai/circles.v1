@@ -9,6 +9,8 @@ import { Draggable } from "react-beautiful-dnd";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { smartTrim } from "@/app/common/utils/utils";
+import { toast } from "react-toastify";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 type Props = {
   field: string;
@@ -30,6 +32,8 @@ const FieldComponent = ({
 
   const [hover, setHover] = useState(false);
   const property = collection.properties[field];
+  const { formActions } = useRoleGate();
+
   return (
     <Draggable draggableId={field} key={field} index={index}>
       {(provided) => (
@@ -61,6 +65,12 @@ const FieldComponent = ({
               alignItems="center"
               gap="2"
               onClick={() => {
+                if (!formActions("addAndEditFields")) {
+                  toast.error(
+                    "You do not have permission to add fields, make sure you have the right role"
+                  );
+                  return;
+                }
                 setPropertyName(property.name);
                 setIsAddFieldOpen(true);
               }}

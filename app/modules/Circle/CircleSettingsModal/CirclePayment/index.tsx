@@ -75,7 +75,7 @@ export default function DefaultPayment() {
           <Text variant="extraLarge" weight="bold">
             Payments
           </Text>
-          <Text variant="label">Add your whitelisted tokens</Text>
+          <Text variant="label">Add your whitelisted tokens and address</Text>
         </Box>
         <Stack>
           <Text weight="semiBold">Chain</Text>
@@ -141,6 +141,25 @@ export default function DefaultPayment() {
                 />
               )}
             </AnimatePresence>
+          </Stack>
+          <Text weight="semiBold">Whitelisted Addresses</Text>
+          <Stack direction="horizontal" wrap>
+            {circle?.whitelistedAddresses?.[chain?.chainId || ""].map(
+              (address) => (
+                <Box cursor="pointer" key={address}>
+                  <Tag hover>
+                    <Text>{address}</Text>
+                  </Tag>
+                </Box>
+              )
+            )}
+            <Box cursor="pointer" onClick={() => setIsAddTokenModalOpen(true)}>
+              <Tag hover label="Add">
+                <Stack direction="horizontal" align="center" space="1">
+                  <Text>Address</Text>
+                </Stack>
+              </Tag>
+            </Box>
           </Stack>
         </Stack>
         <Box marginTop="4" />

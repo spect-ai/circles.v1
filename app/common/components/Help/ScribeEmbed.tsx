@@ -1,6 +1,7 @@
 import { Box, Button, Heading, IconClose, Stack } from "degen";
 import React from "react";
 import Draggable from "react-draggable";
+import { Hidden } from "react-grid-system";
 import styled from "styled-components";
 
 type Props = {
@@ -17,32 +18,34 @@ export default function ScribeEmbed({
   width = "450",
 }: Props) {
   return (
-    <Draggable>
-      <Container
-        padding="4"
-        backgroundColor="foregroundSecondary"
-        borderRadius="2xLarge"
-      >
-        <Stack direction="horizontal" justify="space-between">
-          <Heading>Walkthrough</Heading>
-          <Button
-            shape="circle"
-            size="small"
-            variant="transparent"
-            onClick={() => handleClose()}
-          >
-            <IconClose />
-          </Button>
-        </Stack>
-        <iframe
-          src={src}
-          width={width}
-          height={height}
-          allowFullScreen
-          frameBorder="0"
-        ></iframe>
-      </Container>
-    </Draggable>
+    <Hidden xs sm md>
+      <Draggable>
+        <Container
+          padding="4"
+          backgroundColor="foregroundSecondary"
+          borderRadius="2xLarge"
+        >
+          <Stack direction="horizontal" justify="space-between">
+            <Heading>Walkthrough</Heading>
+            <Button
+              shape="circle"
+              size="small"
+              variant="transparent"
+              onClick={() => handleClose()}
+            >
+              <IconClose />
+            </Button>
+          </Stack>
+          <iframe
+            src={src}
+            width={width}
+            height={height}
+            allowFullScreen
+            frameBorder="0"
+          ></iframe>
+        </Container>
+      </Draggable>
+    </Hidden>
   );
 }
 

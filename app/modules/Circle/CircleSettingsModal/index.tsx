@@ -20,10 +20,14 @@ interface Props {
 }
 
 const ScrollContainer = styled(Box)`
-  ::-webkit-scrollbar {
-    width: 10px;
+  @media (max-width: 768px) {
+    overflow-y: visible;
   }
-  height: 35rem;
+
+  ::-webkit-scrollbar {
+    width: 0px;
+  }
+  height: 45rem;
   overflow-y: auto;
 `;
 
@@ -91,10 +95,24 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
       <Box
         display="flex"
         style={{
-          height: "calc(100% - 5rem)",
+          height: "calc(100% - 1rem)",
+        }}
+        flexDirection={{
+          xs: "column",
+          md: "row",
         }}
       >
-        <Box width="1/4" paddingY="8" paddingRight="1">
+        <Box
+          width={{
+            xs: "full",
+            md: "1/4",
+          }}
+          paddingY="8"
+          paddingRight={{
+            xs: "0",
+            md: "1",
+          }}
+        >
           <Tabs
             selectedTab={tab}
             onTabClick={onTabClick}
@@ -119,10 +137,13 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
           />
         </Box>
         <ScrollContainer
-          width="3/4"
+          width={{
+            xs: "full",
+            md: "3/4",
+          }}
           paddingX={{
-            xs: "2",
-            md: "4",
+            xs: "4",
+            md: "6",
             lg: "8",
           }}
           paddingY="4"

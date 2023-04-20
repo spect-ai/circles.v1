@@ -9,6 +9,7 @@ import { useLocation } from "react-use";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { FaDiscord } from "react-icons/fa";
 import { joinCirclesFromDiscord } from "@/app/services/JoinCircle";
+import queryClient from "@/app/common/utils/queryClient";
 
 export const NameInput = styled.input`
   width: 100%;
@@ -27,36 +28,15 @@ export const NameInput = styled.input`
 `;
 
 export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
-  // const { updateProfile } = useProfileUpdate();
-  // const [userName, setUserName] = useState("");
-  // const [part, setPart] = useState(0);
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
-  // const updateUser = async () => {
-  //   const res = await updateProfile({
-  //     username: userName,
-  //   });
-  //   if (res) {
-  //     setStep(1);
-  //   } else {
-  //     toast.error("Username already taken");
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (currentUser?.discordUsername) setPart(1);
-  // }, []);
   return (
     <Box
-      display={"flex"}
-      flexDirection="column"
-      gap={"5"}
       width={{ xs: "full", md: "fit", lg: "128" }}
-      alignItems="center"
-      marginTop={"60"}
+      marginTop={{
+        xs: "32",
+        md: "60",
+      }}
     >
-      <Stack align="center">
+      <Stack align="center" space="6">
         <Stack
           direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}
           align="center"
@@ -110,26 +90,18 @@ const ConnectDiscordButton = ({
       if (!code) return;
       console.log({ code });
       const res = await fetch(
-        `${process.env.BOT_HOST}/api/connectDiscord?code=${code}`
+        `${process.env.API_HOST}/user/v1/connectDiscord?code=${code}`,
+        {
+          credentials: "include",
+        }
       );
       if (res.ok) {
         const data = await res.json();
-        console.log({ data });
-        const random2Digit = Math.floor(Math.random() * 100);
-        const profileRes = await updateProfile({
-          discordId: data.userData.id,
-          discordUsername:
-            data.userData.username === undefined
-              ? undefined
-              : data.userData.username + "#" + data.userData.discriminator,
-          username: data.userData.username + "_" + random2Digit,
-        });
-        console.log({ profileRes });
+        queryClient.setQueryData("getMyUser", data);
         setLoading(false);
-        joinCirclesFromDiscord(data.guildData, data.userData.id);
         process.env.NODE_ENV === "production" &&
           mixpanel.track("Onboard discord", {
-            user: data.userData.username + "_" + random2Digit,
+            user: data.username,
           });
         setStep(1);
       }

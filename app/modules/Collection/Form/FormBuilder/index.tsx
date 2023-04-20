@@ -4,7 +4,16 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { CoverImage, StampCard } from "@/app/modules/PublicForm";
 import { deleteField, updateFormCollection } from "@/app/services/Collection";
-import { Box, Button, FileInput, Stack, Tag, Text, useTheme } from "degen";
+import {
+  Box,
+  Button,
+  FileInput,
+  IconPlusSmall,
+  Stack,
+  Tag,
+  Text,
+  useTheme,
+} from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo, useCallback, useEffect, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
@@ -27,6 +36,8 @@ import SubmittedPage from "./SubmittedPage";
 import { BiLogIn } from "react-icons/bi";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { logError } from "@/app/common/utils/utils";
+import { Hidden, Visible } from "react-grid-system";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 function FormBuilder() {
   const {
@@ -75,6 +86,7 @@ function FormBuilder() {
   };
 
   const { mode } = useTheme();
+  const { formActions } = useRoleGate();
 
   useEffect(() => {
     if (connectedUser) {
@@ -290,23 +302,25 @@ function FormBuilder() {
       return (
         <FormBuilderContainer>
           <Box {...provided.droppableProps} ref={provided.innerRef}>
-            {fields?.map((field, idx) => {
-              if (collection.properties[field]?.isPartOfFormView) {
-                return (
-                  <FieldComponent
-                    id={field}
-                    index={idx}
-                    key={field}
-                    setIsEditFieldOpen={setIsEditFieldOpen}
-                    setIsAddFieldOpen={setIsAddFieldOpen}
-                    setPropertyName={setPropertyName}
-                    formData={formData}
-                    setFormData={setFormData}
-                    setShowConfirmOnDelete={setShowConfirmOnDelete}
-                  />
-                );
-              }
-            })}
+            <Stack>
+              {fields?.map((field, idx) => {
+                if (collection.properties[field]?.isPartOfFormView) {
+                  return (
+                    <FieldComponent
+                      id={field}
+                      index={idx}
+                      key={field}
+                      setIsEditFieldOpen={setIsEditFieldOpen}
+                      setIsAddFieldOpen={setIsAddFieldOpen}
+                      setPropertyName={setPropertyName}
+                      formData={formData}
+                      setFormData={setFormData}
+                      setShowConfirmOnDelete={setShowConfirmOnDelete}
+                    />
+                  );
+                }
+              })}
+            </Stack>
             <Box height="4" />
             {!fields?.length && (
               <Stack align="center">
@@ -314,6 +328,12 @@ function FormBuilder() {
                 <Box width="1/3">
                   <PrimaryButton
                     onClick={() => {
+                      if (!formActions("addAndEditFields")) {
+                        toast.error(
+                          "You do not have permission to add fields, make sure you have the right role"
+                        );
+                        return;
+                      }
                       setIsAddFieldOpen(true);
                     }}
                   >
@@ -336,6 +356,25 @@ function FormBuilder() {
                 />
               </Box>
             )}
+          <Visible xs sm>
+            <Box width="full" marginY="4" paddingX="3">
+              <PrimaryButton
+                onClick={() => {
+                  if (!formActions("addAndEditFields")) {
+                    toast.error(
+                      "You do not have permission to add fields, make sure you have the right role"
+                    );
+                    return;
+                  }
+                  setIsAddFieldOpen(true);
+                }}
+                icon={<IconPlusSmall size="4" />}
+                center
+              >
+                Add a field
+              </PrimaryButton>
+            </Box>
+          </Visible>
           <Stack direction="horizontal" justify="space-between">
             <Box paddingX="5" paddingBottom="4" width="1/2">
               <PrimaryButton
@@ -357,20 +396,6 @@ function FormBuilder() {
               </PrimaryButton>
             </Box>
           </Stack>
-          {/* <Box paddingX="5" paddingBottom="4">
-            <PrimaryButton
-              icon={<IconPlusSmall />}
-              onClick={() => {
-                setIsAddFieldOpen(true);
-                process.env.NODE_ENV === "production" &&
-                  mixpanel.track("Add Field Button", {
-                    user: currentUser?.username,
-                  });
-              }}
-            >
-              Add Field
-            </PrimaryButton>
-          </Box> */}
         </FormBuilderContainer>
       );
     }
@@ -461,7 +486,10 @@ function FormBuilder() {
             <FormContainer
               backgroundColor="background"
               borderRadius="2xLarge"
-              padding="8"
+              padding={{
+                xs: "2",
+                md: "8",
+              }}
               display="flex"
               flexDirection="column"
               style={{
@@ -511,8 +539,8 @@ const Container = styled(Box)`
   margin-top: -10rem;
 
   @media (max-width: 768px) {
-    padding: 0rem 5%;
-    margin-top: -16rem;
+    padding: 0rem 1%;
+    margin-top: -6rem;
   }
 
   @media (min-width: 768px) and (max-width: 1024px) {
@@ -535,12 +563,11 @@ const FormBuilderContainer = styled(Box)`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow-y: auto;
 
   ::-webkit-scrollbar {
     width: 0.5rem;
   }
-
-  overflow-y: auto;
 `;
 
 const FormContainer = styled(Box)``;

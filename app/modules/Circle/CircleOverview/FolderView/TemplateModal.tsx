@@ -48,11 +48,14 @@ export default function TemplateModal({ handleClose }: Props) {
     >
       <Box padding="8">
         {!template && (
-          <Stack direction="horizontal" space="4">
+          <Stack direction="horizontal" space="4" wrap>
             <ButtonCard
               buttonText="Create Grant Workflow"
               prefix={<IconLightningBolt color="accent" />}
-              width="full"
+              width={{
+                xs: "full",
+                lg: "1/4",
+              }}
               onClick={() => {
                 setTemplate(1);
               }}
@@ -79,7 +82,10 @@ export default function TemplateModal({ handleClose }: Props) {
             <ButtonCard
               buttonText="Create Onboarding Workflow"
               prefix={<IconSparkles color="accent" />}
-              width="full"
+              width={{
+                xs: "full",
+                lg: "1/4",
+              }}
               onClick={() => {
                 setTemplate(2);
               }}
@@ -110,11 +116,15 @@ export default function TemplateModal({ handleClose }: Props) {
                   <Trello />
                 </Text>
               }
-              width="full"
+              width={{
+                xs: "full",
+                lg: "1/4",
+              }}
               onClick={async () => {
                 await useTemplate();
                 // setTemplate(3);
               }}
+
               // suffix={
               //   <Box cursor="pointer">
               //     <Text variant="label">

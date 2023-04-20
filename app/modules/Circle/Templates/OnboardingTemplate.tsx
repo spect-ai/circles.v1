@@ -81,7 +81,12 @@ export default function OnboardingTemplate({ handleClose }: Props) {
             <Heading color={"accent"} align="left">
               Integrate Discord
             </Heading>
-            <Box width="1/3">
+            <Box
+              width={{
+                xs: "full",
+                md: "1/3",
+              }}
+            >
               <Stack direction="vertical">
                 <PrimaryButton
                   disabled={!!circle?.discordGuildId}

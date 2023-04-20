@@ -1,6 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import Tabs from "@/app/common/components/Tabs";
-import { Box, Button, IconCog, Stack } from "degen";
+import { Box, Button, IconCog, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import styled from "styled-components";
@@ -26,8 +26,8 @@ function FormSettings() {
     <Box>
       <Button
         shape="circle"
-        size="extraSmall"
-        variant="secondary"
+        size="small"
+        variant="transparent"
         center
         onClick={() => {
           process.env.NODE_ENV === "production" &&
@@ -44,7 +44,7 @@ function FormSettings() {
           }
         }}
       >
-        <IconCog size="5" />
+        <IconCog size="5" color="text" />
       </Button>
       <AnimatePresence>
         {isOpen && (
@@ -59,8 +59,26 @@ function FormSettings() {
                 md: "8",
               }}
             >
-              <Stack direction="horizontal">
-                <Box width="1/4" paddingY="8" paddingRight="1">
+              <Stack
+                direction={{
+                  xs: "vertical",
+                  md: "horizontal",
+                }}
+              >
+                <Box
+                  width={{
+                    xs: "full",
+                    md: "1/4",
+                  }}
+                  paddingY={{
+                    xs: "2",
+                    md: "8",
+                  }}
+                  paddingRight={{
+                    xs: "0",
+                    md: "1",
+                  }}
+                >
                   <Tabs
                     selectedTab={selectedTab}
                     onTabClick={(tab) => setSelectedTab(tab)}
@@ -70,9 +88,12 @@ function FormSettings() {
                   />
                 </Box>
                 <ScrollContainer
-                  width="3/4"
+                  width={{
+                    xs: "full",
+                    md: "3/4",
+                  }}
                   paddingX={{
-                    xs: "0",
+                    xs: "2",
                     md: "4",
                     lg: "8",
                   }}

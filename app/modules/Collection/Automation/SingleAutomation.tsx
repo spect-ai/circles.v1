@@ -230,7 +230,7 @@ export default function SingleAutomation({
         })
         .catch((err) => {
           console.error(err);
-          logError("Something went wrong while fetching collection");
+          toast.error("Something went wrong while fetching collection");
         });
   }, [actions, trigger, conditions, name, collectionOption]);
 

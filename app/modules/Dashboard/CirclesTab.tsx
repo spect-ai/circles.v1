@@ -16,7 +16,7 @@ const ScrollContainer = styled(Box)<{ height: boolean }>`
   overflow-y: auto;
 
   @media (max-width: 768px) {
-    height: calc(100vh - 12rem);
+    height: calc(100vh - 14rem);
   }
 
   height: calc(100vh - ${(props) => (props.height ? "11" : "14")}rem);

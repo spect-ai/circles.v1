@@ -298,16 +298,23 @@ function FormFields({ form, setForm }: Props) {
         form.formMetadata.pages["collect"] ? "collect" : "submitted"
       );
       setUpdateResponse(false);
+      process.env.NODE_ENV === "production" &&
+        mixpanel.track("Form Submit", {
+          form: form.name,
+          sybilEnabled: form.formMetadata.sybilProtectionEnabled,
+          user: currentUser?.username,
+          circle: form.parents[0].slug,
+        });
     } else {
       logError("Error adding data");
+      process.env.NODE_ENV === "production" &&
+        mixpanel.track("Form Submit Failed", {
+          form: form.name,
+          sybilEnabled: form.formMetadata.sybilProtectionEnabled,
+          user: currentUser?.username,
+          circle: form.parents[0].slug,
+        });
     }
-    process.env.NODE_ENV === "production" &&
-      mixpanel.track("Form Submit", {
-        form: form.name,
-        sybilEnabled: form.formMetadata.sybilProtectionEnabled,
-        user: currentUser?.username,
-        circle: form.parents[0].slug,
-      });
     setSubmitting(false);
   };
 

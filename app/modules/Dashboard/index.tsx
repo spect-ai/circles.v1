@@ -39,6 +39,7 @@ import Help from "@/app/common/components/Help";
 import { isProfilePanelExpandedAtom } from "@/app/state/global";
 import { useAtom } from "jotai";
 import { PopoverOption } from "../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 
 function Dashboard() {
   const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
@@ -61,8 +62,6 @@ function Dashboard() {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { mode, setMode } = useTheme();
   const router = useRouter();
-
-  const { tab } = router.query;
 
   if (isLoading || !currentUser?.id)
     return <Loader loading={isLoading} text="Fetching circles" />;
@@ -235,15 +234,14 @@ function Dashboard() {
                   />
                 </Button>
                 <Link href={`/profile/${currentUser?.username}`}>
-                  <Button
-                    size="small"
+                  <PrimaryButton
                     variant="secondary"
                     onClick={() => {
                       setIsProfilePanelExpanded(false);
                     }}
                   >
                     View Profile
-                  </Button>
+                  </PrimaryButton>
                 </Link>
                 <Logout />
               </Stack>
@@ -252,8 +250,6 @@ function Dashboard() {
           {(!currentUser.discordUsername ||
             currentUser.discordUsername === "undefined#undefined") && (
             <Box
-              marginY={"3"}
-              padding={"3"}
               display="flex"
               flexDirection={{
                 lg: "row",
@@ -264,7 +260,6 @@ function Dashboard() {
               gap="3"
               justifyContent="space-between"
               alignItems={"center"}
-              boxShadow="0.5"
               borderRadius={"large"}
             >
               <Text>
@@ -283,7 +278,7 @@ function Dashboard() {
           />
           <Stack direction="horizontal" wrap>
             <Button
-              size="small"
+              size="extraSmall"
               prefix={<IconTokens />}
               variant={panelTab === "circles" ? "tertiary" : "transparent"}
               onClick={() => {
@@ -294,7 +289,7 @@ function Dashboard() {
               Spaces
             </Button>
             <Button
-              size="small"
+              size="extraSmall"
               prefix={
                 <Grid
                   size={18}
@@ -352,9 +347,5 @@ function Dashboard() {
 
   return <Loader loading={isLoading} text="Fetching circles" />;
 }
-
-const UnderlinedText = styled(Box)`
-  text-decoration: underline;
-`;
 
 export default memo(Dashboard);

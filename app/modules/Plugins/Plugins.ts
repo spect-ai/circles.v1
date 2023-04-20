@@ -124,7 +124,8 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
       "Collect information about the responder. Past experiences, educational achievments, skills along with linked NFTs & credentials!",
     tags: "credential curation, responder info",
     docs: "https://docs.guild.xyz",
-    image: "https://ik.imagekit.io/spectcdn/image.png?updatedAt=1678724185631",
+    image:
+      "https://ik.imagekit.io/spectcdn/survey_image.png?updatedAt=1681811990898",
     premium: true,
   },
 };

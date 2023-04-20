@@ -41,6 +41,10 @@ import { BiBot } from "react-icons/bi";
 import TemplateModal from "../Circle/CircleOverview/FolderView/TemplateModal";
 
 export const Container = styled(Box)<{ subH?: string }>`
+  @media (max-width: 768px) {
+    height: calc(100vh - 16.1rem);
+  }
+
   ::-webkit-scrollbar {
     display: none;
   }
@@ -202,7 +206,6 @@ function CircleSidebar() {
                     <Text>
                       <IconUserGroup size="4" />{" "}
                     </Text>
-
                     <Text>Roles</Text>
                   </Box>
                 </CustomButton>
@@ -256,7 +259,7 @@ function CircleSidebar() {
                       });
                   }}
                 >
-                  Payment Center
+                  Payments
                 </PrimaryButton>
               </Link>
             )}
@@ -278,7 +281,7 @@ function CircleSidebar() {
                       });
                   }}
                 >
-                  Automation Center
+                  Automations
                 </PrimaryButton>
               </Link>
             )}
@@ -304,14 +307,9 @@ function CircleSidebar() {
                         });
                     }}
                   >
-                    Governance Center
+                    Governance
                   </PrimaryButton>
                 </Link>
-                <Badge>
-                  <Text color="accent" size="extraSmall">
-                    New
-                  </Text>
-                </Badge>
               </Box>
             )}
             {circle?.sidebarConfig?.showMembership && (
@@ -336,7 +334,7 @@ function CircleSidebar() {
                         });
                     }}
                   >
-                    Membership Center
+                    Memberships
                   </PrimaryButton>
                 </Link>
               </Box>

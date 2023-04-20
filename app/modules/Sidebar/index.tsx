@@ -24,6 +24,7 @@ import {
   socketAtom,
 } from "@/app/state/global";
 import { logError } from "@/app/common/utils/utils";
+import { Hidden, Visible } from "react-grid-system";
 
 export const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -119,24 +120,45 @@ function Sidebar(): ReactElement {
           )}
         </Box>
         <Box borderBottomWidth="0.375" paddingY="3">
-          <Stack space="2">
-            <Button
-              shape="circle"
-              variant={isSidebarExpanded ? "secondary" : "transparent"}
-              size="small"
-              onClick={() => {
-                setIsSidebarExpanded(!isSidebarExpanded);
-                process.env.NODE_ENV === "production" &&
-                  mixpanel.track("Expand Sidebar Button", {
-                    user: currentUser?.username,
-                    url: window.location.href,
-                  });
-              }}
-            >
-              <Text color="accent">
-                <IconMenu size="5" />
-              </Text>
-            </Button>
+          <Stack space="2" align="center">
+            <Visible xs sm>
+              <Button
+                shape="circle"
+                variant={isSidebarExpanded ? "secondary" : "transparent"}
+                size="extraSmall"
+                onClick={() => {
+                  setIsSidebarExpanded(!isSidebarExpanded);
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Expand Sidebar Button", {
+                      user: currentUser?.username,
+                      url: window.location.href,
+                    });
+                }}
+              >
+                <Text color="accent">
+                  <IconMenu size="4" />
+                </Text>
+              </Button>
+            </Visible>
+            <Hidden xs sm>
+              <Button
+                shape="circle"
+                variant={isSidebarExpanded ? "secondary" : "transparent"}
+                size="small"
+                onClick={() => {
+                  setIsSidebarExpanded(!isSidebarExpanded);
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Expand Sidebar Button", {
+                      user: currentUser?.username,
+                      url: window.location.href,
+                    });
+                }}
+              >
+                <Text color="accent">
+                  <IconMenu size="5" />
+                </Text>
+              </Button>
+            </Hidden>
           </Stack>
         </Box>
         {!isLoading && (

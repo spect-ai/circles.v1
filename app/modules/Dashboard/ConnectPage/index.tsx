@@ -19,7 +19,7 @@ export default function ConnectPage() {
       {/* <VioletBlur style={{ bottom: "0px", left: "80rem" }} /> */}
       <Box
         style={{
-          margin: "30vh auto",
+          margin: "0vh auto",
           paddingLeft: "1rem",
           paddingRight: "1rem",
           display: "flex",
