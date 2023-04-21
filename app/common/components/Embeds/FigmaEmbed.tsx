@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 
 const FigmaEmbed = ({
   attrs,
@@ -8,26 +9,31 @@ const FigmaEmbed = ({
   };
 }) => {
   return (
-    <div
-      style={{ width: "100%", paddingBottom: "56.25%", position: "relative" }}
-    >
-      <iframe
+    <div style={{ width: "100%", position: "relative" }}>
+      <StyledIframe
         src={`https://www.figma.com/embed?embed_host=astra&url=${encodeURIComponent(
           attrs?.href
         )}`}
         title="Figma Embed"
-        style={{
-          border: 0,
-          width: "100%",
-          height: "100%",
-          position: "absolute",
-          top: 0,
-          left: 0,
-        }}
         allowFullScreen
-      ></iframe>
+      ></StyledIframe>
     </div>
   );
 };
 
 export default FigmaEmbed;
+
+const StyledIframe = styled.iframe`
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 100%px;
+  }
+  @media (max-width: 1280px) and (min-width: 768px) {
+    width: 100%;
+    height: 250px;
+  }
+  width: 560px;
+  height: 315px;
+  border: 0;
+  border-radius: 8px;
+`;
