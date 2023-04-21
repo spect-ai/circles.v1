@@ -126,7 +126,6 @@ const ConnectPage: NextPage = () => {
         });
     }
   }, [query.channelId]);
-  console.log("asasas");
 
   return (
     <>

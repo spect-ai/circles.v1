@@ -43,7 +43,10 @@ export default function DiscordField({
       if (!code) return;
       if (verify) {
         const res = await fetch(
-          `${process.env.API_HOST}/user/v1/connectDiscord?code=${code}`
+          `${process.env.API_HOST}/user/v1/connectDiscord?code=${code}`,
+          {
+            credentials: "include",
+          }
         );
         if (res.ok) {
           const { userData } = await res.json();
