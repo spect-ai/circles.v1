@@ -1,16 +1,30 @@
-import { Box, Text, useTheme } from "degen";
+import {
+  Box,
+  Button,
+  IconArrowUpRight,
+  IconClose,
+  Text,
+  useTheme,
+} from "degen";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import ResizableIframe from "../ResizableIframe";
 
 const GeneralEmbed = ({
   attrs,
   mode,
+  findEmbedNode,
+  resizeEmbed,
+  resizeable,
 }: {
   attrs: {
     href: string;
   };
   mode: string;
+  findEmbedNode: (url: string) => void;
+  resizeEmbed: (url: string, width: any, height: any) => void;
+  resizeable: boolean;
 }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -28,21 +42,13 @@ const GeneralEmbed = ({
 
   if (src)
     return (
-      <div
-        style={{ width: "100%", paddingBottom: "56.25%", position: "relative" }}
-      >
-        <iframe
+      <div style={{ width: "100%", position: "relative" }}>
+        <ResizableIframe
           src={attrs?.href}
           title="General Embed"
-          style={{
-            border: 0,
-            width: "100%",
-            height: "100%",
-            position: "absolute",
-            top: 0,
-            left: 0,
+          onResize={(height: number, width: number) => {
+            resizeEmbed(attrs?.href, width, height);
           }}
-          allowFullScreen
         />
       </div>
     );
@@ -84,23 +90,26 @@ const GeneralEmbed = ({
         <div
           style={{
             width: "100%",
-            paddingBottom: "56.25%",
+
             position: "relative",
           }}
         >
-          <iframe
+          {" "}
+          <ResizableIframe
             src={attrs?.href}
             title="General Embed"
-            style={{
-              border: 0,
-              width: "100%",
-              height: "100%",
-              position: "absolute",
-              top: 0,
-              left: 0,
+            onResize={(height: number, width: number) => {
+              resizeEmbed(attrs?.href, width, height);
             }}
-            allowFullScreen
           />
+          <Button
+            shape="circle"
+            size="small"
+            variant="transparent"
+            onClick={() => findEmbedNode(attrs?.href)}
+          >
+            <IconClose />
+          </Button>
         </div>
       );
     }
@@ -108,7 +117,34 @@ const GeneralEmbed = ({
       <Box>
         {title && description ? (
           <EmbedCard mode={mode}>
-            <Box display="flex" flexDirection="row" width="full">
+            <Box
+              display="flex"
+              flexDirection="row"
+              width="full"
+              justifyContent="flex-end"
+              padding="0"
+              margin="0"
+            >
+              <Button
+                shape="circle"
+                size="extraSmall"
+                variant="transparent"
+                onClick={() => findEmbedNode(attrs?.href)}
+              >
+                <IconClose />
+              </Button>
+            </Box>
+            <Box
+              display="flex"
+              flexDirection="row"
+              width="full"
+              alignItems="flex-start"
+              marginTop="2"
+              gap="2"
+              onClick={() => {
+                window.open(attrs?.href, "_blank");
+              }}
+            >
               <Box width="3/4">
                 <Text variant="large" weight="bold">
                   {title?.length > 50 ? title.substring(0, 50) + "..." : title}
@@ -120,7 +156,12 @@ const GeneralEmbed = ({
                 </Text>
               </Box>
               <Box width="1/4">
-                <StyledImage src={imageUrl} />
+                <StyledImage
+                  src={
+                    imageUrl ||
+                    `https://api.dicebear.com/6.x/identicon/svg?seed=${attrs?.href}`
+                  }
+                />
               </Box>
             </Box>
           </EmbedCard>
@@ -141,16 +182,9 @@ const EmbedCard = styled(Box)<{
   width?: string;
   height?: string;
 }>`
-  @media (max-width: 1420px) {
-    width: 100%;
-    padding: 0.5rem;
-    margin: 0;
-    height: auto;
-    margin-top: 0.5rem;
-    align-items: flex-start;
-  }
-  height: ${(props) => props.height || "auto"};
-  border-radius: 1rem;
+  width: ${(props) => props.width || "100%"};
+  height: ${(props) => props.height || "fit-content"};
+  border-radius: 0.5rem;
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -163,8 +197,6 @@ const EmbedCard = styled(Box)<{
 `;
 
 const StyledImage = styled.img`
-  @media (max-width: 768px) {
-    width: 16rem;
-  }
-  width: 100%;
+  width: 80%;
+  height: 80%;
 `;

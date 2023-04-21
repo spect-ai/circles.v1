@@ -1,22 +1,20 @@
-import RichMarkdownEditor from "rich-markdown-editor";
-import { toast } from "react-toastify";
-import dark, { light } from "./styles/theme";
-import { storeImage } from "../../utils/ipfs";
-import React, { memo, useEffect, useRef, useState } from "react";
-import { Box, ThemeProvider, useTheme } from "degen";
-import {
-  BlockOutlined,
-  TwitterOutlined,
-  YoutubeFilled,
-} from "@ant-design/icons";
-import LoomIcon from "@/app/assets/icons/loom_beam_color.svg";
-import FigmaIcon from "@/app/assets/icons/figma_icon.svg";
-import GeneralEmbed from "../Embeds/GeneralEmbed";
-import FigmaEmbed from "../Embeds/FigmaEmbed";
-import MiroEmbed from "../Embeds/MiroEmbed";
+import { TwitterOutlined, YoutubeFilled } from "@ant-design/icons";
+import { Box, useTheme } from "degen";
+import React, { Ref, memo, useEffect, useRef, useState } from "react";
 import { FaFigma } from "react-icons/fa";
-import { SiLoom, SiMiro } from "react-icons/si";
 import { ImEmbed } from "react-icons/im";
+import { SiLoom, SiMiro } from "react-icons/si";
+import { toast } from "react-toastify";
+import RichMarkdownEditor, { Props as EditorProps } from "rich-markdown-editor";
+import { storeImage } from "../../utils/ipfs";
+import FigmaEmbed from "../Embeds/FigmaEmbed";
+import GeneralEmbed from "../Embeds/GeneralEmbed";
+import LoomEmbed from "../Embeds/LoomEmbed";
+import MiroEmbed from "../Embeds/MiroEmbed";
+import TweetEmbed from "../Embeds/TwitterEmbed";
+import YouTubeEmbed from "../Embeds/YoutubeEmbed";
+import dark, { light } from "./styles/theme";
+import { EditorState, Transaction } from "prosemirror-state";
 
 type Props = {
   value?: string;
@@ -27,6 +25,7 @@ type Props = {
   tourId?: string;
   setIsDirty?: (val: boolean) => void;
   isDirty?: boolean;
+  onResize?: (url: string, width: any, height: any) => void;
 };
 
 function Editor({
@@ -38,130 +37,69 @@ function Editor({
   onChange,
   isDirty,
   setIsDirty,
+  onResize,
 }: Props) {
   const [content, setcontent] = useState(value);
   const { mode } = useTheme();
-  const editorRef = useRef(null);
+  const editorRef = useRef<RichMarkdownEditor | null>(null);
+  const findEmbedNode = (
+    url: string,
+    node: Node
+  ): { embedNode: Node | null; position?: number } => {
+    let embedNode: Node | null = null;
+    let position: number | undefined;
+    if (!(node as any).content) return { embedNode, position };
 
-  useEffect(() => {
-    if (editorRef.current) {
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (mutation.type === "childList") {
-            mutation.removedNodes.forEach((node) => {
-              if (node.nodeName === "BLOCKQUOTE") {
-                const script = document.getElementById("twitter-wjs");
-                if (script) {
-                  script.remove();
-                }
-              }
-            });
-          }
-        });
-      });
+    (node as any).content.descendants((childNode: any, pos: number) => {
+      if (embedNode) return;
 
-      observer.observe(editorRef.current, { childList: true, subtree: true });
-
-      return () => {
-        observer.disconnect();
-      };
-    }
-  }, [editorRef]);
-
-  const handleYouTubeEmbed = ({
-    attrs,
-  }: {
-    attrs: {
-      href: string;
-      matches: any;
-    };
-  }): any => {
-    const id =
-      attrs?.href &&
-      attrs.href.match(
-        /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#&?]*).*/
-      )?.[2];
-
-    if (id) {
-      return (
-        <iframe
-          width="560"
-          height="315"
-          src={`https://www.youtube.com/embed/${id}?rel=0&enablejsapi=1`}
-          allowFullScreen
-          title="YouTube Video"
-        />
-      );
-    }
-  };
-
-  const LoomEmbed = ({
-    attrs,
-  }: {
-    attrs: {
-      href: string;
-      matches: any;
-    };
-  }): any => {
-    const videoId = attrs?.href.match(/(?:share\/)([^/]+)/)?.[1];
-
-    if (videoId) {
-      return (
-        <iframe
-          src={`https://www.loom.com/embed/${videoId}`}
-          width="640"
-          height="360"
-          title="Loom Video"
-        />
-      );
-    }
-  };
-
-  const TweetEmbed = ({
-    attrs,
-  }: {
-    attrs: {
-      href: string;
-      matches: any;
-    };
-  }) => {
-    if (!attrs?.href) return null;
-    const tweetId = attrs?.href.split("/").pop();
-    const tweetRef = useRef(null);
-
-    useEffect(() => {
-      if ((window as any).twttr && (window as any).twttr.widgets) {
-        (window as any).twttr.widgets
-          .createTweet(tweetId, tweetRef.current, {
-            conversation: "none",
-            dnt: true,
-          })
-          .catch((error: any) => {
-            console.error("Failed to render tweet:", error);
-          });
+      if (childNode.type.name === "embed" && childNode.attrs.href === url) {
+        embedNode = childNode;
+        position = pos;
+        return false;
       }
 
-      return () => {
-        if (tweetRef.current) {
-          (tweetRef.current as any).innerHTML = "";
-        }
-      };
-    }, [tweetId]);
+      return true;
+    });
 
-    return (
-      <div
-        ref={tweetRef}
-        className="twitter-tweet"
-        data-conversation="none"
-        data-dnt="true"
-      >
-        <a href={attrs?.href}></a>
-      </div>
+    return { embedNode, position };
+  };
+
+  const findEmbedInEditor = (
+    url: string
+  ): { embedNode: Node | null; position?: number } | null => {
+    if (!editorRef.current) return null;
+    const document = editorRef.current.view.state.doc;
+    return findEmbedNode(url, document);
+  };
+
+  const replaceEmbedWithUrl = (
+    editorState: EditorState,
+    embedNode: Node,
+    pos: number
+  ) => {
+    const urlText = (embedNode as any).attrs.href;
+    console.log({ urlText });
+    const newText = editorState.schema.text(urlText, [
+      editorState.schema.marks.link.create({ href: urlText }),
+    ]);
+    const tr = editorState.tr.replaceWith(
+      pos,
+      pos + (embedNode as any).nodeSize,
+      newText
     );
+    console.log({ tr });
+    return tr;
   };
 
   return (
-    <Box onMouseLeave={() => onSave && onSave(content as string)}>
+    <Box
+      onMouseLeave={() => {
+        if (isDirty) {
+          onSave && onSave(content as string);
+        }
+      }}
+    >
       <RichMarkdownEditor
         data-tour={tourId}
         dark={mode === "dark"}
@@ -173,6 +111,7 @@ function Editor({
           setcontent(val());
           onChange && onChange(val());
         }}
+        ref={editorRef}
         placeholder={placeholder}
         uploadImage={async (file) => {
           console.log({ file });
@@ -193,23 +132,49 @@ function Editor({
           }
         }}
         embeds={[
-          {
-            title: "Embed",
-            keywords: "embed",
-            icon: () => (
-              <Box
-                style={{
-                  margin: "0.33rem",
-                }}
-              >
-                <ImEmbed />
-              </Box>
-            ),
-            matcher: (url) => {
-              return true; // Match all URLs
-            },
-            component: ({ attrs }) => GeneralEmbed({ attrs, mode }),
-          },
+          // {
+          //   title: "Embed",
+          //   keywords: "embed",
+          //   icon: () => (
+          //     <Box
+          //       style={{
+          //         margin: "0.33rem",
+          //       }}
+          //     >
+          //       <ImEmbed />
+          //     </Box>
+          //   ),
+          //   matcher: () => {
+          //     return true; // Match all URLs
+          //   },
+          //   component: ({ attrs }) =>
+          //     GeneralEmbed({
+          //       attrs,
+          //       mode,
+          //       findEmbedNode: (url: string) => {
+          //         console.log({ url });
+          //         const res = findEmbedInEditor(url);
+          //         if (
+          //           res &&
+          //           res.embedNode &&
+          //           (res.position || res.position === 0) &&
+          //           editorRef.current
+          //         ) {
+          //           const { dispatch, state } = editorRef.current.view;
+          //           const transaction = replaceEmbedWithUrl(
+          //             state,
+          //             res.embedNode,
+          //             res.position
+          //           );
+          //           dispatch(transaction);
+          //         }
+          //       },
+          //       resizeEmbed: (url: string, width: any, height: any) => {
+          //         onResize && onResize(url, width, height);
+          //       },
+          //       resizeable: onResize ? true : false,
+          //     }),
+          // },
           {
             title: "YouTube",
             keywords: "youtube video",
@@ -227,7 +192,7 @@ function Editor({
               url.match(
                 /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=|embed\/|v\/)?([^#&?]{11})/
               ) as RegExpMatchArray,
-            component: handleYouTubeEmbed,
+            component: YouTubeEmbed,
           },
           {
             title: "Tweet",
@@ -266,7 +231,7 @@ function Editor({
               url.match(
                 /^https?:\/\/(?:www\.)?loom\.com\/share\/[a-zA-Z0-9]+/
               ) as RegExpMatchArray,
-            component: LoomEmbed,
+            component: LoomEmbed as any,
           },
           {
             title: "Figma",
@@ -304,9 +269,7 @@ function Editor({
               // Match Miro URLs
               console.log({ url });
 
-              return /^https:\/\/miro\.com\/app\/board\/[0-9a-zA-Z]{22,}/.test(
-                url
-              );
+              return /^https:\/\/miro\.com\/app\/board\/[0-9a-zA-Z]/.test(url);
             },
             component: MiroEmbed,
           },

@@ -1,26 +1,29 @@
-import React from "react";
 import styled from "styled-components";
 
-const MiroEmbed = ({
+export default function YouTubeEmbed({
   attrs,
 }: {
   attrs: {
     href: string;
+    matches: any;
   };
-}) => {
-  console.log({ attrs });
-  return (
-    <div style={{ width: "100%", position: "relative" }}>
-      <StyledIframe
-        src={`${attrs?.href}/embed`}
-        title="Miro Embed"
-        allowFullScreen
-      ></StyledIframe>
-    </div>
-  );
-};
+}) {
+  const id =
+    attrs?.href &&
+    attrs.href.match(
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#&?]*).*/
+    )?.[2];
 
-export default MiroEmbed;
+  if (id) {
+    return (
+      <StyledIframe
+        src={`https://www.youtube.com/embed/${id}?rel=0&enablejsapi=1`}
+        allowFullScreen
+        title="YouTube Video"
+      />
+    );
+  } else return null;
+}
 
 const StyledIframe = styled.iframe`
   @media (max-width: 768px) {

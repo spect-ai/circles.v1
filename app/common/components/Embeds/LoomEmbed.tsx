@@ -1,27 +1,27 @@
-import React from "react";
 import styled from "styled-components";
+import ResizableIframe from "../ResizableIframe";
 
-const MiroEmbed = ({
+export default function LoomEmbed({
   attrs,
 }: {
   attrs: {
     href: string;
+    matches: any;
   };
-}) => {
-  console.log({ attrs });
-  return (
-    <div style={{ width: "100%", position: "relative" }}>
+}) {
+  const videoId = attrs?.href.match(/(?:share\/)([^/]+)/)?.[1];
+
+  if (videoId) {
+    return (
       <StyledIframe
-        src={`${attrs?.href}/embed`}
-        title="Miro Embed"
+        src={`https://www.loom.com/embed/${videoId}`}
         allowFullScreen
-      ></StyledIframe>
-    </div>
-  );
-};
-
-export default MiroEmbed;
-
+        title="Loom Video"
+      />
+    );
+  }
+  return null;
+}
 const StyledIframe = styled.iframe`
   @media (max-width: 768px) {
     width: 100%;
