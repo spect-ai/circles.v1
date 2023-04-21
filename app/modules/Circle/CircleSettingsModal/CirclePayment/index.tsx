@@ -156,7 +156,7 @@ export default function DefaultPayment() {
           </Stack>
           <Text weight="semiBold">Whitelisted Addresses</Text>
           <Stack direction="horizontal" wrap>
-            {circle?.whitelistedAddresses?.[chain?.chainId || ""].map(
+            {circle?.whitelistedAddresses?.[chain?.chainId || ""]?.map(
               (address) => (
                 <Box cursor="pointer">
                   <Tag>

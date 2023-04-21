@@ -86,9 +86,9 @@ function CollectionHeading() {
   }, [collection.formMetadata]);
 
   const onViewPluginsOpen = () => {
-    if (!formActions("addAndEditFields")) {
+    if (!formActions("manageSettings")) {
       toast.error(
-        "Your role(s) doesn't have permissions to add plugins, ensure you have the permission to add and edit fields"
+        "Your role(s) doesn't have permissions to add plugins, ensure your role has the permission to manage settings"
       );
       return;
     }

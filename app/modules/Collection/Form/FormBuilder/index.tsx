@@ -328,9 +328,9 @@ function FormBuilder() {
                 <Box width="1/3">
                   <PrimaryButton
                     onClick={() => {
-                      if (!formActions("addAndEditFields")) {
+                      if (!formActions("manageSettings")) {
                         toast.error(
-                          "You do not have permission to add fields, make sure you have the right role"
+                          "You do not have permission to edit fields, make sure your role has permission to manage settings"
                         );
                         return;
                       }
@@ -360,9 +360,9 @@ function FormBuilder() {
             <Box width="full" marginY="4" paddingX="3">
               <PrimaryButton
                 onClick={() => {
-                  if (!formActions("addAndEditFields")) {
+                  if (!formActions("manageSettings")) {
                     toast.error(
-                      "You do not have permission to add fields, make sure you have the right role"
+                      "You do not have permission to edit fields, make sure your role has permission to manage settings"
                     );
                     return;
                   }

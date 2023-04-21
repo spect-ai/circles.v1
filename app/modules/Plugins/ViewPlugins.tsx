@@ -139,12 +139,6 @@ export default function ViewPlugins({ handleClose }: Props) {
         setPluginOpen(pluginName);
         break;
       case "payments":
-        if (!formActions("manageSettings")) {
-          toast.error(
-            "Your role(s) doesn't have permissions to edit this plugin, ensure you have the permission to manage form settings"
-          );
-          return;
-        }
         setIsPluginOpen(true);
         setPluginOpen(pluginName);
         break;

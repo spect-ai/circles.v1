@@ -74,7 +74,13 @@ export default function Chain({
       value: address,
     })) || [];
 
+  whitelistedAddress.push({
+    label: "Add a new address",
+    value: "__custom__",
+  });
+
   const [isExpanded, setIsExpanded] = useState(true);
+  const [customAddress, setCustomAddress] = useState(false);
 
   return (
     <Box>
@@ -82,12 +88,13 @@ export default function Chain({
         <Box
           display="flex"
           flexDirection="row"
-          alignItems="center"
+          alignItems="flex-end"
           cursor="pointer"
           gap="4"
         >
           <Box width="1/3">
             <Dropdown
+              label="Network"
               options={networkOptions}
               selected={network}
               onChange={onNetworkChange}
@@ -104,18 +111,31 @@ export default function Chain({
               placeholder="Receiving Address"
             /> */}
             <Dropdown
+              label="Receiver Address"
               options={whitelistedAddress || []}
-              selected={whitelistedAddress?.find(
-                (address) => address.value === receiverAddress
-              )}
-              onChange={(address) => onUpdateReceiverAddress(address.value)}
+              selected={
+                customAddress
+                  ? (null as any)
+                  : whitelistedAddress?.find(
+                      (address) => address.value === receiverAddress
+                    )
+              }
+              onChange={(address) => {
+                if (address?.value == "__custom__") {
+                  setCustomAddress(true);
+                  return;
+                }
+                setCustomAddress(false);
+                onUpdateReceiverAddress(address.value);
+              }}
               multiple={false}
               isClearable={false}
-              placeholder="Receiving Address"
+              placeholder="Pick from dropdown or paste new address"
               creatable
               formatCreateLabel={(inputValue) =>
                 `Whitelist ${smartTrim(inputValue, 14)}`
               }
+              formatOptionLabel={(option) => smartTrim(option.label, 20)}
             />
           </Box>
           <Button

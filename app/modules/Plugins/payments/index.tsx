@@ -452,7 +452,6 @@ export default function Payments({ handleClose }: Props) {
                     });
                   }}
                   onUpdateReceiverAddress={async (address) => {
-                    console.log({ address });
                     if (ethers.utils.isAddress(address) === false) {
                       toast.error(
                         "Invalid address, please enter a valid ethereum address"

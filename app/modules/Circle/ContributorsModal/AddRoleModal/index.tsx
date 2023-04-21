@@ -46,7 +46,7 @@ export default function AddRole({ role }: props) {
     <Box>
       {!role ? (
         <PrimaryButton
-          icon={<IconPlusSmall />}
+          icon={<IconPlusSmall size="5" />}
           onClick={() => setIsOpen(true)}
           variant="transparent"
         >

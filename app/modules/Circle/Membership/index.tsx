@@ -1,7 +1,7 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import { UserType } from "@/app/types";
 import { GithubOutlined, TwitterOutlined } from "@ant-design/icons";
-import { Avatar, Box, Button, Stack, Tag, Text } from "degen";
+import { Avatar, Box, Button, Stack, Tag, Text, useTheme } from "degen";
 import { useState } from "react";
 import { Hidden } from "react-grid-system";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
@@ -16,6 +16,7 @@ import styled from "styled-components";
 import ContributorsModal from "../ContributorsModal";
 import mixpanel from "mixpanel-browser";
 import { useQuery } from "react-query";
+import { ToastContainer } from "react-toastify";
 
 type Props = {};
 
@@ -40,6 +41,8 @@ export default function Membership({}: Props) {
     enabled: false,
   });
 
+  const { mode } = useTheme();
+
   return (
     <Box
       marginX={{
@@ -48,6 +51,16 @@ export default function Membership({}: Props) {
       }}
       marginTop="2"
     >
+      <ToastContainer
+        toastStyle={{
+          backgroundColor: `${
+            mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+          }`,
+          color: `${
+            mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+          }`,
+        }}
+      />
       <AnimatePresence>
         {isEmebedOpen && (
           <Embed
