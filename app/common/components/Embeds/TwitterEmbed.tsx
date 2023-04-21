@@ -9,7 +9,11 @@ export default function TweetEmbed({
   };
 }) {
   if (!attrs?.href) return null;
-  const tweetId = attrs?.href.split("/").pop();
+  const urlObj = new URL(attrs?.href);
+  urlObj.search = "";
+  const url = urlObj.toString();
+
+  const tweetId = url.split("/").pop();
   const tweetRef = useRef(null);
 
   useEffect(() => {
@@ -38,7 +42,7 @@ export default function TweetEmbed({
       data-conversation="none"
       data-dnt="true"
     >
-      <a href={attrs?.href}></a>
+      <a href={url}></a>
     </div>
   );
 }
