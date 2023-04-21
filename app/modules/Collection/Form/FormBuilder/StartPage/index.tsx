@@ -38,7 +38,7 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
     return (
       <Box
         style={{
-          height: "calc(100vh - 20rem)",
+          minHeight: "calc(100vh - 20rem)",
         }}
         display="flex"
         flexDirection="column"

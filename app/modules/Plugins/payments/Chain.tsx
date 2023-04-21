@@ -133,9 +133,9 @@ export default function Chain({
               placeholder="Pick from dropdown or paste new address"
               creatable
               formatCreateLabel={(inputValue) =>
-                `Whitelist ${smartTrim(inputValue, 14)}`
+                `Whitelist ${smartTrim(inputValue, 8)}`
               }
-              formatOptionLabel={(option) => smartTrim(option.label, 20)}
+              formatOptionLabel={(option) => smartTrim(option.label, 22)}
             />
           </Box>
           <Button

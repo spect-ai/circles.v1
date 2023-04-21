@@ -26,7 +26,6 @@ import { useAccount, useConnect } from "wagmi";
 import { H } from "highlight.run";
 import { Hidden, Visible } from "react-grid-system";
 import mixpanel from "mixpanel-browser";
-import { current_release } from "../../changelog/content";
 import Changelog from "../../changelog";
 
 type PublicLayoutProps = {
@@ -116,6 +115,12 @@ function PublicLayout(props: PublicLayoutProps) {
   const { connect, connectors } = useConnect();
   const { address } = useAccount();
 
+  const [changelogData, setChangelogData] =
+    useState<{
+      Title: string;
+      Description: string;
+    }>();
+
   useEffect(() => {
     if (!address && connectedUser) {
       const connectorId = localStorage.getItem("connectorId");
@@ -193,10 +198,18 @@ function PublicLayout(props: PublicLayoutProps) {
   }, [currentUser]);
 
   useEffect(() => {
-    if (!localStorage.getItem(current_release)) {
-      setShowChangelog(true);
-      localStorage.setItem(current_release, "true");
-    }
+    (async () => {
+      const res = await fetch(
+        `${process.env.API_HOST}/collection/v1/changelog`
+      );
+      const data = await res.json();
+      if (!data) return;
+      setChangelogData(data);
+      if (!localStorage.getItem(data.Title) && circle === "spect-core") {
+        setShowChangelog(true);
+        localStorage.setItem(data.Title, "true");
+      }
+    })();
   }, []);
 
   if (isLoading || loading)
@@ -216,8 +229,11 @@ function PublicLayout(props: PublicLayoutProps) {
             </Hidden>
             <AnimatePresence initial={false}>
               {isSidebarExpanded && <ExtendedSidebar />}
-              {showChangelog && (
-                <Changelog handleClose={() => setShowChangelog(false)} />
+              {showChangelog && changelogData && (
+                <Changelog
+                  handleClose={() => setShowChangelog(false)}
+                  data={changelogData}
+                />
               )}
             </AnimatePresence>
             <Box
