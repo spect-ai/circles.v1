@@ -21,7 +21,7 @@ export default function useConnectDiscord() {
       }
     );
     if (res.ok) {
-      const data = await res.json();
+      const { profile: data } = await res.json();
       queryClient.setQueryData("getMyUser", data);
       queryClient.refetchQueries("dashboardCircles");
       toast("Successfully linked your Discord account", {

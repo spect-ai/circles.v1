@@ -96,7 +96,7 @@ const ConnectDiscordButton = ({
         }
       );
       if (res.ok) {
-        const data = await res.json();
+        const { profile: data } = await res.json();
         queryClient.setQueryData("getMyUser", data);
         setLoading(false);
         process.env.NODE_ENV === "production" &&

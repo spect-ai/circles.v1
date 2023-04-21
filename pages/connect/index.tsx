@@ -257,6 +257,7 @@ const ConnectPage: NextPage = () => {
                   setData={setData}
                   propertyName="discord"
                   updateRequiredFieldNotSet={() => {}}
+                  verify
                 />
               )}
               {query.telegram === "true" && (
