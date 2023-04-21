@@ -390,7 +390,7 @@ function CollectionHeading() {
                         setIsShareOpen(false);
                       }}
                     >
-                      Share on Discord
+                      Share on Discord 🔥
                     </PopoverOption>
                     <PopoverOption
                       onClick={() => {

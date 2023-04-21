@@ -58,6 +58,10 @@ export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
         size="small"
       >
         <Box paddingX="8" paddingY="4">
+          <Text>
+            Spect forms can be filled out directly from Discord 🤯. Connect your
+            Discord server to collect responses to this form on Discord.
+          </Text>
           <Box
             width="48"
             paddingTop="4"
@@ -91,8 +95,11 @@ export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
       <Box paddingX="8" paddingY="4">
         <Box marginTop="2" width="full">
           {" "}
+          <Text variant="small">
+            Spect forms can be filled out directly from Discord 🤯
+          </Text>
           <Box marginTop="4">
-            <Text variant="label">Create Thread on this Channel</Text>
+            <Text variant="label">Share form on this Channel</Text>
           </Box>
           <Dropdown
             options={channelOptions}
