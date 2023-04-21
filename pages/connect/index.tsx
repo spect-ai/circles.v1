@@ -10,8 +10,10 @@ import GithubField from "@/app/modules/PublicForm/Fields/GithubField";
 import TelegramField from "@/app/modules/PublicForm/Fields/TelegramField";
 import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import { postSocials, PostSocialsPayload } from "@/app/services/Collection";
+import { connectedUserAtom } from "@/app/state/global";
 import { CollectionType } from "@/app/types";
 import { Avatar, Box, Stack, Text } from "degen";
+import { useAtom } from "jotai";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -26,6 +28,8 @@ const ConnectPage: NextPage = () => {
   const [collection, setCollection] = useState<CollectionType>(
     {} as CollectionType
   );
+
+  const [connectedUser] = useAtom(connectedUserAtom);
 
   useEffect(() => {
     if (query.discord && profileContext.discordId?.length) {
@@ -126,7 +130,6 @@ const ConnectPage: NextPage = () => {
         });
     }
   }, [query.channelId]);
-  console.log("asasas");
 
   return (
     <>
@@ -251,12 +254,13 @@ const ConnectPage: NextPage = () => {
                   <Connect variant="tertiary" text="Sign In" />
                 </Box>
               )}
-              {query.discord === "true" && (
+              {connectedUser && query.discord === "true" && (
                 <DiscordField
                   data={data}
                   setData={setData}
                   propertyName="discord"
                   updateRequiredFieldNotSet={() => {}}
+                  verify
                 />
               )}
               {query.telegram === "true" && (

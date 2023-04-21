@@ -2,48 +2,28 @@ import { Box, useTheme } from "degen";
 import { VioletBlur } from "../ConnectPage";
 import Logout from "@/app/common/components/LogoutButton";
 import { BasicProfile } from "./BasicProfile";
-import { useQuery } from "react-query";
-import { CircleType, UserType } from "@/app/types";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CreateCircle } from "./CreateCircle";
-import { CreateContent } from "./CreateContent";
 import { SetUpProfile } from "./SetupProfile";
 import useConnectDiscord from "@/app/services/Discord/useConnectDiscord";
 import { ToastContainer } from "react-toastify";
-import { useAtom } from "jotai";
-import { connectedUserAtom } from "@/app/state/global";
 
 const Onboard = () => {
   useConnectDiscord();
   const [onboardType, setOnboardType] =
     useState<"circle" | "profile">("circle");
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const { mode } = useTheme();
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
-
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
-  const { data: myCircles, refetch } = useQuery<CircleType[]>(
-    "dashboardCircles",
-    () =>
-      fetch(`${process.env.API_HOST}/user/v1/circles`, {
-        credentials: "include",
-      }).then((res) => res.json()),
-    {
-      enabled: false,
-    }
-  );
-  useEffect(() => {
-    if (onboardType == "circle") {
-      if (currentUser && currentUser.username?.startsWith("fren")) {
-        setStep(0);
-      } else if (currentUser && myCircles?.length == 0) {
-        setStep(1);
-      }
-    }
-    void refetch();
-  }, [currentUser, connectedUser, onboardType, refetch, myCircles?.length]);
+  // useEffect(() => {
+  //   if (onboardType == "circle") {
+  //     if (currentUser && currentUser.username?.startsWith("fren")) {
+  //       setStep(0);
+  //     } else if (currentUser && myCircles?.length == 0) {
+  //       setStep(1);
+  //     }
+  //   }
+  //   void refetch();
+  // }, [currentUser, connectedUser, onboardType, refetch, myCircles?.length]);
 
   return (
     <Box position={"relative"} display="flex" width={"full"}>

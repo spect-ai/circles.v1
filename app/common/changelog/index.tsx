@@ -1,27 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "../components/Modal";
 import { Box } from "degen";
 import Editor from "../components/Editor";
-import { changelog, current_release } from "./content";
 
 type Props = {
   handleClose: () => void;
+  data: {
+    Title: string;
+    Description: string;
+  };
 };
 
-const Changelog = ({ handleClose }: Props) => {
+const Changelog = ({ handleClose, data }: Props) => {
   return (
-    <Modal
-      title={`Release ${current_release} changelog`}
-      handleClose={handleClose}
-    >
+    <Modal title={data?.Title || "Changelog"} handleClose={handleClose}>
       <Box padding="8">
-        <Editor
-          value={changelog[current_release]}
-          // onSave={(val) => {
-          //   console.log(val);
-          // }}
-          disabled
-        />
+        {data?.Description && <Editor value={data?.Description} disabled />}
       </Box>
     </Modal>
   );

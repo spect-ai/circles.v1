@@ -11,6 +11,7 @@ type Props = {
   propertyName: string;
   updateRequiredFieldNotSet: (key: string, value: any) => void;
   showAvatar?: boolean;
+  verify?: boolean;
 };
 
 export default function DiscordField({
@@ -19,6 +20,7 @@ export default function DiscordField({
   propertyName,
   updateRequiredFieldNotSet,
   showAvatar,
+  verify = false,
 }: Props) {
   const { hostname } = useLocation();
   const [code, setCode] = useState("");
@@ -39,17 +41,37 @@ export default function DiscordField({
   useEffect(() => {
     (async () => {
       if (!code) return;
-      const res = await fetch(
-        `${process.env.BOT_HOST}/api/connectDiscord?code=${code}`
-      );
-      if (res.ok) {
-        const data = await res.json();
-        if (data.userData.id) {
-          setData((d: any) => ({
-            ...d,
-            [propertyName]: data.userData,
-          }));
-          updateRequiredFieldNotSet(propertyName, data.userData);
+      if (verify) {
+        const res = await fetch(
+          `${process.env.API_HOST}/user/v1/connectDiscord?code=${code}`,
+          {
+            credentials: "include",
+          }
+        );
+        if (res.ok) {
+          const { userData } = await res.json();
+          console.log({ userData });
+          if (userData.id) {
+            setData((d: any) => ({
+              ...d,
+              [propertyName]: userData,
+            }));
+            updateRequiredFieldNotSet(propertyName, userData);
+          }
+        }
+      } else {
+        const res = await fetch(
+          `${process.env.BOT_HOST}/api/connectDiscord?code=${code}`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (data.userData.id) {
+            setData((d: any) => ({
+              ...d,
+              [propertyName]: data.userData,
+            }));
+            updateRequiredFieldNotSet(propertyName, data.userData);
+          }
         }
       }
     })();

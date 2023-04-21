@@ -32,7 +32,7 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
   return (
     <Box
       style={{
-        height: "calc(100vh - 20rem)",
+        minHeight: "calc(100vh - 20rem)",
       }}
       display="flex"
       flexDirection="column"
@@ -81,28 +81,20 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
             }
           }}
         />
-        <Box
-          width="full"
-          borderRadius="large"
-          maxHeight="56"
-          overflow="auto"
-          id="editorContainer"
-        >
-          <Editor
-            value={description}
-            onSave={async (value) => {
-              setDescription(value);
-              if (connectedUser) {
-                const res = await updateFormCollection(collection.id, {
-                  description: value,
-                });
-                res.id && updateCollection(res);
-              }
-            }}
-            placeholder={`Edit description`}
-            isDirty={true}
-          />
-        </Box>
+        <Editor
+          value={description}
+          onSave={async (value) => {
+            setDescription(value);
+            if (connectedUser) {
+              const res = await updateFormCollection(collection.id, {
+                description: value,
+              });
+              res.id && updateCollection(res);
+            }
+          }}
+          placeholder={`Edit description`}
+          isDirty={true}
+        />
         <Messages form={collection} />
       </Stack>
       <Footer
