@@ -126,7 +126,8 @@ function FormBuilder() {
                 >
                   {" "}
                   <Text weight="bold">
-                    You require one of the following roles to fill this form
+                    You require one of the following roles to fill this form.
+                    Sign in to check your role.
                   </Text>
                   <Stack space="2">
                     {collection.formMetadata.formRoleGating?.map(
