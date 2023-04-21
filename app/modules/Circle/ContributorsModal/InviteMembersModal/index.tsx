@@ -234,7 +234,6 @@ function InviteMemberModal({
                         }
                       )
                         .then(async (res) => {
-                          console.log({ res });
                           const invite = await res.text();
                           console.log({ invite });
                           if (res.ok) {
@@ -246,12 +245,12 @@ function InviteMemberModal({
                             setIsLoading(false);
                             setIsOpen(false);
                           } else {
-                            logError("Something went wrong generating invite");
+                            logError(JSON.parse(invite)?.error);
                             setIsLoading(false);
                           }
                         })
                         .catch((err) => {
-                          console.log({ err });
+                          console.error(err);
                           setIsLoading(false);
                         });
                     }}

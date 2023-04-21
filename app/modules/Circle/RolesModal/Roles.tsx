@@ -56,12 +56,18 @@ export default function Roles() {
             <DiscordRoleMapping />
           </Box>
         </Stack>
+        <Text variant="label">
+          Roles are ordered according to their rank. Roles can only invite roles
+          below them.
+        </Text>
         {circle &&
-          roles.map((role) => (
+          roles.map((role, index) => (
             <Box key={role}>
               <Stack direction="horizontal" align="center">
                 <Box width="1/3">
-                  <Text variant="label">{circle.roles[role].name}</Text>
+                  <Text variant="label">
+                    {index + 1}. {circle.roles[role].name}
+                  </Text>
                 </Box>
                 <Box width="1/4">
                   <Text>
