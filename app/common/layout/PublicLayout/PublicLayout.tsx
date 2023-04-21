@@ -26,6 +26,8 @@ import { useAccount, useConnect } from "wagmi";
 import { H } from "highlight.run";
 import { Hidden, Visible } from "react-grid-system";
 import mixpanel from "mixpanel-browser";
+import { current_release } from "../../changelog/content";
+import Changelog from "../../changelog";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -67,11 +69,8 @@ function PublicLayout(props: PublicLayoutProps) {
   const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
     isSidebarExpandedAtom
   );
-  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
-    isProfilePanelExpandedAtom
-  );
-  const [userData, setUserData] = useAtom(userDataAtom);
-  const [profileLoading, setProfileLoading] = useAtom(profileLoadingAtom);
+
+  const [showChangelog, setShowChangelog] = useState(false);
 
   const {
     data: myCircles,
@@ -193,6 +192,13 @@ function PublicLayout(props: PublicLayoutProps) {
     }
   }, [currentUser]);
 
+  useEffect(() => {
+    if (!localStorage.getItem(current_release)) {
+      setShowChangelog(true);
+      localStorage.setItem(current_release, "true");
+    }
+  }, []);
+
   if (isLoading || loading)
     return (
       <DesktopContainer backgroundColor="backgroundSecondary" id="Load screen">
@@ -210,6 +216,9 @@ function PublicLayout(props: PublicLayoutProps) {
             </Hidden>
             <AnimatePresence initial={false}>
               {isSidebarExpanded && <ExtendedSidebar />}
+              {showChangelog && (
+                <Changelog handleClose={() => setShowChangelog(false)} />
+              )}
             </AnimatePresence>
             <Box
               display="flex"

@@ -42,7 +42,7 @@ export default class MyDocument extends Document {
           <script
             async
             src="https://platform.twitter.com/widgets.js"
-            charset="utf-8"
+            charSet="utf-8"
           ></script>
         </Head>
         <body>
