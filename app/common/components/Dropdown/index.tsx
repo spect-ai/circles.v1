@@ -87,7 +87,6 @@ const Dropdown: FC<Props> = ({
           onChange={(option) => onChange(option as any)}
           menuPortalTarget={portal ? document.body : undefined}
           isClearable={isClearable}
-          components={{ Option: IconOption }}
           styles={{
             menuPortal: (base) => ({ ...base, zIndex: 9999 }),
             container: (provided) => ({
