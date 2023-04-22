@@ -171,7 +171,14 @@ const connectors = (chains: any) =>
     },
     {
       groupName: "Wallets",
-      wallets: [metaMaskWallet({ chains }), rainbowWallet({ chains })],
+      wallets: [
+        metaMaskWallet({ chains }),
+        rainbowWallet({
+          chains,
+          projectId: "a71a2b69b4ce96eaa0799a1448eb16c9",
+          name: "Spect",
+        }),
+      ],
     },
   ]);
 
