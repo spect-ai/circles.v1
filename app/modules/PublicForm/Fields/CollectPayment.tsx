@@ -19,6 +19,7 @@ import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
+import { Connect } from "../../Sidebar/ProfileButton/ConnectButton";
 
 type Props = {
   paymentConfig: PaymentConfig;
@@ -360,71 +361,82 @@ export default function CollectPayment({
             </Stack>
           </Stack>
           <Box width="1/3">
-            <PrimaryButton
-              loading={loading}
-              icon={<DollarCircleOutlined />}
-              variant="secondary"
-              onClick={async () => {
-                try {
-                  // Checks if you are on the right network
-                  await checkNetwork();
-                } catch (err) {
-                  console.log(err);
-                  return;
-                }
-                // Paying via Native Currency
-                if (
-                  circleRegistry &&
-                  selectedToken.label ==
-                    circleRegistry[selectedNetwork.value]?.nativeCurrency
-                ) {
-                  await currencyPayment();
-                }
-
-                // Paying via ERC20 Token
-                if (
-                  circleRegistry &&
-                  selectedToken.label !==
-                    circleRegistry[selectedNetwork.value]?.nativeCurrency
-                ) {
-                  // Check if you have sufficient ERC20 Allowance
-                  const approvalStatus = await approval();
-                  // Approval for ERC20 token
-                  setLoading(true);
-                  if (!approvalStatus) {
-                    await toast.promise(
-                      approveOneTokenUsingEOA(
-                        selectedNetwork.value,
-                        selectedToken.value,
-                        circleRegistry
-                      ).then((res: any) => {
-                        if (res) {
-                          const pay = async () => {
-                            await tokenPayment();
-                          };
-                          pay();
-                        }
-                      }),
-                      {
-                        pending: `Approving ${selectedToken.label} Token`,
-                        error: {
-                          render: ({ data }: { data: any }) => data.toString(),
-                        },
-                      },
-                      {
-                        position: "top-center",
-                      }
-                    );
-                  } else {
-                    await tokenPayment();
+            {address ? (
+              <PrimaryButton
+                loading={loading}
+                icon={<DollarCircleOutlined />}
+                variant="secondary"
+                onClick={async () => {
+                  try {
+                    // Checks if you are on the right network
+                    await checkNetwork();
+                  } catch (err) {
+                    console.log(err);
+                    return;
+                  }
+                  // Paying via Native Currency
+                  if (
+                    circleRegistry &&
+                    selectedToken.label ==
+                      circleRegistry[selectedNetwork.value]?.nativeCurrency
+                  ) {
+                    await currencyPayment();
                   }
 
-                  setLoading(false);
+                  // Paying via ERC20 Token
+                  if (
+                    circleRegistry &&
+                    selectedToken.label !==
+                      circleRegistry[selectedNetwork.value]?.nativeCurrency
+                  ) {
+                    // Check if you have sufficient ERC20 Allowance
+                    const approvalStatus = await approval();
+                    // Approval for ERC20 token
+                    setLoading(true);
+                    if (!approvalStatus) {
+                      await toast.promise(
+                        approveOneTokenUsingEOA(
+                          selectedNetwork.value,
+                          selectedToken.value,
+                          circleRegistry
+                        ).then((res: any) => {
+                          if (res) {
+                            const pay = async () => {
+                              await tokenPayment();
+                            };
+                            pay();
+                          }
+                        }),
+                        {
+                          pending: `Approving ${selectedToken.label} Token`,
+                          error: {
+                            render: ({ data }: { data: any }) =>
+                              JSON.stringify(data),
+                          },
+                        },
+                        {
+                          position: "top-center",
+                        }
+                      );
+                    } else {
+                      await tokenPayment();
+                    }
+
+                    setLoading(false);
+                  }
+                }}
+              >
+                {paymentConfig.type === "paywall" ? "Pay" : "Donate"}
+              </PrimaryButton>
+            ) : (
+              <Connect
+                text={`
+                Connect Wallet to ${
+                  paymentConfig.type === "paywall" ? "Pay" : "Donate"
                 }
-              }}
-            >
-              {paymentConfig.type === "paywall" ? "Pay" : "Donate"}
-            </PrimaryButton>
+              `}
+              />
+            )}
           </Box>
         </Stack>
       )}
