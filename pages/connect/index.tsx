@@ -76,6 +76,7 @@ const ConnectPage: NextPage = () => {
       (!query.wallet || profileContext);
     if (hasAllConnections) {
       const payload = {} as PostSocialsPayload;
+
       if (data["discord"]) {
         payload.discordId = data["discord"].id;
         payload.discord = {
@@ -83,19 +84,22 @@ const ConnectPage: NextPage = () => {
           id: data["discord"].id,
         };
       }
-      if (data["telegram"]) {
+      if (query.wallet) {
+        payload.propertyName = "connectWallet";
+      } else if (data["telegram"]) {
         payload.telegram = {
           id: data["telegram"].id,
           username: data["telegram"].username,
           first_name: data["telegram"].first_name,
         };
-      }
-      if (data["github"]) {
+        payload.propertyName = query.propertyName as string;
+      } else if (data["github"]) {
         payload.github = {
           id: data["github"].id,
           username: data["github"].login,
           name: data["github"].name,
         };
+        payload.propertyName = query.propertyName as string;
       }
       setBackToDiscordMessage("Linking your socials...");
       postSocials(query.channelId as string, payload)
@@ -225,7 +229,7 @@ const ConnectPage: NextPage = () => {
                     gap="4"
                   >
                     <Text variant="large" weight="bold">
-                      Connect your Telegram account to continue
+                      Link your Telegram account to Discord to continue
                     </Text>
                   </Box>
                 )}
@@ -245,7 +249,7 @@ const ConnectPage: NextPage = () => {
                     gap="4"
                   >
                     <Text variant="large" weight="bold">
-                      Connect your Github account to continue
+                      Link your Github account to Discord to continue
                     </Text>
                   </Box>
                 )}
@@ -254,14 +258,31 @@ const ConnectPage: NextPage = () => {
                   <Connect variant="tertiary" text="Sign In" />
                 </Box>
               )}
-              {connectedUser && query.discord === "true" && (
-                <DiscordField
-                  data={data}
-                  setData={setData}
-                  propertyName="discord"
-                  updateRequiredFieldNotSet={() => {}}
-                  verify
-                />
+              {query.wallet === "true" ? (
+                <>
+                  query.discord === "true" && connectedUser && (
+                  <DiscordField
+                    data={data}
+                    setData={setData}
+                    propertyName="discord"
+                    updateRequiredFieldNotSet={() => {}}
+                    verify
+                  />
+                </>
+              ) : (
+                (query.telegram === "true" || query.github === "true") &&
+                query.discord === "true" && (
+                  <>
+                    {" "}
+                    <DiscordField
+                      data={data}
+                      setData={setData}
+                      propertyName="discord"
+                      updateRequiredFieldNotSet={() => {}}
+                      verify
+                    />
+                  </>
+                )
               )}
               {query.telegram === "true" && (
                 <TelegramField

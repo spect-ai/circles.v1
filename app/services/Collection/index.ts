@@ -505,6 +505,7 @@ export type PostSocialsPayload = {
     name: string;
   };
   ethAddress?: string;
+  propertyName: string;
 };
 
 export const postSocials = async (
