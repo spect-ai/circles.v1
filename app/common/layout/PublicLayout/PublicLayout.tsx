@@ -213,7 +213,7 @@ function PublicLayout(props: PublicLayoutProps) {
         localStorage.setItem(data.Title, "true");
       }
     })();
-  }, []);
+  }, [circle]);
 
   if (isLoading || loading)
     return (
