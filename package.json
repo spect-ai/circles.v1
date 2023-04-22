@@ -28,9 +28,10 @@
     "@guildxyz/sdk": "^1.1.1",
     "@highlight-run/react": "^2.0.1",
     "@popperjs/core": "^2.11.5",
-    "@rainbow-me/rainbowkit": "^0.8.1",
+    "@rainbow-me/rainbowkit": "^0.12.9",
     "@snapshot-labs/snapshot.js": "^0.4.56",
     "@svgr/webpack": "^6.2.1",
+    "@wagmi/core": "^0.10.10",
     "chart.js": "^3.9.1",
     "csvtojson": "^2.0.10",
     "d3": "^7.7.0",
@@ -84,7 +85,7 @@
     "siwe": "^1.1.6",
     "socket.io-client": "4.3.2",
     "styled-components": "^5.3.6",
-    "wagmi": "^0.11.5"
+    "wagmi": "^0.12.12"
   },
   "devDependencies": {
     "@babel/core": "^7.18.2",

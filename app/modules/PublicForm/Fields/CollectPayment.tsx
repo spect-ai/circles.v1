@@ -217,7 +217,8 @@ export default function CollectPayment({
             "Network Gas Token"
           }`,
           error: {
-            render: ({ data }: { data: string }) => data.toString(),
+            render: ({ data }: { data: any }) =>
+              data.message || data.toString(),
           },
         },
         {
