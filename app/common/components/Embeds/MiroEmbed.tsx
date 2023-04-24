@@ -8,7 +8,6 @@ const MiroEmbed = ({
     href: string;
   };
 }) => {
-  console.log({ attrs });
   return (
     <div style={{ width: "100%", position: "relative" }}>
       <StyledIframe

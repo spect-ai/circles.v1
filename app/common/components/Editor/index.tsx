@@ -5,16 +5,25 @@ import { FaFigma } from "react-icons/fa";
 import { ImEmbed } from "react-icons/im";
 import { SiLoom, SiMiro } from "react-icons/si";
 import { toast } from "react-toastify";
-import RichMarkdownEditor, { Props as EditorProps } from "rich-markdown-editor";
+import RichMarkdownEditor, {
+  Props as EditorProps,
+  Extension,
+} from "rich-markdown-editor";
 import { storeImage } from "../../utils/ipfs";
 import FigmaEmbed from "../Embeds/FigmaEmbed";
 import GeneralEmbed from "../Embeds/GeneralEmbed";
 import LoomEmbed from "../Embeds/LoomEmbed";
 import MiroEmbed from "../Embeds/MiroEmbed";
-import TweetEmbed from "../Embeds/TwitterEmbed";
+import TweetEmbed, { extractTweetId } from "../Embeds/TwitterEmbed";
 import YouTubeEmbed from "../Embeds/YoutubeEmbed";
 import dark, { light } from "./styles/theme";
-import { EditorState, Transaction } from "prosemirror-state";
+import {
+  EditorState,
+  Transaction,
+  TextSelection,
+  Plugin,
+} from "prosemirror-state";
+import { isURL } from "../../utils/utils";
 
 type Props = {
   value?: string;
@@ -42,54 +51,69 @@ function Editor({
   const [content, setcontent] = useState(value);
   const { mode } = useTheme();
   const editorRef = useRef<RichMarkdownEditor | null>(null);
-  const findEmbedNode = (
-    url: string,
-    node: Node
-  ): { embedNode: Node | null; position?: number } => {
-    let embedNode: Node | null = null;
-    let position: number | undefined;
-    if (!(node as any).content) return { embedNode, position };
+  const [dropdownPosition, setDropdownPosition] =
+    useState<{ top: number; left: number } | null>(null);
+  const [pastedData, setPastedData] = useState<string | null>(null);
 
-    (node as any).content.descendants((childNode: any, pos: number) => {
-      if (embedNode) return;
+  const handlePaste = (view: any, event: any) => {
+    const clipboardData = event.clipboardData || (window as any).clipboardData;
+    const pastedData = clipboardData.getData("text");
 
-      if (childNode.type.name === "embed" && childNode.attrs.href === url) {
-        embedNode = childNode;
-        position = pos;
-        return false;
-      }
+    if (!pastedData) return false;
+    if (!isURL(pastedData)) return false;
+    const urlObj = new URL(pastedData);
+    if (urlObj.searchParams.has("embedOnSpect")) return false;
 
-      return true;
-    });
+    event.preventDefault();
 
-    return { embedNode, position };
+    const rect = view.coordsAtPos(view.state.selection.from);
+
+    setDropdownPosition({ top: rect.top, left: rect.left });
+    setPastedData(pastedData);
+
+    return true;
   };
 
-  const findEmbedInEditor = (
-    url: string
-  ): { embedNode: Node | null; position?: number } | null => {
-    if (!editorRef.current) return null;
-    const document = editorRef.current.view.state.doc;
-    return findEmbedNode(url, document);
-  };
+  const handleEmbedSelect = (embed: boolean) => {
+    if (!editorRef.current || !pastedData) return;
 
-  const replaceEmbedWithUrl = (
-    editorState: EditorState,
-    embedNode: Node,
-    pos: number
-  ) => {
-    const urlText = (embedNode as any).attrs.href;
-    console.log({ urlText });
-    const newText = editorState.schema.text(urlText, [
-      editorState.schema.marks.link.create({ href: urlText }),
-    ]);
-    const tr = editorState.tr.replaceWith(
-      pos,
-      pos + (embedNode as any).nodeSize,
-      newText
-    );
-    console.log({ tr });
-    return tr;
+    const view = editorRef.current.view;
+    let modifiedData = pastedData;
+    if (embed && isURL(pastedData)) {
+      const urlObj = new URL(pastedData);
+      urlObj.searchParams.append("embedOnSpect", "true");
+      modifiedData = urlObj.toString();
+
+      // Create a link mark with the enriched URL
+      const linkMark = view.state.schema.marks.link.create({
+        href: modifiedData,
+      });
+
+      console.log({ state: view.state, linkMark });
+      // Create a text node with the modified data and apply the link mark
+      const linkNode = view.state.schema.text(modifiedData, [linkMark]);
+      const newState = view.state.apply(
+        view.state.tr.insert(view.state.selection.from, linkNode)
+      );
+
+      const newSelection = TextSelection.create(
+        newState.doc,
+        view.state.selection.from + modifiedData.length
+      );
+
+      console.log({ newState, newSelection });
+      view.updateState(newState);
+      view.dispatch(view.state.tr.setSelection(newSelection as any));
+      view.focus();
+
+      console.log({ val: editorRef.current.value() });
+
+      // const editorValue = (editorRef.current as any).getContent();
+      setcontent(editorRef.current.value());
+    }
+
+    setDropdownPosition(null);
+    setPastedData(null);
   };
 
   return (
@@ -111,6 +135,11 @@ function Editor({
           setcontent(val());
           onChange && onChange(val());
         }}
+        handleDOMEvents={
+          {
+            // paste: handlePaste,
+          }
+        }
         ref={editorRef}
         placeholder={placeholder}
         uploadImage={async (file) => {
@@ -130,6 +159,26 @@ function Editor({
           if (isDirty) {
             onSave && onSave(content as string);
           }
+        }}
+        onCreateLink={async (title) => {
+          console.log({ title });
+
+          return title;
+        }}
+        // extensions={[new YouTubeEmbedExtension()]}
+        onHoverLink={(event) => {
+          console.log({ event });
+          return true;
+        }}
+        onSearchLink={async (term) => {
+          console.log({ term });
+          return [
+            {
+              url: term,
+              title: term,
+              subtitle: term,
+            },
+          ];
         }}
         embeds={[
           // {
@@ -188,10 +237,17 @@ function Editor({
               </Box>
             ),
             defaultHidden: false,
-            matcher: (url) =>
-              url.match(
-                /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=|embed\/|v\/)?([^#&?]{11})/
-              ) as RegExpMatchArray,
+            matcher: (url) => {
+              const id =
+                url &&
+                url.match(
+                  /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#&?]*).*/
+                )?.[2];
+
+              if (!id) return false;
+
+              return true;
+            },
             component: YouTubeEmbed,
           },
           {
@@ -208,11 +264,20 @@ function Editor({
             ),
             defaultHidden: false,
             matcher: (url) => {
-              return url.match(
+              const match = url.match(
                 /^https?:\/\/(www\.)?(twitter\.com)\/.+/
               ) as RegExpMatchArray;
+              if (!match) return false;
+              const urlObj = new URL(url);
+              urlObj.search = "";
+              const urlString = urlObj.toString();
+              const tweetId = extractTweetId(urlString);
+              if (!tweetId) return false;
+              return true;
             },
-            component: TweetEmbed,
+            component: (e) => {
+              return <TweetEmbed attrs={e.attrs} />;
+            },
           },
           {
             title: "Loom",
@@ -227,10 +292,11 @@ function Editor({
               </Box>
             ),
             defaultHidden: false,
-            matcher: (url) =>
-              url.match(
-                /^https?:\/\/(?:www\.)?loom\.com\/share\/[a-zA-Z0-9]+/
-              ) as RegExpMatchArray,
+            matcher: (url) => {
+              const videoId = url.match(/(?:share\/)([^/]+)/)?.[1];
+              if (!videoId) return false;
+              return true;
+            },
             component: LoomEmbed as any,
           },
           {
@@ -267,8 +333,6 @@ function Editor({
             ),
             matcher: (url) => {
               // Match Miro URLs
-              console.log({ url });
-
               return /^https:\/\/miro\.com\/app\/board\/[0-9a-zA-Z]/.test(url);
             },
             component: MiroEmbed,
