@@ -5,10 +5,11 @@ import { CollectionType, FormType } from "@/app/types";
 import { Avatar, Box, Stack } from "degen";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import Footer from "./Footer";
 import Messages from "./Messages";
 import { logError } from "@/app/common/utils/utils";
+import { SkeletonLoader } from "@/app/modules/PublicForm/Fields/SkeletonLoader";
+import { motion } from "framer-motion";
 
 type Props = {
   form: CollectionType | undefined;
@@ -24,7 +25,6 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
 
   useEffect(() => {
     void (async () => {
-      console.log("formId", formId);
       if (formId) {
         const res: FormType = await getForm(formId as string);
         if (res.id) {
@@ -36,38 +36,40 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
 
   if (form) {
     return (
-      <Box
-        style={{
-          minHeight: "calc(100vh - 20rem)",
-        }}
-        display="flex"
-        flexDirection="column"
-        justifyContent="space-between"
-      >
-        <Stack space="2">
-          {form.formMetadata.logo && (
-            <Avatar src={form.formMetadata.logo} label="" size="20" />
-          )}
-          <NameInput
-            autoFocus
-            value={form.name}
-            disabled
-            rows={Math.floor(form.name?.length / 20) + 1}
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <Box
+          style={{
+            minHeight: "calc(100vh - 20rem)",
+          }}
+          display="flex"
+          flexDirection="column"
+          justifyContent="space-between"
+        >
+          <Stack space="2">
+            {form.formMetadata.logo && (
+              <Avatar src={form.formMetadata.logo} label="" size="20" />
+            )}
+            <NameInput
+              autoFocus
+              value={form.name}
+              disabled
+              rows={Math.floor(form.name?.length / 20) + 1}
+            />
+            {form.description && (
+              <Editor value={form.description} isDirty={true} disabled />
+            )}
+            <Messages form={form} />
+          </Stack>
+          <Footer
+            collection={form}
+            setCaptchaVerified={setCaptchaVerified}
+            captchaVerified={captchaVerified}
+            setCurrentPage={setCurrentPage}
           />
-          {form.description && (
-            <Editor value={form.description} isDirty={true} disabled />
-          )}
-          <Messages form={form} />
-        </Stack>
-        <Footer
-          collection={form}
-          setCaptchaVerified={setCaptchaVerified}
-          captchaVerified={captchaVerified}
-          setCurrentPage={setCurrentPage}
-        />
-      </Box>
+        </Box>
+      </motion.div>
     );
-  } else return null;
+  } else return <SkeletonLoader />;
 };
 
 export default StartPage;

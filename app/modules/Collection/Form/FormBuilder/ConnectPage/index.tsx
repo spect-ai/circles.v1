@@ -158,7 +158,7 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
             marginTop="4"
             gap="4"
           >
-            <Stack direction="horizontal" space="1">
+            <Stack direction="horizontal" space="1" wrap>
               <Text weight="bold">
                 You require one of the following roles on
               </Text>
