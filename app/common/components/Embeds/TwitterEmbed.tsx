@@ -1,4 +1,27 @@
-import { useEffect, useRef } from "react";
+import { Box } from "degen";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { NodeSelection } from "prosemirror-state";
+import React from "react";
+
+export function isValidTweetId(tweetId: bigint) {
+  const maxBigInt = BigInt("18446744073709551615"); // 2^64 - 1
+  return tweetId > 0 && tweetId < maxBigInt;
+}
+
+export function extractTweetId(url: string): string | null {
+  // Use a regular expression to extract the Tweet ID from the URL
+  const tweetIdRegex = /(?:\/status(?:es)?\/)(\d+)/;
+  const match = url.match(tweetIdRegex);
+  if (match && match[1]) {
+    const tweetId = BigInt(match[1]);
+    if (isValidTweetId(tweetId)) {
+      return tweetId.toString();
+    }
+  }
+
+  return null;
+}
 
 export default function TweetEmbed({
   attrs,
@@ -13,7 +36,7 @@ export default function TweetEmbed({
   urlObj.search = "";
   const url = urlObj.toString();
 
-  const tweetId = url.split("/").pop();
+  const tweetId = extractTweetId(url);
   const tweetRef = useRef(null);
 
   useEffect(() => {
