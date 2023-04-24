@@ -158,6 +158,9 @@ export function useProviderLocalCollection() {
       const res = getIfFieldNeedsAttention(value);
       fieldsThatNeedAttention[key] = res?.needsAttention;
       reasonFieldNeedsAttention[key] = res?.reason;
+      if (res?.needsAttention) {
+        toast.warning(`${key} field needs attention, ${res?.reason}`);
+      }
     });
     setFieldNeedsAttention(fieldsThatNeedAttention);
     setReasonFieldNeedsAttention(reasonFieldNeedsAttention);
