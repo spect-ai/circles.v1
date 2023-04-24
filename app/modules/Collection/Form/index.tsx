@@ -1,4 +1,4 @@
-import { reorder } from "@/app/common/utils/utils";
+import { logError } from "@/app/common/utils/utils";
 import { Box } from "degen";
 import { useCallback } from "react";
 import {
@@ -12,6 +12,7 @@ import { SkeletonLoader } from "../../Explore/SkeletonLoader";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import FormBuilder from "./FormBuilder";
 import InactiveFieldsColumnComponent from "./InactiveFieldsColumn";
+import { updateFormCollection } from "@/app/services/Collection";
 
 export function Form() {
   const {
@@ -19,6 +20,7 @@ export function Form() {
     updateCollection,
     loading,
     currentPage,
+    scrollContainerRef,
   } = useLocalCollection();
 
   const handleDragCollectionProperty = async (result: DropResult) => {
@@ -36,17 +38,14 @@ export function Form() {
     }
 
     const pages = collection.formMetadata.pages;
-
     const sourcePage = pages[currentPage];
-    console.log({ sourcePage });
     const newPage = {
       ...sourcePage,
       properties: Array.from(sourcePage.properties),
     };
     newPage.properties.splice(source.index, 1);
     newPage.properties.splice(destination.index, 0, draggableId);
-    console.log({ newPage });
-    updateCollection({
+    const update = {
       ...collection,
       formMetadata: {
         ...collection.formMetadata,
@@ -55,13 +54,20 @@ export function Form() {
           [currentPage]: newPage,
         },
       },
-    });
+    };
+    updateCollection(update);
+    const res = await updateFormCollection(collection.id, update);
+    if (res.id) {
+      updateCollection(res);
+    } else {
+      logError("Error updating field order");
+    }
   };
 
   const DroppableContent = (provided: DroppableProvided) => {
     return (
       <Box {...provided.droppableProps} ref={provided.innerRef}>
-        <ScrollContainer>
+        <ScrollContainer ref={scrollContainerRef}>
           <FormContainer>
             <FormBuilder />
           </FormContainer>

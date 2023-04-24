@@ -437,6 +437,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
               onChange={(type) => {
                 setIsDirty(true);
                 setType(type);
+                if (type.value === "readonly") setRequired(0);
               }}
               multiple={false}
               isClearable={false}

@@ -111,11 +111,6 @@ function FormBuilder() {
             className="box"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{
-              duration: 0.8,
-              delay: 0.5,
-              ease: [0, 0.71, 0.2, 1.01],
-            }}
           >
             {!collection.formMetadata.hasRole &&
               collection.formMetadata.formRoleGating && (
@@ -126,11 +121,19 @@ function FormBuilder() {
                   marginTop="4"
                   gap="4"
                 >
-                  {" "}
-                  <Text weight="bold">
-                    You require one of the following roles to fill this form.
-                    Sign in to check your role.
-                  </Text>
+                  <Stack direction="horizontal" space="1" wrap>
+                    <Text weight="bold">
+                      You require one of the following roles on
+                    </Text>
+                    <a href="https://guild.xyz">
+                      <Text font="mono" weight="bold" color="accent">
+                        guild.xyz
+                      </Text>
+                    </a>
+                    <Text weight="bold">
+                      to fill this form. Sign in to check your role
+                    </Text>
+                  </Stack>
                   <Stack space="2">
                     {collection.formMetadata.formRoleGating?.map(
                       (role: GuildRole) => (

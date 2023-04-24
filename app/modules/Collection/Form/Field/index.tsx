@@ -43,6 +43,7 @@ import { Hidden } from "react-grid-system";
 import { useAtom } from "jotai";
 import { isSidebarExpandedAtom } from "@/app/state/global";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { useScroll } from "react-use";
 
 type Props = {
   id: string;
@@ -70,6 +71,7 @@ function FieldComponent({
     fieldNeedsAttention,
     updateCollection,
     setCurrentPage,
+    scrollContainerRef,
   } = useLocalCollection();
   const [hover, setHover] = useState(false);
   const { mode } = useTheme();
@@ -96,6 +98,7 @@ function FieldComponent({
 
   const [forceRefresh, setForceRefresh] = useState(true);
   const { formActions } = useRoleGate();
+  const { y } = useScroll(scrollContainerRef);
 
   useEffect(() => {
     // force rerender of the editor component when the description changes
@@ -410,6 +413,7 @@ function FieldComponent({
                 position: "absolute",
                 // position it 1rem below the top of the screen
                 marginLeft: "2rem",
+                marginTop: `-${y}px`,
               }}
             >
               <Stack space="3">

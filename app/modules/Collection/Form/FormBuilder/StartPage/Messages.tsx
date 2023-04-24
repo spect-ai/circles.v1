@@ -19,7 +19,9 @@ export default function Messages({ form }: Props) {
     <Box display="flex" flexDirection="column" marginTop="4" gap="4">
       {form.formMetadata.formRoleGating &&
         form.formMetadata.formRoleGating.length > 0 && (
-          <Text weight="semiBold">⛩️ This form is role gated</Text>
+          <Text weight="semiBold">
+            ⛩️ This form is role gated using guild.xyz
+          </Text>
         )}
       {form.formMetadata.poapEventId && (
         <Text weight="semiBold">
