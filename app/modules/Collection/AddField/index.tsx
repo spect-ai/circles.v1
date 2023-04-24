@@ -100,6 +100,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
   const [allowCustom, setAllowCustom] = useState(false);
 
   const [isDirty, setIsDirty] = useState(false);
+  const [initializing, setInitializing] = useState(propertyName ? true : false);
 
   const onRequiredTabClick = (id: number) => {
     setIsDirty(true);
@@ -234,6 +235,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
       collection.properties &&
       collection.properties[propertyName]
     ) {
+      setInitializing(true);
       setName(propertyName);
       setInitialName(propertyName);
       const property = collection.properties[propertyName];
@@ -263,6 +265,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
       if (property.type === "payWall") {
         setPayWallOption(property.payWallOptions as PayWallOptions);
       }
+      setInitializing(false);
     }
   }, [collection.properties, propertyName]);
 
@@ -397,7 +400,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
                 Field name cannot be slug
               </Text>
             )}
-            {collection.collectionType === 0 && (
+            {collection.collectionType === 0 && !initializing && (
               <Box
                 width="full"
                 borderRadius="large"
@@ -434,6 +437,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
               onChange={(type) => {
                 setIsDirty(true);
                 setType(type);
+                if (type.value === "readonly") setRequired(0);
               }}
               multiple={false}
               isClearable={false}

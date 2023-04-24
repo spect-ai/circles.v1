@@ -12,6 +12,8 @@ import { Box, Input, Text } from "degen";
 import { useEffect, useState } from "react";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
+import { logError } from "@/app/common/utils/utils";
+import { toast } from "react-toastify";
 
 type EmbedProps = {
   isOpen: boolean;
@@ -122,9 +124,15 @@ export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
               const res = await postFormMessage(collection.id, {
                 channelId: selectedChannel.value,
               });
-              setLoading(false);
-              setIsOpen(false);
-              console.log({ res });
+              if (res.id) {
+                setLoading(false);
+                setIsOpen(false);
+                console.log({ res });
+                toast.success("Form shared on discord");
+              } else {
+                setLoading(false);
+                logError("Error sharing form on discord");
+              }
             }}
             loading={loading}
           >

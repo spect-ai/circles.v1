@@ -367,6 +367,7 @@ function CircleSidebar() {
                 return (
                   <Accordian name={folder.name} key={fol} defaultOpen>
                     {folder.contentIds?.map((content) => {
+                      if (circle?.collections?.[content]?.archived) return null;
                       return (
                         <Stack key={content} direction="horizontal" space="0">
                           <Box width="full" padding="1">
@@ -434,52 +435,49 @@ function CircleSidebar() {
                                 </PrimaryButton>
                               </Link>
                             )}
-                            {content &&
-                              circle?.collections?.[content] &&
-                              circle?.collections?.[content].archived !==
-                                true && (
-                                <Link
-                                  href={`/${cId}/r/${circle?.collections?.[content].slug}`}
+                            {content && circle?.collections?.[content] && (
+                              <Link
+                                href={`/${cId}/r/${circle?.collections?.[content].slug}`}
+                              >
+                                <PrimaryButton
+                                  center
+                                  variant={
+                                    cSlug ===
+                                    circle?.collections?.[content].slug
+                                      ? "tertiary"
+                                      : "transparent"
+                                  }
+                                  icon={
+                                    <Text
+                                      color={
+                                        cSlug ===
+                                        circle?.collections?.[content].slug
+                                          ? "accent"
+                                          : "inherit"
+                                      }
+                                    >
+                                      {circle?.collections?.[content]
+                                        .viewType ? (
+                                        getViewIcon(
+                                          circle?.collections?.[content]
+                                            .viewType || ""
+                                        )
+                                      ) : (
+                                        <Table
+                                          size={18}
+                                          style={{ marginTop: 4 }}
+                                        />
+                                      )}
+                                    </Text>
+                                  }
                                 >
-                                  <PrimaryButton
-                                    center
-                                    variant={
-                                      cSlug ===
-                                      circle?.collections?.[content].slug
-                                        ? "tertiary"
-                                        : "transparent"
-                                    }
-                                    icon={
-                                      <Text
-                                        color={
-                                          cSlug ===
-                                          circle?.collections?.[content].slug
-                                            ? "accent"
-                                            : "inherit"
-                                        }
-                                      >
-                                        {circle?.collections?.[content]
-                                          .viewType ? (
-                                          getViewIcon(
-                                            circle?.collections?.[content]
-                                              .viewType || ""
-                                          )
-                                        ) : (
-                                          <Table
-                                            size={18}
-                                            style={{ marginTop: 4 }}
-                                          />
-                                        )}
-                                      </Text>
-                                    }
-                                  >
-                                    {smartTrim(
-                                      circle?.collections?.[content].name,
-                                      22
-                                    )}
-                                  </PrimaryButton>
-                                </Link>
-                              )}
+                                  {smartTrim(
+                                    circle?.collections?.[content].name,
+                                    22
+                                  )}
+                                </PrimaryButton>
+                              </Link>
+                            )}
                           </Box>
                         </Stack>
                       );

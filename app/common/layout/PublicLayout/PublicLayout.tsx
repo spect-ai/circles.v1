@@ -203,14 +203,17 @@ function PublicLayout(props: PublicLayoutProps) {
         `${process.env.API_HOST}/collection/v1/changelog`
       );
       const data = await res.json();
+      console.log({ data });
       if (!data) return;
       setChangelogData(data);
+      console.log({ circle, localStorage: localStorage.getItem(data.Title) });
       if (!localStorage.getItem(data.Title) && circle === "spect-core") {
+        console.log("inside");
         setShowChangelog(true);
         localStorage.setItem(data.Title, "true");
       }
     })();
-  }, []);
+  }, [circle]);
 
   if (isLoading || loading)
     return (

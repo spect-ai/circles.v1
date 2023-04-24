@@ -5,7 +5,13 @@ import { CollectionType, Property } from "@/app/types";
 import { useAtom } from "jotai";
 import _ from "lodash";
 import { useRouter } from "next/router";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 
@@ -45,6 +51,7 @@ type LocalCollectionContextType = {
   colorMapping: {
     [key: string]: string;
   };
+  scrollContainerRef: React.RefObject<HTMLDivElement>;
 };
 
 export const LocalCollectionContext = createContext<LocalCollectionContextType>(
@@ -101,6 +108,7 @@ export function useProviderLocalCollection() {
   );
 
   const [currentPage, setCurrentPage] = useState("start");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const updateCollection = (collection: CollectionType) => {
     queryClient.setQueryData(["collection", colId], collection);
@@ -150,6 +158,9 @@ export function useProviderLocalCollection() {
       const res = getIfFieldNeedsAttention(value);
       fieldsThatNeedAttention[key] = res?.needsAttention;
       reasonFieldNeedsAttention[key] = res?.reason;
+      if (res?.needsAttention) {
+        toast.warning(`${key} field needs attention, ${res?.reason}`);
+      }
     });
     setFieldNeedsAttention(fieldsThatNeedAttention);
     setReasonFieldNeedsAttention(reasonFieldNeedsAttention);
@@ -272,6 +283,7 @@ export function useProviderLocalCollection() {
     currentPage,
     setCurrentPage,
     colorMapping,
+    scrollContainerRef,
   };
 }
 
