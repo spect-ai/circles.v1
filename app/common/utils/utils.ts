@@ -153,8 +153,8 @@ export const convertToId = (text: string) => {
     .replace(/[^\w-]+/g, "");
 };
 
-export const logError = (error: string) => {
+export const logError = (error: string, showToast = true) => {
   console.error(error);
-  toast.error(error);
+  if (showToast) toast.error(error);
   process.env.NODE_ENV === "production" && H.consumeError(new Error(error));
 };
