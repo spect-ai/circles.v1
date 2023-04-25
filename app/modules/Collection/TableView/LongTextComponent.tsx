@@ -26,7 +26,7 @@ export default function LongTextComponent({
   return (
     <Box overflow="hidden" padding="1">
       <Editor
-        value={rowData}
+        value={rowData || ""}
         onSave={(value) => {
           setRowData(value);
           stopEditing();
