@@ -167,7 +167,7 @@ export const PageComponent = ({
                     onClick={() => {
                       if (!formActions("manageSettings")) {
                         toast.error(
-                          "You do not have permission to add fields, make sure your role has permission to manage settings"
+                          "You do not have permission to add fields, make sure your role has permission to manage form settings"
                         );
                         return;
                       }

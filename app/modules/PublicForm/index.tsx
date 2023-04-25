@@ -4,7 +4,6 @@ import { FormType } from "@/app/types";
 import { Box, useTheme } from "degen";
 import React, { useState } from "react";
 import styled from "styled-components";
-import { motion } from "framer-motion";
 
 import _ from "lodash";
 import { useLocation } from "react-use";
@@ -49,13 +48,7 @@ function PublicForm() {
             }`,
           }}
         >
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <FormFields form={form} setForm={setForm} />
-          </motion.div>
+          <FormFields form={form} setForm={setForm} />
         </FormContainer>
         <Box marginBottom="8" />
       </Container>
