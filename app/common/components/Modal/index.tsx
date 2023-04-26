@@ -96,13 +96,12 @@ function Modal({
 }: props) {
   return (
     <Backdrop onClick={handleClose} zIndex={zIndex}>
-      <motion.div
+      <MotionContainer
         onClick={(e) => e.stopPropagation()}
         variants={slideUp}
         initial="hidden"
         animate="visible"
         exit="exit"
-        style={{ display: "flex", justifyContent: "center", width: "100%" }}
       >
         <Container
           position="relative"
@@ -143,10 +142,21 @@ function Modal({
           </Box>
           {children}
         </Container>
-      </motion.div>
+      </MotionContainer>
     </Backdrop>
   );
 }
+
+const MotionContainer = styled(motion.div)`
+  display: flex;
+  justify-content: center;
+
+  @media (max-width: 992px) {
+    width: 100%;
+  }
+
+  width: fit-content;
+`;
 
 export default Modal;
 
