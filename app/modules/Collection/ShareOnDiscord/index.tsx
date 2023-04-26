@@ -14,6 +14,7 @@ import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import { logError } from "@/app/common/utils/utils";
 import { toast } from "react-toastify";
+import { errorLookup } from "../Constants";
 
 type EmbedProps = {
   isOpen: boolean;
@@ -127,11 +128,13 @@ export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
               if (res.id) {
                 setLoading(false);
                 setIsOpen(false);
-                console.log({ res });
                 toast.success("Form shared on discord");
               } else {
                 setLoading(false);
-                logError("Error sharing form on discord");
+                const errorMessage =
+                  errorLookup[res.message]?.message || res.message;
+                toast.error(errorMessage);
+                logError("Error sharing form on discord", false);
               }
             }}
             loading={loading}

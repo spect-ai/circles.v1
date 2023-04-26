@@ -312,3 +312,27 @@ export const mockData = [
     ],
   },
 ];
+
+type ErrorLookup = {
+  [key: string]: {
+    message: string;
+    type: "error" | "warning";
+    url?: string;
+  };
+};
+
+export const errorLookup: ErrorLookup = {
+  "DiscordAPIError[50013]: Missing Permissions": {
+    message:
+      "The Spect bot is missing permissions to perform this action. Please make sure it has permissions to post messages on the selected channel.",
+    url: "",
+    type: "error",
+  },
+  "DiscordAPIError[50035]: Invalid Form Body\ncontent[BASE_TYPE_MAX_LENGTH]: Must be 2000 or fewer in length.":
+    {
+      message:
+        "The form description you are trying to post is hitting the Discord limit. Please make sure it is less than 2000 characters.",
+      url: "",
+      type: "error",
+    },
+};
