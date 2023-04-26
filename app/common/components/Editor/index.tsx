@@ -160,26 +160,26 @@ function Editor({
             onSave && onSave(content as string);
           }
         }}
-        onCreateLink={async (title) => {
-          console.log({ title });
+        // onCreateLink={async (title) => {
+        //   console.log({ title });
 
-          return title;
-        }}
-        // extensions={[new YouTubeEmbedExtension()]}
-        onHoverLink={(event) => {
-          console.log({ event });
-          return true;
-        }}
-        onSearchLink={async (term) => {
-          console.log({ term });
-          return [
-            {
-              url: term,
-              title: term,
-              subtitle: term,
-            },
-          ];
-        }}
+        //   return title;
+        // }}
+        // // extensions={[new YouTubeEmbedExtension()]}
+        // onHoverLink={(event) => {
+        //   console.log({ event });
+        //   return true;
+        // }}
+        // onSearchLink={async (term) => {
+        //   console.log({ term });
+        //   return [
+        //     {
+        //       url: term,
+        //       title: term,
+        //       subtitle: term,
+        //     },
+        //   ];
+        // }}
         embeds={[
           // {
           //   title: "Embed",
