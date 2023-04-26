@@ -239,7 +239,8 @@ const CollectKudos = ({ form, setClaimedJustNow, preview }: Props) => {
                 <Stack>
                   <Text weight="semiBold" variant="large">
                     You received a score of{" "}
-                    {form.formMetadata.matchCountForKudos} out of{" "}
+                    {form.formMetadata.matchCountForKudos} but you needed a
+                    minimum score of{" "}
                     {
                       form.formMetadata
                         .minimumNumberOfAnswersThatNeedToMatchForMintkudos
