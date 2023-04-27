@@ -271,7 +271,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
 
   useEffect(() => {
     if (type.value === "reward" || type.value === "milestone") {
-      const property = collection?.properties[name];
+      const property = collection?.properties?.[name];
 
       updateRewardOptions(property);
     }
