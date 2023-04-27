@@ -68,7 +68,13 @@ import {
 } from "@/app/state/global";
 
 import { ArcanaConnector } from "@arcana/auth-wagmi";
-import { metaMaskWallet, rainbowWallet } from "@rainbow-me/rainbowkit/wallets";
+import {
+  coinbaseWallet,
+  metaMaskWallet,
+  rainbowWallet,
+  trustWallet,
+  walletConnectWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { H } from "highlight.run";
 import { ErrorBoundary } from "@highlight-run/react";
@@ -178,6 +184,12 @@ const connectors = (chains: any) =>
           projectId: "a71a2b69b4ce96eaa0799a1448eb16c9",
           name: "Spect",
         }),
+        trustWallet({ chains }),
+        walletConnectWallet({
+          chains,
+          projectId: "a71a2b69b4ce96eaa0799a1448eb16c9",
+        }),
+        coinbaseWallet({ chains, appName: "Spect" }),
       ],
     },
   ]);
