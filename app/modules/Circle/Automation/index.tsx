@@ -46,6 +46,8 @@ export default function AutomationCenter() {
   const router = useRouter();
   const { mode } = useTheme();
 
+  console.log({ automations: circle?.automations });
+
   if (circle) {
     return (
       <>

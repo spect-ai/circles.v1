@@ -59,7 +59,7 @@ export default function ListView() {
               <Column
                 key={column.value}
                 column={column}
-                groupByColumn={view.groupByColumn}
+                groupByPropertyId={view.groupByColumn}
                 setDefaultValue={setDefaultValue}
                 setIsCardDrawerOpen={setIsCardDrawerOpen}
                 cardIds={cardOrders[index]}
@@ -73,7 +73,8 @@ export default function ListView() {
                 center
                 onClick={async () => {
                   setLoading(true);
-                  await updateField(collection.id, view.groupByColumn, {
+                  await updateField(collection.id, {
+                    id: view.groupByColumn,
                     options: [
                       ...(property.options as Option[]),
                       {

@@ -974,7 +974,7 @@ export type PaymentData = {
 };
 
 export type Property = {
-  id?: string;
+  id: string;
   name: string;
   type: PropertyType;
   isPartOfFormView: boolean;

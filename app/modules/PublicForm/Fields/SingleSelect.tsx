@@ -6,7 +6,7 @@ type Props = {
   options: Option[];
   selected: Option;
   onSelect: (option: Option) => void;
-  propertyName: string;
+  propertyId: string;
   allowCustom: boolean;
   disabled?: boolean;
 };
@@ -15,7 +15,7 @@ const SingleSelect = ({
   options,
   selected,
   onSelect,
-  propertyName,
+  propertyId,
   allowCustom,
   disabled,
 }: Props) => {
@@ -34,7 +34,7 @@ const SingleSelect = ({
           <Stack key={option.value} direction="horizontal" align="center">
             <input
               type="radio"
-              name={propertyName}
+              name={propertyId}
               value={option.value}
               checked={selected?.value === option.value}
               onChange={() => {

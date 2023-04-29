@@ -26,14 +26,14 @@ import { CustomTag } from "../EditValue";
 
 type Props = {
   column: Option;
-  groupByColumn: string;
+  groupByPropertyId: string;
   setDefaultValue: (value: any) => void;
   cardIds: string[];
 };
 
 export default function Column({
   column,
-  groupByColumn,
+  groupByPropertyId,
   setDefaultValue,
   cardIds,
 }: Props) {
@@ -46,7 +46,7 @@ export default function Column({
 
   const [columnName, setColumnName] = useState(column.label);
   const { mode } = useTheme();
-  const columns = collection.properties[groupByColumn].options as Option[];
+  const columns = collection.properties[groupByPropertyId].options as Option[];
 
   const router = useRouter();
 
@@ -64,7 +64,8 @@ export default function Column({
             onChange={(e) => setColumnName(e.target.value)}
             mode={mode}
             onBlur={async () => {
-              const res = await updateField(collection.id, groupByColumn, {
+              const res = await updateField(collection.id, {
+                id: groupByPropertyId,
                 options: columns.map((c) =>
                   c.value === column.value ? { ...c, label: columnName } : c
                 ),
@@ -80,7 +81,7 @@ export default function Column({
             size="small"
             onClick={() => {
               setDefaultValue({
-                [groupByColumn]:
+                [groupByPropertyId]:
                   column.value === "__unassigned__" ? null : column,
               });
               void router.push({
@@ -136,7 +137,8 @@ export default function Column({
                         const value =
                           collection.data[slug] &&
                           collection.data[slug][propertyId];
-                        if (!value || groupByColumn === propertyId) return null;
+                        if (!value || groupByPropertyId === propertyId)
+                          return null;
                         if (property.name === "Title") {
                           return (
                             <Box key={propertyId}>
@@ -311,7 +313,7 @@ export default function Column({
     columnName,
     columns,
     getMemberDetails,
-    groupByColumn,
+    groupByPropertyId,
     mode,
     router,
     setDefaultValue,

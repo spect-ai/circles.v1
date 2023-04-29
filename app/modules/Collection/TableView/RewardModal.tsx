@@ -9,17 +9,11 @@ type Props = {
   form: any;
   value: any | undefined;
   dataId?: string;
-  propertyName: string;
-  handleClose: (reward: Reward, dataId: string, propertyName: string) => void;
+  propertyId: string;
+  handleClose: (reward: Reward, dataId: string, propertyId: string) => void;
 };
 
-function RewardModal({
-  propertyName,
-  dataId,
-  handleClose,
-  form,
-  value,
-}: Props) {
+function RewardModal({ propertyId, dataId, handleClose, form, value }: Props) {
   const [data, setData] = useState(value);
 
   return (
@@ -32,14 +26,14 @@ function RewardModal({
             value: data?.value,
           },
           dataId || "",
-          propertyName
+          propertyId
         );
       }}
       title="Reward"
     >
       <Box padding="8">
         <RewardField
-          rewardOptions={form.properties[propertyName].rewardOptions}
+          rewardOptions={form.properties[propertyId].rewardOptions}
           value={data}
           updateData={(reward: Reward) => {
             setData(reward);

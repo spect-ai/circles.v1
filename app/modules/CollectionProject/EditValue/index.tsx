@@ -21,12 +21,12 @@ import { logError } from "@/app/common/utils/utils";
 type Props = {
   value: any;
   setValue: (value: any) => void;
-  propertyName: string;
+  propertyId: string;
   dataId: string;
   disabled: boolean;
 };
 
-function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
+function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const fieldInput = useRef<any>();
   const {
@@ -34,7 +34,7 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
     updateCollection,
     colorMapping,
   } = useLocalCollection();
-  const property = collection.properties[propertyName];
+  const property = collection.properties[propertyId];
   const [options, setOptions] = useState<any>([]);
   const [filteredOptions, setFilteredOptions] = useState<any>([]);
   const [tempValue, setTempValue] = useState<any>();
@@ -73,7 +73,7 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [propertyName]);
+  }, [propertyId]);
 
   if (!property) return null;
 
@@ -310,7 +310,8 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                       onClick={async () => {
                         const newId = uuid();
                         let res;
-                        res = await updateField(collection.id, propertyName, {
+                        res = await updateField(collection.id, {
+                          id: propertyId,
                           options: [
                             ...options,
                             { label: tempValue, value: newId },
@@ -478,7 +479,7 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
               <RewardModal
                 form={collection}
                 value={value}
-                propertyName={propertyName}
+                propertyId={propertyId}
                 handleClose={(reward) => {
                   setIsEditing(false);
                   console.log({ reward });
@@ -487,7 +488,7 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                       !reward.token ||
                       !reward.chain) &&
                     dataId &&
-                    !collection.data?.[dataId]?.[propertyName]?.value
+                    !collection.data?.[dataId]?.[propertyId]?.value
                   )
                     return;
                   setValue(reward);
@@ -520,7 +521,7 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
             {isEditing && (
               <MultiMilestoneModal
                 form={collection}
-                propertyName={propertyName}
+                propertyId={propertyId}
                 dataId={dataId}
                 handleClose={(value: Milestone[]) => {
                   console.log({ value });
@@ -549,7 +550,7 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
           <AnimatePresence>
             {isEditing && (
               <LongTextModal
-                propertyName={propertyName}
+                propertyName={property.name}
                 handleClose={(value: string) => {
                   setValue(value);
                   setIsEditing(false);

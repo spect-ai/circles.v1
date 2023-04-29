@@ -23,7 +23,6 @@ export const addField = async (
 
 export const updateField = async (
   collectionId: string,
-  name: string,
   update: Partial<Property>
 ) => {
   return await (
@@ -35,11 +34,7 @@ export const updateField = async (
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({
-          id: collectionId,
-          propertyId: name,
-          ...update,
-        }),
+        body: JSON.stringify(update),
       }
     )
   ).json();

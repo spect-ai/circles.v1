@@ -92,6 +92,7 @@ function FormFields({ form, setForm }: Props) {
       const property = form.properties[propertyId];
       if (
         property.required &&
+        property.isPartOfFormView &&
         isEmpty(propertyId, data[propertyId]) &&
         satisfiesConditions(
           data,
@@ -508,7 +509,7 @@ function FormFields({ form, setForm }: Props) {
                       return (
                         <PublicField
                           form={form}
-                          propertyName={field}
+                          propertyId={field}
                           data={data}
                           setData={setData}
                           memberOptions={memberOptions}

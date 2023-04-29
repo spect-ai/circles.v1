@@ -15,11 +15,11 @@ import { getPropertyIcon } from "./Utils";
 import { logError } from "@/app/common/utils/utils";
 
 type Props = {
-  propertyName: string;
+  propertyId: string;
   disabled?: boolean;
 };
 
-function EditProperty({ propertyName, disabled }: Props) {
+function EditProperty({ propertyId, disabled }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const fieldInput = useRef<any>();
   const {
@@ -27,7 +27,7 @@ function EditProperty({ propertyName, disabled }: Props) {
     updateCollection,
     setProjectViewId,
   } = useLocalCollection();
-  const property = collection.properties[propertyName];
+  const property = collection.properties[propertyId];
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [showConfirmOnDelete, setshowConfirmOnDelete] = useState(false);
 
@@ -40,7 +40,7 @@ function EditProperty({ propertyName, disabled }: Props) {
           {isEditFieldOpen && (
             <AddField
               handleClose={() => setIsEditFieldOpen(false)}
-              propertyName={propertyName}
+              propertyId={propertyId}
             />
           )}
           {showConfirmOnDelete && (
@@ -50,7 +50,7 @@ function EditProperty({ propertyName, disabled }: Props) {
               onConfirm={async () => {
                 const res: CollectionType = await deleteField(
                   collection.id,
-                  propertyName
+                  propertyId
                 );
                 if (res.id) {
                   setshowConfirmOnDelete(false);

@@ -53,7 +53,7 @@ export default function TableView() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [isRewardFieldOpen, setIsRewardFieldOpen] = useState(false);
   const [isURLFieldOpen, setIsURLFieldOpen] = useState(false);
-  const [propertyName, setPropertyName] = useState("");
+  const [propertyId, setPropertyId] = useState("");
   const [dataId, setDataId] = useState<string>("");
   const [multipleMilestoneModalOpen, setMultipleMilestoneModalOpen] =
     useState(false);
@@ -124,7 +124,7 @@ export default function TableView() {
       // for each date property in the data, convert the date string to a date object for all the rows
       const dateProperties = collection.propertyOrder.map((property) => {
         if (collection.properties[property]?.type === "date")
-          return collection.properties[property].name;
+          return collection.properties[property].id;
       });
       const data = Object.keys(collection.data).map((key) => {
         const row = collection.data[key];
@@ -212,14 +212,14 @@ export default function TableView() {
           collection.projectMetadata.views[
             collection.collectionType === 0 ? "0x0" : projectViewId
           ].sort?.direction || "asc";
-        const propertyName = property.name;
+        const propertyId = property.id;
         filteredData = filteredData.sort((a: any, b: any) => {
           if (propertyType === "singleSelect") {
             const aIndex = propertyOptions.findIndex(
-              (option) => option.value === a[propertyName]?.value
+              (option) => option.value === a[propertyId]?.value
             );
             const bIndex = propertyOptions.findIndex(
-              (option) => option.value === b[propertyName]?.value
+              (option) => option.value === b[propertyId]?.value
             );
             if (direction === "asc") {
               return aIndex - bIndex;
@@ -228,17 +228,13 @@ export default function TableView() {
           }
           if (propertyType === "user") {
             if (direction === "asc") {
-              return a[propertyName]?.label?.localeCompare(
-                b[propertyName]?.label
-              );
+              return a[propertyId]?.label?.localeCompare(b[propertyId]?.label);
             }
-            return b[propertyName]?.label?.localeCompare(
-              a[propertyName]?.label
-            );
+            return b[propertyId]?.label?.localeCompare(a[propertyId]?.label);
           }
           if (propertyType === "date") {
-            const aDate = new Date(a[propertyName]);
-            const bDate = new Date(b[propertyName]);
+            const aDate = new Date(a[propertyId]);
+            const bDate = new Date(b[propertyId]);
             if (direction === "asc") {
               return aDate.getTime() - bDate.getTime();
             }
@@ -246,24 +242,24 @@ export default function TableView() {
           }
           if (propertyType === "reward") {
             // property has chain, token and value, need to sort it based on chain first, then token and then value
-            const aChain = a[propertyName]?.chain.label;
-            const bChain = b[propertyName]?.chain.label;
+            const aChain = a[propertyId]?.chain.label;
+            const bChain = b[propertyId]?.chain.label;
             if (aChain !== bChain) {
               if (direction === "asc") {
                 return aChain?.localeCompare(bChain);
               }
               return bChain?.localeCompare(aChain);
             }
-            const aToken = a[propertyName]?.token.label;
-            const bToken = b[propertyName]?.token.label;
+            const aToken = a[propertyId]?.token.label;
+            const bToken = b[propertyId]?.token.label;
             if (aToken !== bToken) {
               if (direction === "asc") {
                 return aToken.localeCompare(bToken);
               }
               return bToken.localeCompare(aToken);
             }
-            const aValue = a[propertyName]?.value;
-            const bValue = b[propertyName]?.value;
+            const aValue = a[propertyId]?.value;
+            const bValue = b[propertyId]?.value;
             if (direction === "asc") {
               return aValue - bValue;
             }
@@ -279,9 +275,9 @@ export default function TableView() {
             return;
 
           if (direction === "asc") {
-            return a[propertyName]?.localeCompare(b[propertyName]);
+            return a[propertyId]?.localeCompare(b[propertyId]);
           }
-          return b[propertyName]?.localeCompare(a[propertyName]);
+          return b[propertyId]?.localeCompare(a[propertyId]);
         });
       } else {
         // sort the data based on the timestamp of their first activity
@@ -299,6 +295,7 @@ export default function TableView() {
           return aTime.getTime() - bTime.getTime();
         });
       }
+      console.log({ filteredData });
       setData(filteredData);
     }
   }, [
@@ -334,6 +331,7 @@ export default function TableView() {
       case "number":
         return floatColumn;
       case "date":
+        return textColumn;
         return dateColumn;
       case "singleSelect":
         return SelectComponent;
@@ -367,8 +365,8 @@ export default function TableView() {
       .filter((prop) => prop !== "__cardStatus__")
       .filter((prop) => !!collection.properties[prop])
       .filter((prop) => collection.properties[prop].type !== "readonly")
-      .map((propertyName: string) => {
-        const property = collection.properties[propertyName];
+      .map((propertyId: string) => {
+        const property = collection.properties[propertyId];
         if (property.id === "__ceramic__") {
           return {
             ...keyColumn(property.id, {
@@ -377,9 +375,10 @@ export default function TableView() {
             disabled: true,
             title: (
               <HeaderComponent
+                propertyId={property.id}
                 columnName={property.name}
                 setIsEditFieldOpen={setIsEditFieldOpen}
-                setPropertyName={setPropertyName}
+                setPropertyId={setPropertyId}
                 propertyType={property.type}
               />
             ),
@@ -399,15 +398,16 @@ export default function TableView() {
           ].includes(property.type)
         ) {
           return {
-            ...keyColumn(property.name, {
+            ...keyColumn(property.id, {
               component: getCellComponent(property.type) as any,
               columnData: property,
             }),
             title: (
               <HeaderComponent
+                propertyId={property.id}
                 columnName={property.name}
                 setIsEditFieldOpen={setIsEditFieldOpen}
-                setPropertyName={setPropertyName}
+                setPropertyId={setPropertyId}
                 propertyType={property.type}
               />
             ),
@@ -419,14 +419,15 @@ export default function TableView() {
             columnData: {
               property,
               setIsRewardFieldOpen,
-              setPropertyName,
+              setPropertyId,
               setDataId,
             },
             title: (
               <HeaderComponent
+                propertyId={property.id}
                 columnName={property.name}
                 setIsEditFieldOpen={setIsEditFieldOpen}
-                setPropertyName={setPropertyName}
+                setPropertyId={setPropertyId}
                 propertyType={property.type}
               />
             ),
@@ -438,14 +439,15 @@ export default function TableView() {
             columnData: {
               property,
               setMultipleMilestoneModalOpen,
-              setPropertyName,
+              setPropertyId,
               setDataId,
             },
             title: (
               <HeaderComponent
+                propertyId={property.id}
                 columnName={property.name}
                 setIsEditFieldOpen={setIsEditFieldOpen}
-                setPropertyName={setPropertyName}
+                setPropertyId={setPropertyId}
                 propertyType={property.type}
               />
             ),
@@ -456,14 +458,15 @@ export default function TableView() {
             component: getCellComponent(property.type) as any,
             columnData: {
               property,
-              setPropertyName,
+              setPropertyId,
               setDataId,
             },
             title: (
               <HeaderComponent
+                propertyId={property.id}
                 columnName={property.name}
                 setIsEditFieldOpen={setIsEditFieldOpen}
-                setPropertyName={setPropertyName}
+                setPropertyId={setPropertyId}
                 propertyType={property.type}
               />
             ),
@@ -475,14 +478,15 @@ export default function TableView() {
             columnData: {
               property,
               setIsURLFieldOpen,
-              setPropertyName,
+              setPropertyId,
               setDataId,
             },
             title: (
               <HeaderComponent
+                propertyId={property.id}
                 columnName={property.name}
                 setIsEditFieldOpen={setIsEditFieldOpen}
-                setPropertyName={setPropertyName}
+                setPropertyId={setPropertyId}
                 propertyType={property.type}
               />
             ),
@@ -490,16 +494,17 @@ export default function TableView() {
           };
         } else {
           return {
-            ...keyColumn(property.name, getCellComponent(property.type) as any),
+            ...keyColumn(property.id, getCellComponent(property.type) as any),
             disabled:
               collection.collectionType === 0
                 ? property.isPartOfFormView
                 : false,
             title: (
               <HeaderComponent
+                propertyId={property.id}
                 columnName={property.name}
                 setIsEditFieldOpen={setIsEditFieldOpen}
-                setPropertyName={setPropertyName}
+                setPropertyId={setPropertyId}
                 propertyType={property.type}
               />
             ),
@@ -516,9 +521,10 @@ export default function TableView() {
           columnData: {},
           title: (
             <HeaderComponent
+              propertyId={"__credentials__"}
               columnName={"Responder"}
               setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyName={setPropertyName}
+              setPropertyId={setPropertyId}
               propertyType={"user"}
             />
           ),
@@ -533,32 +539,32 @@ export default function TableView() {
       <AnimatePresence>
         {isEditFieldOpen && (
           <AddField
-            propertyName={propertyName}
+            propertyId={propertyId}
             handleClose={() => setIsEditFieldOpen(false)}
           />
         )}
         {isRewardFieldOpen && (
           <RewardModal
-            value={data?.find((row) => row.id === dataId)?.[propertyName]}
+            value={data?.find((row) => row.id === dataId)?.[propertyId]}
             form={collection}
-            propertyName={propertyName}
+            propertyId={propertyId}
             handleClose={async (
               reward: Reward,
               dataId: string,
-              propertyName: string
+              propertyId: string
             ) => {
               if (data) {
                 const row = data.findIndex((row) => row.id === dataId);
                 if (data[row] && (row === 0 || row)) {
                   const tempData = [...data];
-                  tempData[row][propertyName] = reward;
-                  console.log({ tempdata: tempData[row][propertyName] });
+                  tempData[row][propertyId] = reward;
+                  console.log({ tempdata: tempData[row][propertyId] });
                   setData(tempData);
                   setIsRewardFieldOpen(false);
                   await updateData({
                     row: tempData[row],
                   });
-                  console.log({ updatedData: data[row][propertyName] });
+                  console.log({ updatedData: data[row][propertyId] });
                 }
                 setIsRewardFieldOpen(false);
               }
@@ -569,17 +575,17 @@ export default function TableView() {
         {isURLFieldOpen && (
           <MultiURLModal
             form={collection}
-            propertyName={propertyName}
+            propertyId={propertyId}
             handleClose={async (
               payment: Option[],
               dataId: string,
-              propertyName: string
+              propertyId: string
             ) => {
               if (data) {
                 const row = data.findIndex((row) => row.id === dataId);
                 if (row === 0 || row) {
                   const tempData = [...data];
-                  tempData[row][propertyName] = payment;
+                  tempData[row][propertyId] = payment;
                   setData(tempData);
                   setIsURLFieldOpen(false);
                   await updateData({
@@ -595,21 +601,21 @@ export default function TableView() {
         {multipleMilestoneModalOpen && (
           <MultiMilestoneModal
             form={collection}
-            propertyName={propertyName}
+            propertyId={propertyId}
             dataId={dataId}
             disabled={
               collection.collectionType === 0
-                ? collection.properties[propertyName].isPartOfFormView
+                ? collection.properties[propertyId].isPartOfFormView
                 : false
             }
             handleClose={async (
               value: Milestone[],
               dataId: string,
-              propertyName: string
+              propertyId: string
             ) => {
               if (
                 collection.collectionType === 0
-                  ? collection.properties[propertyName].isPartOfFormView
+                  ? collection.properties[propertyId].isPartOfFormView
                   : false
               ) {
                 setMultipleMilestoneModalOpen(false);
@@ -624,7 +630,7 @@ export default function TableView() {
                 console.log({ value });
                 if (row === 0 || row) {
                   const tempData = [...data];
-                  tempData[row][propertyName] = value;
+                  tempData[row][propertyId] = value;
                   setData(tempData);
                   setMultipleMilestoneModalOpen(false);
                   console.log({ tempData });

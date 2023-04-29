@@ -117,7 +117,6 @@ export default function DataDrawer({
                   marginBottom="4"
                   gap="2"
                 >
-                  {" "}
                   <Text color="accentText" weight="semiBold">
                     Response {dataIdx}
                   </Text>
@@ -159,25 +158,25 @@ export default function DataDrawer({
                 }}
               >
                 <Box display="flex" flexDirection="column" width="3/4" gap="4">
-                  {collection.propertyOrder.map((propertyName: string) => {
-                    const property = collection.properties[propertyName];
+                  {collection.propertyOrder.map((propertyId: string) => {
+                    const property = collection.properties[propertyId];
                     if (property.isPartOfFormView === false) return null;
                     if (property.type === "readonly") return null;
-                    if (!data[property.id || property.name])
+                    if (!data[property.id])
                       return (
-                        <Stack key={property.name} space="1">
+                        <Stack key={property.id} space="1">
                           <Text
                             weight="semiBold"
                             variant="large"
                             color="accent"
                           >
                             {property.name}
-                          </Text>{" "}
+                          </Text>
                           <Text variant="label">No value added</Text>
                         </Stack>
                       );
                     return (
-                      <Stack key={property.name} space="1">
+                      <Stack key={property.id} space="1">
                         <Stack
                           space={"2"}
                           direction="horizontal"
@@ -211,26 +210,24 @@ export default function DataDrawer({
                             "email",
                             "number",
                           ].includes(property.type) && (
-                            <Text size="small">
-                              {data[property.id || property.name]}
-                            </Text>
+                            <Text size="small">{data[property.id]}</Text>
                           )}
                           {property?.type === "longText" && (
-                            <Editor value={data[property.name]} disabled />
+                            <Editor value={data[property.id]} disabled />
                           )}
                           {property?.type == "singleURL" && (
                             <Box
                               onClick={() =>
-                                window.open(data[property.name], "_blank")
+                                window.open(data[property.id], "_blank")
                               }
                               cursor="pointer"
                             >
-                              <Text>{data[property.name]}</Text>
+                              <Text>{data[property.id]}</Text>
                             </Box>
                           )}
                           {property?.type == "multiURL" && (
                             <Stack direction="vertical">
-                              {data[property.name]?.map((url: OptionType) => (
+                              {data[property.id]?.map((url: OptionType) => (
                                 <Box key={url.value}>
                                   <Stack direction={"horizontal"}>
                                     <Text>{url.label}</Text>
@@ -250,21 +247,19 @@ export default function DataDrawer({
                             </Stack>
                           )}
                           {property?.type === "singleSelect" && (
-                            <Text>{data[property.name]?.label}</Text>
+                            <Text>{data[property.id]?.label}</Text>
                           )}
                           {property?.type === "multiSelect" && (
                             <Stack space="2" direction="horizontal" wrap>
-                              {data[property.name]?.map(
-                                (option: OptionType) => (
-                                  <Tag key={option.value} tone="accent" hover>
-                                    {option.label}
-                                  </Tag>
-                                )
-                              )}
+                              {data[property.id]?.map((option: OptionType) => (
+                                <Tag key={option.value} tone="accent" hover>
+                                  {option.label}
+                                </Tag>
+                              ))}
                             </Stack>
                           )}
                           {property?.type === "user" && (
-                            <Text>{data[property.name]?.label}</Text>
+                            <Text>{data[property.id]?.label}</Text>
                           )}
                           {property?.type === "user[]" && (
                             <Stack
@@ -273,28 +268,26 @@ export default function DataDrawer({
                               align="baseline"
                               wrap
                             >
-                              {data[property.name]?.map(
-                                (option: OptionType) => (
-                                  <Tag key={option.value} tone="accent" hover>
-                                    {option.label}
-                                  </Tag>
-                                )
-                              )}
+                              {data[property.id]?.map((option: OptionType) => (
+                                <Tag key={option.value} tone="accent" hover>
+                                  {option.label}
+                                </Tag>
+                              ))}
                             </Stack>
                           )}
                           {property?.type === "date" && (
-                            <Text>{data[property.name]?.toString()}</Text>
+                            <Text>{data[property.id]?.toString()}</Text>
                           )}
                           {property?.type === "reward" && (
                             <Text>
-                              {data[property.name]?.value}{" "}
-                              {data[property.name]?.token?.label} on{" "}
-                              {data[property.name]?.chain?.label}
+                              {data[property.id]?.value}{" "}
+                              {data[property.id]?.token?.label} on{" "}
+                              {data[property.id]?.chain?.label}
                             </Text>
                           )}
                           {property?.type === "payWall" && (
                             <Stack>
-                              {[data[property.id || property.name]]?.map(
+                              {[data[property.id || property.id]]?.map(
                                 (payment: {
                                   token: OptionType;
                                   chain: OptionType;
@@ -329,12 +322,12 @@ export default function DataDrawer({
                                   );
                                 }
                               )}
-                              {data[propertyName].length == 0 && "Unpaid"}
+                              {data[propertyId].length == 0 && "Unpaid"}
                             </Stack>
                           )}
                           {property?.type === "milestone" && (
                             <Stack>
-                              {data[property.name]?.map(
+                              {data[property.id]?.map(
                                 (milestone: any, index: number) => (
                                   <Stack key={milestone.id} space="2">
                                     <Stack
@@ -400,7 +393,7 @@ export default function DataDrawer({
                               <Stack direction="horizontal" align="center">
                                 <DefaultAvatar
                                   label="Discord Avatar"
-                                  src={`https://cdn.discordapp.com/avatars/${data[propertyName].id}/${data[propertyName].avatar}.png`}
+                                  src={`https://cdn.discordapp.com/avatars/${data[propertyId].id}/${data[propertyId].avatar}.png`}
                                 />
                                 <Box>
                                   <Text
@@ -408,7 +401,7 @@ export default function DataDrawer({
                                     font="mono"
                                     weight="bold"
                                   >
-                                    {data[propertyName].username}
+                                    {data[propertyId].username}
                                   </Text>
                                 </Box>
                               </Stack>
@@ -416,7 +409,7 @@ export default function DataDrawer({
                           )}
                           {property?.type === "github" && (
                             <a
-                              href={data[propertyName].html_url}
+                              href={data[propertyId].html_url}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -424,7 +417,7 @@ export default function DataDrawer({
                                 <Stack direction="horizontal" align="center">
                                   <DefaultAvatar
                                     label="Discord Avatar"
-                                    src={data[propertyName].avatar_url}
+                                    src={data[propertyId].avatar_url}
                                   />
                                   <Box>
                                     <Text
@@ -432,7 +425,7 @@ export default function DataDrawer({
                                       font="mono"
                                       weight="bold"
                                     >
-                                      {data[propertyName].login}
+                                      {data[propertyId].login}
                                     </Text>
                                   </Box>
                                 </Stack>
@@ -441,7 +434,7 @@ export default function DataDrawer({
                           )}
                           {property?.type === "telegram" && (
                             // <a
-                            //   href={data[propertyName].html_url}
+                            //   href={data[propertyId].html_url}
                             //   target="_blank"
                             //   rel="noreferrer"
                             // >
@@ -453,7 +446,7 @@ export default function DataDrawer({
                                     font="mono"
                                     weight="bold"
                                   >
-                                    {data[propertyName].username}
+                                    {data[propertyId].username}
                                   </Text>
                                 </Box>
                               </Stack>
@@ -541,13 +534,13 @@ export default function DataDrawer({
                                 <DegenAvatar
                                   src={
                                     token.metadata.image ||
-                                    `https://api.dicebear.com/5.x/initials/svg?seed=${token.metadata.name}`
+                                    `https://api.dicebear.com/5.x/initials/svg?seed=${token.metadata.id}`
                                   }
                                   label=""
                                   shape="square"
                                 />
                                 <Text align="center">
-                                  {smartTrim(token.metadata.name, 20)}
+                                  {smartTrim(token.metadata.id, 20)}
                                 </Text>
                                 <Text align="center">{token.balance}</Text>
                               </Stack>

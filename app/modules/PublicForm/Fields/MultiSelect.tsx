@@ -6,7 +6,7 @@ type Props = {
   options: Option[];
   selected: Option[];
   onSelect: (option: Option) => void;
-  propertyName: string;
+  propertyId: string;
   allowCustom: boolean;
   disabled?: boolean;
 };
@@ -15,7 +15,7 @@ const MultiSelect = ({
   options,
   selected,
   onSelect,
-  propertyName,
+  propertyId,
   allowCustom,
   disabled,
 }: Props) => {
@@ -35,7 +35,7 @@ const MultiSelect = ({
           <Stack key={option.value} direction="horizontal" align="center">
             <input
               type="checkbox"
-              name={propertyName}
+              name={propertyId}
               value={option.value}
               checked={selected?.some((o) => o.value === option.value)}
               onChange={() => {

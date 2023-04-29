@@ -1,9 +1,6 @@
-import ViewPlugins from "@/app/modules/Plugins/ViewPlugins";
 import { Box, Stack } from "degen";
-import { AnimatePresence } from "framer-motion";
-import { memo, useState } from "react";
+import { memo } from "react";
 import styled from "styled-components";
-import AddField from "../../AddField";
 import Pages from "../Pages";
 
 const Container = styled(Box)`
@@ -12,9 +9,6 @@ const Container = styled(Box)`
 `;
 
 function InactiveFieldsColumnComponent() {
-  const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
-  const [propertyName, setPropertyName] = useState("");
-
   return (
     <Box
       marginTop={{
@@ -26,14 +20,6 @@ function InactiveFieldsColumnComponent() {
         md: "0",
       }}
     >
-      <AnimatePresence>
-        {isEditFieldOpen && (
-          <AddField
-            propertyName={propertyName}
-            handleClose={() => setIsEditFieldOpen(false)}
-          />
-        )}
-      </AnimatePresence>
       <Container>
         <Box marginTop="2">
           <Stack>

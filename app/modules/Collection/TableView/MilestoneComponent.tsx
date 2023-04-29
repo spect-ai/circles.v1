@@ -2,7 +2,7 @@ import { Box, Button, Text } from "degen";
 import { CellProps } from "react-datasheet-grid";
 
 const MilestoneComponent = ({ rowData, columnData }: CellProps) => {
-  const milestones = rowData[columnData.property.name] || [];
+  const milestones = rowData[columnData.property.id] || [];
   const id = rowData.id;
   return (
     <>
@@ -19,7 +19,7 @@ const MilestoneComponent = ({ rowData, columnData }: CellProps) => {
           justifyContent="flex-start"
           size="small"
           onClick={() => {
-            columnData.setPropertyName(columnData.property.name);
+            columnData.setPropertyId(columnData.property.id);
             columnData.setDataId(id);
             columnData.setMultipleMilestoneModalOpen(true);
           }}

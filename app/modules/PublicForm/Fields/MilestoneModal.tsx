@@ -9,7 +9,7 @@ import { DateInput } from "../../Collection/Form/Field";
 
 type Props = {
   form: any;
-  propertyName: string;
+  propertyId: string;
   data: any;
   handleClose: () => void;
   addMilestone: (milestone: Milestone) => void;
@@ -19,7 +19,7 @@ type Props = {
 
 export default function MilestoneModal({
   form,
-  propertyName,
+  propertyId,
   data,
   handleClose,
   addMilestone,
@@ -29,15 +29,15 @@ export default function MilestoneModal({
   const [value, setValue] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState(
-    propertyName &&
+    propertyId &&
       (milestoneIndex || milestoneIndex === 0) &&
       modalMode === "edit"
-      ? data[propertyName][milestoneIndex].description
+      ? data[propertyId][milestoneIndex].description
       : ""
   );
   const [date, setDate] = useState("");
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const rewardOptions = (form.properties[propertyName]?.rewardOptions ||
+  const rewardOptions = (form.properties[propertyId]?.rewardOptions ||
     {}) as Registry;
   const firstChainName =
     Object.values(rewardOptions).length > 0
@@ -84,7 +84,7 @@ export default function MilestoneModal({
   };
 
   useEffect(() => {
-    if (form.properties[propertyName]?.rewardOptions && selectedChain) {
+    if (form.properties[propertyId]?.rewardOptions && selectedChain) {
       const tokens = Object.entries(
         rewardOptions[selectedChain.value].tokenDetails
       ).map(([address, token]) => {
@@ -96,11 +96,11 @@ export default function MilestoneModal({
       data && setSelectedToken(tokens[0]);
       setTokenOptions(tokens);
     }
-  }, [form.properties, propertyName, rewardOptions, selectedChain]);
+  }, [form.properties, propertyId, rewardOptions, selectedChain]);
 
   useEffect(() => {
     if (modalMode === "edit" && (milestoneIndex || milestoneIndex === 0)) {
-      const milestone = data[propertyName][milestoneIndex];
+      const milestone = data[propertyId][milestoneIndex];
       console.log(milestone.description);
       if (milestone) {
         setTitle(milestone.title);
@@ -200,9 +200,9 @@ export default function MilestoneModal({
             >
               <Dropdown
                 options={
-                  form.properties[propertyName]?.rewardOptions
+                  form.properties[propertyId]?.rewardOptions
                     ? Object.entries(
-                        form.properties[propertyName].rewardOptions as Registry
+                        form.properties[propertyId].rewardOptions as Registry
                       ).map(([chainId, network]) => {
                         return {
                           label: network.name,

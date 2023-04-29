@@ -19,7 +19,7 @@ import TelegramField from "./TelegramField";
 
 type Props = {
   form: FormType;
-  propertyName: string;
+  propertyId: string;
   data: any;
   setData: (value: any) => void;
   memberOptions: Option[];
@@ -29,11 +29,12 @@ type Props = {
   updateFieldHasInvalidType: (key: string, value: any) => void;
   disabled: boolean;
   blockCustomValues?: boolean;
+  hideDescription?: boolean;
 };
 
 export default function PublicField({
   form,
-  propertyName,
+  propertyId,
   data,
   setData,
   memberOptions,
@@ -43,6 +44,7 @@ export default function PublicField({
   updateFieldHasInvalidType,
   disabled,
   blockCustomValues,
+  hideDescription = false,
 }: Props) {
   const { mode } = useTheme();
 
@@ -53,7 +55,7 @@ export default function PublicField({
     !satisfiesConditions(
       data,
       form.properties as { [propertyId: string]: Property },
-      form.properties[propertyName].viewConditions || []
+      form.properties[propertyId].viewConditions || []
     )
   ) {
     return null;
@@ -69,153 +71,153 @@ export default function PublicField({
           gap="2"
           alignItems="center"
         >
-          <Text weight="semiBold">{form.properties[propertyName]?.name}</Text>
-          {form.properties[propertyName].required && (
+          <Text weight="semiBold">{form.properties[propertyId]?.name}</Text>
+          {form.properties[propertyId].required && (
             <Tag size="small" tone="accent">
               Required
             </Tag>
           )}
         </Box>
-        {requiredFieldsNotSet[propertyName] && (
+        {requiredFieldsNotSet[propertyId] && (
           <Text color="red" variant="small">
             This is a required field and cannot be empty
           </Text>
         )}
-        {fieldHasInvalidType[propertyName] && (
+        {fieldHasInvalidType[propertyId] && (
           <Text color="red" variant="small">
-            {`This field is of type ${form.properties[propertyName].type}`}
+            {`This field is of type ${form.properties[propertyId].type}`}
           </Text>
         )}
-        {form.properties[propertyName]?.description && (
-          <Editor value={form.properties[propertyName].description} disabled />
+        {form.properties[propertyId]?.description && !hideDescription && (
+          <Editor value={form.properties[propertyId].description} disabled />
         )}
       </Stack>
-      {form.properties[propertyName]?.type === "shortText" && (
+      {form.properties[propertyId]?.type === "shortText" && (
         <Input
           label=""
           placeholder={`Enter text`}
-          value={data && data[propertyName]}
+          value={data && data[propertyId]}
           onChange={(e) => {
-            setData({ ...data, [propertyName]: e.target.value });
+            setData({ ...data, [propertyId]: e.target.value });
           }}
           onBlur={(e) => {
-            updateRequiredFieldNotSet(propertyName, e.target.value);
+            updateRequiredFieldNotSet(propertyId, e.target.value);
           }}
           disabled={disabled}
         />
       )}
-      {form.properties[propertyName]?.type === "email" && (
+      {form.properties[propertyId]?.type === "email" && (
         <Input
           label=""
           placeholder={`Enter email`}
-          value={data && data[propertyName]}
+          value={data && data[propertyId]}
           inputMode="email"
           onChange={(e) => {
-            setData({ ...data, [propertyName]: e.target.value });
+            setData({ ...data, [propertyId]: e.target.value });
           }}
           error={
-            data && data[propertyName] && !isEmail(data[propertyName])
+            data && data[propertyId] && !isEmail(data[propertyId])
               ? "Invalid email"
               : undefined
           }
           onBlur={(e) => {
-            updateRequiredFieldNotSet(propertyName, e.target.value);
-            updateFieldHasInvalidType(propertyName, e.target.value);
+            updateRequiredFieldNotSet(propertyId, e.target.value);
+            updateFieldHasInvalidType(propertyId, e.target.value);
           }}
           disabled={disabled}
         />
       )}
-      {form.properties[propertyName]?.type === "singleURL" && (
+      {form.properties[propertyId]?.type === "singleURL" && (
         <Input
           label=""
           placeholder={`Enter URL`}
-          value={data && data[propertyName]}
+          value={data && data[propertyId]}
           inputMode="text"
           onChange={(e) => {
-            setData({ ...data, [propertyName]: e.target.value });
+            setData({ ...data, [propertyId]: e.target.value });
           }}
           error={
-            data && data[propertyName] && !isURL(data[propertyName])
+            data && data[propertyId] && !isURL(data[propertyId])
               ? "Invalid URL"
               : undefined
           }
           onBlur={(e) => {
-            updateRequiredFieldNotSet(propertyName, e.target.value);
-            updateFieldHasInvalidType(propertyName, e.target.value);
+            updateRequiredFieldNotSet(propertyId, e.target.value);
+            updateFieldHasInvalidType(propertyId, e.target.value);
           }}
           disabled={disabled}
         />
       )}
-      {form.properties[propertyName]?.type === "multiURL" && (
+      {form.properties[propertyId]?.type === "multiURL" && (
         <MultiURLField
           placeholder={`Enter URL`}
-          value={data && data[propertyName]}
+          value={data && data[propertyId]}
           disabled={disabled}
           updateFieldHasInvalidType={updateFieldHasInvalidType}
           updateRequiredFieldNotSet={updateRequiredFieldNotSet}
           data={data}
           setData={setData}
-          propertyName={propertyName}
+          propertyId={propertyId}
         />
       )}
-      {form.properties[propertyName]?.type === "number" && (
+      {form.properties[propertyId]?.type === "number" && (
         <Input
           label=""
           placeholder={`Enter number`}
-          value={data && data[propertyName]?.toString()}
+          value={data && data[propertyId]?.toString()}
           type="number"
           onChange={(e) => {
-            setData({ ...data, [propertyName]: parseFloat(e.target.value) });
+            setData({ ...data, [propertyId]: parseFloat(e.target.value) });
           }}
           onKeyDown={(e) => {
             if (
               isNaN(e.key as any) &&
-              data[propertyName] &&
-              isNaN(data[propertyName])
+              data[propertyId] &&
+              isNaN(data[propertyId])
             ) {
               setInvalidNumberCharEntered({
                 ...invalidNumberCharEntered,
-                [propertyName]: true,
+                [propertyId]: true,
               });
             } else {
               setInvalidNumberCharEntered({
                 ...invalidNumberCharEntered,
-                [propertyName]: false,
+                [propertyId]: false,
               });
             }
           }}
           onBlur={(e) => {
-            updateRequiredFieldNotSet(propertyName, e.target.value);
+            updateRequiredFieldNotSet(propertyId, e.target.value);
           }}
           disabled={disabled}
         />
       )}
-      {form.properties[propertyName]?.type === "date" && (
+      {form.properties[propertyId]?.type === "date" && (
         <DateInput
           placeholder={`Enter date`}
           type="date"
           mode={mode}
-          value={data && data[propertyName]?.toString()}
+          value={data && data[propertyId]?.toString()}
           onChange={(e) => {
-            setData({ ...data, [propertyName]: e.target.value });
+            setData({ ...data, [propertyId]: e.target.value });
           }}
           onBlur={(e) => {
-            updateRequiredFieldNotSet(propertyName, e.target.value);
+            updateRequiredFieldNotSet(propertyId, e.target.value);
           }}
           disabled={disabled}
         />
       )}
-      {form.properties[propertyName]?.type === "ethAddress" && (
+      {form.properties[propertyId]?.type === "ethAddress" && (
         <EthAddressField
-          value={data && data[propertyName]}
+          value={data && data[propertyId]}
           disabled={disabled}
           onChange={(value) => {
-            setData({ ...data, [propertyName]: value });
-            updateRequiredFieldNotSet(propertyName, value);
+            setData({ ...data, [propertyId]: value });
+            updateRequiredFieldNotSet(propertyId, value);
           }}
         />
       )}
-      {form.properties[propertyName]?.type === "longText" && (
+      {form.properties[propertyId]?.type === "longText" && (
         <Box
           marginTop="4"
           width="full"
@@ -230,12 +232,12 @@ export default function PublicField({
           id="editorContainer"
         >
           <Editor
-            value={(data && data[propertyName]) || ""}
+            value={(data && data[propertyId]) || ""}
             onSave={(value) => {
               if (!value) return;
-              data[propertyName] = value;
+              data[propertyId] = value;
               setData({ ...data });
-              updateRequiredFieldNotSet(propertyName, value);
+              updateRequiredFieldNotSet(propertyId, value);
             }}
             placeholder={`Enter text, use / for commands`}
             isDirty={true}
@@ -243,53 +245,53 @@ export default function PublicField({
           />
         </Box>
       )}
-      {(form.properties[propertyName]?.type === "singleSelect" ||
-        form.properties[propertyName]?.type === "user") && (
+      {(form.properties[propertyId]?.type === "singleSelect" ||
+        form.properties[propertyId]?.type === "user") && (
         <Box marginTop="4">
           <SingleSelect
             allowCustom={
               blockCustomValues
                 ? !blockCustomValues
-                : form.properties[propertyName]?.allowCustom || false
+                : form.properties[propertyId]?.allowCustom || false
             }
             options={
-              form.properties[propertyName]?.type === "user"
+              form.properties[propertyId]?.type === "user"
                 ? (memberOptions as any)
-                : form.properties[propertyName]?.options
+                : form.properties[propertyId]?.options
             }
-            selected={data && data[propertyName]}
+            selected={data && data[propertyId]}
             onSelect={(value: any) => {
               if (disabled) return;
-              setData({ ...data, [propertyName]: value });
+              setData({ ...data, [propertyId]: value });
             }}
-            propertyName={propertyName}
+            propertyId={propertyId}
             disabled={disabled}
           />
         </Box>
       )}
-      {(form.properties[propertyName]?.type === "multiSelect" ||
-        form.properties[propertyName]?.type === "user[]") && (
+      {(form.properties[propertyId]?.type === "multiSelect" ||
+        form.properties[propertyId]?.type === "user[]") && (
         <Box marginTop="4">
           <MultiSelect
             disabled={disabled}
             allowCustom={
               blockCustomValues
                 ? !blockCustomValues
-                : form.properties[propertyName]?.allowCustom || false
+                : form.properties[propertyId]?.allowCustom || false
             }
             options={
-              form.properties[propertyName]?.type === "user[]"
+              form.properties[propertyId]?.type === "user[]"
                 ? (memberOptions as any)
-                : form.properties[propertyName]?.options
+                : form.properties[propertyId]?.options
             }
-            selected={data && data[propertyName]}
+            selected={data && data[propertyId]}
             onSelect={(value: any) => {
               if (disabled) return;
-              if (!data[propertyName]) {
-                setData({ ...data, [propertyName]: [value] });
+              if (!data[propertyId]) {
+                setData({ ...data, [propertyId]: [value] });
               } else {
                 if (
-                  data[propertyName].some(
+                  data[propertyId].some(
                     (item: any) => item.value === value.value
                   )
                 ) {
@@ -297,7 +299,7 @@ export default function PublicField({
                     // change value of custom option
                     setData({
                       ...data,
-                      [propertyName]: data[propertyName].map((item: any) => {
+                      [propertyId]: data[propertyId].map((item: any) => {
                         if (item.value === "__custom__") {
                           return value;
                         }
@@ -308,15 +310,15 @@ export default function PublicField({
                   }
                   setData({
                     ...data,
-                    [propertyName]: data[propertyName].filter(
+                    [propertyId]: data[propertyId].filter(
                       (item: any) => item.value !== value.value
                     ),
                   });
                 } else {
                   const maxSelections =
-                    form.properties[propertyName]?.maxSelections;
-                  if (maxSelections && data[propertyName]) {
-                    if (data[propertyName].length >= maxSelections) {
+                    form.properties[propertyId]?.maxSelections;
+                  if (maxSelections && data[propertyId]) {
+                    if (data[propertyId].length >= maxSelections) {
                       toast.error(
                         `You can only select ${maxSelections} options`
                       );
@@ -325,84 +327,84 @@ export default function PublicField({
                   }
                   setData({
                     ...data,
-                    [propertyName]: [...data[propertyName], value],
+                    [propertyId]: [...data[propertyId], value],
                   });
                 }
               }
             }}
-            propertyName={propertyName}
+            propertyId={propertyId}
           />
         </Box>
       )}
-      {form.properties[propertyName]?.type === "reward" && (
+      {form.properties[propertyId]?.type === "reward" && (
         <Box marginTop="0">
           <RewardField
             disabled={disabled}
             rewardOptions={
-              form.properties[propertyName]?.rewardOptions as Registry
+              form.properties[propertyId]?.rewardOptions as Registry
             }
-            value={data && data[propertyName]}
+            value={data && data[propertyId]}
             updateData={(reward: Reward) => {
               setData({
                 ...data,
-                [propertyName]: reward,
+                [propertyId]: reward,
               });
-              updateRequiredFieldNotSet(propertyName, reward);
+              updateRequiredFieldNotSet(propertyId, reward);
             }}
             onValueKeyDown={(e: any) => {
               if (isNaN(e.key)) {
                 setInvalidNumberCharEntered({
                   ...invalidNumberCharEntered,
-                  [propertyName]: true,
+                  [propertyId]: true,
                 });
               } else {
                 setInvalidNumberCharEntered({
                   ...invalidNumberCharEntered,
-                  [propertyName]: false,
+                  [propertyId]: false,
                 });
               }
             }}
           />
         </Box>
       )}
-      {form.properties[propertyName]?.type === "milestone" && (
+      {form.properties[propertyId]?.type === "milestone" && (
         <MilestoneField
           form={form}
           data={data}
           setData={setData}
-          propertyName={propertyName}
+          propertyId={propertyId}
           updateRequiredFieldNotSet={updateRequiredFieldNotSet}
           disabled={disabled}
         />
       )}
-      {form.properties[propertyName]?.type === "discord" && (
+      {form.properties[propertyId]?.type === "discord" && (
         <DiscordField
           data={data}
           setData={setData}
-          propertyName={propertyName}
+          propertyId={propertyId}
           updateRequiredFieldNotSet={updateRequiredFieldNotSet}
           showAvatar={true}
         />
       )}
-      {form.properties[propertyName]?.type === "github" && (
+      {form.properties[propertyId]?.type === "github" && (
         <GithubField
           data={data}
           setData={setData}
-          propertyName={propertyName}
+          propertyId={propertyId}
           updateRequiredFieldNotSet={updateRequiredFieldNotSet}
           showAvatar={true}
         />
       )}
-      {form.properties[propertyName]?.type === "telegram" && (
+      {form.properties[propertyId]?.type === "telegram" && (
         <TelegramField
           data={data}
           setData={setData}
-          propertyName={propertyName}
+          propertyId={propertyId}
           updateRequiredFieldNotSet={updateRequiredFieldNotSet}
         />
       )}
 
-      {invalidNumberCharEntered[propertyName] && (
+      {invalidNumberCharEntered[propertyId] && (
         <Text variant="label" size="small">
           Please enter a number{" "}
         </Text>

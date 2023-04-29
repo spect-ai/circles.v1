@@ -17,8 +17,9 @@ import { getPropertyIcon } from "../../CollectionProject/EditProperty/Utils";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type Props = {
+  propertyId: string;
   columnName: string;
-  setPropertyName: (name: string) => void;
+  setPropertyId: (name: string) => void;
   setIsEditFieldOpen: (value: boolean) => void;
   propertyType: PropertyType;
 };
@@ -40,9 +41,10 @@ const ScrollContainer = styled(Box)`
 `;
 
 export default function HeaderComponent({
+  propertyId,
   columnName,
   setIsEditFieldOpen,
-  setPropertyName,
+  setPropertyId,
   propertyType,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -76,15 +78,15 @@ export default function HeaderComponent({
                       e.preventDefault();
                       if (
                         collection.collectionType === 1 &&
-                        (columnName === "Title" ||
-                          columnName === "Description" ||
-                          columnName === "__cardStatus__")
+                        (propertyId === "Title" ||
+                          propertyId === "Description" ||
+                          propertyId === "__cardStatus__")
                       ) {
                         toast.warn("You can't edit this field");
                         return;
                       }
                       setIsEditFieldOpen(true);
-                      setPropertyName(columnName);
+                      setPropertyId(propertyId);
                     }}
                   >
                     <Text color="accent">
@@ -109,7 +111,7 @@ export default function HeaderComponent({
           onClick={() => {
             setIsOpen(false);
             setIsEditFieldOpen(true);
-            setPropertyName(columnName);
+            setPropertyId(columnName);
           }}
         >
           <Stack direction="horizontal" space="2" align="center">

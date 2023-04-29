@@ -25,7 +25,7 @@ import { CustomTag } from "../EditValue";
 
 type Props = {
   column: Option;
-  groupByColumn: string;
+  groupByPropertyId: string;
   setDefaultValue: (value: any) => void;
   setIsCardDrawerOpen: (value: boolean) => void;
   cardIds: string[];
@@ -33,7 +33,7 @@ type Props = {
 
 export default function Column({
   column,
-  groupByColumn,
+  groupByPropertyId,
   setDefaultValue,
   cardIds,
 }: Props) {
@@ -45,7 +45,7 @@ export default function Column({
   const { getMemberDetails } = useModalOptions();
   const [columnName, setColumnName] = useState(column.label);
   const { mode } = useTheme();
-  const columns = collection.properties[groupByColumn].options as Option[];
+  const columns = collection.properties[groupByPropertyId].options as Option[];
 
   const router = useRouter();
 
@@ -60,7 +60,8 @@ export default function Column({
             onBlur={async () => {
               // update only if name is changed
               if (column.label === columnName) return;
-              const res = await updateField(collection.id, groupByColumn, {
+              const res = await updateField(collection.id, {
+                id: groupByPropertyId,
                 options: columns.map((c) =>
                   c.value === column.value ? { ...c, label: columnName } : c
                 ),
@@ -75,7 +76,7 @@ export default function Column({
             size="small"
             onClick={() => {
               setDefaultValue({
-                [groupByColumn]:
+                [groupByPropertyId]:
                   column.value === "__unassigned__" ? null : column,
               });
               void router.push({
@@ -137,7 +138,7 @@ export default function Column({
                             collection.data[slug][propertyId];
                           if (
                             !value ||
-                            groupByColumn === propertyId ||
+                            groupByPropertyId === propertyId ||
                             propertyId === "Title"
                           )
                             return null;
@@ -311,7 +312,7 @@ export default function Column({
     columnName,
     columns,
     getMemberDetails,
-    groupByColumn,
+    groupByPropertyId,
     mode,
     router,
     setDefaultValue,

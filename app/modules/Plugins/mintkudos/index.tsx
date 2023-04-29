@@ -98,11 +98,9 @@ export default function SendKudos({ handleClose }: Props) {
     collection.formMetadata?.responseDataForMintkudos || {}
   );
 
-  const validFieldsCount = collection.propertyOrder.filter(
-    (propertyName) =>
-      collection.properties[propertyName].isPartOfFormView &&
-      quizValidFieldTypes.includes(collection.properties[propertyName].type)
-  )?.length;
+  const validFieldsCount = Object.keys(
+    collection.formMetadata.responseDataForMintkudos || {}
+  ).length;
   const uploadFile = async (file: File) => {
     if (file) {
       setUploading(true);

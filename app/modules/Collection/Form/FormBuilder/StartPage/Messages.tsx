@@ -1,4 +1,3 @@
-import { quizValidFieldTypes } from "@/app/modules/Plugins/common/ResponseMatchDistribution";
 import { CollectionType } from "@/app/types";
 import { WalletOutlined } from "@ant-design/icons";
 import { Box, Text } from "degen";
@@ -8,13 +7,12 @@ type Props = {
 };
 
 export default function Messages({ form }: Props) {
-  const quizValidFields =
-    form?.propertyOrder &&
-    form.propertyOrder.filter(
-      (propertyName) =>
-        form.properties[propertyName].isPartOfFormView &&
-        quizValidFieldTypes.includes(form.properties[propertyName].type)
-    );
+  const kudosQuizValidFields = Object.keys(
+    form.formMetadata.responseDataForMintkudos || {}
+  ).length;
+  const poapQuizValidFields = Object.keys(
+    form.formMetadata.responseDataForPoap || {}
+  ).length;
   return (
     <Box display="flex" flexDirection="column" marginTop="4" gap="4">
       {form.formMetadata.formRoleGating &&
@@ -27,7 +25,7 @@ export default function Messages({ form }: Props) {
         <Text weight="semiBold">
           🏅 This form distributes a POAP to responders{" "}
           {form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap
-            ? `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap} / ${quizValidFields?.length}  or higher`
+            ? `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap} / ${poapQuizValidFields}  or higher`
             : null}
         </Text>
       )}
@@ -35,7 +33,7 @@ export default function Messages({ form }: Props) {
         <Text weight="semiBold">
           🎉 This form distributes soulbound tokens to responders{" "}
           {form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForMintkudos
-            ? `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForMintkudos} / ${quizValidFields?.length} or higher`
+            ? `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForMintkudos} / ${kudosQuizValidFields} or higher`
             : null}
         </Text>
       )}

@@ -40,6 +40,8 @@ export function Collection() {
     return <SkeletonLoader />;
   }
 
+  console.log({ collection });
+
   return (
     <>
       <ToastContainer
@@ -52,13 +54,13 @@ export function Collection() {
           }`,
         }}
       />
-      {/* <PrimaryButton
+      <PrimaryButton
         onClick={() => {
           void migrateAllCOllections();
         }}
       >
         Migrate
-      </PrimaryButton> */}
+      </PrimaryButton>
       <AnimatePresence>
         {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
       </AnimatePresence>

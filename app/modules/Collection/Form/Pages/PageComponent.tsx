@@ -19,7 +19,7 @@ type Props = {
   onClick?: () => void;
   fields: string[];
   setAddFieldOpen: (value: boolean) => void;
-  setPropertyName: (value: string) => void;
+  setPropertyId: (value: string) => void;
   setActivePage: (value: string) => void;
 };
 
@@ -31,7 +31,7 @@ export const PageComponent = ({
   fields,
   setAddFieldOpen,
   setActivePage,
-  setPropertyName,
+  setPropertyId,
 }: Props) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
@@ -155,7 +155,7 @@ export const PageComponent = ({
                       type={collection.properties[field].type}
                       index={index}
                       setIsAddFieldOpen={setAddFieldOpen}
-                      setPropertyName={setPropertyName}
+                      setPropertyId={setPropertyId}
                     />
                   ))}
                   {provided.placeholder}
@@ -180,7 +180,7 @@ export const PageComponent = ({
                         });
                       setActivePage(id);
                       onClick && onClick();
-                      setPropertyName("");
+                      setPropertyId("");
                       setAddFieldOpen(true);
                     }}
                   >

@@ -33,7 +33,7 @@ export const PageLine = () => {
 
   const [addFieldOpen, setAddFieldOpen] = useState(false);
   const [activePage, setActivePage] = useState("");
-  const [propertyName, setPropertyName] = useState<string>();
+  const [propertyId, setPropertyId] = useState<string>();
 
   let i = 0;
   for (const pageId of pageOrder) {
@@ -62,7 +62,7 @@ export const PageLine = () => {
             fields={pages[pageId].properties}
             setAddFieldOpen={setAddFieldOpen}
             setActivePage={setActivePage}
-            setPropertyName={setPropertyName}
+            setPropertyId={setPropertyId}
           />
         ))}
       </div>
@@ -181,7 +181,7 @@ export const PageLine = () => {
             <AddField
               handleClose={() => setAddFieldOpen(false)}
               pageId={activePage}
-              propertyName={propertyName}
+              propertyId={propertyId}
             />
           )}
         </AnimatePresence>
@@ -196,7 +196,7 @@ export const PageLine = () => {
               fields={pages[pageId].properties}
               setAddFieldOpen={setAddFieldOpen}
               setActivePage={setActivePage}
-              setPropertyName={setPropertyName}
+              setPropertyId={setPropertyId}
             />
           ))}
           <DragDropContext onDragEnd={handleDragEnd}>
@@ -214,7 +214,7 @@ export const PageLine = () => {
                         fields={pages[pageId].properties}
                         setAddFieldOpen={setAddFieldOpen}
                         setActivePage={setActivePage}
-                        setPropertyName={setPropertyName}
+                        setPropertyId={setPropertyId}
                       />
                     ))}
                   </Stack>
@@ -233,7 +233,7 @@ export const PageLine = () => {
               fields={pages[pageId].properties}
               setAddFieldOpen={setAddFieldOpen}
               setActivePage={setActivePage}
-              setPropertyName={setPropertyName}
+              setPropertyId={setPropertyId}
             />
           ))}
         </Stack>
