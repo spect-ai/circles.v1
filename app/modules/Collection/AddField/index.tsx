@@ -86,9 +86,9 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
   const [viewConditions, setViewConditions] = useState<Condition[]>(
     (propertyName && collection.properties[propertyName]?.viewConditions) || []
   );
-  const [modalSize, setModalSize] = useState<"small" | "medium" | "large">(
-    viewConditions?.length > 0 ? "large" : "small"
-  );
+  // const [modalSize, setModalSize] = useState<"small" | "medium" | "large">(
+  //   viewConditions?.length > 0 ? "large" : "small"
+  // );
   const [advancedDefaultOpen, setAdvancedDefaultOpen] = useState(
     viewConditions?.length > 0 ? true : false
   );
@@ -278,7 +278,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
   }, [type]);
 
   useEffect(() => {
-    setModalSize(viewConditions?.length > 0 ? "large" : "small");
+    // setModalSize(viewConditions?.length > 0 ? "large" : "small");
     setAdvancedDefaultOpen(viewConditions?.length > 0 ? true : false);
   }, [viewConditions]);
 
@@ -366,7 +366,6 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
             handleClose();
           }
         }}
-        size={modalSize}
       >
         <Box padding="8">
           <Stack>
