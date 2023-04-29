@@ -6,7 +6,11 @@ import {
   linkDiscordToCollection,
   postFormMessage,
 } from "@/app/services/Collection";
-import { fetchGuildChannels, guildIsConnected } from "@/app/services/Discord";
+import {
+  fetchGuildChannels,
+  groupChannelsByCategory,
+  guildIsConnected,
+} from "@/app/services/Discord";
 import { Option } from "@/app/types";
 import { Box, Input, Text } from "degen";
 import { useEffect, useState } from "react";
@@ -15,6 +19,7 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 import { logError } from "@/app/common/utils/utils";
 import { toast } from "react-toastify";
 import { errorLookup } from "../Constants";
+import { ChannelType } from "discord-api-types/v10";
 
 type EmbedProps = {
   isOpen: boolean;
@@ -24,7 +29,9 @@ type EmbedProps = {
 export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
   const { localCollection: collection } = useLocalCollection();
   const { circle, justAddedDiscordServer } = useCircle();
-  const [channelOptions, setChannelOptions] = useState([]);
+  const [channelOptions, setChannelOptions] = useState(
+    [] as { label: string; options: Option[] }[]
+  );
   const [selectedChannel, setSelectedChannel] = useState({} as Option);
   const [discordIsConnected, setDiscordIsConnected] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,12 +49,16 @@ export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
   useEffect(() => {
     if (circle?.discordGuildId && discordIsConnected) {
       const getGuildChannels = async () => {
-        const channels = await fetchGuildChannels(circle?.discordGuildId);
+        const channels = await fetchGuildChannels(
+          circle?.discordGuildId,
+          ChannelType.GuildText,
+          true
+        );
         const channelOptions = channels?.map((channel: any) => ({
           label: channel.name,
           value: channel.id,
         }));
-        setChannelOptions(channelOptions);
+        setChannelOptions(groupChannelsByCategory(channelOptions));
       };
       void getGuildChannels();
     }
