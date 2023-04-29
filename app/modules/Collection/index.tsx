@@ -40,8 +40,6 @@ export function Collection() {
     return <SkeletonLoader />;
   }
 
-  console.log({ collection });
-
   return (
     <>
       <ToastContainer

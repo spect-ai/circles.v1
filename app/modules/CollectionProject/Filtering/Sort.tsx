@@ -45,7 +45,7 @@ export default function Sort() {
     };
     let options = collection.propertyOrder.map((property) => {
       if (
-        !unSortableProperties.includes(collection.properties[property].type)
+        !unSortableProperties.includes(collection.properties[property]?.type)
       ) {
         return {
           label: property,
