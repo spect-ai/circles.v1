@@ -8,17 +8,13 @@ import MilestoneField from "../../PublicForm/Fields/MilestoneField";
 type Props = {
   form: any;
   dataId: string;
-  propertyName: string;
-  handleClose: (
-    value: Milestone[],
-    dataId: string,
-    propertyName: string
-  ) => void;
+  propertyId: string;
+  handleClose: (value: Milestone[], dataId: string, propertyId: string) => void;
   disabled?: boolean;
 };
 
 function MultiMilestoneModal({
-  propertyName,
+  propertyId,
   dataId,
   form,
   handleClose,
@@ -31,8 +27,8 @@ function MultiMilestoneModal({
     <Modal
       handleClose={() => {
         value
-          ? handleClose(value[propertyName], dataId, propertyName)
-          : handleClose([], dataId, propertyName);
+          ? handleClose(value[propertyId], dataId, propertyId)
+          : handleClose([], dataId, propertyId);
       }}
       title="Edit Milestones"
     >
@@ -47,7 +43,7 @@ function MultiMilestoneModal({
         <MilestoneField
           form={form}
           dataId={dataId}
-          propertyName={propertyName}
+          propertyId={propertyId}
           data={value}
           setData={setValue}
           showDescription={true}

@@ -8,7 +8,7 @@ import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 type Props = {
   setData: (data: any) => void;
   data: any;
-  propertyName: string;
+  propertyId: string;
   updateRequiredFieldNotSet: (key: string, value: any) => void;
   showAvatar?: boolean;
   verify?: boolean;
@@ -17,7 +17,7 @@ type Props = {
 export default function DiscordField({
   data,
   setData,
-  propertyName,
+  propertyId,
   updateRequiredFieldNotSet,
   showAvatar,
   verify = false,
@@ -54,9 +54,9 @@ export default function DiscordField({
           if (userData.id) {
             setData((d: any) => ({
               ...d,
-              [propertyName]: userData,
+              [propertyId]: userData,
             }));
-            updateRequiredFieldNotSet(propertyName, userData);
+            updateRequiredFieldNotSet(propertyId, userData);
           }
         }
       } else {
@@ -68,9 +68,9 @@ export default function DiscordField({
           if (data.userData.id) {
             setData((d: any) => ({
               ...d,
-              [propertyName]: data.userData,
+              [propertyId]: data.userData,
             }));
-            updateRequiredFieldNotSet(propertyName, data.userData);
+            updateRequiredFieldNotSet(propertyId, data.userData);
           }
         }
       }
@@ -79,18 +79,18 @@ export default function DiscordField({
 
   return (
     <Box marginTop="4" width="64">
-      {data[propertyName] && data[propertyName].id ? (
+      {data[propertyId] && data[propertyId].id ? (
         <Box borderWidth="0.375" borderRadius="2xLarge" padding="2">
           <Stack direction="horizontal" align="center" justify="center">
             {showAvatar && (
               <Avatar
                 label="Discord Avatar"
-                src={`https://cdn.discordapp.com/avatars/${data[propertyName].id}/${data[propertyName].avatar}.png`}
+                src={`https://cdn.discordapp.com/avatars/${data[propertyId].id}/${data[propertyId].avatar}.png`}
               />
             )}
             <Box>
               <Text size="extraSmall" font="mono" weight="bold">
-                {data[propertyName].username}
+                {data[propertyId].username}
               </Text>
             </Box>
           </Stack>

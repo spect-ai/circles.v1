@@ -27,7 +27,6 @@ import { fieldOptionsDropdown, fields } from "../Constants";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import AddOptions from "./AddOptions";
 import MilestoneOptions from "./MilestoneOptions";
-import uuid from "react-uuid";
 import { prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance } from "@/app/common/utils/constants";
 import { AnimatePresence } from "framer-motion";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
@@ -38,14 +37,16 @@ import RewardTokenOptions from "./RewardTokenOptions";
 import { useKeyPressEvent } from "react-use";
 import Editor from "@/app/common/components/Editor";
 import { logError } from "@/app/common/utils/utils";
+import { v4 as uuid } from "uuid";
+import { quizValidFieldTypes } from "../../Plugins/common/ResponseMatchDistribution";
 
 type Props = {
-  propertyName?: string;
+  propertyId?: string;
   pageId?: string;
   handleClose: () => void;
 };
 
-export default function AddField({ propertyName, pageId, handleClose }: Props) {
+export default function AddField({ propertyId, pageId, handleClose }: Props) {
   const {
     localCollection: collection,
     updateCollection,
@@ -84,23 +85,23 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
   const [showConfirmOnClose, setShowConfirmOnClose] = useState(false);
 
   const [viewConditions, setViewConditions] = useState<Condition[]>(
-    (propertyName && collection.properties[propertyName]?.viewConditions) || []
+    (propertyId && collection.properties[propertyId]?.viewConditions) || []
   );
-  const [modalSize, setModalSize] = useState<"small" | "medium" | "large">(
-    viewConditions?.length > 0 ? "large" : "small"
-  );
+  // const [modalSize, setModalSize] = useState<"small" | "medium" | "large">(
+  //   viewConditions?.length > 0 ? "large" : "small"
+  // );
   const [advancedDefaultOpen, setAdvancedDefaultOpen] = useState(
     viewConditions?.length > 0 ? true : false
   );
   const [reasonFieldNeedsUserAttention, setReasonFieldNeedsUserAttention] =
-    useState(propertyName ? reasonFieldNeedsAttention[propertyName] : "");
+    useState(propertyId ? reasonFieldNeedsAttention[propertyId] : "");
 
   const [cardOrder, setCardOrder] = useState<any>();
   const [maxSelections, setMaxSelections] = useState<number>();
   const [allowCustom, setAllowCustom] = useState(false);
 
   const [isDirty, setIsDirty] = useState(false);
-  const [initializing, setInitializing] = useState(propertyName ? true : false);
+  const [initializing, setInitializing] = useState(propertyId ? true : false);
 
   const onRequiredTabClick = (id: number) => {
     setIsDirty(true);
@@ -112,9 +113,9 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
     if (!document.activeElement?.className.includes("ProseMirror")) {
       if (name.trim() !== "" && !loading && !showNameCollissionError) {
         if (
-          propertyName &&
+          propertyId &&
           !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
-            collection.properties[propertyName].type
+            collection.properties[propertyId].type
           ].includes(type.value)
         ) {
           setShowConfirm(true);
@@ -127,7 +128,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
 
   const onSave = async () => {
     setLoading(true);
-    let res;
+    let res: CollectionType | undefined;
     let rewardOptions = {} as Registry | undefined;
     let payWallOptions = {} as PayWallOptions;
     if (type.value === "reward" || type.value === "milestone") {
@@ -140,8 +141,9 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
     if (type.value === "payWall") {
       payWallOptions = payWallOption;
     }
-    if (propertyName) {
-      res = await updateField(collection.id, propertyName, {
+    if (propertyId) {
+      res = await updateField(collection.id, {
+        id: propertyId,
         name: name.trim(),
         type: type.value as PropertyType,
         options: fieldOptions,
@@ -149,7 +151,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
         description,
         userType,
         default: defaultValue,
-        isPartOfFormView: collection.properties[propertyName]?.isPartOfFormView,
+        isPartOfFormView: collection.properties[propertyId]?.isPartOfFormView,
         required: required === 1,
         milestoneFields,
         viewConditions,
@@ -157,7 +159,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
         maxSelections,
         allowCustom,
       });
-      if (collection.collectionType === 1) {
+      if (collection.collectionType === 1 && res) {
         res = await updateFormCollection(collection.id, {
           projectMetadata: {
             ...res.projectMetadata,
@@ -176,6 +178,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
       res = await addField(
         collection.id,
         {
+          id: uuid(),
           name: name.trim(),
           type: type.value as PropertyType,
           isPartOfFormView: false,
@@ -196,11 +199,27 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
     }
     setIsDirty(false);
     setLoading(false);
-    if (res.id) {
+    if (res?.id) {
       handleClose();
       updateCollection(res);
+      if (
+        collection.formMetadata?.responseDataForMintkudos &&
+        quizValidFieldTypes.includes(type.value)
+      ) {
+        toast.warn(
+          "A new valid field has been added, you can add this to your mint kudos match responses "
+        );
+      }
+      if (
+        collection.formMetadata?.responseDataForPoap &&
+        quizValidFieldTypes.includes(type.value)
+      ) {
+        toast.warn(
+          "A new valid field has been added, you can add this to your poap match responses "
+        );
+      }
     } else {
-      logError(res.message.toString());
+      logError((res as unknown as Error)?.message.toString());
     }
   };
 
@@ -231,14 +250,15 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
 
   useEffect(() => {
     if (
-      propertyName &&
+      propertyId &&
       collection.properties &&
-      collection.properties[propertyName]
+      collection.properties[propertyId]
     ) {
       setInitializing(true);
-      setName(propertyName);
-      setInitialName(propertyName);
-      const property = collection.properties[propertyName];
+      const property = collection.properties[propertyId];
+
+      setName(property.name);
+      setInitialName(property.name);
       setDescription(property?.description || "");
       setRequired(property?.required ? 1 : 0);
       setDefaultValue(property?.default);
@@ -267,7 +287,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
       }
       setInitializing(false);
     }
-  }, [collection.properties, propertyName]);
+  }, [collection.properties, propertyId]);
 
   useEffect(() => {
     if (type.value === "reward" || type.value === "milestone") {
@@ -278,19 +298,20 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
   }, [type]);
 
   useEffect(() => {
-    setModalSize(viewConditions?.length > 0 ? "large" : "small");
+    // setModalSize(viewConditions?.length > 0 ? "large" : "small");
     setAdvancedDefaultOpen(viewConditions?.length > 0 ? true : false);
   }, [viewConditions]);
 
   useEffect(() => {
-    if (propertyName && collection.projectMetadata?.cardOrders) {
-      setCardOrder(collection.projectMetadata.cardOrders[propertyName]);
+    if (propertyId && collection.projectMetadata?.cardOrders) {
+      setCardOrder(collection.projectMetadata.cardOrders[propertyId]);
     }
-  }, [collection.projectMetadata?.cardOrders, propertyName]);
+  }, [collection.projectMetadata?.cardOrders, propertyId]);
 
   useEffect(() => {
-    if (viewConditions) {
+    if (viewConditions && propertyId) {
       const res = getIfFieldNeedsAttention({
+        id: propertyId,
         name: name.trim(),
         type: type.value as PropertyType,
         isPartOfFormView: false,
@@ -330,7 +351,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
               setShowConfirmOnDelete(false);
               const res: CollectionType = await deleteField(
                 collection.id,
-                (propertyName as string).trim()
+                (propertyId as string).trim()
               );
               if (res.id) {
                 res.collectionType === 1 &&
@@ -358,7 +379,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
         )}
       </AnimatePresence>
       <Modal
-        title={propertyName ? "Edit Field" : "Add Field"}
+        title={propertyId ? "Edit Field" : "Add Field"}
         handleClose={() => {
           if (isDirty) {
             setShowConfirmOnClose(true);
@@ -366,7 +387,6 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
             handleClose();
           }
         }}
-        size={modalSize}
       >
         <Box padding="8">
           <Stack>
@@ -549,9 +569,9 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
                 disabled={showNameCollissionError || !name || !isDirty}
                 onClick={async () => {
                   if (
-                    propertyName &&
+                    propertyId &&
                     !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
-                      collection.properties[propertyName].type
+                      collection.properties[propertyId].type
                     ].includes(type.value)
                   ) {
                     setShowConfirm(true);
@@ -562,7 +582,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
               >
                 Save
               </PrimaryButton>
-              {propertyName && (
+              {propertyId && (
                 <PrimaryButton
                   loading={deleteLoading}
                   tone="red"

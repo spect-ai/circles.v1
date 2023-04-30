@@ -17,7 +17,7 @@ type Props = {
   type: PropertyType;
   index: number;
   setIsAddFieldOpen: (open: boolean) => void;
-  setPropertyName: (name: string) => void;
+  setPropertyId: (name: string) => void;
 };
 
 const FieldComponent = ({
@@ -25,7 +25,7 @@ const FieldComponent = ({
   type,
   index,
   setIsAddFieldOpen,
-  setPropertyName,
+  setPropertyId,
 }: Props) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
@@ -71,12 +71,12 @@ const FieldComponent = ({
                   );
                   return;
                 }
-                setPropertyName(property.name);
+                setPropertyId(property.id);
                 setIsAddFieldOpen(true);
               }}
             >
               <Text color="accent">{getPropertyIcon(type, 14)}</Text>
-              <Text variant="label">{smartTrim(field, 30)}</Text>
+              <Text variant="label">{smartTrim(property.name, 30)}</Text>
             </PropertyButton>
             <Stack direction="horizontal" align="center" space="2">
               <Box />
@@ -106,7 +106,8 @@ const FieldComponent = ({
                   <Box
                     cursor="pointer"
                     onClick={async () => {
-                      const res = await updateField(collection.id, field, {
+                      const res = await updateField(collection.id, {
+                        id: field,
                         isPartOfFormView: false,
                       });
                       updateCollection(res);
@@ -120,7 +121,8 @@ const FieldComponent = ({
                   <Box
                     cursor="pointer"
                     onClick={async () => {
-                      const res = await updateField(collection.id, field, {
+                      const res = await updateField(collection.id, {
+                        id: field,
                         isPartOfFormView: true,
                       });
                       updateCollection(res);

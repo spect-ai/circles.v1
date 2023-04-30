@@ -50,7 +50,7 @@ type Props = {
   index: number;
   setIsEditFieldOpen: (value: boolean) => void;
   setIsAddFieldOpen: (value: boolean) => void;
-  setPropertyName: (value: string) => void;
+  setPropertyId: (value: string) => void;
   formData: any;
   setFormData: (value: any) => void;
   setShowConfirmOnDelete: (value: boolean) => void;
@@ -61,7 +61,7 @@ function FieldComponent({
   index,
   setIsEditFieldOpen,
   setIsAddFieldOpen,
-  setPropertyName,
+  setPropertyId,
   formData,
   setFormData,
   setShowConfirmOnDelete,
@@ -147,7 +147,7 @@ function FieldComponent({
             paddingY="1"
             paddingX="2"
             onClick={() => {
-              setPropertyName(collection.properties[id]?.name);
+              setPropertyId(id);
               setIsEditFieldOpen(true);
               process.env.NODE_ENV === "production" &&
                 mixpanel.track("Edit Field Button", {
@@ -266,7 +266,7 @@ function FieldComponent({
             onSelect={(value: any) => {
               setFormData({ ...formData, [id]: value });
             }}
-            propertyName={id}
+            propertyId={id}
           />
         </Box>
       )}
@@ -295,7 +295,7 @@ function FieldComponent({
                 }
               }
             }}
-            propertyName={id}
+            propertyId={id}
           />
         </Box>
       )}
@@ -500,7 +500,7 @@ function FieldComponent({
                       );
                       return;
                     }
-                    setPropertyName(id);
+                    setPropertyId(id);
                     setShowConfirmOnDelete(true);
                   }}
                 >

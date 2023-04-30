@@ -85,6 +85,7 @@
     "siwe": "^1.1.6",
     "socket.io-client": "4.3.2",
     "styled-components": "^5.3.6",
+    "uuid": "^9.0.0",
     "wagmi": "^0.12.12"
   },
   "devDependencies": {
@@ -110,6 +111,7 @@
     "@types/react-dom": "^17",
     "@types/reactour": "^1.18.2",
     "@types/styled-components": "^5.1.25",
+    "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.27.1",
     "@typescript-eslint/parser": "^5.27.1",
     "@welldone-software/why-did-you-render": "^7.0.1",

@@ -19,7 +19,7 @@ interface Props {
   data: any;
   setData: (value: any) => void;
   updateRequiredFieldNotSet: (key: string, value: any) => void;
-  propertyName: string;
+  propertyId: string;
 }
 
 interface InputProps {
@@ -28,7 +28,7 @@ interface InputProps {
   placeholder: string;
   val: Option;
   updateData: (i: number, lab: string, val: string) => void;
-  propertyName: string;
+  propertyId: string;
   i: number;
 }
 
@@ -93,7 +93,7 @@ export default function MultiURLField({
   placeholder,
   value,
   data,
-  propertyName,
+  propertyId,
   setData,
 }: Props) {
   const [urlArray, setUrlArray] = useState<Option[]>(value);
@@ -104,7 +104,7 @@ export default function MultiURLField({
     urls[index].value = value;
     urls = urls.filter((i) => i.value != "" || i.label != "");
     setUrlArray(urls);
-    setData({ ...data, [propertyName]: urls });
+    setData({ ...data, [propertyId]: urls });
   };
   return (
     <Stack direction={"vertical"}>
@@ -118,7 +118,7 @@ export default function MultiURLField({
               placeholder={placeholder}
               disabled={disabled}
               updateData={updateData}
-              propertyName={propertyName}
+              propertyId={propertyId}
               i={i}
             />
           );

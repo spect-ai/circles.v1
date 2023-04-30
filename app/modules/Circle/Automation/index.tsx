@@ -168,7 +168,7 @@ export default function AutomationCenter() {
                                   align="center"
                                   ellipsis
                                 >
-                                  {automat.name}
+                                  {automat?.name}
                                 </Text>
                               </Container>
                             </Col>

@@ -181,19 +181,19 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
   const PropertyDraggable = ({
     provided,
     snapshot,
-    property,
+    propertyId,
     value,
   }: {
     provided: DraggableProvided;
     snapshot: DraggableStateSnapshot;
-    property: string;
+    propertyId: string;
     value: any;
   }) => {
     const [hover, setHover] = useState(false);
     const usePortal = snapshot.isDragging;
     const child = (
       <Box
-        key={property}
+        key={propertyId}
         marginY="1"
         ref={provided.innerRef}
         {...provided.draggableProps}
@@ -223,17 +223,17 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
             width="full"
           > */}
           <EditProperty
-            propertyName={property}
+            propertyId={propertyId}
             disabled={
               collection.data?.[cardSlug as string]?.__cardStatus__ === "closed"
             }
           />
           <EditValue
-            propertyName={property}
-            value={value[property]}
+            propertyId={propertyId}
+            value={value[propertyId]}
             setValue={(val) => {
-              setValue({ ...value, [property]: val });
-              void onChange({ [property]: val }, value.slug);
+              setValue({ ...value, [propertyId]: val });
+              void onChange({ [propertyId]: val }, value.slug);
             }}
             dataId={value.slug}
             disabled={
@@ -254,19 +254,19 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
 
   const PropertyList = (provided: DroppableProvided) => (
     <Box ref={provided.innerRef} {...provided.droppableProps}>
-      {propertyOrder.map((property, index) => {
+      {propertyOrder.map((propertyId, index) => {
         if (
-          property !== "Title" &&
-          property !== "Description" &&
-          property !== "__cardStatus__"
+          propertyId !== "Title" &&
+          propertyId !== "Description" &&
+          propertyId !== "__cardStatus__"
         ) {
           return (
-            <Draggable key={property} draggableId={property} index={index}>
+            <Draggable key={propertyId} draggableId={propertyId} index={index}>
               {(provided, snapshot) => {
                 return (
                   <PropertyDraggableCallback
                     provided={provided}
-                    property={property}
+                    propertyId={propertyId}
                     snapshot={snapshot}
                     value={value}
                   />

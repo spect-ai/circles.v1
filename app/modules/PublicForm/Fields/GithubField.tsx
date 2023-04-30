@@ -6,7 +6,7 @@ import { FaGithub } from "react-icons/fa";
 type Props = {
   setData: (data: any) => void;
   data: any;
-  propertyName: string;
+  propertyId: string;
   updateRequiredFieldNotSet: (key: string, value: any) => void;
   showAvatar?: boolean;
 };
@@ -14,7 +14,7 @@ type Props = {
 export default function GithubField({
   data,
   setData,
-  propertyName,
+  propertyId,
   updateRequiredFieldNotSet,
   showAvatar,
 }: Props) {
@@ -47,9 +47,9 @@ export default function GithubField({
         if (data.userData.id) {
           setData((d: any) => ({
             ...d,
-            [propertyName]: data.userData,
+            [propertyId]: data.userData,
           }));
-          updateRequiredFieldNotSet(propertyName, data.userData);
+          updateRequiredFieldNotSet(propertyId, data.userData);
         }
       }
     })();
@@ -57,18 +57,15 @@ export default function GithubField({
 
   return (
     <Box marginTop="4" width="64">
-      {data[propertyName] && data[propertyName].id ? (
+      {data[propertyId] && data[propertyId].id ? (
         <Box borderWidth="0.375" borderRadius="2xLarge" padding="2">
           <Stack direction="horizontal" align="center">
             {showAvatar && (
-              <Avatar
-                label="Github Avatar"
-                src={data[propertyName].avatar_url}
-              />
+              <Avatar label="Github Avatar" src={data[propertyId].avatar_url} />
             )}
             <Box>
               <Text size="extraSmall" font="mono" weight="bold">
-                {data[propertyName].login}
+                {data[propertyId].login}
               </Text>
             </Box>
           </Stack>

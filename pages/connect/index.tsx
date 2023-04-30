@@ -92,14 +92,14 @@ const ConnectPage: NextPage = () => {
           username: data["telegram"].username,
           first_name: data["telegram"].first_name,
         };
-        payload.propertyName = query.propertyName as string;
+        payload.propertyName = query.propertyId as string;
       } else if (data["github"]) {
         payload.github = {
           id: data["github"].id,
           username: data["github"].login,
           name: data["github"].name,
         };
-        payload.propertyName = query.propertyName as string;
+        payload.propertyName = query.propertyId as string;
       }
       setBackToDiscordMessage("Linking your socials...");
       postSocials(query.channelId as string, payload)
@@ -264,7 +264,7 @@ const ConnectPage: NextPage = () => {
                   <DiscordField
                     data={data}
                     setData={setData}
-                    propertyName="discord"
+                    propertyId="discord"
                     updateRequiredFieldNotSet={() => {}}
                     verify
                   />
@@ -277,7 +277,7 @@ const ConnectPage: NextPage = () => {
                     <DiscordField
                       data={data}
                       setData={setData}
-                      propertyName="discord"
+                      propertyId="discord"
                       updateRequiredFieldNotSet={() => {}}
                       verify={false}
                     />
@@ -288,7 +288,7 @@ const ConnectPage: NextPage = () => {
                 <TelegramField
                   data={data}
                   setData={setData}
-                  propertyName="telegram"
+                  propertyId="telegram"
                   updateRequiredFieldNotSet={() => {}}
                 />
               )}
@@ -296,7 +296,7 @@ const ConnectPage: NextPage = () => {
                 <GithubField
                   data={data}
                   setData={setData}
-                  propertyName="github"
+                  propertyId="github"
                   updateRequiredFieldNotSet={() => {}}
                 />
               )}

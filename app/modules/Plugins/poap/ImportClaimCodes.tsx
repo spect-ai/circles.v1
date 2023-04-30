@@ -96,7 +96,7 @@ export default function ImportClaimCodes({
                   <CheckCircleOutlined />
                 </Text>
                 <Text>
-                  {`Currently, distributing POAP when ${minimumNumberOfAnswersThatNeedToMatch} / ${validFieldsCount} or more answers match.`}
+                  {`Distributing POAP when ${minimumNumberOfAnswersThatNeedToMatch} or more answers match.`}
                 </Text>
               </Stack>
               <Box marginLeft="4">

@@ -14,15 +14,15 @@ import { useRef, useState, useEffect } from "react";
 
 interface Props {
   form: any;
-  propertyName: string;
-  handleClose: (urls: Option[], dataId: string, propertyName: string) => void;
+  propertyId: string;
+  handleClose: (urls: Option[], dataId: string, propertyId: string) => void;
   dataId: string;
 }
 
 interface InputProps {
   val: Option;
   updateData: (i: number, lab: string, val: string) => void;
-  propertyName: string;
+  propertyId: string;
   i: number;
 }
 
@@ -73,12 +73,12 @@ function URLInput({ val, updateData, i }: InputProps) {
 
 export default function MultiURLModal({
   form,
-  propertyName,
+  propertyId,
   handleClose,
   dataId,
 }: Props) {
   const [urlArray, setUrlArray] = useState<Option[]>(
-    dataId ? form?.data[dataId]?.[propertyName] : undefined
+    dataId ? form?.data[dataId]?.[propertyId] : undefined
   );
 
   const updateData = (index: number, label: string, value: string) => {
@@ -92,7 +92,7 @@ export default function MultiURLModal({
   return (
     <Modal
       handleClose={() => {
-        handleClose(urlArray, dataId || "", propertyName);
+        handleClose(urlArray, dataId || "", propertyId);
       }}
       title="Multiple URLs"
     >
@@ -105,7 +105,7 @@ export default function MultiURLModal({
                   key={i}
                   val={val}
                   updateData={updateData}
-                  propertyName={propertyName}
+                  propertyId={propertyId}
                   i={i}
                 />
               );

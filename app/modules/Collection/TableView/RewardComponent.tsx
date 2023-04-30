@@ -4,7 +4,7 @@ import { CellProps } from "react-datasheet-grid";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 const RewardComponent = ({ rowData, columnData }: CellProps) => {
-  const reward = rowData[columnData.property.name];
+  const reward = rowData[columnData.property.id];
   const id = rowData.id;
 
   const { localCollection: collection } = useLocalCollection();
@@ -28,7 +28,7 @@ const RewardComponent = ({ rowData, columnData }: CellProps) => {
               : false
           )
             return;
-          columnData.setPropertyName(columnData.property.name);
+          columnData.setPropertyId(columnData.property.id);
           columnData.setDataId(id);
           columnData.setIsRewardFieldOpen(true);
         }}

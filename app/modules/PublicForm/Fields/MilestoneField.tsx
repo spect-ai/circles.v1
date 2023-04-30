@@ -10,7 +10,7 @@ import MilestoneModal from "./MilestoneModal";
 type Props = {
   form: any;
   dataId?: string;
-  propertyName: string;
+  propertyId: string;
   data: any;
   setData: (value: any) => void;
   showDescription?: boolean;
@@ -20,7 +20,7 @@ type Props = {
 
 export default function MilestoneField({
   form,
-  propertyName,
+  propertyId,
   data,
   setData,
   showDescription,
@@ -43,20 +43,18 @@ export default function MilestoneField({
               if (modalMode === "create") {
                 setData({
                   ...data,
-                  [propertyName]:
-                    data && data[propertyName]
-                      ? [...data[propertyName], value]
+                  [propertyId]:
+                    data && data[propertyId]
+                      ? [...data[propertyId], value]
                       : [value],
                 });
                 updateRequiredFieldNotSet &&
                   updateRequiredFieldNotSet(
-                    propertyName,
-                    data[propertyName]
-                      ? [...data[propertyName], value]
-                      : [value]
+                    propertyId,
+                    data[propertyId] ? [...data[propertyId], value] : [value]
                   );
               } else {
-                data[propertyName][milestoneIndex] = value;
+                data[propertyId][milestoneIndex] = value;
                 setData({
                   ...data,
                 });
@@ -66,7 +64,7 @@ export default function MilestoneField({
             }}
             modalMode={modalMode}
             milestoneIndex={milestoneIndex}
-            propertyName={propertyName}
+            propertyId={propertyId}
             data={data}
             form={form}
           />
@@ -75,8 +73,8 @@ export default function MilestoneField({
       <Box marginTop="4">
         <Stack direction="vertical" space="2">
           {data &&
-            data[propertyName]?.length &&
-            data[propertyName].map((milestone: Milestone, index: number) => {
+            data[propertyId]?.length &&
+            data[propertyId].map((milestone: Milestone, index: number) => {
               return (
                 <Box
                   key={index}
@@ -126,10 +124,10 @@ export default function MilestoneField({
                       </Button>
                       <PrimaryButton
                         onClick={() => {
-                          const newMilestones = data[propertyName].filter(
+                          const newMilestones = data[propertyId].filter(
                             (milestone: Milestone, i: number) => i !== index
                           );
-                          setData({ ...data, [propertyName]: newMilestones });
+                          setData({ ...data, [propertyId]: newMilestones });
                         }}
                       >
                         Remove
@@ -141,7 +139,7 @@ export default function MilestoneField({
             })}
         </Stack>
         {((form.collectionType === 0 &&
-          form?.properties[propertyName].isPartOfFormView) ||
+          form?.properties[propertyId].isPartOfFormView) ||
           form.collectionType === 1) &&
           !disabled && (
             <Box width="full">

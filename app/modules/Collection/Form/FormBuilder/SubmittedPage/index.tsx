@@ -27,7 +27,6 @@ const SubmittedPage = ({
     enabled: false,
   });
 
-  console.log({ form: form.formMetadata });
   return (
     <Box
       style={{
@@ -187,32 +186,6 @@ const SubmittedPage = ({
                   setSubmitted && setSubmitted(false);
 
                   const tempData: any = {};
-                  form.propertyOrder.forEach((propertyId) => {
-                    if (
-                      [
-                        "longText",
-                        "shortText",
-                        "ethAddress",
-                        "user",
-                        "date",
-                        "number",
-                      ].includes(form.properties[propertyId].type)
-                    ) {
-                      tempData[propertyId] = "";
-                    } else if (
-                      form.properties[propertyId].type === "singleSelect"
-                    ) {
-                      // @ts-ignore
-                      tempData[propertyId] = {};
-                    } else if (
-                      ["multiSelect", "user[]"].includes(
-                        form.properties[propertyId].type
-                      )
-                    ) {
-                      tempData[propertyId] = [];
-                    }
-                  });
-
                   setData && setData(tempData);
                 }}
               >

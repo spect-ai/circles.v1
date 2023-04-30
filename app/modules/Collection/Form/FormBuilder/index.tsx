@@ -47,7 +47,7 @@ function FormBuilder() {
     setCurrentPage,
   } = useLocalCollection();
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
-  const [propertyName, setPropertyName] = useState("");
+  const [propertyId, setPropertyId] = useState("");
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
   const [showConfirmOnDelete, setShowConfirmOnDelete] = useState(false);
 
@@ -142,7 +142,7 @@ function FormBuilder() {
       <AnimatePresence>
         {isEditFieldOpen && (
           <AddField
-            propertyName={propertyName}
+            propertyId={propertyId}
             handleClose={() => setIsEditFieldOpen(false)}
           />
         )}
@@ -160,7 +160,7 @@ function FormBuilder() {
               setShowConfirmOnDelete(false);
               const res: CollectionType = await deleteField(
                 collection.id,
-                (propertyName as string).trim()
+                (propertyId as string).trim()
               );
               if (res.id) {
                 updateCollection(res);
@@ -544,7 +544,7 @@ function FormBuilder() {
                                     key={field}
                                     setIsEditFieldOpen={setIsEditFieldOpen}
                                     setIsAddFieldOpen={setIsAddFieldOpen}
-                                    setPropertyName={setPropertyName}
+                                    setPropertyId={setPropertyId}
                                     formData={formData}
                                     setFormData={setFormData}
                                     setShowConfirmOnDelete={

@@ -5,7 +5,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
 import { getComparators } from "./Comparator";
 import FilterValueField from "./FilterValueField";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
+import { toast } from "react-toastify";
 
 type Props = {
   viewConditions: Condition[];
@@ -26,12 +26,13 @@ export default function AddConditions({
   buttonWidth,
   dropDownPortal,
 }: Props) {
-  const fieldOptions = Object.entries(collection.properties)
+  const fieldOptions = Object.entries(collection.properties || {})
     .filter((field) => !["multiURL"].includes(field[1].type))
     .map((field) => ({
-      label: field[0],
+      label: collection.properties[field[0]].name,
       value: field[0],
     }));
+
   return (
     <Box>
       {viewConditions?.map((condition, index) => (
@@ -151,11 +152,17 @@ export default function AddConditions({
           </Stack>
         </Box>
       ))}
-      <Box marginTop="4" width={(buttonWidth as any) || "64"}>
+      <Box marginTop="4" width={(buttonWidth as any) || "64"} padding="0.5">
         <PrimaryButton
-          icon={<IconPlusSmall />}
+          icon={<IconPlusSmall size="5" />}
           variant="tertiary"
           onClick={() => {
+            if (!fieldOptions[0]) {
+              toast.warn(
+                "There are no fields in the form to add a condition to."
+              );
+              return;
+            }
             const newCondition: Condition = {
               id: Math.random().toString(36).substring(7),
               type: "data",

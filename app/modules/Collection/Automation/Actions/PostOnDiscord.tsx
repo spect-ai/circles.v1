@@ -141,7 +141,7 @@ export default function PostCardOnDiscord({
             )
             .map(([propertyId, property]) => ({
               label: property.name,
-              value: property.name,
+              value: property.id,
             })) || []
         }
         selected={fields}
