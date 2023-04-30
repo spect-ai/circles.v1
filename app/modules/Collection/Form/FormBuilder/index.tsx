@@ -37,6 +37,7 @@ import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { logError } from "@/app/common/utils/utils";
 import { Visible } from "react-grid-system";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { FaDiscord } from "react-icons/fa";
 
 function FormBuilder() {
   const {
@@ -238,6 +239,73 @@ function FormBuilder() {
               </Stack>
               {currentPage === "start" && (
                 <BuilderStartPage setCurrentPage={setCurrentPage} />
+              )}
+              {currentPage === "connectDiscord" && (
+                <Box
+                  style={{
+                    height: "calc(100vh - 20rem)",
+                  }}
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="space-between"
+                >
+                  <motion.div
+                    className="box"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      padding="4"
+                      marginTop="4"
+                      gap="4"
+                    >
+                      <Stack direction="horizontal" space="1" wrap>
+                        <Text weight="bold">
+                          You require one of the followin g roles on Discord to
+                          fill this form. Connect Discord to verify your role.
+                        </Text>
+                      </Stack>
+                      <Stack space="2">
+                        {collection.formMetadata.discordRoleGating?.map(
+                          (role: { id: string; name: string }) => (
+                            <Tag tone="accent" key={role.id}>
+                              {role.name}
+                            </Tag>
+                          )
+                        )}
+                      </Stack>
+                    </Box>
+                  </motion.div>
+                  <Stack direction="horizontal" justify="space-between">
+                    <Box paddingX="5" paddingBottom="4" width="1/2">
+                      <PrimaryButton
+                        variant="transparent"
+                        onClick={() => {
+                          setCurrentPage(
+                            pageOrder[pageOrder.indexOf(currentPage) - 1]
+                          );
+                        }}
+                      >
+                        Back
+                      </PrimaryButton>
+                    </Box>
+                    <Box paddingX="5" paddingBottom="4" width="1/2">
+                      <PrimaryButton
+                        variant="secondary"
+                        icon={<FaDiscord size={24} />}
+                        onClick={() => {
+                          setCurrentPage(
+                            pageOrder[pageOrder.indexOf(currentPage) + 1]
+                          );
+                        }}
+                      >
+                        Connect Discord
+                      </PrimaryButton>
+                    </Box>
+                  </Stack>
+                </Box>
               )}
               {currentPage === "connect" && (
                 <Box
@@ -449,9 +517,13 @@ function FormBuilder() {
                   preview
                 />
               )}
-              {!["start", "connect", "collect", "submitted"].includes(
-                currentPage
-              ) && (
+              {![
+                "start",
+                "connect",
+                "collect",
+                "submitted",
+                "connectDiscord",
+              ].includes(currentPage) && (
                 <FormBuilderContainer>
                   <DragDropContext onDragEnd={handleDragCollectionProperty}>
                     <Droppable droppableId="droppable">

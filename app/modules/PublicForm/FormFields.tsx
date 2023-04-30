@@ -40,6 +40,7 @@ import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import CollectPage from "../Collection/Form/FormBuilder/CollectPage";
 import CollectPayment from "./Fields/CollectPayment";
 import SubmittedPage from "../Collection/Form/FormBuilder/SubmittedPage";
+import ConnectDiscordPage from "../Collection/Form/FormBuilder/ConnectDiscordPage";
 
 type Props = {
   form: FormType | undefined;
@@ -59,7 +60,7 @@ function FormFields({ form, setForm }: Props) {
   const [updateResponse, setUpdateResponse] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [connectedUser] = useAtom(connectedUserAtom);
-
+  const [verificationToken, setVerificationToken] = useState("");
   const { onSaveProfile, email, setEmail } = useProfile();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -286,7 +287,8 @@ function FormFields({ form, setForm }: Props) {
       res = await addData(
         form.id || "",
         data,
-        !connectedUser ? true : form.formMetadata.allowAnonymousResponses
+        !connectedUser ? true : form.formMetadata.allowAnonymousResponses,
+        verificationToken
       );
     }
     const resAfterSave = await getForm(form.slug);
@@ -454,6 +456,7 @@ function FormFields({ form, setForm }: Props) {
         )}
       </AnimatePresence>
       {Array.from({ length: 1 }).map((_, i) => {
+        console.log({ i });
         if (currentPage === "start") {
           return (
             <StartPage
@@ -469,6 +472,18 @@ function FormFields({ form, setForm }: Props) {
               setForm={setForm}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
+            />
+          );
+        } else if (currentPage === "connectDiscord" && form) {
+          return (
+            <ConnectDiscordPage
+              form={form as CollectionType}
+              data={data}
+              setData={setData}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              verificationToken={verificationToken}
+              setVerificationToken={setVerificationToken}
             />
           );
         } else if (currentPage === "collect") {

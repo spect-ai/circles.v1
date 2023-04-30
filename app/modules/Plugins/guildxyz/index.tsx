@@ -182,6 +182,32 @@ export default function RoleGate({ handleClose }: Props) {
               gap="2"
               justifyContent="flex-end"
             >
+              {" "}
+              {(collection.formMetadata?.formRoleGating?.length || 0) > 0 && (
+                <PrimaryButton
+                  loading={loading}
+                  variant="tertiary"
+                  onClick={async () => {
+                    setLoading(true);
+
+                    const res = await updateCollection(
+                      {
+                        formMetadata: {
+                          ...collection.formMetadata,
+                          formRoleGating: [],
+                        },
+                      },
+                      collection.id
+                    );
+                    setLocalCollection(res);
+
+                    setLoading(false);
+                    handleClose();
+                  }}
+                >
+                  Disable
+                </PrimaryButton>
+              )}
               <PrimaryButton
                 loading={loading}
                 disabled={!selectedRoles?.length}
@@ -209,31 +235,6 @@ export default function RoleGate({ handleClose }: Props) {
               >
                 Save
               </PrimaryButton>
-              {(collection.formMetadata?.formRoleGating?.length || 0) > 0 && (
-                <PrimaryButton
-                  loading={loading}
-                  variant="tertiary"
-                  onClick={async () => {
-                    setLoading(true);
-
-                    const res = await updateCollection(
-                      {
-                        formMetadata: {
-                          ...collection.formMetadata,
-                          formRoleGating: [],
-                        },
-                      },
-                      collection.id
-                    );
-                    setLocalCollection(res);
-
-                    setLoading(false);
-                    handleClose();
-                  }}
-                >
-                  Disable
-                </PrimaryButton>
-              )}
             </Box>
           </Stack>
         )}

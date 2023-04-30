@@ -26,6 +26,7 @@ import { useQuery } from "react-query";
 import { CollectionType, UserType } from "@/app/types";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
+import DiscordRoleGate from "./DiscordRole";
 
 type Props = {
   handleClose: () => void;
@@ -57,6 +58,8 @@ export const isPluginAdded = (
       return collection.formMetadata.captchaEnabled === true;
     case "responderProfile":
       return collection.formMetadata.allowAnonymousResponses === false;
+    case "discordRole":
+      return !!collection.formMetadata.discordRoleGating?.length;
     default:
       return false;
   }
@@ -135,6 +138,7 @@ export default function ViewPlugins({ handleClose }: Props) {
       case "ceramic":
       case "googleCaptcha":
       case "responderProfile":
+      case "discordRole":
         setIsPluginOpen(true);
         setPluginOpen(pluginName);
         break;
@@ -279,6 +283,12 @@ export default function ViewPlugins({ handleClose }: Props) {
           <ResponderProfile
             handleClose={() => setIsPluginOpen(false)}
             key="responderProfile"
+          />
+        )}
+        {isPluginOpen && pluginOpen === "discordRole" && (
+          <DiscordRoleGate
+            handleClose={() => setIsPluginOpen(false)}
+            key="discordRole"
           />
         )}
       </AnimatePresence>

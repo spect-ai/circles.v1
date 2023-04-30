@@ -904,6 +904,10 @@ export type FormMetadata = {
     tokens: LookupToken[];
     snapshot: number;
   };
+  discordRoleGating?: {
+    id: string;
+    name: string;
+  }[];
 };
 
 export type LookupToken = {

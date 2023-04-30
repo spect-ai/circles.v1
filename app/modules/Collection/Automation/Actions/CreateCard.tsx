@@ -559,7 +559,7 @@ export default function CreateCard({
                   collection.formMetadata.allowAnonymousResponses
                 ) {
                   toast.warning(
-                    "You can only map the responder if the form does not allow anonymous responses"
+                    "You can only map the responder if the form collects responder profile"
                   );
                   return;
                 }
@@ -591,7 +591,7 @@ export default function CreateCard({
             </PrimaryButton>
             {collection.formMetadata &&
               collection.formMetadata.allowAnonymousResponses && (
-                <Tooltip title="You can only map the responder if the form doesnot allow anonymous responses">
+                <Tooltip title="You can only map the responder if the form collects responder profile">
                   <InfoCircleOutlined
                     style={{ color: "rgb(191, 90, 242, 1)" }}
                   />

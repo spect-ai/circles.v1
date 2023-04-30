@@ -18,7 +18,8 @@ export type PluginType =
   | "guildxyz"
   | "mintkudos"
   | "googleCaptcha"
-  | "responderProfile";
+  | "responderProfile"
+  | "discordRole";
 
 export const spectPlugins: { [key: string]: SpectPlugin } = {
   gtcpassport: {
@@ -70,7 +71,7 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
   // },
   erc20: {
     id: "erc20",
-    name: "Distribute ERC20 Tokens to Responders (Closed Alpha)",
+    name: "Distribute ERC20 Tokens to Responders (Limited Beta)",
     version: "1.0.0",
     description:
       "Want to incentivize responders for filling out your form? Use this plugin to distribute ERC20 tokens to responders!",
@@ -118,7 +119,7 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
   },
   responderProfile: {
     id: "responderProfile",
-    name: "Responder Profile",
+    name: "Collect Responder Profile",
     version: "1.0.0",
     description:
       "Collect information about the responder. Past experiences, educational achievments, skills along with linked NFTs & credentials!",
@@ -126,6 +127,18 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     docs: "https://docs.guild.xyz",
     image:
       "https://ik.imagekit.io/spectcdn/survey_image.png?updatedAt=1681811990898",
+    premium: true,
+  },
+  discordRole: {
+    id: "responderProfile",
+    name: "Role Gating With Discord Roles",
+    version: "1.0.0",
+    description:
+      "Role gate who can reply to this form with Discord roles. Only people with the specified roles can reply to this form!",
+    tags: "credential curation, responder info",
+    docs: "",
+    image:
+      "https://ik.imagekit.io/spectcdn/discord_logo_chaks.png?updatedAt=1682681466430",
     premium: true,
   },
 };

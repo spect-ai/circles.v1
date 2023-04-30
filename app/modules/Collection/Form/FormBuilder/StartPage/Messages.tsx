@@ -2,6 +2,7 @@ import { quizValidFieldTypes } from "@/app/modules/Plugins/common/ResponseMatchD
 import { CollectionType } from "@/app/types";
 import { WalletOutlined } from "@ant-design/icons";
 import { Box, Text } from "degen";
+import { BsDiscord } from "react-icons/bs";
 
 type Props = {
   form: CollectionType;
@@ -53,6 +54,16 @@ export default function Messages({ form }: Props) {
             <WalletOutlined />
           </Text>{" "}
           <Text weight="semiBold">This form requires you to sign in</Text>
+        </Box>
+      )}
+      {form.formMetadata.pages["connectDiscord"] && (
+        <Box display="flex" flexDirection="row" gap="2">
+          <Text weight="semiBold" color="accent">
+            <BsDiscord />
+          </Text>{" "}
+          <Text weight="semiBold">
+            This form requires you to connect Discord
+          </Text>
         </Box>
       )}
     </Box>

@@ -50,6 +50,7 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
   const { data: currentUser } = useQuery<UserType>("getMyUser", getUser, {
     enabled: false,
   });
+  const pageNumber = form.formMetadata.pageOrder.indexOf(currentPage);
 
   const addStamps = async (form: FormType) => {
     const stamps = await getAllCredentials();
@@ -76,14 +77,14 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
       if (connectedUser && signedIn) {
         if (form.formMetadata.sybilProtectionEnabled) {
           if (form.formMetadata.hasPassedSybilCheck) {
-            setCurrentPage(form.formMetadata.pageOrder[2]);
+            setCurrentPage(form.formMetadata.pageOrder[pageNumber + 1]);
           }
         } else if (form.formMetadata.formRoleGating) {
           if (form.formMetadata.hasRole) {
-            setCurrentPage(form.formMetadata.pageOrder[2]);
+            setCurrentPage(form.formMetadata.pageOrder[pageNumber + 1]);
           }
         } else {
-          setCurrentPage(form.formMetadata.pageOrder[2]);
+          setCurrentPage(form.formMetadata.pageOrder[pageNumber + 1]);
         }
         setSignedIn(false);
       }
@@ -306,7 +307,7 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
           <PrimaryButton
             variant="transparent"
             onClick={() => {
-              setCurrentPage("start");
+              setCurrentPage(form.formMetadata.pageOrder[pageNumber - 1]);
             }}
           >
             Back
@@ -353,7 +354,7 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
                       );
                       return;
                     }
-                    setCurrentPage(form.formMetadata.pageOrder[2]);
+                    setCurrentPage(form.formMetadata.pageOrder[pageNumber + 1]);
                   }}
                 >
                   Continue

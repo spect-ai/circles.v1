@@ -241,11 +241,12 @@ export const getForm = async (formId: string) => {
 export const addData = async (
   collectionId: string,
   data: any,
-  anon: boolean
+  anon: boolean,
+  verificationToken?: string
 ) => {
   return await (
     await fetch(
-      `${process.env.API_HOST}/collection/v1/${collectionId}/addData`,
+      `${process.env.API_HOST}/collection/v1/${collectionId}/addData?verificationToken=${verificationToken}`,
       {
         method: "PATCH",
         headers: {
