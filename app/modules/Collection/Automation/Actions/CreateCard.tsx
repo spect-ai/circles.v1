@@ -563,15 +563,15 @@ export default function CreateCard({
                   );
                   return;
                 }
-                if (
-                  collection.collectionType === 0 &&
-                  !collection.formMetadata.walletConnectionRequired
-                ) {
-                  toast.warning(
-                    "The selected form does not require wallet connection, so the responder cannot be mapped. Please change it in the form settings"
-                  );
-                  return;
-                }
+                // if (
+                //   collection.collectionType === 0 &&
+                //   !collection.formMetadata.walletConnectionRequired
+                // ) {
+                //   toast.warning(
+                //     "The selected form does not require wallet connection, so the responder cannot be mapped. Please change it in the form settings"
+                //   );
+                //   return;
+                // }
                 setFieldType("responder");
                 setValues([
                   ...values,

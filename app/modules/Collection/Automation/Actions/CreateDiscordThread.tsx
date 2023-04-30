@@ -179,7 +179,7 @@ export default function CreateDiscordThread({
               .filter(([propertyId, property]) => property.type === "shortText")
               .map(([propertyId, property]) => ({
                 label: `Map from value in "${property.name}"`,
-                value: property.name,
+                value: property.id,
               })) || []
           }
           selected={threadName}
