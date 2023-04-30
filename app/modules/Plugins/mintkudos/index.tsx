@@ -371,7 +371,7 @@ export default function SendKudos({ handleClose }: Props) {
                           <CheckCircleOutlined />
                         </Text>
                         <Text>
-                          {`Currently, distributing Kudos when ${minimumNumberOfAnswersThatNeedToMatch} / ${validFieldsCount} or more answers match.`}
+                          {`Distributing Kudos when ${minimumNumberOfAnswersThatNeedToMatch} or more answers match.`}
                         </Text>
                       </Stack>
                       <Box marginLeft="4">

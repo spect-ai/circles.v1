@@ -12,7 +12,7 @@ const Container = styled(Box)`
   padding-bottom: 0.1rem;
   &:hover {
     cursor: pointer;
-    border-color: rgb(191, 90, 242, 1);
+    border-color: rgb(191, 90, 242, 0.8);
   }
 `;
 

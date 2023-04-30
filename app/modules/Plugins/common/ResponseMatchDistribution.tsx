@@ -7,6 +7,7 @@ import { useLocalCollection } from "../../Collection/Context/LocalCollectionCont
 import PublicField from "../../PublicForm/Fields/PublicField";
 import { logError } from "@/app/common/utils/utils";
 import CheckBox from "@/app/common/components/Table/Checkbox";
+import { satisfiesConditions } from "../../Collection/Common/SatisfiesFilter";
 
 export type Props = {
   setModalModal: (mode: string) => void;
@@ -34,11 +35,7 @@ export default function ResponseMatchDistribution({
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);
-  const validFields = collection.propertyOrder.filter(
-    (propertyId) =>
-      collection.properties[propertyId].isPartOfFormView &&
-      quizValidFieldTypes.includes(collection.properties[propertyId].type)
-  );
+  const [validFields, setValidFields] = useState([] as string[]);
 
   const [minNumOfAnswers, setMinNumOfAnswers] = useState(
     minimumNumberOfAnswersThatNeedToMatch
@@ -49,7 +46,7 @@ export default function ResponseMatchDistribution({
   ).length;
 
   useEffect(() => {
-    if (minNumOfAnswers === 0) {
+    if (minNumOfAnswers === 0 && validFields.length > 0) {
       setLocalData(
         validFields.reduce((acc, propertyId) => {
           if (
@@ -68,7 +65,24 @@ export default function ResponseMatchDistribution({
       );
       setMinNumOfAnswers(validFields.length);
     }
-  }, []);
+  }, [validFields]);
+
+  useEffect(() => {
+    setValidFields(
+      collection.propertyOrder.filter(
+        (propertyId) =>
+          collection.properties[propertyId].isPartOfFormView &&
+          quizValidFieldTypes.includes(
+            collection.properties[propertyId].type
+          ) &&
+          satisfiesConditions(
+            localData,
+            collection.properties,
+            collection.properties[propertyId].viewConditions || []
+          )
+      )
+    );
+  }, [localData]);
 
   if (validFields.length === 0) {
     return (
@@ -125,16 +139,24 @@ export default function ResponseMatchDistribution({
         {validFields &&
           validFields.map((propertyId) => {
             return (
-              <Stack direction="horizontal" align="center">
-                <Box>
+              <Stack direction="horizontal">
+                <Box marginTop="4">
                   <CheckBox
                     isChecked={localData[propertyId] !== undefined}
                     onClick={() => {
                       if (localData[propertyId] !== undefined) {
+                        if (Object.keys(localData).length === 1) {
+                          toast.error(
+                            "You must have at least one answer selected"
+                          );
+                          return;
+                        }
                         const newData = { ...localData };
                         delete newData[propertyId];
                         setLocalData(newData);
-                        setMinNumOfAnswers(minNumOfAnswers - 1);
+                        if (minNumOfAnswers > 1) {
+                          setMinNumOfAnswers(minNumOfAnswers - 1);
+                        }
                       } else {
                         if (
                           ["number", "date"].includes(
@@ -210,6 +232,12 @@ export default function ResponseMatchDistribution({
             loading={loading}
             variant="secondary"
             onClick={async () => {
+              if (minNumOfAnswers === 0 || isNaN(minNumOfAnswers)) {
+                toast.error(
+                  "Please set the minimum number of answers that need to match to a number greater than 0"
+                );
+                return;
+              }
               if (
                 Object.values(localData).filter((v) => {
                   // filter out empty strings and empty arrays and empty objects
@@ -223,7 +251,9 @@ export default function ResponseMatchDistribution({
                   return Boolean(v);
                 }).length < numQuestions
               ) {
-                toast.error("Please fill out all fields");
+                toast.error(
+                  "Please fill out all the selected fields' correct answers"
+                );
                 return;
               }
               setLoading(true);
