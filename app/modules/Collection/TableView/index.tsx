@@ -677,6 +677,7 @@ export default function TableView() {
                 Object.entries(da)
                   .filter(([key, value]) => key !== "id")
                   .forEach(([key, value]: [string, any]) => {
+                    const propertyName = collection.properties[key]?.name;
                     if (key === "slug") {
                       csvData["Data Slug"] = value;
                       return;
@@ -704,7 +705,7 @@ export default function TableView() {
                     }
                     if (!collection.properties[key]) return;
                     if (collection.properties[key].type === "reward") {
-                      csvData[key] = JSON.stringify({
+                      csvData[propertyName] = JSON.stringify({
                         chain: value?.chain.label,
                         token: value?.token.label,
                         value: value?.value,
@@ -720,29 +721,29 @@ export default function TableView() {
                           value: v?.reward?.value,
                         },
                       }));
-                      csvData[key] = JSON.stringify(milestones);
+                      csvData[propertyName] = JSON.stringify(milestones);
                     } else if (
                       ["user", "singleSelect"].includes(
                         collection.properties[key].type
                       )
                     ) {
-                      csvData[key] = value?.label;
+                      csvData[propertyName] = value?.label;
                     } else if (collection.properties[key].type === "multiURL") {
-                      csvData[key] = JSON.stringify(value);
+                      csvData[propertyName] = JSON.stringify(value);
                     } else if (
                       ["user[]", "multiSelect"].includes(
                         collection.properties[key].type
                       )
                     ) {
-                      csvData[key] = JSON.stringify(
+                      csvData[propertyName] = JSON.stringify(
                         value?.map((v: Option) => v.label)
                       );
                     } else if (key === "__payment__") {
-                      csvData[key] = JSON.stringify(value);
+                      csvData[propertyName] = JSON.stringify(value);
                     } else if (!value) {
-                      csvData[key] = "";
+                      csvData[propertyName] = "";
                     } else {
-                      csvData[key] = value;
+                      csvData[propertyName] = value;
                     }
                   });
                 return csvData;

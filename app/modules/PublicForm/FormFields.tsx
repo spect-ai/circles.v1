@@ -133,7 +133,7 @@ function FormFields({ form, setForm }: Props) {
           value: member,
         }));
         if (fetchedMemberOptions.length !== memberOptions.length) {
-          setMemberOptions(memberOptions);
+          setMemberOptions(fetchedMemberOptions);
         }
       })();
     }

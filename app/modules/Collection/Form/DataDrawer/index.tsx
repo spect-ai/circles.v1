@@ -280,9 +280,15 @@ export default function DataDrawer({
                           )}
                           {property?.type === "reward" && (
                             <Text>
-                              {data[property.id]?.value}{" "}
-                              {data[property.id]?.token?.label} on{" "}
-                              {data[property.id]?.chain?.label}
+                              {data[property.id]?.value ? (
+                                <>
+                                  {data[property.id]?.value}{" "}
+                                  {data[property.id]?.token?.label} on{" "}
+                                  {data[property.id]?.chain?.label}
+                                </>
+                              ) : (
+                                "No value added"
+                              )}
                             </Text>
                           )}
                           {property?.type === "payWall" && (
