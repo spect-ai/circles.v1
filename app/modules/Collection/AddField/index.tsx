@@ -234,7 +234,9 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
       updateCollection(res);
       if (
         collection.formMetadata?.responseDataForMintkudos &&
-        quizValidFieldTypes.includes(type.value)
+        quizValidFieldTypes.includes(type.value) &&
+        propertyId &&
+        collection.formMetadata.mintkudosTokenId
       ) {
         toast.warn(
           "A new valid field has been added, you can add this to your mint kudos match responses "
@@ -242,7 +244,9 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
       }
       if (
         collection.formMetadata?.responseDataForPoap &&
-        quizValidFieldTypes.includes(type.value)
+        quizValidFieldTypes.includes(type.value) &&
+        propertyId &&
+        collection.formMetadata.poapEventId
       ) {
         toast.warn(
           "A new valid field has been added, you can add this to your poap match responses "
