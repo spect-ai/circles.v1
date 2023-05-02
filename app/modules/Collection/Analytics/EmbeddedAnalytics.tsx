@@ -18,6 +18,7 @@ import {
   ArcElement,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import { Col, Row } from "react-grid-system";
 
 type Props = {};
 
@@ -53,31 +54,26 @@ const EmbeddedAnalytics = (props: Props) => {
   }, [slug]);
 
   return (
-    <ScrollContainer padding="8">
-      {collection &&
-        collection.formMetadata.chartOrder?.map((chartId) => {
-          const chart = collection.formMetadata.charts?.[chartId];
-          if (!chart) return null;
-          return (
-            <FieldChart
-              key={chartId}
-              chart={chart}
-              disabled
-              collection={collection}
-              updateCollection={setCollection}
-            />
-          );
-        })}
-    </ScrollContainer>
+    <Box padding="8">
+      <Row>
+        {collection &&
+          collection.formMetadata.chartOrder?.map((chartId) => {
+            const chart = collection.formMetadata.charts?.[chartId];
+            if (!chart) return null;
+            return (
+              <Col xs={12} sm={6} md={4} lg={3} key={chartId}>
+                <FieldChart
+                  chart={chart}
+                  disabled
+                  collection={collection}
+                  updateCollection={setCollection}
+                />
+              </Col>
+            );
+          })}
+      </Row>
+    </Box>
   );
 };
-
-const ScrollContainer = styled(Box)`
-  overflow-y: auto;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 1rem;
-`;
 
 export default EmbeddedAnalytics;

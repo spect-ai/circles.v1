@@ -67,13 +67,15 @@ const FieldChart = ({
     setDataRows(Object.values(rowData).map((item) => item.toString()));
   }, []);
   return (
-    <Container
+    <Box
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
       <Stack>
         <Stack direction="horizontal" justify="space-between" align="center">
-          <Text weight="semiBold">{chart?.name}</Text>
+          <Text weight="semiBold" ellipsis size="small">
+            {chart?.name}
+          </Text>
           {!disabled && (
             <motion.div
               animate={{
@@ -207,26 +209,8 @@ const FieldChart = ({
           />
         )}
       </Stack>
-    </Container>
+    </Box>
   );
 };
-
-const Container = styled(Box)`
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-
-  @media (min-width: 768px and max-width: 1024px) {
-    width: calc(33% - 1);
-  }
-
-  @media (min-width: 1024px and max-width: 1440px) {
-    width: calc(25% - 1);
-  }
-
-  @media (min-width: 1440px) {
-    width: calc(20% - 1);
-  }
-`;
 
 export default FieldChart;

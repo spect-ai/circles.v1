@@ -22,6 +22,7 @@ import { AiOutlineAreaChart } from "react-icons/ai";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Embed } from "../Embed";
+import { Col, Row } from "react-grid-system";
 
 ChartJS.register(
   CategoryScale,
@@ -46,7 +47,7 @@ const Analytics = (props: Props) => {
   const [isEmebedOpen, setIsEmebedOpen] = useState(false);
 
   return (
-    <ScrollContainer padding="2">
+    <ScrollContainer padding="4">
       <AnimatePresence>
         {isAddChartOpen && (
           <AddChart
@@ -84,22 +85,23 @@ const Analytics = (props: Props) => {
             </PrimaryButton>
           </Box>
         </Stack>
-        <Stack direction="horizontal" wrap>
+        <Row>
           {collection.formMetadata.chartOrder?.map((chartId) => {
             const chart = collection.formMetadata.charts?.[chartId];
             if (!chart) return null;
             return (
-              <FieldChart
-                key={chartId}
-                chart={chart}
-                setChartId={setChartId}
-                setIsAddChartOpen={setIsAddChartOpen}
-                collection={collection}
-                updateCollection={updateCollection}
-              />
+              <Col xs={12} sm={6} md={4} lg={3} key={chartId}>
+                <FieldChart
+                  chart={chart}
+                  setChartId={setChartId}
+                  setIsAddChartOpen={setIsAddChartOpen}
+                  collection={collection}
+                  updateCollection={updateCollection}
+                />
+              </Col>
             );
           })}
-        </Stack>
+        </Row>
       </Stack>
     </ScrollContainer>
   );
