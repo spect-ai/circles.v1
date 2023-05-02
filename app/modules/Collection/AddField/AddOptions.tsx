@@ -6,6 +6,9 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 import ColorPicker from "react-best-gradient-color-picker";
 import Popover from "@/app/common/components/Popover";
 import { motion } from "framer-motion";
+import CheckBox from "@/app/common/components/Table/Checkbox";
+import { Tooltip } from "react-tippy";
+import { BiHelpCircle } from "react-icons/bi";
 
 type Props = {
   fieldOptions: { label: string; value: string; color?: string }[];
@@ -20,6 +23,8 @@ type Props = {
   setMaxSelections: (maxSelections: number) => void;
   allowCustom: boolean;
   setAllowCustom: (allowCustom: boolean) => void;
+  immutable: boolean;
+  setImmutable: (immutable: boolean) => void;
   multiSelect?: boolean;
   setIsDirty?: (isDirty: boolean) => void;
 };
@@ -35,6 +40,8 @@ export default function AddOptions({
   setMaxSelections,
   allowCustom,
   setAllowCustom,
+  immutable,
+  setImmutable,
   multiSelect,
   setIsDirty,
 }: Props) {
@@ -45,7 +52,7 @@ export default function AddOptions({
   const [colorPickerColor, setColorPickerColor] = useState("#000000");
 
   return (
-    <Box maxHeight="56" overflow="auto">
+    <Box overflow="auto">
       <Stack>
         <Text variant="label">{label}</Text>
         <Box display="flex" flexDirection="row" gap="4" width="full">
@@ -178,19 +185,32 @@ export default function AddOptions({
         {collection.collectionType === 0 && (
           <Stack>
             <Text variant="label">Settings</Text>
+
             <Stack direction="horizontal" align="center" space="2">
-              <input
-                type="checkbox"
-                name={"Settings"}
-                checked={allowCustom}
-                onChange={() => {
+              <Tooltip
+                title="This will ensure no one can update this property, if they do the data assoicated will be deleted. This can be particularly useful for unbiased voting"
+                theme={mode}
+              >
+                <CheckBox
+                  isChecked={immutable}
+                  onClick={() => {
+                    setIsDirty && setIsDirty(true);
+                    setImmutable(!immutable);
+                  }}
+                />
+              </Tooltip>
+
+              <Text size="small" weight="light">
+                Make it immutable
+              </Text>
+            </Stack>
+
+            <Stack direction="horizontal" align="center" space="2">
+              <CheckBox
+                isChecked={allowCustom}
+                onClick={() => {
                   setIsDirty && setIsDirty(true);
                   setAllowCustom(!allowCustom);
-                }}
-                style={{
-                  width: "16px",
-                  height: "16px",
-                  cursor: "pointer",
                 }}
               />
               <Text size="small" weight="light">

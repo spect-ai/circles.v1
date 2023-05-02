@@ -196,6 +196,20 @@ function CollectionHeading() {
                 >
                   Responses ({Object.keys(collection.data || {})?.length})
                 </PrimaryButton>
+                <PrimaryButton
+                  variant={view === 2 ? "tertiary" : "transparent"}
+                  onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Form Analytics", {
+                        collection: collection?.slug,
+                        circle: collection?.parents[0].slug,
+                        user: currentUser?.username,
+                      });
+                    setView(2);
+                  }}
+                >
+                  Analytics
+                </PrimaryButton>
                 {/* <PrimaryButton onClick={() => setIsAddFieldOpen(true)}>
                   Add Field
                 </PrimaryButton> */}

@@ -133,7 +133,7 @@ export default function SnapshotVoting({
     if (dataId && collection.data) {
       setData({});
       setTimeout(() => {
-        setData(collection?.data[dataId]);
+        setData(collection?.data?.[dataId]);
       }, 0);
     }
   }, [collection?.data, dataId]);
@@ -307,22 +307,16 @@ export default function SnapshotVoting({
                       },
                     },
                     responsive: true,
-                    maintainAspectRatio: false,
+                    // maintainAspectRatio: false,
                     scales: {
                       y: {
                         ticks: {
                           color: "rgb(191,90,242,0.8)",
                         },
-                        grid: {
-                          borderColor: "rgb(191,90,242,0.2)",
-                        },
                       },
                       x: {
                         beginAtZero: true,
 
-                        grid: {
-                          borderColor: "rgb(191,90,242,0.2)",
-                        },
                         ticks: {
                           stepSize: 1,
                           color: "rgb(191,90,242,0.8)",
@@ -336,8 +330,8 @@ export default function SnapshotVoting({
                       {
                         label: " Votes ",
                         data: getVotes(),
-                        backgroundColor: "rgb(191,90,242, 0.2)",
-                        borderColor: "rgb(191,90,242)",
+                        backgroundColor: "rgb(191,90,242, 0.1)",
+                        borderColor: "rgb(191,90,242,0.1)",
                         borderWidth: 1,
                         borderRadius: 5,
                         barPercentage: 0.5,
