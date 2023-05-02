@@ -64,10 +64,8 @@ export default function Membership({}: Props) {
       <AnimatePresence>
         {isEmebedOpen && (
           <Embed
-            isOpen={isEmebedOpen}
             setIsOpen={setIsEmebedOpen}
-            component="members"
-            routeId={circle?.slug || ""}
+            embedRoute={`https://circles-v1-production.vercel.app/${circle?.slug}/embed?tab=membership`}
           />
         )}
         {isContributorsModalOpen && (

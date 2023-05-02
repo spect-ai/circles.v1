@@ -466,10 +466,8 @@ function CollectionHeading() {
         )}
         {isEmbedModalOpen && (
           <Embed
-            isOpen={isEmbedModalOpen}
             setIsOpen={setIsEmbedModalOpen}
-            component="form"
-            routeId={collection.slug}
+            embedRoute={`https://circles-v1-production.vercel.app/r/${collection.slug}/embed?`}
           />
         )}
         {isWarningOpened && (

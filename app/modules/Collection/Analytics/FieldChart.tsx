@@ -1,24 +1,41 @@
-import { Chart } from "@/app/types";
+import { Chart, CollectionType } from "@/app/types";
 import { Box, Button, IconPencil, IconTrash, Stack, Text } from "degen";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Bar, Doughnut, Line, Pie } from "react-chartjs-2";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
-import ChartDataLabels, { Context } from "chartjs-plugin-datalabels";
+import { Context } from "chartjs-plugin-datalabels";
 import { satisfiesConditions } from "../Common/SatisfiesFilter";
 import { motion } from "framer-motion";
 import { updateFormCollection } from "@/app/services/Collection";
 import { toast } from "react-toastify";
+import { BarOptions, LineOptions, PieOptions } from "./ChartOptions";
+import styled from "styled-components";
 
-type Props = {
-  chart: Chart;
-  setIsAddChartOpen: (val: boolean) => void;
-  setChartId: (id: string) => void;
-};
+type Props =
+  | {
+      chart: Chart;
+      setIsAddChartOpen: (val: boolean) => void;
+      setChartId: (id: string) => void;
+      collection: CollectionType;
+      updateCollection: (collection: CollectionType) => void;
+      disabled?: false;
+    }
+  | {
+      chart: Chart;
+      disabled: true;
+      collection: CollectionType;
+      updateCollection: (collection: CollectionType) => void;
+      setIsAddChartOpen?: (val: boolean) => void;
+      setChartId?: (id: string) => void;
+    };
 
-const FieldChart = ({ chart, setChartId, setIsAddChartOpen }: Props) => {
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
-
+const FieldChart = ({
+  chart,
+  setChartId,
+  setIsAddChartOpen,
+  disabled,
+  collection,
+  updateCollection,
+}: Props) => {
   const [dataRows, setDataRows] = useState<string[]>([]);
   const [labels, setLabels] = useState<string[]>([]);
 
@@ -50,62 +67,62 @@ const FieldChart = ({ chart, setChartId, setIsAddChartOpen }: Props) => {
     setDataRows(Object.values(rowData).map((item) => item.toString()));
   }, []);
   return (
-    <Box
-      style={{
-        width: "calc(20% - 1rem)",
-      }}
+    <Container
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
       <Stack>
         <Stack direction="horizontal" justify="space-between" align="center">
           <Text weight="semiBold">{chart?.name}</Text>
-          <motion.div
-            animate={{
-              opacity: hover ? 1 : 0,
-            }}
-          >
-            <Stack direction="horizontal" space="1">
-              <Button
-                size="extraSmall"
-                shape="circle"
-                variant="transparent"
-                onClick={() => {
-                  setChartId(chart.id);
-                  setIsAddChartOpen(true);
-                }}
-              >
-                <Text color="accent">
-                  <IconPencil size="4" />
-                </Text>
-              </Button>
-              <Button
-                size="extraSmall"
-                shape="circle"
-                variant="transparent"
-                onClick={async () => {
-                  delete collection.formMetadata.charts?.[chart.id];
-                  const res = await updateFormCollection(collection.id, {
-                    formMetadata: {
-                      ...collection.formMetadata,
-                      chartOrder: collection.formMetadata.chartOrder?.filter(
-                        (item) => item !== chart.id
-                      ),
-                    },
-                  });
-                  if (res.id) {
-                    updateCollection(res);
-                  } else {
-                    toast.error("Error deleting chart");
-                  }
-                }}
-              >
-                <Text color="red">
-                  <IconTrash size="5" />
-                </Text>
-              </Button>
-            </Stack>
-          </motion.div>
+          {!disabled && (
+            <motion.div
+              animate={{
+                opacity: hover ? 1 : 0,
+              }}
+            >
+              <Stack direction="horizontal" space="1">
+                <Button
+                  size="extraSmall"
+                  shape="circle"
+                  variant="transparent"
+                  onClick={() => {
+                    if (disabled) return;
+                    setChartId(chart.id);
+                    setIsAddChartOpen(true);
+                  }}
+                >
+                  <Text color="accent">
+                    <IconPencil size="4" />
+                  </Text>
+                </Button>
+                <Button
+                  size="extraSmall"
+                  shape="circle"
+                  variant="transparent"
+                  onClick={async () => {
+                    delete collection.formMetadata.charts?.[chart.id];
+                    const res = await updateFormCollection(collection.id, {
+                      formMetadata: {
+                        ...collection.formMetadata,
+                        chartOrder: collection.formMetadata.chartOrder?.filter(
+                          (item) => item !== chart.id
+                        ),
+                      },
+                    });
+                    if (res.id) {
+                      updateCollection(res);
+                    } else {
+                      toast.error("Error deleting chart");
+                    }
+                  }}
+                >
+                  <Text color="red">
+                    <IconTrash size="5" />
+                  </Text>
+                </Button>
+              </Stack>
+            </motion.div>
+          )}
         </Stack>
         {chart.type === "bar" && (
           <Bar
@@ -190,121 +207,26 @@ const FieldChart = ({ chart, setChartId, setIsAddChartOpen }: Props) => {
           />
         )}
       </Stack>
-    </Box>
+    </Container>
   );
 };
 
-const BarOptions = {
-  indexAxis: "y" as "y",
-  plugins: {
-    legend: {
-      display: false,
-    },
-    datalabels: {
-      formatter: (value: number, ctx: Context) => {
-        let sum = 0;
-        let dataArr = ctx.chart.data.datasets[0].data;
-        dataArr.map((data) => {
-          if (typeof data === "string") {
-            sum += parseFloat(data);
-          }
-        });
-        let percentage = ((value * 100) / sum).toFixed(2) + "%";
-        return percentage;
-      },
-      color: "#fff",
-    },
-  },
-  responsive: true,
-  // maintainAspectRatio: false,
-  scales: {
-    y: {
-      ticks: {
-        color: "rgb(191,90,242,0.8)",
-      },
-    },
-    x: {
-      beginAtZero: true,
-      ticks: {
-        stepSize: 1,
-        color: "rgb(191,90,242,0.8)",
-      },
-    },
-  },
-};
+const Container = styled(Box)`
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 
-const LineOptions = {
-  indexAxis: "y" as "y",
-  plugins: {
-    legend: {
-      display: false,
-    },
-    datalabels: {
-      formatter: (value: number, ctx: Context) => {
-        let sum = 0;
-        let dataArr = ctx.chart.data.datasets[0].data;
-        dataArr.map((data) => {
-          if (typeof data === "string") {
-            sum += parseFloat(data);
-          }
-        });
-        let percentage = ((value * 100) / sum).toFixed(1) + "%";
-        return percentage;
-      },
-      color: "#fff",
-    },
-  },
-  responsive: true,
-  // maintainAspectRatio: false,
-  scales: {
-    y: {
-      ticks: {
-        color: "rgb(191,90,242,0.8)",
-      },
-    },
-    x: {
-      beginAtZero: true,
-      ticks: {
-        stepSize: 1,
-        color: "rgb(191,90,242,0.8)",
-      },
-    },
-  },
-};
+  @media (min-width: 768px and max-width: 1024px) {
+    width: calc(33% - 1);
+  }
 
-const PieOptions = {
-  indexAxis: "y" as "y",
-  plugins: {
-    legend: {
-      display: false,
-    },
-    datalabels: {
-      formatter: (value: number, ctx: Context) => {
-        let sum = 0;
-        let dataArr = ctx.chart.data.datasets[0].data;
-        const label = ctx.chart.data.labels?.[ctx.dataIndex];
-        dataArr.map((data) => {
-          if (typeof data === "string") {
-            sum += parseFloat(data);
-          }
-        });
-        let percentage = ((value * 100) / sum).toFixed(2) + "%";
-        // return label + " " + percentage;
-        return `${percentage}\n${label}`;
-      },
-      color: "#fff",
-    },
-  },
-  responsive: true,
-  // maintainAspectRatio: false,
-  scales: {
-    y: {
-      display: false,
-    },
-    x: {
-      display: false,
-    },
-  },
-};
+  @media (min-width: 1024px and max-width: 1440px) {
+    width: calc(25% - 1);
+  }
+
+  @media (min-width: 1440px) {
+    width: calc(20% - 1);
+  }
+`;
 
 export default FieldChart;

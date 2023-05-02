@@ -14,8 +14,6 @@ import {
   PointElement,
   LineElement,
   ArcElement,
-  RadialLinearScale,
-  RadarController,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import styled from "styled-components";
@@ -23,6 +21,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { AiOutlineAreaChart } from "react-icons/ai";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
+import { Embed } from "../Embed";
 
 ChartJS.register(
   CategoryScale,
@@ -40,11 +39,14 @@ ChartJS.register(
 type Props = {};
 
 const Analytics = (props: Props) => {
-  const { localCollection: collection } = useLocalCollection();
+  const { localCollection: collection, updateCollection } =
+    useLocalCollection();
   const [isAddChartOpen, setIsAddChartOpen] = useState(false);
   const [chartId, setChartId] = useState("");
+  const [isEmebedOpen, setIsEmebedOpen] = useState(false);
+
   return (
-    <ScrollContainer>
+    <ScrollContainer padding="2">
       <AnimatePresence>
         {isAddChartOpen && (
           <AddChart
@@ -52,20 +54,36 @@ const Analytics = (props: Props) => {
             chartId={chartId}
           />
         )}
+        {isEmebedOpen && (
+          <Embed
+            setIsOpen={setIsEmebedOpen}
+            embedRoute={`https://dev.spect.network/embed/form/${collection?.slug}/charts?`}
+          />
+        )}
       </AnimatePresence>
       <Stack>
-        <Box width="1/4">
-          <PrimaryButton
-            center
-            icon={<AiOutlineAreaChart size={20} />}
-            onClick={() => {
-              setChartId("");
-              setIsAddChartOpen(true);
-            }}
-          >
-            Add Chart
-          </PrimaryButton>
-        </Box>
+        <Stack direction="horizontal" justify="space-between">
+          <Box width="48">
+            <PrimaryButton
+              center
+              icon={<AiOutlineAreaChart size={20} />}
+              onClick={() => {
+                setChartId("");
+                setIsAddChartOpen(true);
+              }}
+            >
+              Add Chart
+            </PrimaryButton>
+          </Box>
+          <Box width="48">
+            <PrimaryButton
+              onClick={() => setIsEmebedOpen(true)}
+              variant="tertiary"
+            >
+              <Text color="accent">Embed</Text>
+            </PrimaryButton>
+          </Box>
+        </Stack>
         <Stack direction="horizontal" wrap>
           {collection.formMetadata.chartOrder?.map((chartId) => {
             const chart = collection.formMetadata.charts?.[chartId];
@@ -76,6 +94,8 @@ const Analytics = (props: Props) => {
                 chart={chart}
                 setChartId={setChartId}
                 setIsAddChartOpen={setIsAddChartOpen}
+                collection={collection}
+                updateCollection={updateCollection}
               />
             );
           })}

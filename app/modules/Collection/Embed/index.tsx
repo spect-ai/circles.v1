@@ -8,26 +8,15 @@ import { toast } from "react-toastify";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type EmbedProps = {
-  isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  component: "form" | "members";
-  routeId: string;
+  embedRoute: string;
 };
 
-export const Embed = ({
-  isOpen,
-  setIsOpen,
-  component,
-  routeId,
-}: EmbedProps) => {
+export const Embed = ({ setIsOpen, embedRoute }: EmbedProps) => {
   const [selectedMode, setSelectedMode] = useState(0);
   const { mode } = useTheme();
   return (
-    <Modal
-      title={`Embed ${component}`}
-      handleClose={() => setIsOpen(false)}
-      size="small"
-    >
+    <Modal title={`Embed`} handleClose={() => setIsOpen(false)} size="small">
       <Box padding="8">
         <Stack>
           <Stack direction="horizontal" align="center" space="2">
@@ -60,15 +49,8 @@ export const Embed = ({
             icon={<Copy size={18} />}
             onClick={async () => {
               const colorMode = selectedMode === 0 ? "dark" : "light";
-              if (component === "form") {
-                await navigator.clipboard.writeText(
-                  `https://circles-v1-production.vercel.app/r/${routeId}/embed?mode=${colorMode}`
-                );
-              } else {
-                await navigator.clipboard.writeText(
-                  `https://circles-v1-production.vercel.app/${routeId}/embed?mode=${colorMode}&tab=membership`
-                );
-              }
+              const embedLink = `${embedRoute}&colorMode=${colorMode}`;
+              await navigator.clipboard.writeText(embedLink);
               toast.success(
                 "Copied to clipboard, paste it on any website which supports embed"
               );
