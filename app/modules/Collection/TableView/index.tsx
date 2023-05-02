@@ -127,7 +127,7 @@ export default function TableView() {
           return collection.properties[property].id;
       });
       const data = Object.keys(collection.data).map((key) => {
-        const row = collection.data[key];
+        const row = collection.data?.[key];
         dateProperties.forEach((property) => {
           if (row[property as string])
             row[property as string] = new Date(row[property as string]);
@@ -165,7 +165,7 @@ export default function TableView() {
       ) {
         filteredData = filteredData.filter((row) => {
           return satisfiesConditions(
-            collection.data[row.id],
+            collection.data?.[row.id],
             collection.properties,
             collection.projectMetadata.views[
               collection.collectionType === 0 ? "0x0" : projectViewId
@@ -177,7 +177,7 @@ export default function TableView() {
       if (showMyTasks) {
         filteredData = filteredData.filter((row) => {
           return isMyCard(
-            collection.data[row.id],
+            collection.data?.[row.id],
             collection.properties,
             currentUser?.id || ""
           );
@@ -282,6 +282,8 @@ export default function TableView() {
       } else {
         // sort the data based on the timestamp of their first activity
         filteredData = filteredData.sort((a: any, b: any) => {
+          if (!collection.dataActivities || !collection.dataActivityOrder)
+            return 0;
           const aTime = new Date(
             collection.dataActivities[a.id][
               collection.dataActivityOrder[a.id][0]

@@ -50,7 +50,8 @@ export default function MapField({
   );
 
   const [maxSelections, setMaxSelections] = useState<number>();
-  const [allowCustom, setAllowCustom] = useState(true);
+  const [allowCustom, setAllowCustom] = useState(false);
+  const [immutable, setImmutable] = useState(false);
 
   return (
     <Box>
@@ -128,6 +129,8 @@ export default function MapField({
               setMaxSelections={setMaxSelections}
               allowCustom={allowCustom}
               setAllowCustom={setAllowCustom}
+              immutable={immutable}
+              setImmutable={setImmutable}
             />
           )}
           {(properties[propertyName].type === "user" ||

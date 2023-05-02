@@ -22,7 +22,6 @@ import { ExternalLink } from "react-feather";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
-import DataActivity from "./DataActivity";
 import SnapshotVoting from "./VotingOnSnapshot";
 import Avatar from "@/app/common/components/Avatar";
 import { timeSince, smartTrim } from "@/app/common/utils/utils";
@@ -63,13 +62,6 @@ export default function DataDrawer({
     {
       enabled: false,
     }
-  );
-
-  const getMemberDetails = React.useCallback(
-    (id: string) => {
-      return memberDetails?.memberDetails[id];
-    },
-    [memberDetails]
   );
 
   const handleClose = async () => {
@@ -120,21 +112,23 @@ export default function DataDrawer({
                   <Text color="accentText" weight="semiBold">
                     Response {dataIdx}
                   </Text>
-                  {collection.dataActivities[dataId]?.[
-                    collection.dataActivityOrder?.[dataId]?.[0]
-                  ]?.timestamp && (
-                    <Text ellipsis size="label" color="textTertiary">
-                      Added{" "}
-                      {timeSince(
-                        new Date(
-                          collection.dataActivities[dataId][
-                            collection.dataActivityOrder?.[dataId]?.[0]
-                          ].timestamp
-                        )
-                      )}{" "}
-                      ago
-                    </Text>
-                  )}
+                  {collection.dataActivities &&
+                    collection.dataActivityOrder &&
+                    collection.dataActivities[dataId]?.[
+                      collection.dataActivityOrder?.[dataId]?.[0]
+                    ]?.timestamp && (
+                      <Text ellipsis size="label" color="textTertiary">
+                        Added{" "}
+                        {timeSince(
+                          new Date(
+                            collection.dataActivities[dataId][
+                              collection.dataActivityOrder?.[dataId]?.[0]
+                            ].timestamp
+                          )
+                        )}{" "}
+                        ago
+                      </Text>
+                    )}
                 </Box>
               </Stack>
 

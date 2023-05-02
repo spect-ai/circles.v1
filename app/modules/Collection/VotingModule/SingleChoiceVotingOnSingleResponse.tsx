@@ -17,7 +17,8 @@ export default function SingleChoiceVotingOnSingleResponse({
   disabled,
 }: Props) {
   const [maxSelections, setMaxSelections] = useState<number>();
-  const [allowCustom, setAllowCustom] = useState(true);
+  const [allowCustom, setAllowCustom] = useState(false);
+  const [immutable, setImmutable] = useState(false);
   return (
     <>
       <Box>
@@ -32,6 +33,8 @@ export default function SingleChoiceVotingOnSingleResponse({
               allowCustom={allowCustom}
               setAllowCustom={setAllowCustom}
               setMaxSelections={setMaxSelections}
+              immutable={immutable}
+              setImmutable={setImmutable}
             />
           </Stack>
         </Stack>
