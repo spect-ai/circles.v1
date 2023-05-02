@@ -51,20 +51,24 @@ const FieldChart = ({
         }
       })
       .filter((item) => item !== undefined) as string[];
-    setLabels(
-      collection.properties[chart?.fields[0]].options?.map(
-        (item) => item.label
-      ) || []
+
+    const labelsArr = collection.properties[chart?.fields[0]].options?.map(
+      (item) => item.label
     );
-    const rowData = arr.reduce((acc, curr) => {
-      if (acc[curr]) {
-        acc[curr] += 1;
-      } else {
-        acc[curr] = 1;
+    setLabels(labelsArr || []);
+
+    // create empty array of length of labels
+    const rowData = new Array(labelsArr?.length).fill(0);
+
+    // loop through arr and increment the index of rowData
+    arr.forEach((item) => {
+      const index = labelsArr?.indexOf(item);
+      if (index !== undefined && index !== -1) {
+        rowData[index] += 1;
       }
-      return acc;
-    }, {} as { [key: string]: number });
-    setDataRows(Object.values(rowData).map((item) => item.toString()));
+    });
+
+    setDataRows(rowData);
   }, []);
   return (
     <Box

@@ -88,14 +88,16 @@ export const PieOptions = {
       formatter: (value: number, ctx: Context) => {
         let sum = 0;
         let dataArr = ctx.chart.data.datasets[0].data;
+
         const label = ctx.chart.data.labels?.[ctx.dataIndex];
         dataArr.map((data) => {
-          if (typeof data === "string") {
-            sum += parseFloat(data);
-          }
+          if (typeof data === "number") sum += data;
         });
         let percentage = ((value * 100) / sum).toFixed(2) + "%";
         // return label + " " + percentage;
+
+        if (percentage === "0.00%") return null;
+
         return `${percentage}\n${label}`;
       },
       color: "#fff",
