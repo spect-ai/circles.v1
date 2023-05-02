@@ -49,7 +49,7 @@ export const Embed = ({ setIsOpen, embedRoute }: EmbedProps) => {
             icon={<Copy size={18} />}
             onClick={async () => {
               const colorMode = selectedMode === 0 ? "dark" : "light";
-              const embedLink = `${embedRoute}&colorMode=${colorMode}`;
+              const embedLink = `${embedRoute}&mode=${colorMode}`;
               await navigator.clipboard.writeText(embedLink);
               toast.success(
                 "Copied to clipboard, paste it on any website which supports embed"

@@ -57,7 +57,7 @@ const Analytics = (props: Props) => {
         {isEmebedOpen && (
           <Embed
             setIsOpen={setIsEmebedOpen}
-            embedRoute={`https://dev.spect.network/embed/form/${collection?.slug}/charts?`}
+            embedRoute={`https://circles-v1-production.vercel.app/embed/form/${collection?.slug}/charts?`}
           />
         )}
       </AnimatePresence>
