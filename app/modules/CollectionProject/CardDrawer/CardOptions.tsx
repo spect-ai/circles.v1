@@ -180,7 +180,7 @@ export default function CardOptions({
                     return;
                   }
                   if (
-                    !collection.data[cardSlug][
+                    !collection.data?.[cardSlug][
                       collection.projectMetadata.payments?.payeeField
                     ]
                   ) {
@@ -287,7 +287,7 @@ export default function CardOptions({
                   },
                   archivedData: {
                     ...collection.archivedData,
-                    [cardSlug]: collection.data[cardSlug],
+                    [cardSlug]: collection.data?.[cardSlug],
                   },
                   projectMetadata: {
                     ...collection.projectMetadata,

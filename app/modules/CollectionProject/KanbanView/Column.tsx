@@ -105,7 +105,7 @@ export default function Column({
                 draggableId={slug}
                 index={index}
                 isDragDisabled={
-                  collection.data[slug]?.__cardStatus__ === "closed"
+                  collection.data?.[slug]?.__cardStatus__ === "closed"
                 }
               >
                 {(provided, snapshot) => (
@@ -135,7 +135,7 @@ export default function Column({
                       {collection.propertyOrder.map((propertyId) => {
                         const property = collection.properties[propertyId];
                         const value =
-                          collection.data[slug] &&
+                          collection.data?.[slug] &&
                           collection.data[slug][propertyId];
                         if (!value || groupByPropertyId === propertyId)
                           return null;

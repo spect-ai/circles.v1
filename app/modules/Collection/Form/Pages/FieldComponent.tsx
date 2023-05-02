@@ -110,7 +110,11 @@ const FieldComponent = ({
                         id: field,
                         isPartOfFormView: false,
                       });
-                      updateCollection(res);
+                      if (res.id) {
+                        updateCollection(res);
+                      } else {
+                        toast.error(res.message);
+                      }
                     }}
                   >
                     <Text variant="label">

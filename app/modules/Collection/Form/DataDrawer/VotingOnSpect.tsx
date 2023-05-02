@@ -54,7 +54,7 @@ export default function SpectVoting({
     if (dataId && collection.data) {
       setData({});
       setTimeout(() => {
-        setData(collection?.data[dataId]);
+        setData(collection?.data?.[dataId]);
       }, 0);
     }
   }, [collection?.data, dataId]);
@@ -188,22 +188,15 @@ export default function SpectVoting({
                   },
                 },
                 responsive: true,
-                maintainAspectRatio: false,
+                // maintainAspectRatio: false,
                 scales: {
                   y: {
                     ticks: {
                       color: "rgb(191,90,242,0.8)",
                     },
-                    grid: {
-                      borderColor: "rgb(191,90,242,0.2)",
-                    },
                   },
                   x: {
                     beginAtZero: true,
-
-                    grid: {
-                      borderColor: "rgb(191,90,242,0.2)",
-                    },
                     ticks: {
                       stepSize: 1,
                       color: "rgb(191,90,242,0.8)",

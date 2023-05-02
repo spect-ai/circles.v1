@@ -99,6 +99,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
   const [cardOrder, setCardOrder] = useState<any>();
   const [maxSelections, setMaxSelections] = useState<number>();
   const [allowCustom, setAllowCustom] = useState(false);
+  const [immutable, setImmutable] = useState(false);
 
   const [isDirty, setIsDirty] = useState(false);
   const [initializing, setInitializing] = useState(propertyId ? true : false);
@@ -132,6 +133,9 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
   validConditionFields = validConditionFields
     .filter((field) => collection.properties[field].type !== "multiURL")
     .filter((field) => collection.properties[field].isPartOfFormView);
+  const [confirmMessage, setConfirmMessage] = useState(
+    "This will remove existing data associated with this field as the field type is changed. Are you sure you want to continue?"
+  );
 
   const onRequiredTabClick = (id: number) => {
     setIsDirty(true);
@@ -140,7 +144,11 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
 
   useKeyPressEvent("Enter", () => {
     // check if no input is focused
-    if (!document.activeElement?.className.includes("ProseMirror")) {
+    if (
+      !document.activeElement?.className.includes("ProseMirror") &&
+      !document.activeElement?.nodeName.includes("TEXTAREA") &&
+      !document.activeElement?.nodeName.includes("INPUT")
+    ) {
       if (name.trim() !== "" && !loading && !showNameCollissionError) {
         if (
           propertyId &&
@@ -188,6 +196,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
         payWallOptions,
         maxSelections,
         allowCustom,
+        immutable,
       });
       if (collection.collectionType === 1 && res) {
         res = await updateFormCollection(collection.id, {
@@ -223,6 +232,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
           payWallOptions,
           maxSelections,
           allowCustom,
+          immutable,
         },
         pageId
       );
@@ -309,6 +319,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
         setFieldOptions(property?.options || []);
         setMaxSelections(property?.maxSelections);
         setAllowCustom(Boolean(property?.allowCustom));
+        setImmutable(Boolean(property?.immutable));
       }
       if (property.type === "user") {
         setUserType(property.userType);
@@ -367,7 +378,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
       <AnimatePresence>
         {showConfirm && (
           <ConfirmModal
-            title="This will remove existing data associated with this field as the field type is changed. Are you sure you want to continue?"
+            title={confirmMessage}
             handleClose={() => setShowConfirm(false)}
             onConfirm={() => {
               setShowConfirm(false);
@@ -506,6 +517,8 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
                 maxSelections={maxSelections}
                 setMaxSelections={setMaxSelections}
                 setAllowCustom={setAllowCustom}
+                immutable={immutable}
+                setImmutable={setImmutable}
                 multiSelect={type.value === "multiSelect"}
                 setIsDirty={setIsDirty}
               />
@@ -605,13 +618,24 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
                 onClick={async () => {
                   if (
                     propertyId &&
-                    !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
-                      collection.properties[propertyId].type
-                    ].includes(type.value)
+                    collection.properties[propertyId].immutable &&
+                    Object.keys(collection.data || {}).length > 0
                   ) {
+                    setConfirmMessage(
+                      "This will remove existing data associated with this field as this field is immutable. Are you sure you want to continue?"
+                    );
                     setShowConfirm(true);
                   } else {
-                    await onSave();
+                    if (
+                      propertyId &&
+                      !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
+                        collection.properties[propertyId].type
+                      ].includes(type.value)
+                    ) {
+                      setShowConfirm(true);
+                    } else {
+                      await onSave();
+                    }
                   }
                 }}
               >

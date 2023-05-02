@@ -110,7 +110,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
       }
       setValue({});
       setTimeout(() => {
-        setValue(collection.data[cardSlug as string]);
+        setValue(collection.data?.[cardSlug as string]);
       }, 100);
     }
   }, [defaultValue?.id, cardSlug, newCard]);
@@ -125,7 +125,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
         data: {
           ...collection.data,
           [slug]: {
-            ...collection.data[slug],
+            ...collection.data?.[slug],
             ...update,
           },
         },
@@ -586,18 +586,20 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                   )}
                 </Box>
 
-                {!newCard && (
-                  <CardActivity
-                    activities={collection.dataActivities[value.slug]}
-                    activityOrder={collection.dataActivityOrder[value.slug]}
-                    dataId={value.slug}
-                    collectionId={collection.id}
-                    dataOwner={
-                      collection.profiles[collection.dataOwner[value.slug]]
-                    }
-                    getMemberDetails={getMemberDetails}
-                  />
-                )}
+                {!newCard &&
+                  collection.dataActivities &&
+                  collection.dataActivityOrder && (
+                    <CardActivity
+                      activities={collection.dataActivities[value.slug]}
+                      activityOrder={collection.dataActivityOrder[value.slug]}
+                      dataId={value.slug}
+                      collectionId={collection.id}
+                      dataOwner={
+                        collection.profiles[collection.dataOwner[value.slug]]
+                      }
+                      getMemberDetails={getMemberDetails}
+                    />
+                  )}
               </Stack>
             </Container>
           </motion.div>

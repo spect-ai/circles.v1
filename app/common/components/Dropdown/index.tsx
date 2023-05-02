@@ -71,7 +71,7 @@ const Dropdown: FC<Props> = ({
   return (
     <Stack space="2">
       <Box marginLeft="4">
-        <Text color="textSecondary" weight="semiBold">
+        <Text color="textSecondary" weight="semiBold" size="small">
           {label}
         </Text>
       </Box>

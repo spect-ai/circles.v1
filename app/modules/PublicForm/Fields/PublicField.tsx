@@ -77,6 +77,11 @@ export default function PublicField({
               Required
             </Tag>
           )}
+          {form.properties[propertyId].immutable && (
+            <Tag size="small" tone="blue">
+              Immutable
+            </Tag>
+          )}
         </Box>
         {requiredFieldsNotSet[propertyId] && (
           <Text color="red" variant="small">

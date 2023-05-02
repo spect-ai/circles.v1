@@ -65,13 +65,13 @@ export default function useViewCommon() {
           keys: collection.propertyOrder.map((property) => {
             if (collection.properties[property].type === "user") {
               return (item: string) => {
-                const member = collection.data[item][property]?.value;
+                const member = collection.data?.[item][property]?.value;
                 return memberDetails?.memberDetails[member]?.username;
               };
             }
             if (collection.properties[property].type === "multiSelect") {
               return (item: string) => {
-                return collection.data[item][property]?.map(
+                return collection.data?.[item][property]?.map(
                   (option: Option) => option.label
                 );
               };
@@ -79,8 +79,8 @@ export default function useViewCommon() {
 
             return (item: string) => {
               return (
-                collection.data[item][property]?.label ||
-                collection.data[item][property]
+                collection.data?.[item][property]?.label ||
+                collection.data?.[item][property]
               );
             };
           }),
@@ -91,7 +91,7 @@ export default function useViewCommon() {
       newCardOrder = newCardOrder.map((group) => {
         return group.filter((cardId) => {
           return satisfiesConditions(
-            collection.data[cardId],
+            collection.data?.[cardId],
             collection.properties,
             view.filters || []
           );
@@ -107,7 +107,7 @@ export default function useViewCommon() {
       newCardOrder = newCardOrder.map((group) => {
         return group.filter((cardId) => {
           return isMyCard(
-            collection.data[cardId],
+            collection.data?.[cardId],
             collection.properties,
             currentUser?.id || ""
           );
@@ -136,10 +136,10 @@ export default function useViewCommon() {
         return group?.sort((a, b) => {
           if (propertyType === "singleSelect") {
             const aIndex = propertyOptions.findIndex(
-              (option) => option.value === collection.data[a][property]?.value
+              (option) => option.value === collection.data?.[a][property]?.value
             );
             const bIndex = propertyOptions.findIndex(
-              (option) => option.value === collection.data[b][property]?.value
+              (option) => option.value === collection.data?.[b][property]?.value
             );
             if (direction === "asc") {
               return aIndex - bIndex;
@@ -148,17 +148,17 @@ export default function useViewCommon() {
           }
           if (propertyType === "user") {
             if (direction === "asc") {
-              return collection.data[a][property]?.label?.localeCompare(
+              return collection.data?.[a][property]?.label?.localeCompare(
                 collection.data[b][property]?.label
               );
             }
-            return collection.data[b][property]?.label?.localeCompare(
+            return collection.data?.[b][property]?.label?.localeCompare(
               collection.data[a][property]?.label
             );
           }
           if (propertyType === "date") {
-            const aDate = new Date(collection.data[a][property]);
-            const bDate = new Date(collection.data[b][property]);
+            const aDate = new Date(collection.data?.[a][property]);
+            const bDate = new Date(collection.data?.[b][property]);
             if (direction === "asc") {
               return aDate.getTime() - bDate.getTime();
             }
@@ -166,24 +166,24 @@ export default function useViewCommon() {
           }
           if (propertyType === "reward") {
             // property has chain, token and value, need to sort it based on chain first, then token and then value
-            const aChain = collection.data[a][property]?.chain.label;
-            const bChain = collection.data[b][property]?.chain.label;
+            const aChain = collection.data?.[a][property]?.chain.label;
+            const bChain = collection.data?.[b][property]?.chain.label;
             if (aChain !== bChain) {
               if (direction === "asc") {
                 return aChain?.localeCompare(bChain);
               }
               return bChain?.localeCompare(aChain);
             }
-            const aToken = collection.data[a][property]?.token.label;
-            const bToken = collection.data[b][property]?.token.label;
+            const aToken = collection.data?.[a][property]?.token.label;
+            const bToken = collection.data?.[b][property]?.token.label;
             if (aToken !== bToken) {
               if (direction === "asc") {
                 return aToken.localeCompare(bToken);
               }
               return bToken.localeCompare(aToken);
             }
-            const aValue = collection.data[a][property]?.value;
-            const bValue = collection.data[b][property]?.value;
+            const aValue = collection.data?.[a][property]?.value;
+            const bValue = collection.data?.[b][property]?.value;
             if (direction === "asc") {
               return aValue - bValue;
             }
@@ -191,11 +191,11 @@ export default function useViewCommon() {
           }
 
           if (direction === "asc") {
-            return collection.data[a][property]?.localeCompare(
+            return collection.data?.[a][property]?.localeCompare(
               collection.data[b][property]
             );
           }
-          return collection.data[b][property]?.localeCompare(
+          return collection.data?.[b][property]?.localeCompare(
             collection.data[a][property]
           );
         });
@@ -330,7 +330,7 @@ export default function useViewCommon() {
       data: {
         ...collection.data,
         [draggableId]: {
-          ...collection.data[draggableId],
+          ...collection.data?.[draggableId],
           [view.groupByColumn]:
             destColumn.value === "__unassigned__" ? null : destColumn,
         },

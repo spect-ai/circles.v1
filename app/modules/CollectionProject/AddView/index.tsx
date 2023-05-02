@@ -121,7 +121,7 @@ export default function AddView({ viewType, handleClose }: Props) {
                 // filter collection data based on group by column options and add it to a 2 dimensional array
                 collection.data &&
                   Object.keys(collection.data).forEach((key) => {
-                    const data = collection.data[key];
+                    const data = collection.data?.[key];
                     const columnValue = data[groupByColumn.value];
                     const columnIndex = collection.properties[
                       groupByColumn.value

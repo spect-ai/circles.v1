@@ -189,8 +189,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
       fetchCollection()
         .then((res) => {
           if (res.data) {
-            console.log({ d: res.data?.data });
-            const options = Object.values(res.data?.data)
+            const options = Object.values(res.data?.data || {})
               ?.filter(
                 (card) =>
                   res.data.projectMetadata?.paymentStatus?.[card.slug] !==

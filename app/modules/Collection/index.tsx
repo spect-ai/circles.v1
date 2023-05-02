@@ -13,6 +13,7 @@ import { SkeletonLoader } from "./SkeletonLoader";
 import Help from "@/app/common/components/Help";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { migrateAllCOllections } from "@/app/services/Collection";
+import Analytics from "./Analytics";
 
 export function Collection() {
   const {
@@ -78,6 +79,7 @@ export function Collection() {
             marginTop="4"
           >
             {view === 1 && <TableView />}
+            {view === 2 && <Analytics />}
           </Box>
         </Stack>
       )}

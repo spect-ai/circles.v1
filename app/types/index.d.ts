@@ -785,7 +785,7 @@ export interface CollectionType {
   updatedAt: string;
   private: boolean;
   parents: CircleType[];
-  data: MappedItem<any>;
+  data?: MappedItem<any>;
   archivedData: MappedItem<any>;
   indexes: MappedItem<string[]>;
   defaultView: DefaultViewType;
@@ -794,8 +794,8 @@ export interface CollectionType {
   dataOwner: MappedItem<string>;
   profiles: { [key: string]: UserType };
   voting: Voting;
-  dataActivities: MappedItem<MappedItem<CollectionActivity>>;
-  dataActivityOrder: MappedItem<string[]>;
+  dataActivities?: MappedItem<MappedItem<CollectionActivity>>;
+  dataActivityOrder?: MappedItem<string[]>;
   collectionType: 0 | 1;
   formMetadata: FormMetadata;
   projectMetadata: ProjectMetadata;
@@ -908,6 +908,19 @@ export type FormMetadata = {
     id: string;
     name: string;
   }[];
+  charts?: {
+    [chartId: string]: Chart;
+  };
+
+  chartOrder?: string[];
+};
+
+export type Chart = {
+  id: string;
+  name: string;
+  type: "bar" | "pie" | "line" | "doughnut";
+  fields: string[];
+  filters?: Condition[];
 };
 
 export type LookupToken = {
@@ -996,6 +1009,7 @@ export type Property = {
   maxSelections?: number;
   allowCustom?: boolean;
   milestoneFields?: string[];
+  immutable?: boolean;
 };
 
 export type PropertyType =

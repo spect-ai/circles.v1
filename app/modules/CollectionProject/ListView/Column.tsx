@@ -126,7 +126,7 @@ export default function Column({
                       <Box>
                         {/* <Text weight="semiBold">{property.name}</Text> */}
                         <Text weight="semiBold">
-                          {collection.data[slug] &&
+                          {collection.data?.[slug] &&
                             collection.data[slug]["Title"]}
                         </Text>
                       </Box>
@@ -134,7 +134,7 @@ export default function Column({
                         {collection.propertyOrder.map((propertyId) => {
                           const property = collection.properties[propertyId];
                           const value =
-                            collection.data[slug] &&
+                            collection.data?.[slug] &&
                             collection.data[slug][propertyId];
                           if (
                             !value ||

@@ -140,6 +140,11 @@ function FieldComponent({
                 Required
               </Tag>
             )}
+            {collection.properties[id].immutable && (
+              <Tag size="small" tone="blue">
+                Immutable
+              </Tag>
+            )}
           </Box>
           <Box
             cursor="pointer"
