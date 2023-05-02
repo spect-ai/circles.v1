@@ -99,7 +99,7 @@ export default function CreateDiscordChannel({
     void getGuildChannels();
 
     const fetchGuildRoles = async () => {
-      const roles = await getGuildRoles(circle?.discordGuildId);
+      const roles = await getGuildRoles(circle?.discordGuildId, true);
       roles && setDiscordRoles(roles);
     };
     void fetchGuildRoles();
@@ -291,7 +291,7 @@ export default function CreateDiscordChannel({
             ) && (
               <Box marginTop="4" marginBottom="2">
                 <Text variant="small" color="yellow">
-                  {`Looks like there are no user fields in ${collection.name} currently. Please add a field of type "user" or "user[]" to add stakeholders dynamically.`}
+                  {`Looks like there are no user fields in "${collection.name}" currently. Please add a field of type "Single User" or "Multi User" to add stakeholders dynamically.`}
                 </Text>
               </Box>
             )}

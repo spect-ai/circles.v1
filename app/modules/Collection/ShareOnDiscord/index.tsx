@@ -19,7 +19,7 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 import { logError } from "@/app/common/utils/utils";
 import { toast } from "react-toastify";
 import { errorLookup } from "../Constants";
-import { ChannelType } from "discord-api-types/v10";
+import { ChannelType, PermissionFlagsBits } from "discord-api-types/v10";
 
 type EmbedProps = {
   isOpen: boolean;
@@ -52,7 +52,15 @@ export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
         const channels = await fetchGuildChannels(
           circle?.discordGuildId,
           ChannelType.GuildText,
-          true
+          true,
+          [
+            PermissionFlagsBits.ViewChannel,
+            PermissionFlagsBits.SendMessages,
+            PermissionFlagsBits.ManageThreads,
+            PermissionFlagsBits.SendMessagesInThreads,
+            PermissionFlagsBits.CreatePrivateThreads,
+            PermissionFlagsBits.AttachFiles,
+          ]
         );
         const channelOptions = channels?.map((channel: any) => ({
           label: channel.name,
@@ -127,9 +135,21 @@ export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
         <Box
           display="flex"
           flexDirection="row"
-          justifyContent="flex-end"
+          justifyContent="space-between"
           marginTop="4"
+          alignItems="center"
         >
+          <Box
+            cursor="pointer"
+            onClick={() => {
+              window.open(
+                "https://docs.spect.network/spect-docs/build-with-spect/setup-discord-native-onboarding/common-pitfalls-and-questions#why-doesnt-my-discord-channel-show-up-when-i-try-to-share-the-form",
+                "_blank"
+              );
+            }}
+          >
+            <Text underline>I dont see a channel</Text>
+          </Box>
           <PrimaryButton
             onClick={async () => {
               setLoading(true);

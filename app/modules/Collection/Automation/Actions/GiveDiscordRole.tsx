@@ -63,7 +63,7 @@ export default function GiveDiscordRole({
   useEffect(() => {
     if (!discordIsConnected || !circle?.discordGuildId) return;
     const fetchGuildRoles = async () => {
-      const roles = await getGuildRoles(circle?.discordGuildId);
+      const roles = await getGuildRoles(circle?.discordGuildId, true);
       roles && setDiscordRoles(roles);
     };
     if (circle?.discordGuildId) void fetchGuildRoles();

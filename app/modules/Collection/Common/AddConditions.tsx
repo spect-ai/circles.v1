@@ -6,6 +6,7 @@ import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
 import { getComparators } from "./Comparator";
 import FilterValueField from "./FilterValueField";
 import { toast } from "react-toastify";
+import { getPropertyIcon } from "../../CollectionProject/EditProperty/Utils";
 
 type Props = {
   viewConditions: Condition[];
@@ -15,6 +16,7 @@ type Props = {
   collection: CollectionType;
   dropDownPortal: boolean;
   buttonWidth?: string;
+  validConditionFields?: string[];
 };
 
 export default function AddConditions({
@@ -25,12 +27,18 @@ export default function AddConditions({
   collection,
   buttonWidth,
   dropDownPortal,
+  validConditionFields,
 }: Props) {
   const fieldOptions = Object.entries(collection.properties || {})
     .filter((field) => !["multiURL"].includes(field[1].type))
+    .filter(
+      (field) =>
+        !validConditionFields || validConditionFields.includes(field[0])
+    )
     .map((field) => ({
       label: collection.properties[field[0]].name,
       value: field[0],
+      icon: getPropertyIcon(collection.properties[field[0]].type),
     }));
 
   return (
@@ -159,7 +167,7 @@ export default function AddConditions({
           onClick={() => {
             if (!fieldOptions[0]) {
               toast.warn(
-                "There are no fields in the form to add a condition to."
+                "There are no non-hidden fields above this field that can be used to add conditions."
               );
               return;
             }

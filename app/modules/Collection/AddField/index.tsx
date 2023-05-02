@@ -103,6 +103,36 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
   const [isDirty, setIsDirty] = useState(false);
   const [initializing, setInitializing] = useState(propertyId ? true : false);
 
+  let validConditionFields = [] as string[];
+  if (propertyId) {
+    const fieldSortedByLocations = [] as string[];
+    for (const page of collection.formMetadata.pageOrder) {
+      fieldSortedByLocations.push(
+        ...collection.formMetadata.pages[page].properties
+      );
+    }
+    for (const field of fieldSortedByLocations) {
+      if (field !== propertyId) {
+        validConditionFields.push(field);
+      } else break;
+    }
+  } else {
+    const currPageIndex = collection.formMetadata.pageOrder.indexOf(
+      pageId || ""
+    );
+    for (const page of collection.formMetadata.pageOrder.slice(
+      0,
+      currPageIndex + 1
+    )) {
+      validConditionFields.push(
+        ...collection.formMetadata.pages[page].properties
+      );
+    }
+  }
+  validConditionFields = validConditionFields
+    .filter((field) => collection.properties[field].type !== "multiURL")
+    .filter((field) => collection.properties[field].isPartOfFormView);
+
   const onRequiredTabClick = (id: number) => {
     setIsDirty(true);
     setRequired(id);
@@ -529,10 +559,11 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
                     setIsDirty(true);
                     setViewConditions(conditions);
                   }}
-                  buttonText="Add Condition when Field is Visible"
+                  buttonText="Add condition when field is visible"
                   collection={collection}
                   buttonWidth="fit"
                   dropDownPortal={true}
+                  validConditionFields={validConditionFields}
                 />
                 {/* {["shortText", "longText", "ethAddress"].includes(
                   type.value

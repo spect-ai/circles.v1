@@ -7,6 +7,7 @@ import { Box, Input, Text } from "degen";
 import { useEffect, useState } from "react";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { useLocation } from "react-use";
+import { ChannelType, PermissionFlagsBits } from "discord-api-types/v10";
 
 type Props = {
   actionMode: "edit" | "create";
@@ -48,7 +49,12 @@ export default function PostCardOnDiscord({
   useEffect(() => {
     if (discordIsConnected && circle?.discordGuildId) {
       const getGuildChannels = async () => {
-        const channels = await fetchGuildChannels(circle?.discordGuildId);
+        const channels = await fetchGuildChannels(
+          circle?.discordGuildId,
+          ChannelType.GuildText,
+          false,
+          [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages]
+        );
         const categoryOptions = channels?.map((channel: any) => ({
           label: channel.name,
           value: channel.id,

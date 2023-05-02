@@ -13,10 +13,17 @@ export const guildIsConnected = async (guildId: string) => {
   return false;
 };
 
-export const getGuildRoles = async (guildId: string) => {
-  const res = await fetch(
-    `${process.env.BOT_HOST}/api/guilds/${guildId}/roles`
-  );
+export const getGuildRoles = async (
+  guildId: string,
+  showRolesThatCanBeGivenByBot = false
+) => {
+  let url;
+  if (showRolesThatCanBeGivenByBot) {
+    url = `${process.env.BOT_HOST}/api/guilds/${guildId}/roles?showRolesThatCanBeGivenByBot=true`;
+  } else {
+    url = `${process.env.BOT_HOST}/api/guilds/${guildId}/roles`;
+  }
+  const res = await fetch(url);
   if (res.ok) {
     const data = await res.json();
     return data;
@@ -28,13 +35,17 @@ export const getGuildRoles = async (guildId: string) => {
 export const fetchGuildChannels = async (
   guildId: string,
   channelType: ChannelType = ChannelType.GuildText,
-  returnPlayground?: boolean
+  returnPlayground?: boolean,
+  requiredPermission?: bigint[]
 ) => {
   let url = "";
   if (returnPlayground) {
     url = `${process.env.BOT_HOST}/api/channels/multiple?guildId=${guildId}&channelType=${channelType}&returnPlayground=true`;
   } else {
     url = `${process.env.BOT_HOST}/api/channels/multiple?guildId=${guildId}&channelType=${channelType}`;
+  }
+  if (requiredPermission) {
+    url += `&requiredPermission=${requiredPermission.join(",")}`;
   }
   const res = await fetch(url);
   if (res.ok) {

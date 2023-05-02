@@ -66,7 +66,8 @@ export default function GrantTemplate({ handleClose }: Props) {
       const getGuildChannels = async () => {
         const channels = await fetchGuildChannels(
           circle?.discordGuildId,
-          ChannelType.GuildCategory
+          ChannelType.GuildCategory,
+          false
         );
         const categoryOptions = channels?.map((channel: any) => ({
           label: channel.name,
@@ -76,7 +77,7 @@ export default function GrantTemplate({ handleClose }: Props) {
       };
       if (circle?.discordGuildId) void getGuildChannels();
       const fetchGuildRoles = async () => {
-        const roles = await getGuildRoles(circle?.discordGuildId);
+        const roles = await getGuildRoles(circle?.discordGuildId, true);
         roles && setDiscordRoles(roles);
       };
       if (circle?.discordGuildId) void fetchGuildRoles();

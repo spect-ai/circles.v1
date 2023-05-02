@@ -19,6 +19,7 @@ import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { logError } from "@/app/common/utils/utils";
+import { ChannelType, PermissionFlagsBits } from "discord-api-types/v10";
 
 type Props = {
   actionMode: "edit" | "create";
@@ -105,7 +106,17 @@ export default function CreateDiscordThread({
   useEffect(() => {
     if (circle?.discordGuildId && discordIsConnected) {
       const getGuildChannels = async () => {
-        const channels = await fetchGuildChannels(circle?.discordGuildId);
+        const channels = await fetchGuildChannels(
+          circle?.discordGuildId,
+          ChannelType.GuildText,
+          false,
+          [
+            PermissionFlagsBits.ViewChannel,
+            PermissionFlagsBits.SendMessagesInThreads,
+            PermissionFlagsBits.CreatePublicThreads,
+            PermissionFlagsBits.CreatePrivateThreads,
+          ]
+        );
         const channelOptions = channels?.map((channel: any) => ({
           label: channel.name,
           value: channel.id,
@@ -115,7 +126,7 @@ export default function CreateDiscordThread({
       void getGuildChannels();
 
       const fetchGuildRoles = async () => {
-        const roles = await getGuildRoles(circle?.discordGuildId);
+        const roles = await getGuildRoles(circle?.discordGuildId, true);
         roles && setDiscordRoles(roles);
       };
       void fetchGuildRoles();
@@ -341,7 +352,7 @@ export default function CreateDiscordThread({
           ) && (
             <Box marginTop="4" marginBottom="2">
               <Text variant="small" color="yellow">
-                {`Looks like there are no user fields in ${collection.name} currently. Please add a field of type "user" or "user[]" to add stakeholders dynamically.`}
+                {`Looks like there are no user fields in "${collection.name}" currently. Please add a field of type "Single User" or "Multi User" to add stakeholders dynamically.`}
               </Text>
             </Box>
           )}
@@ -422,7 +433,7 @@ export default function CreateDiscordThread({
                 setLinking(false);
               }}
             >
-              Link Discord
+              Link Thread
             </PrimaryButton>
           </Box>
         </Box>
