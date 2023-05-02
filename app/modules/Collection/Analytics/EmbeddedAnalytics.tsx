@@ -54,35 +54,30 @@ const EmbeddedAnalytics = (props: Props) => {
 
   return (
     <ScrollContainer padding="8">
-      <Stack direction="horizontal" wrap>
-        {collection &&
-          collection.formMetadata.chartOrder?.map((chartId) => {
-            const chart = collection.formMetadata.charts?.[chartId];
-            if (!chart) return null;
-            return (
-              <FieldChart
-                key={chartId}
-                chart={chart}
-                disabled
-                collection={collection}
-                updateCollection={setCollection}
-              />
-            );
-          })}
-      </Stack>
+      {collection &&
+        collection.formMetadata.chartOrder?.map((chartId) => {
+          const chart = collection.formMetadata.charts?.[chartId];
+          if (!chart) return null;
+          return (
+            <FieldChart
+              key={chartId}
+              chart={chart}
+              disabled
+              collection={collection}
+              updateCollection={setCollection}
+            />
+          );
+        })}
     </ScrollContainer>
   );
 };
 
 const ScrollContainer = styled(Box)`
   overflow-y: auto;
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-  @media (max-width: 992px) {
-    height: calc(100vh - 9rem);
-  }
-  height: calc(100vh - 9rem);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
 `;
 
 export default EmbeddedAnalytics;

@@ -22,6 +22,7 @@ type PublicLayoutProps = {
 const Container = styled(Box)<{ issidebarexpanded: boolean }>`
   max-width: 100vw;
   flex-grow: 1;
+  overflow-y: auto;
 `;
 
 // show this only desktop screens
@@ -29,8 +30,8 @@ const DesktopContainer = styled(Box)`
   display: flex;
   flexdirection: row;
   height: 100vh;
-  overflowy: auto;
-  overflowx: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 const getUser = async () => {
