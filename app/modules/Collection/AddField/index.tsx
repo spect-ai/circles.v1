@@ -617,6 +617,15 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
                 disabled={showNameCollissionError || !name || !isDirty}
                 onClick={async () => {
                   if (
+                    ["singleSelect", "multiSelect"].includes(type.value) &&
+                    !fieldOptions?.length
+                  ) {
+                    toast.error(
+                      "Please add atleast one option before saving the field"
+                    );
+                    return;
+                  }
+                  if (
                     propertyId &&
                     collection.properties[propertyId].immutable &&
                     Object.keys(collection.data || {}).length > 0
