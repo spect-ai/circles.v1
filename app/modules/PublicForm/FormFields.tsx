@@ -78,7 +78,14 @@ function FormFields({ form, setForm }: Props) {
   const [fieldHasInvalidType, setFieldHasInvalidType] = useState(
     {} as { [key: string]: boolean }
   );
-
+  const [discordUser, setDiscordUser] = useState(
+    {} as {
+      id: string;
+      username: string;
+      discriminator: string;
+      avatar: string;
+    }
+  );
   const { address, connector } = useAccount();
 
   const [currentPage, setCurrentPage] = useState("start");
@@ -485,6 +492,8 @@ function FormFields({ form, setForm }: Props) {
               setCurrentPage={setCurrentPage}
               verificationToken={verificationToken}
               setVerificationToken={setVerificationToken}
+              discordUser={discordUser}
+              setDiscordUser={setDiscordUser}
             />
           );
         } else if (currentPage === "collect") {

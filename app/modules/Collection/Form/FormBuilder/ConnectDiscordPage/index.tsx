@@ -20,6 +20,18 @@ type Props = {
   setCurrentPage: (page: string) => void;
   verificationToken: string;
   setVerificationToken: (token: string) => void;
+  discordUser: {
+    id: string;
+    username: string;
+    discriminator: string;
+    avatar: string;
+  };
+  setDiscordUser: (user: {
+    id: string;
+    username: string;
+    discriminator: string;
+    avatar: string;
+  }) => void;
 };
 
 const ConnectDiscordPage = ({
@@ -30,15 +42,9 @@ const ConnectDiscordPage = ({
   setCurrentPage,
   verificationToken,
   setVerificationToken,
+  discordUser,
+  setDiscordUser,
 }: Props) => {
-  const [discordUser, setDiscordUser] = useState(
-    {} as {
-      id: string;
-      username: string;
-      discriminator: string;
-      avatar: string;
-    }
-  );
   const { hostname } = useLocation();
   const [code, setCode] = useState("");
   const pageNumber = form.formMetadata.pageOrder.indexOf(currentPage);
