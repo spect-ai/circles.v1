@@ -185,6 +185,7 @@ export default function CreateDiscordThread({
       </Box>
       {!manualAction && (
         <CreatableDropdown
+          placeholder="Select a field to map from or enter any custom value..."
           options={
             Object.entries(collection.properties)
               .filter(([propertyId, property]) => property.type === "shortText")
@@ -195,7 +196,7 @@ export default function CreateDiscordThread({
           }
           selected={threadName}
           onChange={(value) => {
-            if (collection.properties[value.value])
+            if (collection.properties[value?.value])
               setThreadNameType("mapping");
             else setThreadNameType("value");
             setThreadName(value);

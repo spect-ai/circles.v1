@@ -106,6 +106,7 @@ export default function AutomationCenter() {
                   const col = Object.values(circle.collections).find((col) => {
                     return col.slug === collection;
                   });
+                  if (col?.archived) return null;
                   return (
                     <Box>
                       <Stack direction="horizontal" space="1" align={"center"}>
