@@ -26,7 +26,9 @@ const AddChart = ({ handleClose, chartId }: Props) => {
     useLocalCollection();
 
   const fieldOptions = Object.values(collection.properties || {})
-    .filter((field) => field.type === "singleSelect")
+    .filter(
+      (field) => field.type === "singleSelect" || field.type === "multiSelect"
+    )
     .map((field) => ({
       label: field.name,
       value: field.id,
