@@ -30,7 +30,12 @@ export default function AddConditions({
   validConditionFields,
 }: Props) {
   const fieldOptions = Object.entries(collection.properties || {})
-    .filter((field) => !["multiURL"].includes(field[1].type))
+    .filter(
+      (field) =>
+        !["multiURL", "github", "discord", "telegram", "readonly"].includes(
+          field[1].type
+        )
+    )
     .filter(
       (field) =>
         !validConditionFields || validConditionFields.includes(field[0])
