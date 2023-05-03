@@ -43,7 +43,6 @@ const EmbedFormAnalytics: NextPage<Props> = ({
   slug,
   chartId,
   collection,
-  image,
 }: Props) => {
   if (!collection) {
     return (
@@ -67,13 +66,12 @@ const EmbedFormAnalytics: NextPage<Props> = ({
   }
 
   const chart = collection?.formMetadata.charts?.[chartId as string];
-  const imageUrl = URL.createObjectURL(image);
   return (
     <>
       <MetaHead
         title={"Spect Embedded Form Analytics"}
         description={`Embedded analytics ${chart?.name} for form ${collection?.name} on Spect.`}
-        image={imageUrl}
+        image={`https://dev.spect.network/api/og?chartName=${chart?.name}&chartType=${chart?.type}`}
       />
       <EmbedFormLayout>
         <Box padding="8">
@@ -107,13 +105,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     })
   )?.json();
 
-  const image = await (
-    await fetch(
-      `https://dev.spect.network/api/og?chartName=${
-        res.formMetadata?.charts?.[chartId as string].name
-      }&chartType=${res.formMetadata?.charts?.[chartId as string].type}`
-    )
-  )?.blob();
+  // const image = await (
+  //   await fetch(
+  //     `https://dev.spect.network/api/og?chartName=${
+  //       res.formMetadata?.charts?.[chartId as string].name
+  //     }&chartType=${res.formMetadata?.charts?.[chartId as string].type}`
+  //   )
+  // )?.blob();
 
   if (!res?.properties) {
     console.log("Failed to fetch collection");
@@ -129,7 +127,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       slug,
       chartId,
       collection: res,
-      image,
     },
   };
 }
