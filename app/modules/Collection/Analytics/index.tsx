@@ -85,23 +85,30 @@ const Analytics = (props: Props) => {
             </PrimaryButton>
           </Box>
         </Stack>
-        <Row>
-          {collection.formMetadata.chartOrder?.map((chartId) => {
-            const chart = collection.formMetadata.charts?.[chartId];
-            if (!chart) return null;
-            return (
-              <Col xs={12} sm={6} md={4} lg={3} key={chartId}>
-                <FieldChart
-                  chart={chart}
-                  setChartId={setChartId}
-                  setIsAddChartOpen={setIsAddChartOpen}
-                  collection={collection}
-                  updateCollection={updateCollection}
-                />
-              </Col>
-            );
-          })}
-        </Row>
+        {!collection.formMetadata.chartOrder ||
+        collection.formMetadata.chartOrder?.length === 0 ? (
+          <Stack align="center">
+            <Heading>No charts have been added</Heading>
+          </Stack>
+        ) : (
+          <Row>
+            {collection.formMetadata.chartOrder?.map((chartId) => {
+              const chart = collection.formMetadata.charts?.[chartId];
+              if (!chart) return null;
+              return (
+                <Col xs={12} sm={6} md={4} lg={3} key={chartId}>
+                  <FieldChart
+                    chart={chart}
+                    setChartId={setChartId}
+                    setIsAddChartOpen={setIsAddChartOpen}
+                    collection={collection}
+                    updateCollection={updateCollection}
+                  />
+                </Col>
+              );
+            })}
+          </Row>
+        )}
       </Stack>
     </ScrollContainer>
   );

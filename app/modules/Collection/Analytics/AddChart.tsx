@@ -31,7 +31,6 @@ const AddChart = ({ handleClose, chartId }: Props) => {
       label: field.name,
       value: field.id,
     }));
-
   const chartOptions: {
     label: string;
     value: ChartType;
@@ -98,6 +97,7 @@ const AddChart = ({ handleClose, chartId }: Props) => {
             onChange={(option) => setSelectedField(option)}
             multiple={false}
             label="Select field to chart"
+            isClearable={false}
           />
           <Dropdown
             options={chartOptions}
@@ -112,18 +112,27 @@ const AddChart = ({ handleClose, chartId }: Props) => {
             }
             multiple={false}
             label="Select chart type"
+            isClearable={false}
           />
-          <AddConditions
-            viewConditions={viewCondtions}
-            setViewConditions={setViewCondtions}
-            firstRowMessage=""
-            buttonText="Add Filter"
-            collection={collection}
-            dropDownPortal={true}
-            buttonWidth="1/2"
-          />
-          <Box width="1/2">
+          <Stack space="0">
+            <Box marginLeft="4">
+              <Text size="small" weight="semiBold" color="textSecondary">
+                Add Filters
+              </Text>
+            </Box>
+            <AddConditions
+              viewConditions={viewCondtions}
+              setViewConditions={setViewCondtions}
+              firstRowMessage=""
+              buttonText="Add Filter"
+              collection={collection}
+              dropDownPortal={true}
+              buttonWidth="1/2"
+            />
+          </Stack>
+          <Box width="1/2" marginTop="16">
             <PrimaryButton
+              disabled={!title || !selectedField?.value || !chartType}
               loading={loading}
               onClick={async () => {
                 setLoading(true);

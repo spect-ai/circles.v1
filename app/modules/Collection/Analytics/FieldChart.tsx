@@ -36,7 +36,7 @@ const FieldChart = ({
   collection,
   updateCollection,
 }: Props) => {
-  const [dataRows, setDataRows] = useState<string[]>([]);
+  const [dataRows, setDataRows] = useState<number[]>([]);
   const [labels, setLabels] = useState<string[]>([]);
 
   const [hover, setHover] = useState(false);
@@ -52,7 +52,7 @@ const FieldChart = ({
       })
       .filter((item) => item !== undefined) as string[];
 
-    const labelsArr = collection.properties[chart?.fields[0]].options?.map(
+    const labelsArr = collection.properties[chart?.fields[0]]?.options?.map(
       (item) => item.label
     );
     setLabels(labelsArr || []);
@@ -72,6 +72,9 @@ const FieldChart = ({
   }, []);
   return (
     <Box
+      borderWidth="0.375"
+      padding="4"
+      borderRadius="2xLarge"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
@@ -130,87 +133,95 @@ const FieldChart = ({
             </motion.div>
           )}
         </Stack>
-        {chart.type === "bar" && (
-          <Bar
-            options={BarOptions}
-            data={{
-              labels: labels,
-              datasets: [
-                {
-                  label: chart?.name,
-                  data: dataRows,
-                  backgroundColor: "rgb(191,90,242,0.7)",
-                  borderColor: "rgb(191,90,242)",
-                  barPercentage: 0.8,
-                  borderRadius: 10,
-                  borderWidth: 2,
-                },
-              ],
-            }}
-          />
-        )}
-        {chart.type === "line" && (
-          <Line
-            options={LineOptions}
-            data={{
-              labels: labels,
-              datasets: [
-                {
-                  label: chart?.name,
-                  data: dataRows,
-                  backgroundColor: "rgb(191,90,242,0.7)",
-                  borderColor: "rgb(191,90,242)",
-                  borderWidth: 2,
-                },
-              ],
-            }}
-          />
-        )}
-        {chart.type === "pie" && (
-          <Pie
-            options={PieOptions}
-            data={{
-              labels: labels,
-              datasets: [
-                {
-                  label: chart?.name,
-                  data: dataRows,
-                  backgroundColor: [
-                    "rgb(191,90,242,0.7)",
-                    "rgb(191,90,212,0.5)",
-                    "rgb(191,90,162,0.35)",
-                    "rgb(191,90,132,0.2)",
+        {dataRows.some((a) => a > 0) ? (
+          <Box>
+            {chart.type === "bar" && (
+              <Bar
+                options={BarOptions}
+                data={{
+                  labels: labels,
+                  datasets: [
+                    {
+                      label: chart?.name,
+                      data: dataRows,
+                      backgroundColor: "rgb(191,90,242,0.7)",
+                      borderColor: "rgb(191,90,242)",
+                      barPercentage: 0.8,
+                      borderRadius: 10,
+                      borderWidth: 2,
+                    },
                   ],
-                  borderColor: "rgb(191,90,242)",
-                  borderRadius: 10,
-                  borderWidth: 2,
-                },
-              ],
-            }}
-          />
-        )}
-        {chart.type === "doughnut" && (
-          <Doughnut
-            options={PieOptions}
-            data={{
-              labels: labels,
-              datasets: [
-                {
-                  label: chart?.name,
-                  data: dataRows,
-                  backgroundColor: [
-                    "rgb(191,90,242,0.7)",
-                    "rgb(191,90,212,0.5)",
-                    "rgb(191,90,162,0.35)",
-                    "rgb(191,90,132,0.2)",
+                }}
+              />
+            )}
+            {chart.type === "line" && (
+              <Line
+                options={LineOptions}
+                data={{
+                  labels: labels,
+                  datasets: [
+                    {
+                      label: chart?.name,
+                      data: dataRows,
+                      backgroundColor: "rgb(191,90,242,0.7)",
+                      borderColor: "rgb(191,90,242)",
+                      borderWidth: 2,
+                    },
                   ],
-                  borderColor: "rgb(191,90,242)",
-                  borderRadius: 10,
-                  borderWidth: 2,
-                },
-              ],
-            }}
-          />
+                }}
+              />
+            )}
+            {chart.type === "pie" && (
+              <Pie
+                options={PieOptions}
+                data={{
+                  labels: labels,
+                  datasets: [
+                    {
+                      label: chart?.name,
+                      data: dataRows,
+                      backgroundColor: [
+                        "rgb(191,90,242,0.7)",
+                        "rgb(191,90,212,0.5)",
+                        "rgb(191,90,162,0.35)",
+                        "rgb(191,90,132,0.2)",
+                      ],
+                      borderColor: "rgb(191,90,242)",
+                      borderRadius: 10,
+                      borderWidth: 2,
+                    },
+                  ],
+                }}
+              />
+            )}
+            {chart.type === "doughnut" && (
+              <Doughnut
+                options={PieOptions}
+                data={{
+                  labels: labels,
+                  datasets: [
+                    {
+                      label: chart?.name,
+                      data: dataRows,
+                      backgroundColor: [
+                        "rgb(191,90,242,0.7)",
+                        "rgb(191,90,212,0.5)",
+                        "rgb(191,90,162,0.35)",
+                        "rgb(191,90,132,0.2)",
+                      ],
+                      borderColor: "rgb(191,90,242)",
+                      borderRadius: 10,
+                      borderWidth: 2,
+                    },
+                  ],
+                }}
+              />
+            )}
+          </Box>
+        ) : (
+          <Box>
+            <Text variant="label">No data to display</Text>
+          </Box>
         )}
       </Stack>
     </Box>

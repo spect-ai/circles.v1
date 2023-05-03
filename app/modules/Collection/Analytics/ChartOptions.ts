@@ -11,11 +11,10 @@ export const BarOptions = {
         let sum = 0;
         let dataArr = ctx.chart.data.datasets[0].data;
         dataArr.map((data) => {
-          if (typeof data === "string") {
-            sum += parseFloat(data);
-          }
+          if (typeof data === "number") sum += data;
         });
-        let percentage = ((value * 100) / sum).toFixed(2) + "%";
+        let percentage = ((value * 100) / sum).toFixed(1) + "%";
+        if (percentage === "0.0%") return null;
         return percentage;
       },
       color: "#fff",
@@ -50,11 +49,10 @@ export const LineOptions = {
         let sum = 0;
         let dataArr = ctx.chart.data.datasets[0].data;
         dataArr.map((data) => {
-          if (typeof data === "string") {
-            sum += parseFloat(data);
-          }
+          if (typeof data === "number") sum += data;
         });
         let percentage = ((value * 100) / sum).toFixed(1) + "%";
+        if (percentage === "0.0%") return null;
         return percentage;
       },
       color: "#fff",
@@ -93,11 +91,10 @@ export const PieOptions = {
         dataArr.map((data) => {
           if (typeof data === "number") sum += data;
         });
-        let percentage = ((value * 100) / sum).toFixed(2) + "%";
+        let percentage = ((value * 100) / sum).toFixed(1) + "%";
         // return label + " " + percentage;
 
-        if (percentage === "0.00%") return null;
-
+        if (percentage === "0.0%") return null;
         return `${percentage}\n${label}`;
       },
       color: "#fff",
