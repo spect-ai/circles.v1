@@ -17,7 +17,7 @@ export default function ConfirmModal({
   onCancel,
 }: Props) {
   return (
-    <Modal title="Confirm?" handleClose={handleClose} zIndex={3} size="small">
+    <Modal title="Confirm?" handleClose={handleClose} zIndex={999} size="small">
       <Box paddingX="8" paddingY="4">
         <Stack>
           <Text variant="large" weight="semiBold">

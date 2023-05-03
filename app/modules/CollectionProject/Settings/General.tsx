@@ -1,4 +1,4 @@
-import { Input, Stack, Text } from "degen";
+import { Box, Input, Stack, Text } from "degen";
 import { Visible } from "react-grid-system";
 import InviteMemberModal from "../../Circle/ContributorsModal/InviteMembersModal";
 import FormRoles from "../../Collection/Form/FormRoles";
@@ -24,8 +24,9 @@ export default function General({ name, setName }: Props) {
           <InviteMemberModal />
         </Visible>
       </Stack>
-
-      <FormRoles />
+      <Box width={{ lg: "1/2" }}>
+        <FormRoles />
+      </Box>
       {/* <VotingModule /> */}
     </Stack>
   );

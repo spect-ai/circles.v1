@@ -28,7 +28,7 @@ function RoleChunks({
     setCircleRoles(circle?.roles || {});
   }, [circle?.roles]);
   return (
-    <Stack space={"4"}>
+    <Stack space="1">
       <Text variant="large">{permissionText}</Text>
       <Box display={"flex"} flexDirection="row" gap={"2"}>
         {Object.keys(circleRoles)?.map((role) => {
@@ -91,7 +91,7 @@ export default function FormRoles() {
         permissionText={
           collection?.collectionType === 0
             ? "Manage Form Settings"
-            : "Manage Collection Settings"
+            : "Manage Project Settings"
         }
         permissions={manageSettings}
         setPermissions={setManageSettings}
@@ -121,42 +121,44 @@ export default function FormRoles() {
         setPermissions={setAddComments}
         setIsDirty={setIsDirty}
       /> */}
-      <PrimaryButton
-        loading={loading}
-        onClick={async () => {
-          setLoading(true);
-          const res = await (
-            await fetch(
-              `${process.env.API_HOST}/collection/v1/${collection.id}`,
-              {
-                method: "PATCH",
-                body: JSON.stringify({
-                  permissions: {
-                    manageSettings: manageSettings,
-                    updateResponsesManually: updateResponses,
-                    viewResponses: viewResponses,
-                    addComments: addComments,
+      <Box marginTop="4">
+        <PrimaryButton
+          loading={loading}
+          onClick={async () => {
+            setLoading(true);
+            const res = await (
+              await fetch(
+                `${process.env.API_HOST}/collection/v1/${collection.id}`,
+                {
+                  method: "PATCH",
+                  body: JSON.stringify({
+                    permissions: {
+                      manageSettings: manageSettings,
+                      updateResponsesManually: updateResponses,
+                      viewResponses: viewResponses,
+                      addComments: addComments,
+                    },
+                  }),
+                  headers: {
+                    "Content-Type": "application/json",
                   },
-                }),
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                credentials: "include",
-              }
-            )
-          ).json();
-          if (res.id) {
-            toast.success("Updated Permissions");
-            updateCollection(res);
-            setIsDirty(false);
-          } else logError("Update collection failed");
-          setLoading(false);
-          setRoleModal(false);
-        }}
-        disabled={!isDirty}
-      >
-        Save Permissions
-      </PrimaryButton>
+                  credentials: "include",
+                }
+              )
+            ).json();
+            if (res.id) {
+              toast.success("Updated Permissions");
+              updateCollection(res);
+              setIsDirty(false);
+            } else logError("Update collection failed");
+            setLoading(false);
+            setRoleModal(false);
+          }}
+          disabled={!isDirty}
+        >
+          Save Permissions
+        </PrimaryButton>
+      </Box>
     </Stack>
   );
 }

@@ -67,7 +67,8 @@ export default function Settings() {
       <AnimatePresence>
         {isOpen && (
           <Modal
-            title="Collection Settings"
+            title="Project Settings"
+            size="large"
             handleClose={() => {
               updateFormCollection(collection.id, {
                 name,
@@ -141,6 +142,6 @@ const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
     width: 5px;
   }
-  height: 20rem;
+  height: 32rem;
   overflow-y: auto;
 `;

@@ -23,7 +23,7 @@ export default function Archive({}: Props) {
           <ConfirmModal
             title={
               collection.collectionType === 0
-                ? "Are you sure you want to archive this collection?"
+                ? "Are you sure you want to archive this form?"
                 : "Are you sure you want to archive this project?"
             }
             onConfirm={() => {
@@ -50,8 +50,11 @@ export default function Archive({}: Props) {
         )}
       </AnimatePresence>
       <Stack space="1">
-        <Text variant="label">Danger</Text>
-        <Box width="1/2">
+        <Text align="left" weight="semiBold" size="large">
+          Danger, this will also archive associated automations, if there are
+          any.
+        </Text>
+        <Box width="1/2" marginTop="4">
           <PrimaryButton
             icon={<ArchiveIcon size={16} style={{ marginTop: 2 }} />}
             tone="red"

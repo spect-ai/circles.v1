@@ -163,6 +163,7 @@ export default function CreateDiscordChannel({
         <Text variant="label">Channel Name</Text>
       </Box>
       <CreatableDropdown
+        placeholder="Select a field to map from or enter any custom value..."
         options={
           Object.entries(collection.properties)
             .filter(([propertyId, property]) => property.type === "shortText")

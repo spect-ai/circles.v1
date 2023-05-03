@@ -137,6 +137,7 @@ export default function SingleAutomation({
     if (res) {
       void fetchCircle();
     }
+    handleClose();
   };
 
   const { refetch: fetchCollection } = useQuery<CollectionType>(

@@ -188,7 +188,7 @@ export default function AddOptions({
 
             <Stack direction="horizontal" align="center" space="2">
               <Tooltip
-                title="This will ensure no one can update this property, if they do the data assoicated will be deleted. This can be particularly useful for unbiased voting"
+                title="This will ensure no one can update this field. If this is updated, all associated data will be deleted. This can be particularly useful for voting & protecting responses from being tampered with by form creator."
                 theme={mode}
               >
                 <CheckBox

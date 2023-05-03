@@ -87,7 +87,7 @@ export const deleteCircle = async (circleId: string) => {
   );
   if (res.ok) {
     const data = await res.json();
-    toast("Circle deleted successfully", {
+    toast("Circle archived!", {
       theme: "dark",
     });
     return data;
