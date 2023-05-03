@@ -58,10 +58,12 @@ export default function DataActivity({
     username: "Responder",
   };
 
+  const slicedOrder = activityOrder?.slice(1);
+
   return (
     <Box padding="4">
       <Stack>
-        {activityOrder?.map((activityId) => {
+        {slicedOrder?.map((activityId) => {
           const activity = activities[activityId];
           const actor =
             collection.data?.[dataId]?.["anonymous"] === true &&

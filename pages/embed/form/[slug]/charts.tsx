@@ -36,6 +36,7 @@ interface Props {
   slug: string;
   chartId: string;
   collection: CollectionType;
+  image: Blob;
 }
 
 const EmbedFormAnalytics: NextPage<Props> = ({
@@ -69,10 +70,8 @@ const EmbedFormAnalytics: NextPage<Props> = ({
     <>
       <MetaHead
         title={"Spect Embedded Form Analytics"}
-        description={`Embedded analytics ${chart?.name} for form ${collection?.properties?.name} on Spect.`}
-        image={
-          "https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset"
-        }
+        description={`Embedded analytics ${chart?.name} for form ${collection?.name} on Spect.`}
+        image={`https://dev.spect.network/api/og?chartName=${chart?.name}&chartType=${chart?.type}`}
       />
       <EmbedFormLayout>
         <Box padding="8">
@@ -105,6 +104,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       headers,
     })
   )?.json();
+
+  // const image = await (
+  //   await fetch(
+  //     `https://dev.spect.network/api/og?chartName=${
+  //       res.formMetadata?.charts?.[chartId as string].name
+  //     }&chartType=${res.formMetadata?.charts?.[chartId as string].type}`
+  //   )
+  // )?.blob();
 
   if (!res?.properties) {
     console.log("Failed to fetch collection");

@@ -25,6 +25,7 @@ import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import SnapshotVoting from "./VotingOnSnapshot";
 import Avatar from "@/app/common/components/Avatar";
 import { timeSince, smartTrim } from "@/app/common/utils/utils";
+import DataActivity from "./DataActivity";
 
 type props = {
   expandedDataSlug: string;
@@ -62,6 +63,13 @@ export default function DataDrawer({
     {
       enabled: false,
     }
+  );
+
+  const getMemberDetails = React.useCallback(
+    (id: string) => {
+      return memberDetails?.memberDetails[id];
+    },
+    [memberDetails]
   );
 
   const handleClose = async () => {
@@ -572,16 +580,21 @@ export default function DataDrawer({
               marginTop="24"
             />
             <Box paddingBottom="0">
-              {/* <DataActivity
-                activities={collection.dataActivities[dataId]}
-                activityOrder={collection.dataActivityOrder[dataId]}
-                getMemberDetails={getMemberDetails}
-                dataId={dataId}
-                collectionId={collection.id}
-                dataOwner={collection.profiles[collection.dataOwner[data.slug]]}
-                setForm={updateCollection}
-                collection={collection}
-              /> */}
+              {collection.dataActivities?.[dataId] &&
+                collection.dataActivityOrder && (
+                  <DataActivity
+                    activities={collection.dataActivities[dataId]}
+                    activityOrder={collection.dataActivityOrder[dataId]}
+                    getMemberDetails={getMemberDetails}
+                    dataId={dataId}
+                    collectionId={collection.id}
+                    dataOwner={
+                      collection.profiles[collection.dataOwner[data.slug]]
+                    }
+                    setForm={updateCollection}
+                    collection={collection}
+                  />
+                )}
             </Box>
           </ScrollContainer>
         </motion.div>
@@ -590,7 +603,7 @@ export default function DataDrawer({
   );
 }
 
-const ScrollContainer = styled(Box)`
+const ScrollContainer = styled(Box)`.
   height: calc(100vh - 4rem);
   overflow-y: auto;
 
