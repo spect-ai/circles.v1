@@ -23,7 +23,7 @@ type Props =
       chart: Chart;
       disabled: true;
       collection: CollectionType;
-      updateCollection: (collection: CollectionType) => void;
+      updateCollection?: (collection: CollectionType) => void;
       setIsAddChartOpen?: (val: boolean) => void;
       setChartId?: (id: string) => void;
       setIsEmbedOpen?: (val: boolean) => void;
