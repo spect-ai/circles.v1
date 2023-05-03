@@ -58,7 +58,7 @@ const Analytics = (props: Props) => {
         {isEmebedOpen && (
           <Embed
             setIsOpen={setIsEmebedOpen}
-            embedRoute={`https://circles-v1-production.vercel.app/embed/form/${collection?.slug}/charts?`}
+            embedRoute={`https://circles-v1-production.vercel.app/embed/form/${collection?.slug}/charts?chartId=${chartId}`}
           />
         )}
       </AnimatePresence>
@@ -76,14 +76,14 @@ const Analytics = (props: Props) => {
               Add Chart
             </PrimaryButton>
           </Box>
-          <Box width="48">
+          {/* <Box width="48">
             <PrimaryButton
               onClick={() => setIsEmebedOpen(true)}
               variant="tertiary"
             >
               <Text color="accent">Embed</Text>
             </PrimaryButton>
-          </Box>
+          </Box> */}
         </Stack>
         {!collection.formMetadata.chartOrder ||
         collection.formMetadata.chartOrder?.length === 0 ? (
@@ -103,6 +103,7 @@ const Analytics = (props: Props) => {
                     setIsAddChartOpen={setIsAddChartOpen}
                     collection={collection}
                     updateCollection={updateCollection}
+                    setIsEmbedOpen={setIsEmebedOpen}
                   />
                 </Col>
               );

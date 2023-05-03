@@ -1,14 +1,13 @@
-import { Chart, CollectionType } from "@/app/types";
+import { Chart, CollectionType, Option } from "@/app/types";
 import { Box, Button, IconPencil, IconTrash, Stack, Text } from "degen";
 import { useEffect, useState } from "react";
 import { Bar, Doughnut, Line, Pie } from "react-chartjs-2";
-import { Context } from "chartjs-plugin-datalabels";
 import { satisfiesConditions } from "../Common/SatisfiesFilter";
 import { motion } from "framer-motion";
 import { updateFormCollection } from "@/app/services/Collection";
 import { toast } from "react-toastify";
 import { BarOptions, LineOptions, PieOptions } from "./ChartOptions";
-import styled from "styled-components";
+import { ImEmbed } from "react-icons/im";
 
 type Props =
   | {
@@ -17,6 +16,7 @@ type Props =
       setChartId: (id: string) => void;
       collection: CollectionType;
       updateCollection: (collection: CollectionType) => void;
+      setIsEmbedOpen: (val: boolean) => void;
       disabled?: false;
     }
   | {
@@ -26,6 +26,7 @@ type Props =
       updateCollection: (collection: CollectionType) => void;
       setIsAddChartOpen?: (val: boolean) => void;
       setChartId?: (id: string) => void;
+      setIsEmbedOpen?: (val: boolean) => void;
     };
 
 const FieldChart = ({
@@ -35,22 +36,28 @@ const FieldChart = ({
   disabled,
   collection,
   updateCollection,
+  setIsEmbedOpen,
 }: Props) => {
   const [dataRows, setDataRows] = useState<number[]>([]);
   const [labels, setLabels] = useState<string[]>([]);
-
   const [hover, setHover] = useState(false);
 
   useEffect(() => {
-    const arr: string[] = Object.values(collection.data || {})
+    const property = collection.properties[chart?.fields[0]];
+
+    const arr = Object.values(collection.data || {})
       .map((item) => {
         if (
           satisfiesConditions(item, collection.properties, chart?.filters || [])
         ) {
-          return item[chart?.fields[0]].label;
+          if (property.type === "multiSelect") {
+            return item[property.id]?.map((item: Option) => item.label);
+          } else {
+            return item[property.id]?.label;
+          }
         }
       })
-      .filter((item) => item !== undefined) as string[];
+      .filter((item) => item !== undefined);
 
     const labelsArr = collection.properties[chart?.fields[0]]?.options?.map(
       (item) => item.label
@@ -60,36 +67,62 @@ const FieldChart = ({
     // create empty array of length of labels
     const rowData = new Array(labelsArr?.length).fill(0);
 
-    // loop through arr and increment the index of rowData
-    arr.forEach((item) => {
-      const index = labelsArr?.indexOf(item);
-      if (index !== undefined && index !== -1) {
-        rowData[index] += 1;
-      }
-    });
+    if (property.type === "multiSelect") {
+      labelsArr?.forEach((label, index) => {
+        arr.forEach((item) => {
+          if (item?.includes(label)) {
+            rowData[index] += 1;
+          }
+        });
+      });
+    } else {
+      // loop through arr and increment the index of rowData
+      arr.forEach((item) => {
+        const index = labelsArr?.indexOf(item);
+        if (index !== undefined && index !== -1) {
+          rowData[index] += 1;
+        }
+      });
+    }
 
     setDataRows(rowData);
   }, []);
   return (
     <Box
-      borderWidth="0.375"
+      borderWidth={disabled ? "0" : "0.375"}
       padding="4"
       borderRadius="2xLarge"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <Stack>
-        <Stack direction="horizontal" justify="space-between" align="center">
-          <Text weight="semiBold" ellipsis size="small">
-            {chart?.name}
-          </Text>
-          {!disabled && (
+      <Stack space="0">
+        {!disabled && (
+          <Stack space="1">
+            <Text weight="semiBold" ellipsis size="small">
+              {chart?.name}
+            </Text>
             <motion.div
               animate={{
                 opacity: hover ? 1 : 0,
               }}
             >
-              <Stack direction="horizontal" space="1">
+              <Stack direction="horizontal" space="1" align="center">
+                <Button
+                  size="extraSmall"
+                  shape="circle"
+                  variant="transparent"
+                  onClick={() => {
+                    if (disabled) return;
+                    setChartId(chart.id);
+                    setIsEmbedOpen(true);
+                  }}
+                >
+                  <Box marginTop="1">
+                    <Text color="accent">
+                      <ImEmbed size={16} />
+                    </Text>
+                  </Box>
+                </Button>
                 <Button
                   size="extraSmall"
                   shape="circle"
@@ -126,13 +159,14 @@ const FieldChart = ({
                   }}
                 >
                   <Text color="red">
-                    <IconTrash size="5" />
+                    <IconTrash size="4" />
                   </Text>
                 </Button>
               </Stack>
             </motion.div>
-          )}
-        </Stack>
+          </Stack>
+        )}
+
         {dataRows.some((a) => a > 0) ? (
           <Box>
             {chart.type === "bar" && (

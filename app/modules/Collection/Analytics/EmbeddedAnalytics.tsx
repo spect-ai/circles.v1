@@ -1,6 +1,5 @@
-import { Box, Heading, Stack } from "degen";
+import { Box, Text } from "degen";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
 import FieldChart from "./FieldChart";
 import { CollectionType } from "@/app/types";
 import { useRouter } from "next/router";
@@ -18,9 +17,6 @@ import {
   ArcElement,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import { Col, Row } from "react-grid-system";
-
-type Props = {};
 
 ChartJS.register(
   CategoryScale,
@@ -35,11 +31,11 @@ ChartJS.register(
   ChartDataLabels
 );
 
-const EmbeddedAnalytics = (props: Props) => {
+const EmbeddedAnalytics = () => {
   const [collection, setCollection] = useState<CollectionType>();
 
   const router = useRouter();
-  const { slug } = router.query;
+  const { slug, chartId } = router.query;
 
   useEffect(() => {
     (async () => {
@@ -53,25 +49,20 @@ const EmbeddedAnalytics = (props: Props) => {
     })();
   }, [slug]);
 
+  const chart = collection?.formMetadata.charts?.[chartId as string];
+
   return (
     <Box padding="8">
-      <Row>
-        {collection &&
-          collection.formMetadata.chartOrder?.map((chartId) => {
-            const chart = collection.formMetadata.charts?.[chartId];
-            if (!chart) return null;
-            return (
-              <Col xs={12} sm={6} md={4} lg={3} key={chartId}>
-                <FieldChart
-                  chart={chart}
-                  disabled
-                  collection={collection}
-                  updateCollection={setCollection}
-                />
-              </Col>
-            );
-          })}
-      </Row>
+      {chart ? (
+        <FieldChart
+          chart={chart}
+          disabled
+          collection={collection}
+          updateCollection={setCollection}
+        />
+      ) : (
+        <Text>Chart not found</Text>
+      )}
     </Box>
   );
 };
