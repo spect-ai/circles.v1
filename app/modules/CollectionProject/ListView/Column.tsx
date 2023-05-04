@@ -133,6 +133,7 @@ export default function Column({
                       <Stack space="3" direction="horizontal" align="center">
                         {collection.propertyOrder.map((propertyId) => {
                           const property = collection.properties[propertyId];
+                          if (!property) return null;
                           const value =
                             collection.data?.[slug] &&
                             collection.data[slug][propertyId];

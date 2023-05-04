@@ -134,6 +134,7 @@ export default function Column({
                     <Stack space="3">
                       {collection.propertyOrder.map((propertyId) => {
                         const property = collection.properties[propertyId];
+                        if (!property) return null;
                         const value =
                           collection.data?.[slug] &&
                           collection.data[slug][propertyId];
