@@ -6,9 +6,12 @@ export const config = {
 };
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
+  console.log({ url: req.url });
   const { searchParams } = new URL(req.url || "");
   const cover = searchParams.get("cover");
   const logo = searchParams.get("logo");
+
+  console.log({ cover, logo });
 
   return new ImageResponse(
     (

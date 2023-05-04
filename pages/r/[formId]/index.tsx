@@ -44,6 +44,11 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
 
   const context = useProviderCircleContext();
   const profileContext = useProviderLocalProfile();
+  console.log(
+    `https://dev.spect.network/api/formOg?cover=${encodeURIComponent(
+      form.formMetadata.cover || ""
+    )}&logo=${encodeURIComponent(form.formMetadata.logo || "")}`
+  );
   return (
     <>
       <MetaHead
@@ -52,9 +57,9 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
           form.description ||
           "Incentivized forms for communities to collect feedback, run surveys, onboarding, and more."
         }
-        image={
-          "https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset"
-        }
+        image={`https://dev.spect.network/api/formOg?cover=${encodeURIComponent(
+          form.formMetadata.cover || ""
+        )}&logo=${encodeURIComponent(form.formMetadata.logo || "")}`}
       />
       <LocalProfileContext.Provider value={profileContext}>
         <CircleContext.Provider value={context}>
@@ -74,6 +79,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   if (!slug) return { props: { form: null } };
 
   console.log({ slug });
+  console.time("fetch");
 
   const res = await (
     await fetch(
@@ -90,6 +96,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       },
     };
   }
+
+  console.timeEnd("fetch");
 
   return {
     props: {
