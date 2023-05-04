@@ -20,6 +20,7 @@ interface Props {
 }
 
 const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
+  console.log({ form, slug });
   if (!form) {
     return (
       <>
@@ -51,9 +52,9 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
           form.description ||
           "Incentivized forms for communities to collect feedback, run surveys, onboarding, and more."
         }
-        image={`https://dev.spect.network/api/formOg?cover=${encodeURIComponent(
-          form.formMetadata.cover || ""
-        )}&logo=${encodeURIComponent(form.formMetadata.logo)}`}
+        image={
+          "https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset"
+        }
       />
       <LocalProfileContext.Provider value={profileContext}>
         <CircleContext.Provider value={context}>
