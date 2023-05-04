@@ -181,7 +181,10 @@ export default function AddConditions({
               type: "data",
               service: "collection",
               data: {
-                field: fieldOptions[0],
+                field: {
+                  label: fieldOptions[0]?.label,
+                  value: fieldOptions[0]?.value,
+                },
                 comparator: getComparators(
                   collection.properties[fieldOptions[0]?.value]?.type
                 )[0],
