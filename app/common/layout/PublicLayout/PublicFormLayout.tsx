@@ -22,7 +22,7 @@ type PublicLayoutProps = {
   children: ReactNodeNoStrings;
 };
 
-const Container = styled(Box)<{ issidebarexpanded: boolean }>`
+const Container = styled(Box)`
   max-width: 100vw;
   flex-grow: 1;
 `;
@@ -161,7 +161,7 @@ function PublicLayout(props: PublicLayoutProps) {
   return (
     <DesktopContainer backgroundColor="backgroundSecondary" id="public-layout">
       <Box display="flex" flexDirection="column" width="full" overflow="hidden">
-        <Container issidebarexpanded={isSidebarExpanded}>{children}</Container>
+        <Container>{children}</Container>
       </Box>
     </DesktopContainer>
   );

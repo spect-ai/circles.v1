@@ -32,14 +32,18 @@ type PublicLayoutProps = {
   children: ReactNodeNoStrings;
 };
 
-const Container = styled(Box)<{ issidebarexpanded: boolean }>`
+const Container = styled(Box)<{ issidebarexpanded: string }>`
   @media (max-width: 992px) {
     max-width: ${(props) =>
-      props.issidebarexpanded ? "calc(100vw - 22rem)" : "calc(100vw - 0rem)"};
+      props.issidebarexpanded === "true"
+        ? "calc(100vw - 22rem)"
+        : "calc(100vw - 0rem)"};
   }
 
   max-width: ${(props) =>
-    props.issidebarexpanded ? "calc(100vw - 22rem)" : "calc(100vw - 2rem)"};
+    props.issidebarexpanded === "true"
+      ? "calc(100vw - 22rem)"
+      : "calc(100vw - 2rem)"};
   flex-grow: 1;
 `;
 
@@ -263,7 +267,7 @@ function PublicLayout(props: PublicLayoutProps) {
                   </Button>
                 </Box>
               </Visible>
-              <Container issidebarexpanded={isSidebarExpanded}>
+              <Container issidebarexpanded={isSidebarExpanded.toString()}>
                 {children}
               </Container>
             </Box>

@@ -10,8 +10,12 @@ import { useLocation } from "react-use";
 import FormFields from "./FormFields";
 import { ToastContainer } from "react-toastify";
 
-function PublicForm() {
-  const [form, setForm] = useState<FormType>();
+type Props = {
+  form: FormType;
+};
+
+function PublicForm({ form: fetchedForm }: Props) {
+  const [form, setForm] = useState<FormType>(fetchedForm);
   const { mode } = useTheme();
   const { pathname } = useLocation();
   const route = pathname?.split("/")[3];

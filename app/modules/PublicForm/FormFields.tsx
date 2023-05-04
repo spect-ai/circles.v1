@@ -464,13 +464,13 @@ function FormFields({ form, setForm }: Props) {
         )}
       </AnimatePresence>
       {Array.from({ length: 1 }).map((_, i) => {
-        console.log({ i });
         if (currentPage === "start") {
           return (
             <StartPage
               form={form as CollectionType}
               setCurrentPage={setCurrentPage}
               setForm={setForm}
+              key={i}
             />
           );
         } else if (currentPage === "connect" && form) {
@@ -480,6 +480,7 @@ function FormFields({ form, setForm }: Props) {
               setForm={setForm}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
+              key={i}
             />
           );
         } else if (currentPage === "connectDiscord" && form) {
@@ -494,6 +495,7 @@ function FormFields({ form, setForm }: Props) {
               setVerificationToken={setVerificationToken}
               discordUser={discordUser}
               setDiscordUser={setDiscordUser}
+              key={i}
             />
           );
         } else if (currentPage === "collect") {
@@ -502,6 +504,7 @@ function FormFields({ form, setForm }: Props) {
               form={form as CollectionType}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
+              key={i}
             />
           );
         } else if (currentPage === "submitted" && form) {
@@ -512,6 +515,7 @@ function FormFields({ form, setForm }: Props) {
               setUpdateResponse={setUpdateResponse}
               setSubmitted={setSubmitted}
               setData={setData}
+              key={i}
             />
           );
         } else {
@@ -526,6 +530,7 @@ function FormFields({ form, setForm }: Props) {
                 flexDirection="column"
                 justifyContent="space-between"
                 overflow="auto"
+                key={i}
               >
                 <Stack>
                   {fields.map((field) => {

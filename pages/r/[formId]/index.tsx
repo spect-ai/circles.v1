@@ -6,32 +6,59 @@ import {
 } from "@/app/modules/Circle/CircleContext";
 import {
   LocalProfileContext,
-  useProfile,
   useProviderLocalProfile,
 } from "@/app/modules/Profile/ProfileSettings/LocalProfileContext";
 import PublicForm from "@/app/modules/PublicForm";
-import { NextPage } from "next";
+import { FormType } from "@/app/types";
+import { Box, Text } from "degen";
+import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
 
-const FormPage: NextPage = () => {
-  // useConnectDiscordServer();
+interface Props {
+  slug: string;
+  form?: FormType;
+}
+
+const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
+  if (!form) {
+    return (
+      <>
+        <MetaHead
+          title={"Oh no! Failed to fetch form"}
+          description={
+            "Incentivized forms for communities to collect feedback, run surveys, onboarding, and more."
+          }
+          image={
+            "https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset"
+          }
+        />
+        <PublicFormLayout>
+          <Box padding="8">
+            <Text>Failed to fetch</Text>
+          </Box>
+        </PublicFormLayout>
+      </>
+    );
+  }
+
   const context = useProviderCircleContext();
   const profileContext = useProviderLocalProfile();
   return (
     <>
       <MetaHead
-        title={"Spect Form"}
+        title={form.name}
         description={
+          form.description ||
           "Incentivized forms for communities to collect feedback, run surveys, onboarding, and more."
         }
-        image={
-          "https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset"
-        }
+        image={`https://dev.spect.network/api/formOg?cover=${encodeURIComponent(
+          form.formMetadata.cover || ""
+        )}&logo=${encodeURIComponent(form.formMetadata.logo)}`}
       />
       <LocalProfileContext.Provider value={profileContext}>
         <CircleContext.Provider value={context}>
           <PublicFormLayout>
-            <PublicForm />
+            <PublicForm form={form} />
           </PublicFormLayout>
         </CircleContext.Provider>
       </LocalProfileContext.Provider>
@@ -39,4 +66,32 @@ const FormPage: NextPage = () => {
   );
 };
 
-export default React.memo(FormPage);
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { params } = context;
+  const slug = params?.formId;
+
+  if (!slug) return { props: { form: null } };
+
+  const res = await (
+    await fetch(
+      `${process.env.SERVERSIDE_API_HOST}/collection/v1/public/slug/${slug}`
+    )
+  )?.json();
+
+  if (!res?.id) {
+    return {
+      props: {
+        form: null,
+      },
+    };
+  }
+
+  return {
+    props: {
+      slug,
+      form: res,
+    },
+  };
+}
+
+export default FormPage;

@@ -25,7 +25,7 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
 
   useEffect(() => {
     void (async () => {
-      if (formId) {
+      if (formId && !form) {
         const res: FormType = await getForm(formId as string);
         if (res.id) {
           setForm(res);
