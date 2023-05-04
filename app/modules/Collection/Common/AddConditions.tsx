@@ -106,7 +106,10 @@ export default function AddConditions({
                   selected={condition?.data?.field || {}}
                   onChange={(option) => {
                     const newConditions = [...viewConditions];
-                    newConditions[index].data.field = option;
+                    newConditions[index].data.field = {
+                      label: option.label,
+                      value: option.value,
+                    };
                     newConditions[index].data.comparator = getComparators(
                       collection.properties[option.value]?.type
                     )[0];
