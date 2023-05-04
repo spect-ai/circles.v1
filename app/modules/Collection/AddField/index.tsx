@@ -105,34 +105,40 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
   const [initializing, setInitializing] = useState(propertyId ? true : false);
 
   let validConditionFields = [] as string[];
-  if (propertyId) {
-    const fieldSortedByLocations = [] as string[];
-    for (const page of collection.formMetadata.pageOrder) {
-      fieldSortedByLocations.push(
-        ...collection.formMetadata.pages[page].properties
+  if (collection.collectionType === 0) {
+    if (propertyId) {
+      const fieldSortedByLocations = [] as string[];
+      for (const page of collection.formMetadata.pageOrder) {
+        fieldSortedByLocations.push(
+          ...collection.formMetadata.pages[page].properties
+        );
+      }
+      for (const field of fieldSortedByLocations) {
+        if (field !== propertyId) {
+          validConditionFields.push(field);
+        } else break;
+      }
+    } else {
+      const currPageIndex = collection.formMetadata.pageOrder.indexOf(
+        pageId || ""
       );
+      for (const page of collection.formMetadata.pageOrder.slice(
+        0,
+        currPageIndex + 1
+      )) {
+        validConditionFields.push(
+          ...collection.formMetadata.pages[page].properties
+        );
+      }
     }
-    for (const field of fieldSortedByLocations) {
-      if (field !== propertyId) {
-        validConditionFields.push(field);
-      } else break;
-    }
-  } else {
-    const currPageIndex = collection.formMetadata.pageOrder.indexOf(
-      pageId || ""
+    validConditionFields = validConditionFields
+      .filter((field) => collection.properties[field].type !== "multiURL")
+      .filter((field) => collection.properties[field].isPartOfFormView);
+  } else if (collection.collectionType === 1) {
+    validConditionFields = Object.keys(collection.properties).filter(
+      (field) => collection.properties[field].type !== "multiURL"
     );
-    for (const page of collection.formMetadata.pageOrder.slice(
-      0,
-      currPageIndex + 1
-    )) {
-      validConditionFields.push(
-        ...collection.formMetadata.pages[page].properties
-      );
-    }
   }
-  validConditionFields = validConditionFields
-    .filter((field) => collection.properties[field].type !== "multiURL")
-    .filter((field) => collection.properties[field].isPartOfFormView);
   const [confirmMessage, setConfirmMessage] = useState(
     "This will remove existing data associated with this field as the field type is changed. Are you sure you want to continue?"
   );
@@ -669,3 +675,5 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
     </Box>
   );
 }
+
+//

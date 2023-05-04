@@ -1040,6 +1040,7 @@ export type Option = {
   value: string;
   data?: any;
   color?: string;
+  satisfiesCondition?: boolean;
 };
 
 export type FormUserType = "assignee" | "reviewer" | "grantee" | "applicant";

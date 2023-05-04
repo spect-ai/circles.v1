@@ -38,7 +38,6 @@ export default function useViewCommon() {
   const [cardOrders, setCardOrders] = useState(
     collection.projectMetadata.cardOrders[view.groupByColumn]
   );
-
   const [filteredOnGroupByColumn, setFilteredOnGroupByColumn] = useState(false);
 
   const { data: currentUser, refetch } = useQuery<UserType>("getMyUser", {
@@ -216,10 +215,35 @@ export default function useViewCommon() {
 
   useEffect(() => {
     if (property.type === "singleSelect") {
-      const options = Array.from(property.options as Option[]);
+      let options = Array.from(property.options as Option[]);
+      if (view.filters?.length) {
+        const columnFilters = view.filters.filter(
+          (f) => f.data?.field?.value === view.groupByColumn
+        );
+        options = options.map((c) => {
+          return {
+            ...c,
+            satisfiesCondition: satisfiesConditions(
+              {
+                [view.groupByColumn]: c,
+              },
+              collection.properties,
+              columnFilters
+            ),
+          };
+        });
+      } else {
+        options = options.map((c) => {
+          return {
+            ...c,
+            satisfiesCondition: true,
+          };
+        });
+      }
       options.unshift({
         label: "Unassigned",
         value: "__unassigned__",
+        satisfiesCondition: true,
       });
       setColumns(options);
     } else if (property.type === "user" && memberDetails) {
@@ -233,7 +257,7 @@ export default function useViewCommon() {
       });
       setColumns(memberOptions as Option[]);
     }
-  }, [memberDetails, property.options, property.type]);
+  }, [memberDetails, property.options, property.type, projectViewId]);
 
   useEffect(() => {
     if (cardSlug || newCard) {

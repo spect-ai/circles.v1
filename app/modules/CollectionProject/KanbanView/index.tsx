@@ -30,6 +30,8 @@ export default function KanbanView() {
     cardOrders,
     filteredOnGroupByColumn,
   } = useViewCommon();
+
+  console.log({ columns, cardOrders });
   return (
     <Box
       marginX={{
@@ -56,8 +58,7 @@ export default function KanbanView() {
           {columns?.map((column, index) => {
             if (index === 0 && (!cardOrders[0] || cardOrders[0]?.length === 0))
               return null;
-            if (filteredOnGroupByColumn && cardOrders[index]?.length === 0)
-              return null;
+            if (!column?.satisfiesCondition) return null;
             return (
               <Column
                 key={column.value}
