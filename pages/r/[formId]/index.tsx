@@ -44,11 +44,7 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
 
   const context = useProviderCircleContext();
   const profileContext = useProviderLocalProfile();
-  console.log(
-    `https://dev.spect.network/api/formOg?cover=${encodeURIComponent(
-      form.formMetadata.cover || ""
-    )}&logo=${encodeURIComponent(form.formMetadata.logo || "")}`
-  );
+
   return (
     <>
       <MetaHead
@@ -57,9 +53,11 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
           form.description ||
           "Incentivized forms for communities to collect feedback, run surveys, onboarding, and more."
         }
-        image={`https://dev.spect.network/api/formOg?cover=${encodeURIComponent(
-          form.formMetadata.cover || ""
-        )}&logo=${encodeURIComponent(form.formMetadata.logo || "")}`}
+        image={
+          form.formMetadata.cover ||
+          form.formMetadata.logo ||
+          "https://ik.imagekit.io/spectcdn/spect_landscape.pngcz0kiyzu43m_fb9pRIjVW?updatedAt=1681837726214"
+        }
       />
       <LocalProfileContext.Provider value={profileContext}>
         <CircleContext.Provider value={context}>
