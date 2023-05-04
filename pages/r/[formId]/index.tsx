@@ -72,11 +72,15 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   if (!slug) return { props: { form: null } };
 
+  console.log({ slug });
+
   const res = await (
     await fetch(
       `${process.env.SERVERSIDE_API_HOST}/collection/v1/public/slug/${slug}`
     )
   )?.json();
+
+  console.log({ name: res.name });
 
   if (!res?.id) {
     return {
