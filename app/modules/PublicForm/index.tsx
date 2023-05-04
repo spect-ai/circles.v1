@@ -11,11 +11,11 @@ import FormFields from "./FormFields";
 import { ToastContainer } from "react-toastify";
 
 type Props = {
-  form: FormType;
+  form?: FormType;
 };
 
 function PublicForm({ form: fetchedForm }: Props) {
-  const [form, setForm] = useState<FormType>(fetchedForm);
+  const [form, setForm] = useState<FormType | undefined>(fetchedForm);
   const { mode } = useTheme();
   const { pathname } = useLocation();
   const route = pathname?.split("/")[3];
