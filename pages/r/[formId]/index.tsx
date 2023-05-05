@@ -20,6 +20,7 @@ interface Props {
 }
 
 const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
+  console.log({ slug });
   if (!form) {
     return (
       <>
@@ -70,8 +71,10 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { params, req, res } = context;
+  const { params, req } = context;
   const slug = params?.formId;
+
+  console.log({ slug });
 
   if (!slug) return { props: { form: null } };
 
@@ -88,6 +91,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       }
     )
   )?.json();
+
+  console.log({ form: form.name });
 
   if (!form?.id) {
     return {
