@@ -1,7 +1,6 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CollectionType, UserType } from "@/app/types";
 import { Box, Stack, Text, useTheme } from "degen";
-import mixpanel from "mixpanel-browser";
 import Image from "next/image";
 import { useQuery } from "react-query";
 
@@ -82,6 +81,7 @@ const SubmittedPage = ({
               <a href="/" target="_blank">
                 <PrimaryButton
                   onClick={() => {
+                    const mixpanel = require("mixpanel-browser");
                     process.env.NODE_ENV === "production" &&
                       mixpanel.track("Create your own form", {
                         form: form?.name,

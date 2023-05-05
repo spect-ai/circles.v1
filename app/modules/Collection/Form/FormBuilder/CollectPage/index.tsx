@@ -10,12 +10,19 @@ import CollectPoap from "./CollectPoap";
 
 type Props = {
   form: CollectionType;
+  setForm: (form: CollectionType) => void;
   currentPage: string;
   setCurrentPage: (page: string) => void;
   preview?: boolean;
 };
 
-const CollectPage = ({ form, currentPage, setCurrentPage, preview }: Props) => {
+const CollectPage = ({
+  form,
+  setForm,
+  currentPage,
+  setCurrentPage,
+  preview,
+}: Props) => {
   const pageOrder = form.formMetadata.pageOrder;
   const pages = form.formMetadata.pages;
   const [claimedJustNow, setClaimedJustNow] = useState(false);
@@ -41,11 +48,13 @@ const CollectPage = ({ form, currentPage, setCurrentPage, preview }: Props) => {
         />
       )}
       <CollectKudos
+        setForm={setForm}
         form={form}
         preview={preview}
         setClaimedJustNow={setClaimedJustNow}
       />
       <CollectPoap
+        setForm={setForm}
         form={form}
         preview={preview}
         setClaimedJustNow={setClaimedJustNow}

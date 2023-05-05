@@ -1,6 +1,7 @@
 import { PassportStampIcons } from "@/app/assets";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { logError } from "@/app/common/utils/utils";
+import { getForm } from "@/app/services/Collection";
 import { getPoap } from "@/app/services/Poap";
 import { CollectionType, POAPEventType } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
@@ -12,12 +13,14 @@ import styled from "styled-components";
 
 type Props = {
   form: CollectionType;
+  setForm: (form: CollectionType) => void;
   setClaimedJustNow: (value: boolean) => void;
   preview?: boolean;
 };
 
 export default function CollectPoap({
   form,
+  setForm,
   setClaimedJustNow,
   preview,
 }: Props) {
@@ -190,6 +193,11 @@ export default function CollectPoap({
                             }
                           )
                         ).json();
+
+                        const formRes = await getForm(form.slug as string);
+                        if (formRes.id) {
+                          setForm(formRes);
+                        } else logError("Error fetching form");
 
                         console.log(res);
                         if (res.claimed) {

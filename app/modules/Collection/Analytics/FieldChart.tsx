@@ -41,10 +41,10 @@ const FieldChart = ({
   const [dataRows, setDataRows] = useState<number[]>([]);
   const [labels, setLabels] = useState<string[]>([]);
   const [hover, setHover] = useState(false);
+  const property = collection.properties[chart?.fields[0]];
 
   useEffect(() => {
-    const property = collection.properties[chart?.fields[0]];
-
+    if (!property) return;
     const arr = Object.values(collection.data || {})
       .map((item) => {
         if (
@@ -94,6 +94,7 @@ const FieldChart = ({
       borderRadius="2xLarge"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      marginBottom="4"
     >
       <Stack space="0">
         {!disabled && (
@@ -254,7 +255,9 @@ const FieldChart = ({
           </Box>
         ) : (
           <Box>
-            <Text variant="label">No data to display</Text>
+            <Text variant="label">
+              {property ? "No data added" : "Field deleted"}
+            </Text>
           </Box>
         )}
       </Stack>

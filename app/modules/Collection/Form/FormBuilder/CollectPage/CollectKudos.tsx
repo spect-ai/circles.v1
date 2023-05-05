@@ -1,5 +1,6 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { logError } from "@/app/common/utils/utils";
+import { getForm } from "@/app/services/Collection";
 import { CollectionType, KudosType } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
 import { Box, Stack, Text } from "degen";
@@ -10,11 +11,12 @@ import styled from "styled-components";
 
 type Props = {
   form: CollectionType;
+  setForm: (form: CollectionType) => void;
   setClaimedJustNow: (claimed: boolean) => void;
   preview?: boolean;
 };
 
-const CollectKudos = ({ form, setClaimedJustNow, preview }: Props) => {
+const CollectKudos = ({ form, setClaimedJustNow, preview, setForm }: Props) => {
   const [kudos, setKudos] = useState({} as KudosType);
   const [claimed, setClaimed] = useState(form.formMetadata.hasClaimedKudos);
   const [claiming, setClaiming] = useState(false);
@@ -61,7 +63,6 @@ const CollectKudos = ({ form, setClaimedJustNow, preview }: Props) => {
               xl: "1/2",
             }}
           >
-            {" "}
             <StyledImage src={`${kudos.imageUrl}`} alt="kudos" />
           </Box>
         )}
@@ -202,7 +203,11 @@ const CollectKudos = ({ form, setClaimedJustNow, preview }: Props) => {
                           }
                         );
 
-                        console.log(res);
+                        const formRes = await getForm(form.slug as string);
+                        if (formRes.id) {
+                          setForm(formRes);
+                        } else logError("Error fetching form");
+
                         if (res.ok) {
                           setClaimed(true);
                           setClaimedJustNow(true);

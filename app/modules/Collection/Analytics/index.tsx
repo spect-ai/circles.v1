@@ -47,7 +47,7 @@ const Analytics = (props: Props) => {
   const [isEmebedOpen, setIsEmebedOpen] = useState(false);
 
   return (
-    <ScrollContainer padding="4">
+    <ScrollContainer padding="0">
       <AnimatePresence>
         {isAddChartOpen && (
           <AddChart
@@ -91,24 +91,26 @@ const Analytics = (props: Props) => {
             <Heading>No charts have been added</Heading>
           </Stack>
         ) : (
-          <Row>
-            {collection.formMetadata.chartOrder?.map((chartId) => {
-              const chart = collection.formMetadata.charts?.[chartId];
-              if (!chart) return null;
-              return (
-                <Col xs={12} sm={6} md={4} lg={3} key={chartId}>
-                  <FieldChart
-                    chart={chart}
-                    setChartId={setChartId}
-                    setIsAddChartOpen={setIsAddChartOpen}
-                    collection={collection}
-                    updateCollection={updateCollection}
-                    setIsEmbedOpen={setIsEmebedOpen}
-                  />
-                </Col>
-              );
-            })}
-          </Row>
+          <Box padding="4">
+            <Row>
+              {collection.formMetadata.chartOrder?.map((chartId) => {
+                const chart = collection.formMetadata.charts?.[chartId];
+                if (!chart) return null;
+                return (
+                  <Col xs={12} sm={6} md={4} lg={3} key={chartId}>
+                    <FieldChart
+                      chart={chart}
+                      setChartId={setChartId}
+                      setIsAddChartOpen={setIsAddChartOpen}
+                      collection={collection}
+                      updateCollection={updateCollection}
+                      setIsEmbedOpen={setIsEmebedOpen}
+                    />
+                  </Col>
+                );
+              })}
+            </Row>
+          </Box>
         )}
       </Stack>
     </ScrollContainer>

@@ -322,7 +322,11 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
         property.type === "singleSelect" ||
         property?.type === "multiSelect"
       ) {
-        setFieldOptions(property?.options || []);
+        setFieldOptions(
+          property?.options?.filter(
+            (option) => option.value !== "__custom__"
+          ) || []
+        );
         setMaxSelections(property?.maxSelections);
         setAllowCustom(Boolean(property?.allowCustom));
         setImmutable(Boolean(property?.immutable));

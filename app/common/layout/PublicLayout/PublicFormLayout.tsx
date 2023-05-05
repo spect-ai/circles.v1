@@ -1,9 +1,6 @@
 import React, { memo, useEffect } from "react";
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box, useTheme } from "degen";
-import { AnimatePresence } from "framer-motion";
-import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
-import Sidebar from "@/app/modules/Sidebar";
 import styled from "styled-components";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
@@ -14,15 +11,15 @@ import {
   isSidebarExpandedAtom,
   socketAtom,
 } from "@/app/state/global";
-import { io } from "socket.io-client";
 import { useAccount, useConnect } from "wagmi";
-import { H } from "highlight.run";
+import dynamic from "next/dynamic";
+import { io } from "socket.io-client";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
 };
 
-const Container = styled(Box)<{ issidebarexpanded: boolean }>`
+const Container = styled(Box)`
   max-width: 100vw;
   flex-grow: 1;
 `;
@@ -32,17 +29,6 @@ const DesktopContainer = styled(Box)`
   display: flex;
   flexdirection: row;
   height: 100vh;
-  overflowy: auto;
-  overflowx: hidden;
-`;
-
-const MobileContainer = styled(Box)`
-  display: none;
-  @media (min-width: 768px) {
-    display: flex;
-    flexdirection: row;
-    height: 100vh;
-  }
   overflowy: auto;
   overflowx: hidden;
 `;
@@ -148,20 +134,23 @@ function PublicLayout(props: PublicLayoutProps) {
 
   useEffect(() => {
     if (currentUser) {
-      process.env.NODE_ENV === "production" &&
-        H.identify(currentUser.username || "", {
-          id: currentUser.id,
-          email: currentUser.email,
-          discord: currentUser.discordId || "",
-          ethAddress: currentUser.ethAddress || "",
-        });
+      (async () => {
+        const H = await (await import("highlight.run")).H;
+        process.env.NODE_ENV === "production" &&
+          H.identify(currentUser.username || "", {
+            id: currentUser.id,
+            email: currentUser.email,
+            discord: currentUser.discordId || "",
+            ethAddress: currentUser.ethAddress || "",
+          });
+      })();
     }
   }, [currentUser]);
 
   return (
     <DesktopContainer backgroundColor="backgroundSecondary" id="public-layout">
       <Box display="flex" flexDirection="column" width="full" overflow="hidden">
-        <Container issidebarexpanded={isSidebarExpanded}>{children}</Container>
+        <Container>{children}</Container>
       </Box>
     </DesktopContainer>
   );

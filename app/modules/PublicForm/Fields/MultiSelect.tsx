@@ -19,9 +19,17 @@ const MultiSelect = ({
   allowCustom,
   disabled,
 }: Props) => {
+  const [loading, setLoading] = useState(true);
+  const [showInput, setShowInput] = useState(false);
   useEffect(() => {
     if (allowCustom && !options.some((o) => o.value === "__custom__")) {
+      setLoading(true);
       options.push({ label: "Other", value: "__custom__" });
+      setTimeout(() => {
+        setLoading(false);
+      }, 100);
+    } else {
+      setLoading(false);
     }
   }, []);
 
@@ -31,35 +39,38 @@ const MultiSelect = ({
   return (
     <Box>
       <Stack>
-        {options.map((option) => (
-          <Stack key={option.value} direction="horizontal" align="center">
-            <input
-              type="checkbox"
-              name={propertyId}
-              value={option.value}
-              checked={selected?.some((o) => o.value === option.value)}
-              onChange={() => {
-                if (option.value === "__custom__") {
-                  onSelect({ label: "", value: "__custom__" });
-                  if (!selected?.some((o) => o.value === "__custom__")) {
-                    inputRef.current?.focus();
+        {!loading &&
+          options.map((option) => (
+            <Stack key={option.value} direction="horizontal" align="center">
+              <input
+                type="checkbox"
+                name={propertyId}
+                value={option.value}
+                checked={selected?.some((o) => o.value === option.value)}
+                onChange={() => {
+                  if (option.value === "__custom__") {
+                    onSelect({ label: "", value: "__custom__" });
+                    if (!selected?.some((o) => o.value === "__custom__")) {
+                      setShowInput(true);
+                    } else {
+                      setShowInput(false);
+                    }
+                  } else {
+                    onSelect(option);
                   }
-                } else {
-                  onSelect(option);
-                }
-              }}
-              style={{
-                width: "20px",
-                height: "20px",
-                cursor: "pointer",
-              }}
-            />
-            <Text size="small" weight="light">
-              {option.label}
-            </Text>
-          </Stack>
-        ))}
-        {allowCustom && (
+                }}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  cursor: "pointer",
+                }}
+              />
+              <Text size="small" weight="light">
+                {option.label}
+              </Text>
+            </Stack>
+          ))}
+        {showInput && (
           <Input
             ref={inputRef}
             label=""
@@ -72,11 +83,6 @@ const MultiSelect = ({
             }}
             onBlur={(e) => {
               onSelect({ label: customValue, value: "__custom__" });
-            }}
-            onFocus={(e) => {
-              if (selected?.some((o) => o.value === "__custom__")) {
-                onSelect({ label: customValue, value: "__custom__" });
-              }
             }}
             disabled={disabled}
           />

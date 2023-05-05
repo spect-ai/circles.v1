@@ -4,14 +4,20 @@ import { FormType } from "@/app/types";
 import { Box, useTheme } from "degen";
 import React, { useState } from "react";
 import styled from "styled-components";
-
-import _ from "lodash";
 import { useLocation } from "react-use";
-import FormFields from "./FormFields";
 import { ToastContainer } from "react-toastify";
+import dynamic from "next/dynamic";
 
-function PublicForm() {
-  const [form, setForm] = useState<FormType>();
+const FormFields = dynamic(() => import("./FormFields"), {
+  ssr: false,
+});
+
+type Props = {
+  form?: FormType;
+};
+
+function PublicForm({ form: fetchedForm }: Props) {
+  const [form, setForm] = useState<FormType | undefined>(fetchedForm);
   const { mode } = useTheme();
   const { pathname } = useLocation();
   const route = pathname?.split("/")[3];

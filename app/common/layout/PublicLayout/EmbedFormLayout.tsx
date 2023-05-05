@@ -19,7 +19,7 @@ type PublicLayoutProps = {
   children: ReactNodeNoStrings;
 };
 
-const Container = styled(Box)<{ issidebarexpanded: boolean }>`
+const Container = styled(Box)`
   max-width: 100vw;
   flex-grow: 1;
   overflow-y: auto;
@@ -141,7 +141,7 @@ function EmbedLayout(props: PublicLayoutProps) {
   return (
     <DesktopContainer backgroundColor="transparent" id="public-layout">
       <Box display="flex" flexDirection="column" width="full" overflow="hidden">
-        <Container issidebarexpanded={false}>{children}</Container>
+        <Container>{children}</Container>
       </Box>
     </DesktopContainer>
   );

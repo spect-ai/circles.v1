@@ -100,18 +100,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   if (!slug || !chartId) return { props: { collection: null } };
 
   const res = await (
-    await fetch(`${process.env.API_HOST}/collection/v1/${slug}/embedCharts`, {
-      headers,
-    })
+    await fetch(
+      `${process.env.SERVERSIDE_API_HOST}/collection/v1/${slug}/embedCharts`,
+      {
+        headers,
+      }
+    )
   )?.json();
-
-  // const image = await (
-  //   await fetch(
-  //     `https://dev.spect.network/api/og?chartName=${
-  //       res.formMetadata?.charts?.[chartId as string].name
-  //     }&chartType=${res.formMetadata?.charts?.[chartId as string].type}`
-  //   )
-  // )?.blob();
 
   if (!res?.properties) {
     console.log("Failed to fetch collection");

@@ -34,13 +34,26 @@ import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 import Stepper from "@/app/common/components/Stepper";
-import StartPage from "../Collection/Form/FormBuilder/StartPage";
-import ConnectPage from "../Collection/Form/FormBuilder/ConnectPage";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
-import CollectPage from "../Collection/Form/FormBuilder/CollectPage";
-import CollectPayment from "./Fields/CollectPayment";
-import SubmittedPage from "../Collection/Form/FormBuilder/SubmittedPage";
-import ConnectDiscordPage from "../Collection/Form/FormBuilder/ConnectDiscordPage";
+
+import dynamic from "next/dynamic";
+
+const StartPage = dynamic(
+  () => import("../Collection/Form/FormBuilder/StartPage")
+);
+const ConnectPage = dynamic(
+  () => import("../Collection/Form/FormBuilder/ConnectPage")
+);
+const CollectPage = dynamic(
+  () => import("../Collection/Form/FormBuilder/CollectPage")
+);
+const CollectPayment = dynamic(() => import("./Fields/CollectPayment"));
+const SubmittedPage = dynamic(
+  () => import("../Collection/Form/FormBuilder/SubmittedPage")
+);
+const ConnectDiscordPage = dynamic(
+  () => import("../Collection/Form/FormBuilder/ConnectDiscordPage")
+);
 
 type Props = {
   form: FormType | undefined;
@@ -205,7 +218,7 @@ function FormFields({ form, setForm }: Props) {
         setCurrentPage("collect");
       } else setCurrentPage("submitted");
     }
-  }, [form?.name]);
+  }, [form?.name, form?.formMetadata.previousResponses?.length]);
 
   const onSubmit = async (form: CollectionType) => {
     if (
@@ -464,13 +477,13 @@ function FormFields({ form, setForm }: Props) {
         )}
       </AnimatePresence>
       {Array.from({ length: 1 }).map((_, i) => {
-        console.log({ i });
         if (currentPage === "start") {
           return (
             <StartPage
               form={form as CollectionType}
               setCurrentPage={setCurrentPage}
               setForm={setForm}
+              key={i}
             />
           );
         } else if (currentPage === "connect" && form) {
@@ -480,6 +493,7 @@ function FormFields({ form, setForm }: Props) {
               setForm={setForm}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
+              key={i}
             />
           );
         } else if (currentPage === "connectDiscord" && form) {
@@ -494,14 +508,17 @@ function FormFields({ form, setForm }: Props) {
               setVerificationToken={setVerificationToken}
               discordUser={discordUser}
               setDiscordUser={setDiscordUser}
+              key={i}
             />
           );
         } else if (currentPage === "collect") {
           return (
             <CollectPage
+              setForm={setForm}
               form={form as CollectionType}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
+              key={i}
             />
           );
         } else if (currentPage === "submitted" && form) {
@@ -512,6 +529,7 @@ function FormFields({ form, setForm }: Props) {
               setUpdateResponse={setUpdateResponse}
               setSubmitted={setSubmitted}
               setData={setData}
+              key={i}
             />
           );
         } else {
@@ -526,6 +544,7 @@ function FormFields({ form, setForm }: Props) {
                 flexDirection="column"
                 justifyContent="space-between"
                 overflow="auto"
+                key={i}
               >
                 <Stack>
                   {fields.map((field) => {
