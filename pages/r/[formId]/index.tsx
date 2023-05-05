@@ -10,7 +10,6 @@ import {
 } from "@/app/modules/Profile/ProfileSettings/LocalProfileContext";
 import PublicForm from "@/app/modules/PublicForm";
 import { FormType } from "@/app/types";
-import { Box, Text } from "degen";
 import { GetServerSidePropsContext, NextPage } from "next";
 import React from "react";
 
@@ -34,9 +33,9 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
           }
         />
         <PublicFormLayout>
-          <Box padding="8">
-            <Text>Failed to fetch</Text>
-          </Box>
+          <div>
+            <span>Failed to fetch</span>
+          </div>
         </PublicFormLayout>
       </>
     );

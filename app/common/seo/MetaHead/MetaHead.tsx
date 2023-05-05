@@ -11,10 +11,7 @@ export default function MetaHead({
   description,
   image,
 }: props): JSX.Element {
-  const ogImgRelativePath = "/og.jpg";
-
   const siteURL = "https://circles.spect.network";
-  const ogImageURL = `${ogImgRelativePath}`;
   const pathName = useRouter().pathname;
   const pageURL = pathName === "/" ? siteURL : siteURL + pathName;
   const twitterHandle = "@JoinSpect";

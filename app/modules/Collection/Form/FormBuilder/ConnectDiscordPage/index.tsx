@@ -1,9 +1,7 @@
-import ConnectDiscordButton from "@/app/common/components/ConnectDiscordButton";
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import DiscordField from "@/app/modules/PublicForm/Fields/DiscordField";
 import { NameInput } from "@/app/modules/PublicForm/FormFields";
-import { CollectionType, FormType, GuildRole } from "@/app/types";
+import { CollectionType } from "@/app/types";
 import { Avatar, Box, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";

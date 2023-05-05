@@ -34,13 +34,26 @@ import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 import Stepper from "@/app/common/components/Stepper";
-import StartPage from "../Collection/Form/FormBuilder/StartPage";
-import ConnectPage from "../Collection/Form/FormBuilder/ConnectPage";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
-import CollectPage from "../Collection/Form/FormBuilder/CollectPage";
-import CollectPayment from "./Fields/CollectPayment";
-import SubmittedPage from "../Collection/Form/FormBuilder/SubmittedPage";
-import ConnectDiscordPage from "../Collection/Form/FormBuilder/ConnectDiscordPage";
+
+import dynamic from "next/dynamic";
+
+const StartPage = dynamic(
+  () => import("../Collection/Form/FormBuilder/StartPage")
+);
+const ConnectPage = dynamic(
+  () => import("../Collection/Form/FormBuilder/ConnectPage")
+);
+const CollectPage = dynamic(
+  () => import("../Collection/Form/FormBuilder/CollectPage")
+);
+const CollectPayment = dynamic(() => import("./Fields/CollectPayment"));
+const SubmittedPage = dynamic(
+  () => import("../Collection/Form/FormBuilder/SubmittedPage")
+);
+const ConnectDiscordPage = dynamic(
+  () => import("../Collection/Form/FormBuilder/ConnectDiscordPage")
+);
 
 type Props = {
   form: FormType | undefined;

@@ -8,7 +8,6 @@ import {
   UserType,
 } from "@/app/types";
 import { useAtom } from "jotai";
-import mixpanel from "mixpanel-browser";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -157,17 +156,20 @@ export function useProviderCircleContext() {
       void fetchRegistry();
       void fetchMemberDetails();
     }
-    console.log("STARTED TRACKING SESSION FOR CIRCLE" + cId);
-    process.env.NODE_ENV === "production" &&
-      mixpanel.time_event("Circle Session");
-    return () => {
-      console.log("ENDED TRACKING SESSION FOR CIRCLE" + cId);
+    (async () => {
+      console.log("STARTED TRACKING SESSION FOR CIRCLE" + cId);
+      const mixpanel = (await import("mixpanel-browser")).default;
       process.env.NODE_ENV === "production" &&
-        mixpanel.track("Circle Session", {
-          circle: cId,
-          user: currentUser?.username,
-        });
-    };
+        mixpanel.time_event("Circle Session");
+      return () => {
+        console.log("ENDED TRACKING SESSION FOR CIRCLE" + cId);
+        process.env.NODE_ENV === "production" &&
+          mixpanel.track("Circle Session", {
+            circle: cId,
+            user: currentUser?.username,
+          });
+      };
+    })();
   }, [cId]);
 
   useEffect(() => {
