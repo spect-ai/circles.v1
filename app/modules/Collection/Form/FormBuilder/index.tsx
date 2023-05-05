@@ -504,6 +504,7 @@ function FormBuilder() {
               )}
               {currentPage === "collect" && (
                 <CollectPage
+                  setForm={updateCollection}
                   form={collection}
                   preview
                   setCurrentPage={setCurrentPage}
