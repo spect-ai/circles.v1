@@ -24,9 +24,9 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import styled from "styled-components";
 import ProfileInfo from "./ProfileInfo";
 import Editor from "@/app/common/components/Editor";
+import styled from "@emotion/styled";
 
 type Props = {
   form: CollectionType;

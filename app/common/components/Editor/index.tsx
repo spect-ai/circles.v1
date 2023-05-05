@@ -1,29 +1,20 @@
 import { TwitterOutlined, YoutubeFilled } from "@ant-design/icons";
 import { Box, useTheme } from "degen";
-import React, { Ref, memo, useEffect, useRef, useState } from "react";
+import React, { memo, useRef, useState } from "react";
 import { FaFigma } from "react-icons/fa";
-import { ImEmbed } from "react-icons/im";
 import { SiLoom, SiMiro } from "react-icons/si";
 import { toast } from "react-toastify";
-import RichMarkdownEditor, {
-  Props as EditorProps,
-  Extension,
-} from "rich-markdown-editor";
+
 import { storeImage } from "../../utils/ipfs";
 import FigmaEmbed from "../Embeds/FigmaEmbed";
-import GeneralEmbed from "../Embeds/GeneralEmbed";
 import LoomEmbed from "../Embeds/LoomEmbed";
 import MiroEmbed from "../Embeds/MiroEmbed";
 import TweetEmbed, { extractTweetId } from "../Embeds/TwitterEmbed";
 import YouTubeEmbed from "../Embeds/YoutubeEmbed";
 import dark, { light } from "./styles/theme";
-import {
-  EditorState,
-  Transaction,
-  TextSelection,
-  Plugin,
-} from "prosemirror-state";
+import { TextSelection } from "prosemirror-state";
 import { isURL } from "../../utils/utils";
+import RichMarkdownEditor from "rich-markdown-editor";
 
 type Props = {
   value?: string;

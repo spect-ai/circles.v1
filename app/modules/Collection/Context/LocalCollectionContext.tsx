@@ -1,6 +1,6 @@
 import queryClient from "@/app/common/utils/queryClient";
-import { logError } from "@/app/common/utils/utils";
-import { connectedUserAtom, socketAtom } from "@/app/state/global";
+import { connectedUserAtom } from "@/app/state/global";
+import { socketAtom } from "@/app/state/socket";
 import { CollectionType, Property } from "@/app/types";
 import { useAtom } from "jotai";
 import _ from "lodash";

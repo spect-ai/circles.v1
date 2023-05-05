@@ -17,7 +17,6 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { memo, useEffect, useState } from "react";
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
-import styled from "styled-components";
 import AddField from "../../AddField";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import FieldComponent from "../Field";
@@ -38,6 +37,7 @@ import { logError } from "@/app/common/utils/utils";
 import { Visible } from "react-grid-system";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { FaDiscord } from "react-icons/fa";
+import styled from "@emotion/styled";
 
 function FormBuilder() {
   const {

@@ -1,13 +1,10 @@
 import { atom } from "jotai";
-import { Socket } from "socket.io-client";
 
 export const authStatusAtom =
   atom<"loading" | "authenticated" | "unauthenticated">("loading");
 
 export const scribeOpenAtom = atom(false);
 export const scribeUrlAtom = atom("");
-
-export const socketAtom = atom<Socket | null>(null);
 
 export const connectedUserAtom = atom("");
 

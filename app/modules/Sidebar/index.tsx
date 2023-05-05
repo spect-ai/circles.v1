@@ -4,7 +4,6 @@ import { AnimatePresence } from "framer-motion";
 import { Avatar, Box, Button, Stack, Text, IconMenu } from "degen";
 import { useRouter } from "next/router";
 import Logo from "@/app/common/components/Logo";
-import { HomeOutlined } from "@ant-design/icons";
 import { useQuery } from "react-query";
 import { CircleType, UserType } from "@/app/types";
 import styled from "styled-components";
@@ -21,10 +20,10 @@ import {
   isProfilePanelExpandedAtom,
   isSidebarExpandedAtom,
   quickProfileUserAtom,
-  socketAtom,
 } from "@/app/state/global";
 import { logError } from "@/app/common/utils/utils";
 import { Hidden, Visible } from "react-grid-system";
+import { socketAtom } from "@/app/state/socket";
 
 export const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {

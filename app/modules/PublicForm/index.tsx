@@ -3,14 +3,10 @@
 import { FormType } from "@/app/types";
 import { Box, useTheme } from "degen";
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled from "@emotion/styled";
 import { useLocation } from "react-use";
 import { ToastContainer } from "react-toastify";
-import dynamic from "next/dynamic";
-
-const FormFields = dynamic(() => import("./FormFields"), {
-  ssr: false,
-});
+import FormFields from "./FormFields";
 
 type Props = {
   form?: FormType;

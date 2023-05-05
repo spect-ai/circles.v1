@@ -1,5 +1,5 @@
-import { H } from "highlight.run";
-import { toast } from "react-toastify";
+// import { H } from "highlight.run";
+// import { toast } from "react-toastify";
 
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 export const reorder = (
@@ -154,7 +154,13 @@ export const convertToId = (text: string) => {
 };
 
 export const logError = (error: string, showToast = true) => {
-  console.error(error);
-  if (showToast) toast.error(error);
-  process.env.NODE_ENV === "production" && H.consumeError(new Error(error));
+  import("highlight.run").then((mod) => {
+    process.env.NODE_ENV === "production" &&
+      mod.H.consumeError(new Error(error));
+  });
+  if (showToast) {
+    import("react-toastify").then((mod) => {
+      mod.toast.error(error);
+    });
+  }
 };

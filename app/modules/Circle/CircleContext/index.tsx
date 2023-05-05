@@ -1,5 +1,5 @@
 import queryClient from "@/app/common/utils/queryClient";
-import { socketAtom } from "@/app/state/global";
+import { socketAtom } from "@/app/state/socket";
 import {
   CircleType,
   MemberDetails,
