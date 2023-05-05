@@ -205,7 +205,7 @@ function FormFields({ form, setForm }: Props) {
         setCurrentPage("collect");
       } else setCurrentPage("submitted");
     }
-  }, [form?.name]);
+  }, [form?.name, form?.formMetadata.previousResponses?.length]);
 
   const onSubmit = async (form: CollectionType) => {
     if (
@@ -501,6 +501,7 @@ function FormFields({ form, setForm }: Props) {
         } else if (currentPage === "collect") {
           return (
             <CollectPage
+              setForm={setForm}
               form={form as CollectionType}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}

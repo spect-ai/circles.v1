@@ -20,7 +20,6 @@ interface Props {
 }
 
 const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
-  console.log({ form, slug });
   if (!form) {
     return (
       <>
@@ -71,23 +70,26 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const { params } = context;
+  const { params, req, res } = context;
   const slug = params?.formId;
 
   if (!slug) return { props: { form: null } };
 
-  console.log({ slug });
-  console.time("fetch");
-
-  const res = await (
+  const form = await (
     await fetch(
-      `${process.env.SERVERSIDE_API_HOST}/collection/v1/public/slug/${slug}`
+      `${process.env.SERVERSIDE_API_HOST}/collection/v1/public/slug/${slug}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: req.headers.cookie || "",
+        },
+        credentials: "include",
+      }
     )
   )?.json();
 
-  console.log({ name: res.name });
-
-  if (!res?.id) {
+  if (!form?.id) {
     return {
       props: {
         form: null,
@@ -95,12 +97,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     };
   }
 
-  console.timeEnd("fetch");
-
   return {
     props: {
       slug,
-      form: res,
+      form,
     },
   };
 }

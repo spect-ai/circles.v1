@@ -223,7 +223,16 @@ export const deleteCollectionData = async (
 
 export const getForm = async (formSlug: string) => {
   return await (
-    await fetch(`${process.env.API_HOST}/collection/v1/public/slug/${formSlug}`)
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/public/slug/${formSlug}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    )
   ).json();
 };
 

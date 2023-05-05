@@ -25,7 +25,7 @@ export default function useJoinCircle() {
             theme: "dark",
           });
         } else {
-          logError("Something went wrong joining the circle");
+          logError(res.error);
         }
       };
       void asyncJoin();
