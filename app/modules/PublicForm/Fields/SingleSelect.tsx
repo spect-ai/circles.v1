@@ -31,7 +31,7 @@ const SingleSelect = ({
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [options, allowCustom]);
 
   const inputRef: any = useRef();
 

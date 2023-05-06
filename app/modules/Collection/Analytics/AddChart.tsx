@@ -2,16 +2,13 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Input, Stack, Text } from "degen";
 import React, { useEffect, useState } from "react";
-import { AiOutlineAreaChart } from "react-icons/ai";
 import AddConditions from "../Common/AddConditions";
 import { Condition, Option } from "@/app/types";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import Dropdown from "@/app/common/components/Dropdown";
-import { useRafState } from "react-use";
-import { AnimatePresence } from "framer-motion";
-import { updateFormCollection } from "@/app/services/Collection";
 import { v4 as uuid } from "uuid";
-import { toast } from "react-toastify";
+import { logError } from "@/app/common/utils/utils";
+import { updateFormCollection } from "@/app/services/Collection";
 
 type Props = {
   handleClose: () => void;
@@ -180,10 +177,10 @@ const AddChart = ({ handleClose, chartId }: Props) => {
                 if (res.id) {
                   updateCollection(res);
                   handleClose();
+                  setLoading(false);
                 } else {
-                  toast.error("Something went wrong");
+                  logError("Error saving chart");
                 }
-                setLoading(false);
               }}
             >
               Save

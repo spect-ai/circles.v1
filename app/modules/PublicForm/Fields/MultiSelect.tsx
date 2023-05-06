@@ -31,7 +31,7 @@ const MultiSelect = ({
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [allowCustom, options]);
 
   const [customValue, setCustomValue] = useState("");
 
