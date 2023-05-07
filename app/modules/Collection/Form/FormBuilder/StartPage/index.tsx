@@ -50,12 +50,7 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
             {form.formMetadata.logo && (
               <Avatar src={form.formMetadata.logo} label="" size="20" />
             )}
-            <NameInput
-              autoFocus
-              value={form.name}
-              disabled
-              rows={Math.floor(form.name?.length / 20) + 1}
-            />
+            <NameInput autoFocus value={form.name} disabled />
             {form.description && (
               <Editor value={form.description} isDirty={true} disabled />
             )}
