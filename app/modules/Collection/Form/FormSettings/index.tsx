@@ -13,8 +13,14 @@ import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
 import Archive from "@/app/modules/CollectionProject/Settings/Archive";
+import { HeaderButton } from "../FormEditor/EditorHeader";
+import { AiFillSetting } from "react-icons/ai";
 
-function FormSettings() {
+type Props = {
+  headerButton?: boolean;
+};
+
+function FormSettings({ headerButton }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -24,35 +30,52 @@ function FormSettings() {
   const { localCollection: collection } = useLocalCollection();
   return (
     <Box>
-      <Button
-        shape="circle"
-        size="small"
-        variant="transparent"
-        center
-        onClick={() => {
-          process.env.NODE_ENV === "production" &&
-            mixpanel.track("Form Settings", {
-              user: currentUser?.username,
-              form: collection.name,
-            });
-          if (formActions("manageSettings")) {
-            setIsOpen(true);
-          } else {
-            toast.error(
-              "Your role(s) doesn't have the permission to access this form's settings"
-            );
-          }
-        }}
-      >
-        <IconCog size="5" color="text" />
-      </Button>
+      {headerButton ? (
+        <HeaderButton
+          icon={<AiFillSetting size={20} />}
+          label="Settings"
+          onClick={() => {
+            process.env.NODE_ENV === "production" &&
+              mixpanel.track("Form Settings", {
+                user: currentUser?.username,
+                form: collection.name,
+              });
+            if (formActions("manageSettings")) {
+              setIsOpen(true);
+            } else {
+              toast.error(
+                "Your role(s) doesn't have the permission to access this form's settings"
+              );
+            }
+          }}
+        />
+      ) : (
+        <Button
+          shape="circle"
+          size="small"
+          variant="transparent"
+          center
+          onClick={() => {
+            process.env.NODE_ENV === "production" &&
+              mixpanel.track("Form Settings", {
+                user: currentUser?.username,
+                form: collection.name,
+              });
+            if (formActions("manageSettings")) {
+              setIsOpen(true);
+            } else {
+              toast.error(
+                "Your role(s) doesn't have the permission to access this form's settings"
+              );
+            }
+          }}
+        >
+          <IconCog size="5" color="text" />
+        </Button>
+      )}
       <AnimatePresence>
         {isOpen && (
-          <Modal
-            handleClose={() => setIsOpen(false)}
-            title="Form Settings"
-            size="large"
-          >
+          <Modal handleClose={() => setIsOpen(false)} title="Form Settings">
             <Box
               padding={{
                 xs: "2",

@@ -19,7 +19,7 @@ import { useCircle } from "../../Circle/CircleContext";
 
 type Props = {
   networks?: Registry;
-  setNetworks: React.Dispatch<React.SetStateAction<Registry | undefined>>;
+  setNetworks: React.Dispatch<React.SetStateAction<Registry>>;
   customText?: string;
   customTooltip?: string;
   newTokenOpen?: boolean;
@@ -188,7 +188,7 @@ export default function RewardTokenOptions({
                 <Input
                   label=""
                   placeholder="Token Address"
-                  width="72"
+                  width="1/2"
                   value={address}
                   onChange={async (e) => {
                     setAddress(e.target.value);
@@ -209,7 +209,7 @@ export default function RewardTokenOptions({
                 />
               )}
               {addFrom === "whitelist" && (
-                <Box width="72">
+                <Box width="1/2">
                   <Dropdown
                     options={tokenOptions}
                     selected={selectedToken}
@@ -332,7 +332,6 @@ export default function RewardTokenOptions({
         {!newToken &&
           (singleSelect ? Object.keys(networks || {}).length === 0 : true) && (
             <Box
-              marginTop="4"
               display="flex"
               flexDirection="row"
               justifyContent="flex-start"

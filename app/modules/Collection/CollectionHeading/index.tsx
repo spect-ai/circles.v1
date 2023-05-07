@@ -136,7 +136,7 @@ function CollectionHeading() {
                   md: "4",
                 }}
               >
-                <Text
+                {/* <Text
                   size={{
                     xs: "large",
                     md: "headingThree",
@@ -145,7 +145,7 @@ function CollectionHeading() {
                   ellipsis
                 >
                   {smartTrim(collection?.name, 20)}
-                </Text>
+                </Text> */}
               </Box>
               <Visible xs sm>
                 <Button
@@ -158,7 +158,7 @@ function CollectionHeading() {
                   <IconPlug color="accent" />
                 </Button>
               </Visible>
-              <FormSettings />
+              {/* <FormSettings /> */}
               <Hidden xs sm>
                 <PrimaryButton
                   // icon={<IconPencil />}

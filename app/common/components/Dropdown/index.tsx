@@ -26,6 +26,7 @@ type Props =
       creatable?: boolean;
       formatCreateLabel?: (inputValue: string) => string;
       formatOptionLabel?: (option: OptionType) => any;
+      size?: "small" | "medium";
     }
   | {
       multiple: true;
@@ -40,6 +41,7 @@ type Props =
       creatable?: boolean;
       formatCreateLabel?: (inputValue: string) => string;
       formatOptionLabel?: (option: OptionType) => any;
+      size?: "small" | "medium";
     };
 
 const { Option } = components;
@@ -65,6 +67,7 @@ const Dropdown: FC<Props> = ({
   formatCreateLabel,
   formatOptionLabel,
   label,
+  size = "medium",
 }) => {
   const { mode } = useTheme();
 

@@ -536,7 +536,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
             {type.value === "reward" && collection.collectionType === 0 && (
               <RewardTokenOptions
                 networks={networks}
-                setNetworks={setNetworks}
+                setNetworks={setNetworks as any}
                 setIsDirty={setIsDirty}
               />
             )}

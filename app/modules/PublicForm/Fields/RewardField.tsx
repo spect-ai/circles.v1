@@ -19,6 +19,7 @@ export default function RewardField({
   onValueKeyDown,
   disabled,
 }: Props) {
+  if (!Object.values(rewardOptions)) return null;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const firstChainName =
     Object.values(rewardOptions).length > 0
@@ -27,11 +28,13 @@ export default function RewardField({
   const firstChainId =
     Object.keys(rewardOptions).length > 0 ? Object.keys(rewardOptions)[0] : "";
   const firstTokenSymbol = Object.values(
-    rewardOptions[firstChainId]?.tokenDetails
-  )[0].symbol;
+    rewardOptions[firstChainId]?.tokenDetails || {}
+  )[0]?.symbol;
   const firstTokenAddress = Object.keys(
-    rewardOptions[firstChainId]?.tokenDetails
+    rewardOptions[firstChainId]?.tokenDetails || {}
   )[0];
+
+  if (!firstTokenSymbol || !firstTokenAddress) return null;
 
   const [tokenOptions, setTokenOptions] = useState<Option[]>([]);
   const [selectedChain, setSelectedChain] = useState<Option>({

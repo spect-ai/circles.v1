@@ -1,12 +1,65 @@
 import { Box } from "degen";
+import { useCallback, useState } from "react";
+import {
+  DragDropContext,
+  Droppable,
+  DroppableProvided,
+  DropResult,
+} from "react-beautiful-dnd";
 import styled from "styled-components";
 import { SkeletonLoader } from "../../Explore/SkeletonLoader";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import FormBuilder from "./FormBuilder";
 import InactiveFieldsColumnComponent from "./InactiveFieldsColumn";
+import FormEditor from "./FormEditor";
 
 export function Form() {
-  const { loading, scrollContainerRef } = useLocalCollection();
+  const {
+    localCollection: collection,
+    updateCollection,
+    loading,
+    scrollContainerRef,
+    currentPage,
+  } = useLocalCollection();
+
+  const [editMode, setEditMode] = useState(true);
+
+  const handleDragCollectionProperty = async (result: DropResult) => {
+    const { destination, source, draggableId } = result;
+
+    if (!destination) {
+      return;
+    }
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    const pages = collection.formMetadata.pages;
+
+    const sourcePage = pages[currentPage];
+    console.log({ sourcePage });
+    const newPage = {
+      ...sourcePage,
+      properties: Array.from(sourcePage.properties),
+    };
+    newPage.properties.splice(source.index, 1);
+    newPage.properties.splice(destination.index, 0, draggableId);
+    console.log({ newPage });
+    updateCollection({
+      ...collection,
+      formMetadata: {
+        ...collection.formMetadata,
+        pages: {
+          ...pages,
+          [currentPage]: newPage,
+        },
+      },
+    });
+  };
 
   if (loading) {
     return <SkeletonLoader />;
@@ -15,9 +68,13 @@ export function Form() {
   return (
     <ScrollContainer ref={scrollContainerRef}>
       <FormContainer>
-        <FormBuilder />
+        {editMode ? (
+          <FormEditor setEditMode={setEditMode} />
+        ) : (
+          <FormBuilder setEditMode={setEditMode} />
+        )}
       </FormContainer>
-      <InactiveFieldsColumnComponent />
+      {/* <InactiveFieldsColumnComponent /> */}
     </ScrollContainer>
   );
 }
@@ -36,14 +93,12 @@ const ScrollContainer = styled(Box)`
     height: calc(100vh - 9rem);
   }
   flex-direction: row;
-  padding: 1.5rem;
-  margin-top: 1rem;
-  height: calc(100vh - 7rem);
+  height: calc(100vh - 9rem);
 `;
 
 const FormContainer = styled(Box)`
   @media (max-width: 992px) {
     width: 100%;
   }
-  width: 80%;
+  width: 100%;
 `;

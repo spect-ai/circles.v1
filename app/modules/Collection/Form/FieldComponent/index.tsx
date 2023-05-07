@@ -125,6 +125,7 @@ function FieldComponent({
       borderRadius="large"
       isDragging={snapshot.isDragging}
       mode={mode}
+      draggable={false}
     >
       <Stack direction="vertical" space="1">
         {fieldNeedsAttention[id] && (
@@ -134,7 +135,9 @@ function FieldComponent({
         )}
         <Stack direction="horizontal">
           <Box width="full" display="flex" flexDirection="row" gap="2">
-            <Text weight="semiBold">{collection.properties[id]?.name}</Text>
+            {collection.properties[id]?.type !== "readonly" && (
+              <Text weight="semiBold">{collection.properties[id]?.name}</Text>
+            )}
             {collection.properties[id].required && (
               <Tag size="small" tone="accent">
                 Required
@@ -146,7 +149,7 @@ function FieldComponent({
               </Tag>
             )}
           </Box>
-          <Box
+          {/* <Box
             cursor="pointer"
             borderRadius="full"
             paddingY="1"
@@ -162,7 +165,7 @@ function FieldComponent({
             }}
           >
             <IconPencil color="accent" size="4" />
-          </Box>
+          </Box> */}
         </Stack>
         <Box>
           {collection.properties[id]?.description && forceRefresh && (
@@ -398,7 +401,7 @@ function FieldComponent({
             {DraggableContentCallback}
           </Draggable>
         </Box>
-        <Hidden xs sm>
+        {/* <Hidden xs sm>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: hover ? 1 : 0 }}
@@ -516,7 +519,7 @@ function FieldComponent({
               </Stack>
             </Box>
           </motion.div>
-        </Hidden>
+        </Hidden> */}
       </Stack>
     </Box>
   );
@@ -532,12 +535,6 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
       : "2px solid transparent"};
 
   transition: border-color 0.5s ease;
-
-  &:hover {
-    border-color: ${(props) =>
-      props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
-    border-width: 2px;
-  }
 `;
 
 export const DateInput = styled.input<{ mode: string }>`

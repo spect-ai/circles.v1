@@ -39,7 +39,11 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { FaDiscord } from "react-icons/fa";
 import styled from "@emotion/styled";
 
-function FormBuilder() {
+function FormBuilder({
+  setEditMode,
+}: {
+  setEditMode: (editMode: boolean) => void;
+}) {
   const {
     localCollection: collection,
     updateCollection,
@@ -80,7 +84,6 @@ function FormBuilder() {
           stampsWithScore.push(stampWithScore);
         }
       }
-      console.log({ stampsWithScore });
       setStamps(stampsWithScore.sort((a, b) => b.score - a.score));
     }
   };
@@ -178,7 +181,7 @@ function FormBuilder() {
           md: "2",
         }}
       >
-        <CoverImageButtonContainer>
+        {/* <CoverImageButtonContainer>
           <FileInput
             onChange={async (file) => {
               const res = await storeImage(file);
@@ -209,6 +212,17 @@ function FormBuilder() {
               />
             )}
           </FileInput>
+        </CoverImageButtonContainer> */}
+        <CoverImageButtonContainer>
+          <PrimaryButton
+            width="fit"
+            variant="tertiary"
+            onClick={() => {
+              setEditMode(true);
+            }}
+          >
+            Back to editor
+          </PrimaryButton>
         </CoverImageButtonContainer>
         <CoverImage src={cover} backgroundColor="accentSecondary" />
         <Container>
@@ -689,10 +703,11 @@ const Container = styled(Box)`
 
 const CoverImageButtonContainer = styled(Box)`
   margin-bottom: -2rem;
+  margin-left: 1rem;
 `;
 
 const FormBuilderContainer = styled(Box)`
-  min-height: calc(100vh - 20rem);
+  min-height: calc(100vh - 10rem);
   display: flex;
   flex-direction: column;
   justify-content: space-between;

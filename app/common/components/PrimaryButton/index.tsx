@@ -18,6 +18,7 @@ interface Props {
   suffix?: ReactNodeNoStrings;
   center?: boolean;
   size?: "extraSmall" | "small" | "medium" | "large";
+  width?: string;
 }
 
 export const slide = {
@@ -63,6 +64,7 @@ const PrimaryButton: FC<Props> = ({
   tourId,
   center = false,
   size = "small",
+  width = "full",
 }) => {
   return (
     <div key="content">
@@ -71,7 +73,7 @@ const PrimaryButton: FC<Props> = ({
           data-tour={tourId}
           disabled={disabled}
           loading={loading}
-          width="full"
+          width={width as any}
           size={"small"}
           variant={variant}
           prefix={icon}
@@ -90,7 +92,7 @@ const PrimaryButton: FC<Props> = ({
           data-tour={tourId}
           disabled={disabled}
           loading={loading}
-          width="full"
+          width={width as any}
           size={"extraSmall"}
           variant={variant}
           prefix={icon}

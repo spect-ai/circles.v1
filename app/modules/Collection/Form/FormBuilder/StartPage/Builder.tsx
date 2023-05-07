@@ -40,7 +40,7 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
     >
       <Stack space="2">
         {logo && <Avatar src={logo} label="" size="20" />}
-        <FileInput
+        {/* <FileInput
           onChange={async (file) => {
             const res = await storeImage(file);
             setLogo(res.imageGatewayURL);
@@ -63,7 +63,7 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
               name={logo ? "Change logo" : "Add Logo"}
             />
           )}
-        </FileInput>
+        </FileInput> */}
         <NameInput
           placeholder="Enter name"
           autoFocus
@@ -80,6 +80,7 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
               res.id && updateCollection(res);
             }
           }}
+          disabled
         />
         <Editor
           value={description}

@@ -716,7 +716,7 @@ const FormFieldContainer = styled(Box)`
   overflow-y: auto;
 `;
 
-export const NameInput = styled.textarea`
+export const NameInput = styled.input`
   resize: none;
   background: transparent;
   border: 0;

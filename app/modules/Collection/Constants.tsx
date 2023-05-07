@@ -21,10 +21,7 @@ export const fields = [
   { label: "Discord", value: "discord" },
   { label: "Telegram", value: "telegram" },
   { label: "Github", value: "github" },
-  {
-    label: "Read Only",
-    value: "readonly",
-  },
+  { label: "Read Only", value: "readonly" },
 ];
 
 export const fieldOptionsDropdown = [
