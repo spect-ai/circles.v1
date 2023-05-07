@@ -1,6 +1,5 @@
 import queryClient from "@/app/common/utils/queryClient";
-import { LensDate, LensSkills, NFT, VerifiableCredential } from "@/app/types";
-import { toast } from "react-toastify";
+import { LensDate, LensSkills, NFT } from "@/app/types";
 import { Credential } from "@/app/types";
 import { useAtom } from "jotai";
 import { userDataAtom } from "@/app/state/global";
@@ -109,6 +108,7 @@ export default function useProfileUpdate() {
         return true;
       }
     } catch (error) {
+      const toast = await (await import("react-toastify")).toast;
       toast.error(`Error updating profile ${error}`, {
         theme: "dark",
       });

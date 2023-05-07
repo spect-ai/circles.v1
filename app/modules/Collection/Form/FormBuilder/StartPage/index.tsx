@@ -7,8 +7,6 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Footer from "./Footer";
 import Messages from "./Messages";
-import { logError } from "@/app/common/utils/utils";
-import { SkeletonLoader } from "@/app/modules/PublicForm/Fields/SkeletonLoader";
 import { motion } from "framer-motion";
 
 type Props = {
@@ -29,7 +27,10 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
         const res: FormType = await getForm(formId as string);
         if (res.id) {
           setForm(res);
-        } else logError("Error fetching form");
+        } else {
+          const logError = (await import("@/app/common/utils/utils")).logError;
+          logError("Error fetching form");
+        }
       }
     })();
   }, [formId]);
@@ -69,7 +70,7 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
         </Box>
       </motion.div>
     );
-  } else return <SkeletonLoader />;
+  } else return null;
 };
 
 export default StartPage;

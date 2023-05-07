@@ -5,9 +5,9 @@ import { Bar, Doughnut, Line, Pie } from "react-chartjs-2";
 import { satisfiesConditions } from "../Common/SatisfiesFilter";
 import { motion } from "framer-motion";
 import { updateFormCollection } from "@/app/services/Collection";
-import { toast } from "react-toastify";
 import { BarOptions, LineOptions, PieOptions } from "./ChartOptions";
 import { ImEmbed } from "react-icons/im";
+import { logError } from "@/app/common/utils/utils";
 
 type Props =
   | {
@@ -155,7 +155,7 @@ const FieldChart = ({
                     if (res.id) {
                       updateCollection(res);
                     } else {
-                      toast.error("Error deleting chart");
+                      logError("Error deleting chart");
                     }
                   }}
                 >

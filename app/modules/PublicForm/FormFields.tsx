@@ -17,19 +17,15 @@ import {
 import { Box, Input, Stack, Text } from "degen";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { toast } from "react-toastify";
-import styled from "styled-components";
-import PublicField from "./Fields/PublicField";
-import mixpanel from "@/app/common/utils/mixpanel";
-import NotificationPreferenceModal from "./Fields/NotificationPreferenceModal";
+import styled from "@emotion/styled";
+// import PublicField from "./Fields/PublicField";
 import { AnimatePresence } from "framer-motion";
-import {
-  compose,
-  createCeramicSession,
-  loadCeramicSession,
-} from "@/app/services/Ceramic";
-import { useAccount } from "wagmi";
-import Modal from "@/app/common/components/Modal";
+// import {
+//   compose,
+//   createCeramicSession,
+//   loadCeramicSession,
+// } from "@/app/services/Ceramic";
+// import { useAccount } from "wagmi";
 import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
@@ -37,6 +33,7 @@ import Stepper from "@/app/common/components/Stepper";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 
 import dynamic from "next/dynamic";
+import PublicField from "./Fields/PublicField";
 
 const StartPage = dynamic(
   () => import("../Collection/Form/FormBuilder/StartPage")
@@ -53,6 +50,15 @@ const SubmittedPage = dynamic(
 );
 const ConnectDiscordPage = dynamic(
   () => import("../Collection/Form/FormBuilder/ConnectDiscordPage")
+);
+const Modal = dynamic(() => import("@/app/common/components/Modal"));
+
+// const PublicField = dynamic(() => import("./Fields/PublicField"), {
+//   ssr: false,
+// });
+
+const NotificationPreferenceModal = dynamic(
+  () => import("./Fields/NotificationPreferenceModal")
 );
 
 type Props = {
@@ -99,8 +105,6 @@ function FormFields({ form, setForm }: Props) {
       avatar: string;
     }
   );
-  const { address, connector } = useAccount();
-
   const [currentPage, setCurrentPage] = useState("start");
 
   const checkRequired = (data: any) => {
@@ -221,6 +225,7 @@ function FormFields({ form, setForm }: Props) {
   }, [form?.name, form?.formMetadata.previousResponses?.length]);
 
   const onSubmit = async (form: CollectionType) => {
+    const toast = await (await import("react-toastify")).toast;
     if (
       !email &&
       (form.formMetadata.surveyTokenId ||
@@ -233,45 +238,45 @@ function FormFields({ form, setForm }: Props) {
     if (form.formMetadata.ceramicEnabled) {
       let session: any;
       setSubmitting(true);
-      try {
-        const loadedSession = await loadCeramicSession(address as string);
-        console.log({ loadedSession });
-        if (!loadedSession) {
-          const newSession = await createCeramicSession(
-            address as string,
-            connector
-          );
-          console.log({ newSession });
-          session = newSession;
-        } else {
-          session = loadedSession;
-        }
-        compose.setDID(session.did);
-        const result: any = await compose.executeQuery(
-          `
-      mutation {
-        createSpectForm(input: {content: {
-          formId: "${form.slug}",
-          data: "${JSON.stringify(data).replace(/"/g, '\\"')}",
-          createdAt: "${new Date().toISOString()}",
-          link: "https://circles.spect.network/r/${form.id}",
-          origin: "https://circles.spect.network",
-        }}) {
-          document {
-            id
-          }
-        }
-      }
-      `
-        );
-        const streamId = result.data.createSpectForm.document.id;
-        data["__ceramic__"] = streamId;
-      } catch (err) {
-        console.log(err);
-        logError("Could not upload data to Ceramic");
-        setSubmitting(false);
-        return;
-      }
+      // try {
+      //   const loadedSession = await loadCeramicSession(address as string);
+      //   console.log({ loadedSession });
+      //   if (!loadedSession) {
+      //     const newSession = await createCeramicSession(
+      //       address as string,
+      //       connector
+      //     );
+      //     console.log({ newSession });
+      //     session = newSession;
+      //   } else {
+      //     session = loadedSession;
+      //   }
+      //   compose.setDID(session.did);
+      //   const result: any = await compose.executeQuery(
+      //     `
+      // mutation {
+      //   createSpectForm(input: {content: {
+      //     formId: "${form.slug}",
+      //     data: "${JSON.stringify(data).replace(/"/g, '\\"')}",
+      //     createdAt: "${new Date().toISOString()}",
+      //     link: "https://circles.spect.network/r/${form.id}",
+      //     origin: "https://circles.spect.network",
+      //   }}) {
+      //     document {
+      //       id
+      //     }
+      //   }
+      // }
+      // `
+      //   );
+      //   const streamId = result.data.createSpectForm.document.id;
+      //   data["__ceramic__"] = streamId;
+      // } catch (err) {
+      //   console.log(err);
+      //   logError("Could not upload data to Ceramic");
+      //   setSubmitting(false);
+      //   return;
+      // }
     }
     let res;
     if (
@@ -313,6 +318,7 @@ function FormFields({ form, setForm }: Props) {
       );
     }
     const resAfterSave = await getForm(form.slug);
+    const mixpanel = (await import("@/app/common/utils/mixpanel")).default;
     if (res.id) {
       toast.success("Form submitted successfully");
       setForm(resAfterSave);
@@ -415,7 +421,9 @@ function FormFields({ form, setForm }: Props) {
           <Stepper
             steps={form.formMetadata.pageOrder.length}
             currentStep={form.formMetadata.pageOrder.indexOf(currentPage || "")}
-            onStepChange={(step) => {
+            onStepChange={async (step) => {
+              const toast = await (await import("react-toastify")).toast;
+
               if (submitted) {
                 setCurrentPage(form.formMetadata.pageOrder[step]);
               } else if (updateResponse || !submitted) {
@@ -626,8 +634,11 @@ function FormFields({ form, setForm }: Props) {
                       }}
                     >
                       <PrimaryButton
-                        onClick={() => {
+                        onClick={async () => {
                           if (!checkRequired(data)) {
+                            const toast = await (
+                              await import("react-toastify")
+                            ).toast;
                             toast.error("Please fill all required fields");
                             return;
                           }

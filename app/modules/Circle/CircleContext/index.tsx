@@ -1,6 +1,6 @@
 import queryClient from "@/app/common/utils/queryClient";
 import { getPrivateCircleCredentials } from "@/app/services/PrivateCircle";
-import { socketAtom } from "@/app/state/global";
+import { socketAtom } from "@/app/state/socket";
 import {
   CirclePrivate,
   CircleType,

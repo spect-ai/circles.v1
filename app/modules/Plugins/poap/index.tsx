@@ -18,6 +18,7 @@ import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import ResponseMatchDistribution from "../common/ResponseMatchDistribution";
 import ImportClaimCodes from "./ImportClaimCodes";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   handleClose: () => void;
@@ -320,7 +321,9 @@ export default function DistributePOAP({ handleClose }: Props) {
                     virtual,
                     email,
                   });
-                  console.log({ res });
+                  if (!res) {
+                    logError("Error creating POAP");
+                  }
                   setLoading(false);
                 } catch (err: unknown) {
                   setLoading(false);

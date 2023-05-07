@@ -4,7 +4,7 @@ import { CollectionType, Option } from "@/app/types";
 import { Input, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import { useCircle } from "../../Circle/CircleContext";
-import { DateInput } from "../Form/Field";
+import { DateInput } from "../Form/FieldComponent";
 
 type Props = {
   value: any;

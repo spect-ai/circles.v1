@@ -1,6 +1,5 @@
+import styled from "@emotion/styled";
 import { Box, Stack } from "degen";
-import { motion } from "framer-motion";
-import styled from "styled-components";
 
 type Props = {
   steps: number;
@@ -12,18 +11,14 @@ const Stepper = ({ steps, currentStep, onStepChange }: Props) => {
   return (
     <Stack direction="horizontal">
       {Array.from({ length: steps }).map((_, index) => (
-        <motion.div
-          key={index}
-          whileHover={{ scale: 1.2 }}
-          whileTap={{ scale: 0.8 }}
-        >
+        <div key={index}>
           <StepButton
             backgroundColor={
               index === currentStep ? "accent" : "foregroundSecondary"
             }
             onClick={() => onStepChange(index)}
           />
-        </motion.div>
+        </div>
       ))}
     </Stack>
   );

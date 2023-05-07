@@ -1,4 +1,4 @@
-import { storeImage } from "@/app/common/utils/ipfs";
+// import { storeImage } from "@/app/common/utils/ipfs";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { UserType } from "@/app/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -70,6 +70,9 @@ export function useProviderLocalProfile() {
   const [loading, setLoading] = useState(true);
 
   const uploadFile = async (file: File) => {
+    const storeImage = await (
+      await import("@/app/common/utils/ipfs")
+    ).storeImage;
     setIsDirty(true);
     if (file) {
       setUploading(true);

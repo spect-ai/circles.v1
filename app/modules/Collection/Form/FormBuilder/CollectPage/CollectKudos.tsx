@@ -3,11 +3,10 @@ import { logError } from "@/app/common/utils/utils";
 import { getForm } from "@/app/services/Collection";
 import { CollectionType, KudosType } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
+import styled from "@emotion/styled";
 import { Box, Stack, Text } from "degen";
 import { useEffect, useState } from "react";
 import { TwitterShareButton } from "react-share";
-import { toast } from "react-toastify";
-import styled from "styled-components";
 
 type Props = {
   form: CollectionType;

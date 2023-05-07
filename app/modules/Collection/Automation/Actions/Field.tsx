@@ -8,7 +8,7 @@ import { Box, IconPlusSmall, Input, useTheme } from "degen";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { DateInput } from "../../Form/Field";
+import { DateInput } from "../../Form/FieldComponent";
 
 type Props = {
   collection: CollectionType;

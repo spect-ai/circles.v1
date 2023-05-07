@@ -6,9 +6,10 @@ import {
   hasClaimedSurveyToken,
   isEligibleToClaimSurveyToken,
 } from "@/app/services/SurveyProtocol";
-import { socketAtom } from "@/app/state/global";
+import { socketAtom } from "@/app/state/socket";
 import { CollectionType, Registry } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
+import styled from "@emotion/styled";
 import { Box, IconDocumentsSolid, Stack, Text } from "degen";
 import { BigNumber, ethers } from "ethers";
 import { useAtom } from "jotai";
@@ -16,8 +17,6 @@ import _ from "lodash";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { TwitterShareButton } from "react-share";
-import { toast } from "react-toastify";
-import styled from "styled-components";
 import { useAccount } from "wagmi";
 
 type Props = {

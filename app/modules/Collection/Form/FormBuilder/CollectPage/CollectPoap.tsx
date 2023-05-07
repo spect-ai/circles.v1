@@ -5,11 +5,11 @@ import { getForm } from "@/app/services/Collection";
 import { getPoap } from "@/app/services/Poap";
 import { CollectionType, POAPEventType } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
+import styled from "@emotion/styled";
 import { Box, Spinner, Stack, Text } from "degen";
 import { useEffect, useState } from "react";
 import { TwitterShareButton } from "react-share";
 import { toast } from "react-toastify";
-import styled from "styled-components";
 
 type Props = {
   form: CollectionType;

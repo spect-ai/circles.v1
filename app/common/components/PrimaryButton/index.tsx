@@ -1,8 +1,6 @@
 import type { FC } from "react";
-
 import { Button } from "degen";
 import { ReactNodeNoStrings } from "degen/dist/types/types";
-import { motion } from "framer-motion";
 import { Hidden, Visible } from "react-grid-system";
 
 interface Props {
@@ -67,14 +65,7 @@ const PrimaryButton: FC<Props> = ({
   size = "small",
 }) => {
   return (
-    <motion.div
-      key="content"
-      initial="hidden"
-      animate="open"
-      exit="collapsed"
-      variants={animationMapping[animation]}
-      transition={{ duration: 0.3 }}
-    >
+    <div key="content">
       <Hidden xs sm md>
         <Button
           data-tour={tourId}
@@ -113,7 +104,7 @@ const PrimaryButton: FC<Props> = ({
           {children}
         </Button>
       </Visible>
-    </motion.div>
+    </div>
   );
 };
 

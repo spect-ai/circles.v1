@@ -3,7 +3,6 @@ import { Avatar, Box, Stack, Text } from "degen";
 import { useEffect, useState } from "react";
 import { FaDiscord } from "react-icons/fa";
 import { useLocation } from "react-use";
-import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 
 type Props = {
   setData: (data: any) => void;

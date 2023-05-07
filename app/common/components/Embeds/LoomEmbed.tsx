@@ -1,5 +1,4 @@
-import styled from "styled-components";
-import ResizableIframe from "../ResizableIframe";
+import styled from "@emotion/styled";
 
 export default function LoomEmbed({
   attrs,

@@ -13,20 +13,14 @@ import Onboard from "../../../modules/Dashboard/Onboard";
 import Loader from "@/app/common/components/Loader";
 import { useRouter } from "next/router";
 import { io } from "socket.io-client";
-import {
-  socketAtom,
-  connectedUserAtom,
-  isSidebarExpandedAtom,
-  isProfilePanelExpandedAtom,
-  userDataAtom,
-  profileLoadingAtom,
-} from "@/app/state/global";
+import { connectedUserAtom, isSidebarExpandedAtom } from "@/app/state/global";
 import { useAtom } from "jotai";
 import { useAccount, useConnect } from "wagmi";
 import { H } from "highlight.run";
 import { Hidden, Visible } from "react-grid-system";
 import mixpanel from "mixpanel-browser";
 import Changelog from "../../changelog";
+import { socketAtom } from "@/app/state/socket";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;

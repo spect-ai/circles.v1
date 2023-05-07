@@ -7,13 +7,10 @@ import { UserType } from "@/app/types";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import { useAtom } from "jotai";
-import {
-  connectedUserAtom,
-  isSidebarExpandedAtom,
-  socketAtom,
-} from "@/app/state/global";
+import { connectedUserAtom, isSidebarExpandedAtom } from "@/app/state/global";
 import { io } from "socket.io-client";
 import { H } from "highlight.run";
+import { socketAtom } from "@/app/state/socket";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;

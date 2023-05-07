@@ -1,21 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Editor from "@/app/common/components/Editor";
 import { isEmail, isURL } from "@/app/common/utils/utils";
 import { FormType, Option, Property, Registry, Reward } from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { satisfiesConditions } from "../../Collection/Common/SatisfiesFilter";
-import { DateInput } from "../../Collection/Form/Field";
 import DiscordField from "./DiscordField";
-import EthAddressField from "./EthAddressField";
 import GithubField from "./GithubField";
-import MilestoneField from "./MilestoneField";
 import MultiSelect from "./MultiSelect";
 import MultiURLField from "./MultiURLField";
-import RewardField from "./RewardField";
 import SingleSelect from "./SingleSelect";
 import TelegramField from "./TelegramField";
+import dynamic from "next/dynamic";
+import styled from "@emotion/styled";
+
+const Editor = dynamic(() => import("@/app/common/components/Editor"), {
+  ssr: false,
+});
+
+const RewardField = dynamic(() => import("./RewardField"));
+const MilestoneField = dynamic(() => import("./MilestoneField"));
+const EthAddressField = dynamic(() => import("./EthAddressField"));
 
 type Props = {
   form: FormType;
@@ -417,3 +422,21 @@ export default function PublicField({
     </Box>
   );
 }
+
+const DateInput = styled.input<{ mode: string }>`
+  padding: 1rem;
+  border-radius: 0.55rem;
+  border 1px solid ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
+  background-color: ${(props) =>
+    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
+  width: 100%;
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255,0.7)" : "rgb(20,20,20,0.7)"};
+  margin-top: 10px;
+  outline: none;
+  &:focus {
+    border-color: rgb(191, 90, 242, 1);
+  }
+  transition: border-color 0.5s ease;
+`;

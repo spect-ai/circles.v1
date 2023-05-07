@@ -6,14 +6,11 @@ import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { toast } from "react-toastify";
 import { useAtom } from "jotai";
-import {
-  connectedUserAtom,
-  isSidebarExpandedAtom,
-  socketAtom,
-} from "@/app/state/global";
+import { connectedUserAtom, isSidebarExpandedAtom } from "@/app/state/global";
 import { useAccount, useConnect } from "wagmi";
 import dynamic from "next/dynamic";
 import { io } from "socket.io-client";
+import { socketAtom } from "@/app/state/socket";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;

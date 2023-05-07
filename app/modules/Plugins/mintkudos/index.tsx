@@ -480,6 +480,11 @@ export default function SendKudos({ handleClose }: Props) {
                         issuingCommunity,
                         communityAsset?.nftTypeId || assetToUse
                       );
+                      if (!res?.operationId) {
+                        setLoading(false);
+                        logError("Error minting kudos");
+                        return;
+                      }
                       if (res) {
                         recordCollectionKudos(
                           res.operationId,

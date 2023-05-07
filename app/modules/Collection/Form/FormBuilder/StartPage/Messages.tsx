@@ -1,5 +1,5 @@
 import { CollectionType } from "@/app/types";
-import { WalletOutlined } from "@ant-design/icons";
+import WalletOutlined from "@ant-design/icons/WalletOutlined";
 import { Box, Text } from "degen";
 import { BsDiscord } from "react-icons/bs";
 
