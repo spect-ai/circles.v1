@@ -1,25 +1,18 @@
-import Accordian from "@/app/common/components/Accordian";
 import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { addToken } from "@/app/services/Payment";
 import useERC20 from "@/app/services/Payment/useERC20";
 import { Registry } from "@/app/types";
-import {
-  InfoOutlined,
-  QuestionCircleFilled,
-  QuestionCircleOutlined,
-  QuestionCircleTwoTone,
-} from "@ant-design/icons";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Box, Button, IconClose, Input, Stack, Text, useTheme } from "degen";
 import React, { useEffect, useState } from "react";
 import { Tooltip } from "react-tippy";
-import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
 
 type Props = {
   networks?: Registry;
-  setNetworks: React.Dispatch<React.SetStateAction<Registry>>;
+  setNetworks: React.Dispatch<React.SetStateAction<any>>;
   customText?: string;
   customTooltip?: string;
   newTokenOpen?: boolean;
