@@ -27,6 +27,7 @@ import { CollectionType, UserType } from "@/app/types";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
 import DiscordRoleGate from "./DiscordRole";
+import Zealy from "./zealy";
 
 type Props = {
   handleClose: () => void;
@@ -60,13 +61,17 @@ export const isPluginAdded = (
       return collection.formMetadata.allowAnonymousResponses === false;
     case "discordRole":
       return !!collection.formMetadata.discordRoleGating?.length;
+    case "zealy":
+      return !!collection.formMetadata.zealyXP;
     default:
       return false;
   }
 };
 
 export default function ViewPlugins({ handleClose }: Props) {
-  const { registry } = useCircle();
+  const { registry, circle } = useCircle();
+  const { canDo } = useRoleGate();
+
   const [isPluginOpen, setIsPluginOpen] = useState(false);
   const [pluginOpen, setPluginOpen] = useState("");
   const [surveyConditions, setSurveyConditions] = useState<any>({});
@@ -78,6 +83,7 @@ export default function ViewPlugins({ handleClose }: Props) {
     Object.keys(spectPlugins)
   );
   const [showAdded, setShowAdded] = useState(false);
+  const [zealySetupMode, setZealySetupMode] = useState(false);
 
   const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
     "getMyUser",
@@ -146,6 +152,19 @@ export default function ViewPlugins({ handleClose }: Props) {
         setIsPluginOpen(true);
         setPluginOpen(pluginName);
         break;
+      case "zealy":
+        if (!circle?.hasSetupZealy) {
+          if (!canDo("manageCircleSettings")) {
+            toast.error(
+              "A steward must setup Zealy first before the plugin can be added."
+            );
+            return;
+          } else {
+            setZealySetupMode(true);
+          }
+        }
+        setIsPluginOpen(true);
+        setPluginOpen(pluginName);
       default:
         break;
     }
@@ -289,6 +308,14 @@ export default function ViewPlugins({ handleClose }: Props) {
           <DiscordRoleGate
             handleClose={() => setIsPluginOpen(false)}
             key="discordRole"
+          />
+        )}
+        {isPluginOpen && pluginOpen === "zealy" && (
+          <Zealy
+            handleClose={() => setIsPluginOpen(false)}
+            setupMode={zealySetupMode}
+            setSetupMode={setZealySetupMode}
+            key="zealy"
           />
         )}
       </AnimatePresence>

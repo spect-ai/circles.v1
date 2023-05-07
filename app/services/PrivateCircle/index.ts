@@ -1,14 +1,11 @@
+import { CirclePrivate } from "@/app/types";
 import { toast } from "react-toastify";
-
-type CreatePrivateCirclePropertiesDto = {
-  circleId: string;
-  mintkudosApiKey: string;
-  mintkudosCommunityId: string;
-};
 
 type UpdatePrivateCirclePropertiesDto = {
   mintkudosApiKey?: string;
   mintkudosCommunityId?: string;
+  zealyApiKey?: string;
+  zealySubdomain?: string;
 };
 
 export type GetPrivateCirclePropertiesDto = {
@@ -50,7 +47,7 @@ export const updatePrivateCircleCredentials = async (
 
 export const getPrivateCircleCredentials = async (
   circleId: string
-): Promise<GetPrivateCirclePropertiesDto | boolean> => {
+): Promise<CirclePrivate> => {
   const res = await fetch(
     `${process.env.API_HOST}/circle/private/v1/${circleId}`,
     {
@@ -65,6 +62,6 @@ export const getPrivateCircleCredentials = async (
     const data = await res.json();
     return data;
   } else {
-    return false;
+    throw new Error("Error fetching circle credentials");
   }
 };

@@ -70,7 +70,7 @@ export default function ImportClaimCodes({
         </Stack>
       </Stack>
       <Accordian
-        name="Set Conditions"
+        name="Distribute when responses match (ideal for quizzes)"
         defaultOpen={minimumNumberOfAnswersThatNeedToMatch > 0 ? true : false}
       >
         <Stack direction="vertical" space="1">

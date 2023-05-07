@@ -311,7 +311,16 @@ export interface CircleType {
     symbol: string;
   };
   sidebarConfig?: SidebarConfig;
+  hasSetupZealy?: boolean;
 }
+
+export type CirclePrivate = {
+  zealyApiKey?: string;
+  zealySubdomain?: string;
+  mintkudosApiKey?: string;
+  mintkudosCommunityId?: string;
+};
+
 export type SidebarConfig = {
   showPayment?: boolean;
   showAutomation?: boolean;
@@ -913,6 +922,13 @@ export type FormMetadata = {
   };
 
   chartOrder?: string[];
+  zealyXP?: number;
+  zealyXpPerField?: MappedItem<number>;
+  responseDataForZealy?: MappedItem<any>;
+  totalClaimableXP?: number;
+  canClaimZealy?: number;
+  hasClaimedZealy?: boolean;
+  zealySubdomain?: string;
 };
 
 export type Chart = {

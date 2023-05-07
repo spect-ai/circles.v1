@@ -16,6 +16,7 @@ import { useQuery as useApolloQuery, gql } from "@apollo/client";
 import { Space } from "@/app/modules/Collection/VotingModule";
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { useCircle } from "../../CircleContext";
+import ConnectZealy from "../ConnectZealy";
 
 export default function CircleIntegrations() {
   const router = useRouter();
@@ -213,6 +214,20 @@ export default function CircleIntegrations() {
             }}
           >
             <ConnectGnosis />
+          </Box>
+        </Stack>
+        <Stack space="1">
+          <Text variant="extraLarge" weight="bold">
+            Zealy
+          </Text>
+          <Text variant="label">Connect your community on Zealy.</Text>
+          <Box
+            width={{
+              xs: "full",
+              md: "1/3",
+            }}
+          >
+            <ConnectZealy />
           </Box>
         </Stack>
       </Stack>

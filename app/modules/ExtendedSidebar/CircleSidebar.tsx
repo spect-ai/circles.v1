@@ -139,47 +139,6 @@ function CircleSidebar() {
         <Stack direction="horizontal">
           <CircleOptions />
         </Stack>
-        {!isLoading && circle?.toBeClaimed && (
-          <PrimaryButton
-            onClick={async () => {
-              const circleRes = await fetch(
-                `${process.env.API_HOST}/circle/v1/${circle?.id}/claimCircle`,
-                {
-                  method: "PATCH",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({}),
-                  credentials: "include",
-                }
-              );
-              const circleData = await circleRes.json();
-
-              if (!circleData) {
-                toast.error("Cannot claim circle");
-                return;
-              }
-              const memberDetailsRes = await fetch(
-                `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`,
-                {
-                  method: "GET",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  credentials: "include",
-                }
-              );
-
-              const memberDetailsData = await memberDetailsRes.json();
-
-              setCircleData(circleData);
-              setMemberDetailsData(memberDetailsData);
-            }}
-            variant="tertiary"
-          >
-            Claim
-          </PrimaryButton>
-        )}
 
         <Container subH="10.6rem">
           <Stack direction="vertical" space="2">

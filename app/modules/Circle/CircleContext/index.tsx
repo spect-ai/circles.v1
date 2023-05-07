@@ -1,6 +1,8 @@
 import queryClient from "@/app/common/utils/queryClient";
+import { getPrivateCircleCredentials } from "@/app/services/PrivateCircle";
 import { socketAtom } from "@/app/state/global";
 import {
+  CirclePrivate,
   CircleType,
   MemberDetails,
   Registry,
@@ -27,9 +29,6 @@ interface CircleContextType {
   setCircleData: (data: CircleType) => void;
   setMemberDetailsData: (data: MemberDetails) => void;
   setRegistryData: (data: Registry) => void;
-  setRetroData: (data: RetroType) => void;
-  hasMintkudosCredentialsSetup: boolean;
-  setHasMintkudosCredentialsSetup: (isBatchPayOpen: boolean) => void;
   mintkudosCommunityId: string;
   setMintkudosCommunityId: (isBatchPayOpen: string) => void;
   loading: boolean;
@@ -38,6 +37,8 @@ interface CircleContextType {
   setNavigationBreadcrumbs: (data: any) => void;
   justAddedDiscordServer: boolean;
   setJustAddedDiscordServer: (data: boolean) => void;
+  privateCredentials: CirclePrivate;
+  setPrivateCredentials: (data: CirclePrivate) => void;
 }
 
 export const CircleContext = React.createContext<CircleContextType>(
@@ -49,13 +50,14 @@ export function useProviderCircleContext() {
   const { circle: cId, retroSlug } = router.query;
 
   const [page, setPage] = useState<"Overview" | "Retro">("Overview");
-  const [hasMintkudosCredentialsSetup, setHasMintkudosCredentialsSetup] =
-    useState(false);
   const [mintkudosCommunityId, setMintkudosCommunityId] = useState("");
   const [loading, setLoading] = useState(false);
   const [isBatchPayOpen, setIsBatchPayOpen] = useState(false);
   const [socket, setSocket] = useAtom(socketAtom);
   const [justAddedDiscordServer, setJustAddedDiscordServer] = useState(false);
+  const [privateCredentials, setPrivateCredentials] = useState<CirclePrivate>(
+    {} as CirclePrivate
+  );
 
   const {
     data: circle,
@@ -109,13 +111,6 @@ export function useProviderCircleContext() {
       }
     );
 
-  const { data: retro, refetch: fetchRetro } = useQuery<RetroType>(
-    ["retro", retroSlug],
-    {
-      enabled: false,
-    }
-  );
-
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -140,10 +135,6 @@ export function useProviderCircleContext() {
 
   const setRegistryData = (data: Registry) => {
     queryClient.setQueryData(["registry", cId], data);
-  };
-
-  const setRetroData = (data: RetroType) => {
-    queryClient.setQueryData(["retro", retroSlug], data);
   };
 
   const setNavigationBreadcrumbs = (data: any) => {
@@ -200,6 +191,21 @@ export function useProviderCircleContext() {
   }, [cId, socket]);
 
   useEffect(() => {
+    if (circle?.id) {
+      const getPrivateCredentials = async () => {
+        const res = await getPrivateCircleCredentials(circle?.id);
+        setPrivateCredentials(res);
+      };
+
+      try {
+        void getPrivateCredentials();
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }, [circle?.id]);
+
+  useEffect(() => {
     window.addEventListener(
       "message",
       (event) => {
@@ -225,17 +231,12 @@ export function useProviderCircleContext() {
     circle,
     memberDetails,
     registry,
-    retro,
     fetchCircle,
     fetchMemberDetails,
     fetchRegistry,
-    fetchRetro,
     setCircleData,
     setMemberDetailsData,
     setRegistryData,
-    setRetroData,
-    hasMintkudosCredentialsSetup,
-    setHasMintkudosCredentialsSetup,
     mintkudosCommunityId,
     setMintkudosCommunityId,
     navigationBreadcrumbs,
@@ -243,6 +244,8 @@ export function useProviderCircleContext() {
     isLoading,
     justAddedDiscordServer,
     setJustAddedDiscordServer,
+    privateCredentials,
+    setPrivateCredentials,
   };
 }
 

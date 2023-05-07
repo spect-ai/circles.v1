@@ -73,8 +73,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { params, req } = context;
   const slug = params?.formId;
 
-  console.log({ slug });
-
   if (!slug) return { props: { form: null } };
 
   const form = await (
@@ -90,8 +88,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       }
     )
   )?.json();
-
-  console.log({ form: form.name });
 
   if (!form?.id) {
     return {

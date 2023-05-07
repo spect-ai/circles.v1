@@ -18,8 +18,7 @@ export default function Credentials() {
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { setHasMintkudosCredentialsSetup, setMintkudosCommunityId } =
-    useCircle();
+  const { setMintkudosCommunityId } = useCircle();
   const [kudosCommunityId, setKudosCommunityId] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -30,13 +29,6 @@ export default function Credentials() {
       mintkudosApiKey: apiKey,
       mintkudosCommunityId: kudosCommunityId,
     });
-    if (res) {
-      setHasMintkudosCredentialsSetup(true);
-      setMintkudosCommunityId(kudosCommunityId);
-
-      // Handle the case where api key or community id is emptied
-      if (!apiKey || !kudosCommunityId) setHasMintkudosCredentialsSetup(false);
-    }
     setIsLoading(false);
   };
 
@@ -51,7 +43,6 @@ export default function Credentials() {
             setApiKey(properties.mintkudosApiKey || "");
             setKudosCommunityId(properties.mintkudosCommunityId || "");
             if (properties.mintkudosApiKey && properties.mintkudosCommunityId) {
-              setHasMintkudosCredentialsSetup(true);
               setMintkudosCommunityId(properties.mintkudosCommunityId);
             }
           }

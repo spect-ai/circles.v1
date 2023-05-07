@@ -7,6 +7,7 @@ import { useWindowSize } from "react-use";
 import CollectERC20 from "./CollectERC20";
 import CollectKudos from "./CollectKudos";
 import CollectPoap from "./CollectPoap";
+import CollectZealyXp from "./CollectZealyXP";
 
 type Props = {
   form: CollectionType;
@@ -60,6 +61,11 @@ const CollectPage = ({
         setClaimedJustNow={setClaimedJustNow}
       />
       <CollectERC20
+        form={form}
+        preview={preview}
+        setClaimedJustNow={setClaimedJustNow}
+      />
+      <CollectZealyXp
         form={form}
         preview={preview}
         setClaimedJustNow={setClaimedJustNow}

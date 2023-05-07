@@ -10,7 +10,6 @@ import CircleIntegrations from "./CircleIntegrations";
 import DefaultPayment from "./CirclePayment";
 import Contributors from "../ContributorsModal/Contributors";
 import { useCircle } from "../CircleContext";
-import Credentials from "./Credentials";
 import styled from "styled-components";
 import Roles from "../RolesModal/Roles";
 import SidebarConfig from "./SidebarConfig";

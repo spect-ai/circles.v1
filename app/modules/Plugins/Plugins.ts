@@ -19,7 +19,8 @@ export type PluginType =
   | "mintkudos"
   | "googleCaptcha"
   | "responderProfile"
-  | "discordRole";
+  | "discordRole"
+  | "zealy";
 
 export const spectPlugins: { [key: string]: SpectPlugin } = {
   gtcpassport: {
@@ -134,11 +135,23 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     name: "Role Gating With Discord Roles",
     version: "1.0.0",
     description:
-      "Role gate who can reply to this form with Discord roles. Only people with the specified roles can reply to this form!",
+      "Role gate who can reply to this form with Discord roles. This is ideal if you're looking to share this form with specific groups of people with your community!",
     tags: "credential curation, responder info",
     docs: "",
     image:
       "https://ik.imagekit.io/spectcdn/discord_logo_chaks.png?updatedAt=1682681466430",
+    premium: true,
+  },
+  zealy: {
+    id: "zealy",
+    name: "Distribute XP on Zealy",
+    version: "1.0.0",
+    description:
+      "Use Zealy to distribute XP to responders and incentivize responders to fill out your form!",
+    tags: "incentivization, zealy",
+    docs: "",
+    image:
+      "https://ik.imagekit.io/spectcdn/zealy_xp_chaks.png?updatedAt=1683276390713",
     premium: true,
   },
 };
