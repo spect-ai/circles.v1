@@ -40,13 +40,7 @@ type Props = {
 };
 
 export default function SendKudos({ handleClose }: Props) {
-  const {
-    circle,
-    hasMintkudosCredentialsSetup,
-    setHasMintkudosCredentialsSetup,
-    setMintkudosCommunityId,
-    mintkudosCommunityId,
-  } = useCircle();
+  const { circle, setMintkudosCommunityId, mintkudosCommunityId } = useCircle();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);
@@ -110,68 +104,6 @@ export default function SendKudos({ handleClose }: Props) {
       setAssetUrl(imageGatewayURL);
     }
   };
-
-  useEffect(() => {
-    fetch(
-      `${process.env.API_HOST}/circle/myPermissions?circleIds=${circle?.id}`,
-      {
-        credentials: "include",
-      }
-    )
-      .then((res) => {
-        res
-          .json()
-          .then((permissions: Permissions) => {
-            if (permissions?.distributeCredentials) {
-              getPrivateCircleCredentials(circle?.id || "")
-                .then((creds: GetPrivateCirclePropertiesDto | boolean) => {
-                  const credentials = creds as GetPrivateCirclePropertiesDto;
-                  if (
-                    credentials &&
-                    credentials.mintkudosApiKey &&
-                    credentials.mintkudosCommunityId
-                  ) {
-                    setHasMintkudosCredentialsSetup(true);
-                    setMintkudosCommunityId(credentials.mintkudosCommunityId);
-                  }
-                })
-                .catch((err) => console.error(err));
-            }
-          })
-          .catch((err) => console.log(err));
-      })
-      .catch((err) => console.log(err));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [circle?.id]);
-
-  useEffect(() => {
-    if (collection.formMetadata.mintkudosTokenId) {
-      setLoading(true);
-      getKudos(collection.formMetadata.mintkudosTokenId)
-        .then((res) => {
-          setKudos(res);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-        });
-    } else {
-      setKudos({} as KudosType);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [collection]);
-
-  useEffect(() => {
-    getCommunityKudosDesigns()
-      .then((res) => {
-        setCommunityKudosDesigns(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasMintkudosCredentialsSetup]);
 
   return (
     <Modal

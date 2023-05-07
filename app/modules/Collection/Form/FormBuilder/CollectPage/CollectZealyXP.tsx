@@ -115,12 +115,6 @@ export default function CollectZealyXp({
     );
   }
 
-  console.log({
-    zealyXP,
-    zealyXPClaimed,
-    userNotFound,
-  });
-
   return (
     <Box
       display="flex"
