@@ -301,14 +301,28 @@ export default function CollectZealyXp({
           )}
         </Box>
       )}
+
+      {form.formMetadata.zealyXP &&
+        Object.values(form.formMetadata.zealyXpPerField || {}).some(
+          (a) => a > 0
+        ) &&
+        !form.formMetadata.canClaimZealy &&
+        !form.formMetadata.hasClaimedZealy &&
+        !userNotFound &&
+        !loading && (
+          <Stack direction="horizontal" align="flex-start">
+            <Box>
+              <Text variant="extraLarge" weight="bold">
+                👉
+              </Text>
+            </Box>
+            <Stack>
+              <Text weight="semiBold" variant="large">
+                Unfortunately, you didn't qualify to claim any XP 🙁
+              </Text>
+            </Stack>
+          </Stack>
+        )}
     </Box>
   );
 }
-
-const CircularStyledImage = styled.img`
-  @media (max-width: 768px) {
-    width: 18rem;
-  }
-  width: 24rem;
-  border-radius: 20rem;
-`;
