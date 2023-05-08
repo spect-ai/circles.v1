@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { expiryOptions, usesOptions } from "./constants";
+import { expiryOptions, reservedRoles, usesOptions } from "./constants";
 import mixpanel from "@/app/common/utils/mixpanel";
 import styled from "styled-components";
 import { logError } from "@/app/common/utils/utils";
@@ -116,22 +116,25 @@ function InviteMemberModal({
                   justify="flex-start"
                   wrap
                 >
-                  {roleOptions?.map((option) => (
-                    <Box
-                      key={option.role}
-                      cursor="pointer"
-                      onClick={() => setRole(option)}
-                    >
-                      <Tag
-                        tone={
-                          role?.name === option.name ? "accent" : "secondary"
-                        }
-                        hover
+                  {roleOptions?.map((option) => {
+                    if (reservedRoles.includes(option.name)) return null;
+                    return (
+                      <Box
+                        key={option.role}
+                        cursor="pointer"
+                        onClick={() => setRole(option)}
                       >
-                        <Box paddingX="2">{option.name}</Box>
-                      </Tag>
-                    </Box>
-                  ))}
+                        <Tag
+                          tone={
+                            role?.name === option.name ? "accent" : "secondary"
+                          }
+                          hover
+                        >
+                          <Box paddingX="2">{option.name}</Box>
+                        </Tag>
+                      </Box>
+                    );
+                  })}
                 </Stack>
                 <Accordian name="Advance options" defaultOpen={false}>
                   <Stack>

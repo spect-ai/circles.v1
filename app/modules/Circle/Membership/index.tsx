@@ -124,13 +124,21 @@ export default function Membership({}: Props) {
       )}
       <ScrollContainer>
         <Stack align="baseline" space="2" direction="horizontal" wrap>
-          {circle?.members.map((member) => (
-            <Member
-              key={member}
-              member={memberDetails?.memberDetails[member] as UserType}
-              roles={circle.memberRoles[member]}
-            />
-          ))}
+          {circle?.members.map((member) => {
+            if (
+              circle.memberRoles[member]?.includes("__removed__") ||
+              circle.memberRoles[member]?.includes("__left__")
+            ) {
+              return null;
+            }
+            return (
+              <Member
+                key={member}
+                member={memberDetails?.memberDetails[member] as UserType}
+                roles={circle.memberRoles[member]}
+              />
+            );
+          })}
         </Stack>
       </ScrollContainer>
     </Box>

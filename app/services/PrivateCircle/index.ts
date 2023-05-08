@@ -47,7 +47,7 @@ export const updatePrivateCircleCredentials = async (
 
 export const getPrivateCircleCredentials = async (
   circleId: string
-): Promise<CirclePrivate> => {
+): Promise<CirclePrivate | boolean> => {
   const res = await fetch(
     `${process.env.API_HOST}/circle/private/v1/${circleId}`,
     {
@@ -62,6 +62,6 @@ export const getPrivateCircleCredentials = async (
     const data = await res.json();
     return data;
   } else {
-    throw new Error("Error fetching circle credentials");
+    return false;
   }
 };
