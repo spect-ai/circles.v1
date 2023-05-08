@@ -139,7 +139,7 @@ export default function CollectZealyXp({
             <Stack direction="vertical">
               <TwitterShareButton
                 url={`https://circles.spect.network/`}
-                title={`Gm! I just filled out a web3 form and claimed some ${form.formMetadata.canClaimZealy} on @JoinSpect!`}
+                title={`Gm! I just filled out a web3 form and claimed ${form.formMetadata.canClaimZealy} XP on @JoinSpect!\n\nCheck it out 👉`}
               >
                 <Box
                   width={{

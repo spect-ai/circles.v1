@@ -271,7 +271,7 @@ export default function SendKudos({ handleClose }: Props) {
                 </Stack>
               </Box>
               <Accordian
-                name="Set Conditions"
+                name="DISTRIBUTE WHEN RESPONSES MATCH (IDEAL FOR QUIZZES)"
                 defaultOpen={
                   minimumNumberOfAnswersThatNeedToMatch > 0 ? true : false
                 }
