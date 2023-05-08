@@ -247,11 +247,15 @@ export default function ProjectHeading() {
               </Droppable>
 
               <Popover
-                width="24"
+                width="48"
                 isOpen={isAddViewPopupOpen}
                 setIsOpen={setIsAddViewPopupOpen}
                 butttonComponent={
                   <AddViewButton
+                    display="flex"
+                    flexDirection="row"
+                    alignItems="center"
+                    gap="2"
                     paddingX="8"
                     onClick={() => {
                       if (!formActions("manageSettings"))
@@ -264,6 +268,7 @@ export default function ProjectHeading() {
                     <Text>
                       <IconPlusSmall size="5" />
                     </Text>
+                    <Text>Add View</Text>
                   </AddViewButton>
                 }
               >

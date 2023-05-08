@@ -86,7 +86,7 @@ const AddChart = ({ handleClose, chartId }: Props) => {
         <Stack>
           <Input
             label="Chart title"
-            placeholder="Vote distribution by country"
+            placeholder="Vote distribution by guild"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
@@ -122,7 +122,6 @@ const AddChart = ({ handleClose, chartId }: Props) => {
             <AddConditions
               viewConditions={viewCondtions}
               setViewConditions={setViewCondtions}
-              firstRowMessage=""
               buttonText="Add Filter"
               collection={collection}
               dropDownPortal={true}

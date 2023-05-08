@@ -23,6 +23,7 @@ import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Embed } from "../Embed";
 import { Col, Row } from "react-grid-system";
+import { BsFillPieChartFill } from "react-icons/bs";
 
 ChartJS.register(
   CategoryScale,
@@ -64,18 +65,21 @@ const Analytics = (props: Props) => {
       </AnimatePresence>
       <Stack>
         <Stack direction="horizontal" justify="space-between">
-          <Box width="48">
-            <PrimaryButton
-              center
-              icon={<AiOutlineAreaChart size={20} />}
-              onClick={() => {
-                setChartId("");
-                setIsAddChartOpen(true);
-              }}
-            >
-              Add Chart
-            </PrimaryButton>
-          </Box>
+          {collection.formMetadata.chartOrder &&
+            collection.formMetadata.chartOrder?.length > 0 && (
+              <Box width="48">
+                <PrimaryButton
+                  center
+                  icon={<AiOutlineAreaChart size={20} />}
+                  onClick={() => {
+                    setChartId("");
+                    setIsAddChartOpen(true);
+                  }}
+                >
+                  Add Chart
+                </PrimaryButton>
+              </Box>
+            )}
           {/* <Box width="48">
             <PrimaryButton
               onClick={() => setIsEmebedOpen(true)}
@@ -87,9 +91,34 @@ const Analytics = (props: Props) => {
         </Stack>
         {!collection.formMetadata.chartOrder ||
         collection.formMetadata.chartOrder?.length === 0 ? (
-          <Stack align="center">
-            <Heading>No charts have been added</Heading>
-          </Stack>
+          <Box
+            style={{
+              margin: "12% 20%",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1rem",
+              alignItems: "center",
+            }}
+          >
+            <BsFillPieChartFill
+              style={{ fontSize: "5rem", color: "rgb(191, 90, 242, 0.7)" }}
+            />
+            <Text variant="large" color={"textTertiary"} align="center">
+              No charts have been added
+            </Text>
+            <Box width="48">
+              <PrimaryButton
+                center
+                icon={<AiOutlineAreaChart size={20} />}
+                onClick={() => {
+                  setChartId("");
+                  setIsAddChartOpen(true);
+                }}
+              >
+                Add Chart
+              </PrimaryButton>
+            </Box>
+          </Box>
         ) : (
           <Box padding="4">
             <Row>
