@@ -12,7 +12,12 @@ function PaymentFilter() {
   const paymentOptions = ["none", "Paid", "Pending", "Pending Signature"];
   return (
     <Stack direction={"horizontal"} space="1" align={"center"}>
-      <IconEth size={"5"} color="accent" />
+      <Text variant="label">
+        <IconEth
+          size={"5"}
+          color={paymentFilter === "none" ? "inherit" : "accent"}
+        />
+      </Text>
       <Popover
         width="fit"
         butttonComponent={

@@ -4,7 +4,7 @@ import {
   updateCollectionDataGuarded,
   updateFormCollection,
 } from "@/app/services/Collection";
-import { MemberDetails, Option, UserType } from "@/app/types";
+import { ConditionGroup, MemberDetails, Option, UserType } from "@/app/types";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ import {
   satisfiesConditions,
 } from "../../Collection/Common/SatisfiesFilter";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import { satisfiesAdvancedConditions } from "../../Collection/Common/SatisfiesAdvancedFilter";
 
 export default function useViewCommon() {
   const {
@@ -38,7 +39,6 @@ export default function useViewCommon() {
   const [cardOrders, setCardOrders] = useState(
     collection.projectMetadata.cardOrders[view.groupByColumn]
   );
-  const [filteredOnGroupByColumn, setFilteredOnGroupByColumn] = useState(false);
 
   const { data: currentUser, refetch } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -86,21 +86,16 @@ export default function useViewCommon() {
         })
       );
     }
-    if (view.filters?.length) {
+    if (view.advancedFilters?.order?.length) {
       newCardOrder = newCardOrder.map((group) => {
         return group.filter((cardId) => {
-          return satisfiesConditions(
+          return satisfiesAdvancedConditions(
             collection.data?.[cardId],
             collection.properties,
-            view.filters || []
+            view.advancedFilters || ({} as ConditionGroup)
           );
         });
       });
-      // check if the filters are on the groupByColumn
-      const filteredOnGroupByColumn = view.filters.some(
-        (filter) => filter.data.field.value === view.groupByColumn
-      );
-      setFilteredOnGroupByColumn(filteredOnGroupByColumn);
     }
     if (showMyTasks) {
       newCardOrder = newCardOrder.map((group) => {
@@ -216,19 +211,39 @@ export default function useViewCommon() {
   useEffect(() => {
     if (property.type === "singleSelect") {
       let options = Array.from(property.options as Option[]);
-      if (view.filters?.length) {
-        const columnFilters = view.filters.filter(
-          (f) => f.data?.field?.value === view.groupByColumn
-        );
+      if (view.advancedFilters?.order?.length) {
+        const validOids = view.advancedFilters?.order.filter((oid) => {
+          if (view.advancedFilters?.conditions?.[oid]) {
+            return (
+              view.advancedFilters?.conditions?.[oid]?.data?.field?.value ===
+              view.groupByColumn
+            );
+          } else if (view.advancedFilters?.conditionGroups?.[oid]) {
+            return Object.keys(
+              view.advancedFilters?.conditionGroups?.[oid]?.conditions
+            ).some((cid) => {
+              return (
+                view.advancedFilters?.conditionGroups?.[oid]?.conditions?.[cid]
+                  ?.data?.field?.value === view.groupByColumn
+              );
+            });
+          }
+          return false;
+        });
+        const conditionGroup = {
+          ...view.advancedFilters,
+          order: validOids,
+        };
+
         options = options.map((c) => {
           return {
             ...c,
-            satisfiesCondition: satisfiesConditions(
+            satisfiesCondition: satisfiesAdvancedConditions(
               {
                 [view.groupByColumn]: c,
               },
               collection.properties,
-              columnFilters
+              conditionGroup
             ),
           };
         });
@@ -401,6 +416,5 @@ export default function useViewCommon() {
     cardSlug,
     newCard,
     cardOrders,
-    filteredOnGroupByColumn,
   };
 }
