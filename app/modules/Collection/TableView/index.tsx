@@ -2,7 +2,14 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateCollectionDataGuarded } from "@/app/services/Collection";
 import { exportToCsv } from "@/app/services/CsvExport";
-import { Milestone, Option, PropertyType, Reward, UserType } from "@/app/types";
+import {
+  ConditionGroup,
+  Milestone,
+  Option,
+  PropertyType,
+  Reward,
+  UserType,
+} from "@/app/types";
 import { Box, Spinner } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import _ from "lodash";
@@ -48,6 +55,7 @@ import RewardModal from "./RewardModal";
 import SelectComponent from "./SelectComponent";
 import TelegramComponent from "./TelegramComponent";
 import { logError } from "@/app/common/utils/utils";
+import { satisfiesAdvancedConditions } from "../Common/SatisfiesAdvancedFilter";
 
 export default function TableView() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
@@ -164,12 +172,12 @@ export default function TableView() {
           collection.projectMetadata.views[projectViewId].filters)
       ) {
         filteredData = filteredData.filter((row) => {
-          return satisfiesConditions(
+          return satisfiesAdvancedConditions(
             collection.data?.[row.id],
             collection.properties,
             collection.projectMetadata.views[
               collection.collectionType === 0 ? "0x0" : projectViewId
-            ].filters || []
+            ].advancedFilters || ({} as ConditionGroup)
           );
         });
       }

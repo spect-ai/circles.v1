@@ -962,6 +962,7 @@ export type ProjectMetadata = {
         direction: "asc" | "desc";
       };
       groupByColumn: string;
+      advancedFilters?: ConditionGroup;
     };
   };
   cardOrders: {
@@ -1359,6 +1360,13 @@ export type Condition = {
   type: string;
   service: string;
   data: any;
+};
+export type ConditionGroup = {
+  id: string;
+  operator: "and" | "or";
+  conditions: { [id: string]: Condition };
+  conditionGroups?: { [id: string]: ConditionGroup };
+  order: string[];
 };
 
 export type Automation = {

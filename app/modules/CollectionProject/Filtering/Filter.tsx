@@ -1,6 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import { updateFormCollection } from "@/app/services/Collection";
-import { CollectionType, Condition } from "@/app/types";
+import { CollectionType, Condition, ConditionGroup } from "@/app/types";
 import { Box, Button, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import AddConditions from "../../Collection/Common/AddConditions";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { logError } from "@/app/common/utils/utils";
+import AddAdvancedConditions from "../../Collection/Common/AddAdvancedConditions";
 
 function Filter() {
   const {
@@ -19,6 +20,9 @@ function Filter() {
   } = useLocalCollection();
   const [isOpen, setIsOpen] = useState(false);
   const [viewCondtions, setViewCondtions] = useState<Condition[]>([]);
+  const [advancedConditions, setAdvancedConditions] = useState<ConditionGroup>(
+    {} as ConditionGroup
+  );
 
   const projectViewId = collection?.collectionType === 1 ? viewId : "0x0";
 
@@ -26,6 +30,10 @@ function Filter() {
     if (collection?.projectMetadata?.views?.[projectViewId]?.filters) {
       setViewCondtions(
         collection.projectMetadata.views[projectViewId].filters as Condition[]
+      );
+      setAdvancedConditions(
+        (collection.projectMetadata.views[projectViewId]
+          .advancedFilters as ConditionGroup) || {}
       );
     }
   }, [collection.projectMetadata?.views, projectViewId]);
@@ -43,10 +51,14 @@ function Filter() {
           onClick={() => setIsOpen(true)}
         >
           <Box display="flex" alignItems="center">
-            <Text color={viewCondtions.length ? "accent" : "textSecondary"}>
+            <Text
+              color={
+                advancedConditions?.order?.length ? "accent" : "textSecondary"
+              }
+            >
               <FilterIcon size={18} />
             </Text>
-            {viewCondtions.length > 0 && (
+            {advancedConditions?.order?.length > 0 && (
               <Box
                 backgroundColor="foregroundSecondary"
                 borderRadius="2xLarge"
@@ -59,7 +71,9 @@ function Filter() {
                 flexDirection="column"
                 alignItems="center"
               >
-                <Text size="extraSmall">{viewCondtions.length}</Text>
+                <Text size="extraSmall">
+                  {advancedConditions?.order?.length}
+                </Text>
               </Box>
             )}
           </Box>
@@ -68,7 +82,7 @@ function Filter() {
       <AnimatePresence>
         {isOpen && (
           <Modal
-            title="Add Filters"
+            title="Filters"
             handleClose={() => {
               setIsOpen(false);
               updateFormCollection(collection.id, {
@@ -78,30 +92,42 @@ function Filter() {
                     ...collection?.projectMetadata?.views,
                     [projectViewId]: {
                       ...collection.projectMetadata.views?.[projectViewId],
-                      filters: viewCondtions,
+                      advancedFilters: advancedConditions,
+                      // filters: viewCondtions,
                     },
                   },
                 },
               })
                 .then((res: CollectionType) => {
+                  console.log({ res });
                   if (!res.id) {
                     throw new Error("Error updating filters");
                   }
                   console.log({ res });
                   updateCollection(res);
                 })
-                .catch(() => {
+                .catch((e) => {
+                  console.log({ e });
                   logError("Error updating filters");
                 });
             }}
           >
             <Box padding="8">
               <Stack>
-                <AddConditions
+                {/* <AddConditions
                   viewConditions={viewCondtions}
                   setViewConditions={setViewCondtions}
                   firstRowMessage="Add a filter"
                   buttonText="Add Filter"
+                  collection={collection}
+                  dropDownPortal={true}
+                /> */}
+                <AddAdvancedConditions
+                  rootConditionGroup={advancedConditions}
+                  setRootConditionGroup={setAdvancedConditions}
+                  firstRowMessage="When"
+                  buttonText="Add Filter"
+                  groupButtonText="Group Filters"
                   collection={collection}
                   dropDownPortal={true}
                 />
