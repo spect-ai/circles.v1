@@ -1021,6 +1021,7 @@ export type Property = {
   required?: boolean;
   description?: string;
   viewConditions?: Condition[];
+  advancedConditions?: ConditionGroup;
   payWallOptions?: PayWallOptions;
   internal?: boolean;
   maxSelections?: number;
@@ -1375,6 +1376,7 @@ export type Automation = {
   description: string;
   trigger: Trigger;
   conditions?: Condition[];
+  advancedConditions?: ConditionGroup;
   actions: Action[];
   triggerCategory: "collection" | "root";
   triggerCollectionSlug?: string;

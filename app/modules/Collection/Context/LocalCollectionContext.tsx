@@ -117,9 +117,15 @@ export function useProviderLocalCollection() {
 
   const getIfFieldNeedsAttention = (value: Property) => {
     let res = { needsAttention: false, reason: "" };
-    if (value.viewConditions && value.viewConditions.length > 0) {
-      for (const condition of value.viewConditions) {
-        if (condition.type === "data") {
+    if (
+      value.advancedConditions &&
+      value.advancedConditions.order?.length > 0
+    ) {
+      const conditions = value.advancedConditions.conditions;
+      const conditionGroups = value.advancedConditions.conditionGroups;
+      for (const oid of value.advancedConditions.order) {
+        if (conditions?.[oid]) {
+          const condition = conditions[oid];
           if (
             condition.data?.field &&
             !localCollection.properties[condition.data?.field?.value]
@@ -140,6 +146,33 @@ export function useProviderLocalCollection() {
               reason: `"${condition.data?.field?.label}" field has been added to visibility conditions but is an internal field`,
             };
             break;
+          }
+        } else if (conditionGroups?.[oid]) {
+          const conditionGroup = conditionGroups[oid];
+          for (const cid of conditionGroup.order) {
+            const condition = conditions?.[cid];
+            if (!condition) continue;
+            if (
+              condition.data?.field &&
+              !localCollection.properties[condition.data?.field?.value]
+            ) {
+              res = {
+                needsAttention: true,
+                reason: `"${condition.data?.field?.label}" field has been added to visibility conditions but doesn't exist on the form`,
+              };
+              break;
+            }
+            if (
+              condition.data?.field &&
+              !localCollection.properties[condition.data?.field?.value]
+                ?.isPartOfFormView
+            ) {
+              res = {
+                needsAttention: true,
+                reason: `"${condition.data?.field?.label}" field has been added to visibility conditions but is an internal field`,
+              };
+              break;
+            }
           }
         }
       }

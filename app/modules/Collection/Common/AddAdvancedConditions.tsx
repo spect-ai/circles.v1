@@ -500,6 +500,12 @@ export default function AddAdvancedConditions({
                 )[0],
               },
             };
+            if (!rootConditionGroup.operator) {
+              rootConditionGroup.operator = "and";
+            }
+            if (!rootConditionGroup.conditionGroups) {
+              rootConditionGroup.conditionGroups = {};
+            }
             setRootConditionGroup({
               ...rootConditionGroup,
               order: [...(rootConditionGroup.order || []), newCondition.id],

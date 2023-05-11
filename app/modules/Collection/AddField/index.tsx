@@ -17,6 +17,7 @@ import {
   PayWallOptions,
   Property,
   PropertyType,
+  ConditionGroup,
 } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
 import { Box, IconTrash, Input, Stack, Text } from "degen";
@@ -39,6 +40,7 @@ import Editor from "@/app/common/components/Editor";
 import { logError } from "@/app/common/utils/utils";
 import { v4 as uuid } from "uuid";
 import { quizValidFieldTypes } from "../../Plugins/common/ResponseMatchDistribution";
+import AddAdvancedConditions from "../Common/AddAdvancedConditions";
 
 type Props = {
   propertyId?: string;
@@ -84,14 +86,19 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
   const [showConfirmOnDelete, setShowConfirmOnDelete] = useState(false);
   const [showConfirmOnClose, setShowConfirmOnClose] = useState(false);
 
-  const [viewConditions, setViewConditions] = useState<Condition[]>(
-    (propertyId && collection.properties[propertyId]?.viewConditions) || []
+  // const [viewConditions, setViewConditions] = useState<Condition[]>(
+  //   (propertyId && collection.properties[propertyId]?.viewConditions) || []
+  // );
+  const [advancedConditions, setAdvancedConditions] = useState<ConditionGroup>(
+    (propertyId && collection.properties[propertyId]?.advancedConditions) ||
+      ({} as ConditionGroup)
   );
+
   // const [modalSize, setModalSize] = useState<"small" | "medium" | "large">(
   //   viewConditions?.length > 0 ? "large" : "small"
   // );
   const [advancedDefaultOpen, setAdvancedDefaultOpen] = useState(
-    viewConditions?.length > 0 ? true : false
+    advancedConditions?.order?.length > 0 ? true : false
   );
   const [reasonFieldNeedsUserAttention, setReasonFieldNeedsUserAttention] =
     useState(propertyId ? reasonFieldNeedsAttention[propertyId] : "");
@@ -198,7 +205,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
         isPartOfFormView: collection.properties[propertyId]?.isPartOfFormView,
         required: required === 1,
         milestoneFields,
-        viewConditions,
+        advancedConditions,
         payWallOptions,
         maxSelections,
         allowCustom,
@@ -234,7 +241,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
           default: defaultValue,
           required: required === 1,
           milestoneFields,
-          viewConditions,
+          advancedConditions,
           payWallOptions,
           maxSelections,
           allowCustom,
@@ -354,8 +361,10 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
 
   useEffect(() => {
     // setModalSize(viewConditions?.length > 0 ? "large" : "small");
-    setAdvancedDefaultOpen(viewConditions?.length > 0 ? true : false);
-  }, [viewConditions]);
+    setAdvancedDefaultOpen(
+      advancedConditions?.order?.length > 0 ? true : false
+    );
+  }, [advancedConditions]);
 
   useEffect(() => {
     if (propertyId && collection.projectMetadata?.cardOrders) {
@@ -364,7 +373,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
   }, [collection.projectMetadata?.cardOrders, propertyId]);
 
   useEffect(() => {
-    if (viewConditions && propertyId) {
+    if (advancedConditions?.order && propertyId) {
       const res = getIfFieldNeedsAttention({
         id: propertyId,
         name: name.trim(),
@@ -375,13 +384,13 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
         userType: userType,
         default: defaultValue,
         required: required === 1,
-        viewConditions,
+        advancedConditions,
         maxSelections,
         allowCustom,
       });
       setReasonFieldNeedsUserAttention(res?.reason);
     }
-  }, [viewConditions]);
+  }, [advancedConditions]);
 
   return (
     <Box>
@@ -580,7 +589,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
 
             {collection.collectionType === 0 && (
               <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
-                <AddConditions
+                {/* <AddConditions
                   viewConditions={viewConditions}
                   setViewConditions={(conditions) => {
                     setIsDirty(true);
@@ -591,7 +600,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
                   buttonWidth="fit"
                   dropDownPortal={true}
                   validConditionFields={validConditionFields}
-                />
+                /> */}
                 {/* {["shortText", "longText", "ethAddress"].includes(
                   type.value
                 ) && <Input label="" placeholder="Default Value" />}
@@ -611,6 +620,16 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
                   }}
                   multiple={true}
                 /> */}
+                <AddAdvancedConditions
+                  rootConditionGroup={advancedConditions}
+                  setRootConditionGroup={setAdvancedConditions}
+                  firstRowMessage="When"
+                  buttonText="Add Condition"
+                  groupButtonText="Group Conditions"
+                  collection={collection}
+                  dropDownPortal={true}
+                  validConditionFields={validConditionFields}
+                />
               </Accordian>
             )}
 

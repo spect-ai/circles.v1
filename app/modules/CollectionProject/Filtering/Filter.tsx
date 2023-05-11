@@ -28,9 +28,9 @@ function Filter() {
 
   useEffect(() => {
     if (collection?.projectMetadata?.views?.[projectViewId]?.filters) {
-      setViewCondtions(
-        collection.projectMetadata.views[projectViewId].filters as Condition[]
-      );
+      // setViewCondtions(
+      //   collection.projectMetadata.views[projectViewId].filters as Condition[]
+      // );
       setAdvancedConditions(
         (collection.projectMetadata.views[projectViewId]
           .advancedFilters as ConditionGroup) || {}

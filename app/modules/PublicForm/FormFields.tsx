@@ -10,6 +10,7 @@ import {
 import {
   CollectionType,
   Condition,
+  ConditionGroup,
   FormType,
   Property,
   UserType,
@@ -34,6 +35,7 @@ import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 
 import dynamic from "next/dynamic";
 import PublicField from "./Fields/PublicField";
+import { satisfiesAdvancedConditions } from "../Collection/Common/SatisfiesAdvancedFilter";
 
 const StartPage = dynamic(
   () => import("../Collection/Form/FormBuilder/StartPage")
@@ -575,10 +577,11 @@ function FormFields({ form, setForm }: Props) {
                     }
                   })}
                   {fields.every((field: string) => {
-                    return !satisfiesConditions(
+                    return !satisfiesAdvancedConditions(
                       data,
                       form.properties as { [propertyId: string]: Property },
-                      form.properties[field].viewConditions || []
+                      form.properties[field].advancedConditions ||
+                        ({} as ConditionGroup)
                     );
                   }) && (
                     <Box>
