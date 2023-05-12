@@ -1,29 +1,24 @@
-import { Box, Heading, Stack, Text } from "degen";
-import AddChart from "./AddChart";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
+import { Box, Text } from "degen";
 
-import FieldChart from "./FieldChart";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
+  ArcElement,
   BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LineElement,
+  LinearScale,
+  PointElement,
   Title,
   Tooltip,
-  Legend,
-  PointElement,
-  LineElement,
-  ArcElement,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { AiOutlineAreaChart } from "react-icons/ai";
-import { useState } from "react";
-import { AnimatePresence } from "framer-motion";
-import { Embed } from "../Embed";
-import { Col, Row } from "react-grid-system";
-import { BsFillPieChartFill } from "react-icons/bs";
+import { Insights } from "./Insights";
+import { ResponseCharting } from "./ResponseCharting";
 
 ChartJS.register(
   CategoryScale,
@@ -41,120 +36,124 @@ ChartJS.register(
 type Props = {};
 
 const Analytics = (props: Props) => {
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
-  const [isAddChartOpen, setIsAddChartOpen] = useState(false);
-  const [chartId, setChartId] = useState("");
-  const [isEmebedOpen, setIsEmebedOpen] = useState(false);
+  const [analyticsViewId, setAnalyticsViewId] =
+    useState<"Insights" | "ResponseCharting">("Insights");
+
+  const router = useRouter();
+  const { circle: cId, collection: colId } = router.query;
+
+  useEffect(() => {}, []);
 
   return (
-    <ScrollContainer padding="0">
-      <AnimatePresence>
-        {isAddChartOpen && (
-          <AddChart
-            handleClose={() => setIsAddChartOpen(false)}
-            chartId={chartId}
-          />
-        )}
-        {isEmebedOpen && (
-          <Embed
-            setIsOpen={setIsEmebedOpen}
-            embedRoute={`https://circles-v1-production.vercel.app/embed/form/${collection?.slug}/charts?chartId=${chartId}`}
-          />
-        )}
-      </AnimatePresence>
-      <Stack>
-        <Stack direction="horizontal" justify="space-between">
-          {collection.formMetadata.chartOrder &&
-            collection.formMetadata.chartOrder?.length > 0 && (
-              <Box width="48">
-                <PrimaryButton
-                  center
-                  icon={<AiOutlineAreaChart size={20} />}
-                  onClick={() => {
-                    setChartId("");
-                    setIsAddChartOpen(true);
-                  }}
-                >
-                  Add Chart
-                </PrimaryButton>
-              </Box>
-            )}
-          {/* <Box width="48">
-            <PrimaryButton
-              onClick={() => setIsEmebedOpen(true)}
-              variant="tertiary"
-            >
-              <Text color="accent">Embed</Text>
-            </PrimaryButton>
-          </Box> */}
-        </Stack>
-        {!collection.formMetadata.chartOrder ||
-        collection.formMetadata.chartOrder?.length === 0 ? (
-          <Box
-            style={{
-              margin: "12% 20%",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem",
-              alignItems: "center",
-            }}
+    <Box>
+      <ViewTabsContainer
+        backgroundColor="background"
+        paddingX={{
+          xs: "0",
+          md: "4",
+        }}
+        borderTopRadius="large"
+        display="flex"
+        flexDirection={{
+          xs: "column",
+          md: "row",
+        }}
+        gap={{
+          xs: "2",
+          md: "0",
+        }}
+      >
+        <Link href={`/${cId}/r/${colId}?tab=analytics&subTab=insights`}>
+          <ViewTab
+            paddingX="4"
+            backgroundColor={
+              analyticsViewId === "Insights"
+                ? "backgroundSecondary"
+                : "background"
+            }
+            borderTopWidth={analyticsViewId === "Insights" ? "0.375" : "0"}
+            borderRightWidth={analyticsViewId === "Insights" ? "0.375" : "0"}
+            borderLeftWidth={analyticsViewId === "Insights" ? "0.375" : "0"}
+            key={"pending"}
+            onClick={() => setAnalyticsViewId("Insights")}
           >
-            <BsFillPieChartFill
-              style={{ fontSize: "5rem", color: "rgb(191, 90, 242, 0.7)" }}
-            />
-            <Text variant="large" color={"textTertiary"} align="center">
-              No charts have been added
+            <Text variant="small" weight="semiBold">
+              Insights
             </Text>
-            <Box width="48">
-              <PrimaryButton
-                center
-                icon={<AiOutlineAreaChart size={20} />}
-                onClick={() => {
-                  setChartId("");
-                  setIsAddChartOpen(true);
-                }}
-              >
-                Add Chart
-              </PrimaryButton>
-            </Box>
-          </Box>
-        ) : (
-          <Box padding="4">
-            <Row>
-              {collection.formMetadata.chartOrder?.map((chartId) => {
-                const chart = collection.formMetadata.charts?.[chartId];
-                if (!chart) return null;
-                return (
-                  <Col xs={12} sm={6} md={4} lg={3} key={chartId}>
-                    <FieldChart
-                      chart={chart}
-                      setChartId={setChartId}
-                      setIsAddChartOpen={setIsAddChartOpen}
-                      collection={collection}
-                      updateCollection={updateCollection}
-                      setIsEmbedOpen={setIsEmebedOpen}
-                    />
-                  </Col>
-                );
-              })}
-            </Row>
-          </Box>
-        )}
-      </Stack>
-    </ScrollContainer>
+          </ViewTab>
+        </Link>
+        <Link href={`/${cId}/r/${colId}?tab=analytics&subTab=responseCharting`}>
+          <ViewTab
+            paddingX="4"
+            backgroundColor={
+              analyticsViewId === "ResponseCharting"
+                ? "backgroundSecondary"
+                : "background"
+            }
+            borderTopWidth={
+              analyticsViewId === "ResponseCharting" ? "0.375" : "0"
+            }
+            borderRightWidth={
+              analyticsViewId === "ResponseCharting" ? "0.375" : "0"
+            }
+            borderLeftWidth={
+              analyticsViewId === "ResponseCharting" ? "0.375" : "0"
+            }
+            key={"pending"}
+            onClick={() => setAnalyticsViewId("ResponseCharting")}
+          >
+            <Text variant="small" weight="semiBold">
+              ResponseCharting
+            </Text>
+          </ViewTab>
+        </Link>
+      </ViewTabsContainer>
+      <Container marginX="8" paddingY="0" marginTop="2">
+        {analyticsViewId === "Insights" && <Insights />}
+        {analyticsViewId === "ResponseCharting" && <ResponseCharting />}
+      </Container>
+    </Box>
   );
 };
 
-const ScrollContainer = styled(Box)`
-  overflow-y: auto;
-  ::-webkit-scrollbar {
-    width: 5px;
+const Container = styled(Box)`
+&::-webkit-scrollbar {
+  width: 0.5rem;
+}
+&::-webkit-scrollbar-track {
+  background: transparent;
+}
+&::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+      180deg,
+      rgba(191, 90, 242, 0.4) 50%,
+      rgba(191, 90, 242, 0.1) 100%
+      )
+      0% 0% / 100% 100% no-repeat padding-box;
   }
-  @media (max-width: 992px) {
-    height: calc(100vh - 9rem);
+}
+&::-webkit-scrollbar-thumb:hover {
+  background: rgba(191, 90, 242, 0.8);
+}
+
+
+`;
+
+export const ViewTabsContainer = styled(Box)``;
+
+export const ViewTab = styled(Box)`
+  @media (max-width: 768px) {
+    max-width: 100%;
   }
-  height: calc(100vh - 9rem);
+
+  max-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 `;
 
 export default Analytics;

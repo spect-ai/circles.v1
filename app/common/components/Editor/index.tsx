@@ -26,6 +26,7 @@ type Props = {
   setIsDirty?: (val: boolean) => void;
   isDirty?: boolean;
   onResize?: (url: string, width: any, height: any) => void;
+  onFocus?: () => void;
 };
 
 function Editor({
@@ -38,6 +39,7 @@ function Editor({
   isDirty,
   setIsDirty,
   onResize,
+  onFocus,
 }: Props) {
   const [content, setcontent] = useState(value);
   const { mode } = useTheme();
@@ -149,6 +151,11 @@ function Editor({
         onBlur={() => {
           if (isDirty) {
             onSave && onSave(content as string);
+          }
+        }}
+        onFocus={() => {
+          if (onFocus) {
+            onFocus();
           }
         }}
         // onCreateLink={async (title) => {
