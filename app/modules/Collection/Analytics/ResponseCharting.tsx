@@ -63,7 +63,7 @@ export const ResponseCharting = (props: Props) => {
           />
         )}
       </AnimatePresence>
-      <Stack>
+      <Box marginTop="4">
         <Stack direction="horizontal" justify="space-between">
           {collection.formMetadata.chartOrder &&
             collection.formMetadata.chartOrder?.length > 0 && (
@@ -80,14 +80,6 @@ export const ResponseCharting = (props: Props) => {
                 </PrimaryButton>
               </Box>
             )}
-          {/* <Box width="48">
-                <PrimaryButton
-                  onClick={() => setIsEmebedOpen(true)}
-                  variant="tertiary"
-                >
-                  <Text color="accent">Embed</Text>
-                </PrimaryButton>
-              </Box> */}
         </Stack>
         {!collection.formMetadata.chartOrder ||
         collection.formMetadata.chartOrder?.length === 0 ? (
@@ -120,13 +112,13 @@ export const ResponseCharting = (props: Props) => {
             </Box>
           </Box>
         ) : (
-          <Box padding="4">
+          <Box paddingY="4">
             <Row>
               {collection.formMetadata.chartOrder?.map((chartId) => {
                 const chart = collection.formMetadata.charts?.[chartId];
                 if (!chart) return null;
                 return (
-                  <Col xs={12} sm={6} md={4} lg={3} key={chartId}>
+                  <Col xs={12} sm={6} md={4} lg={6} key={chartId}>
                     <FieldChart
                       chart={chart}
                       setChartId={setChartId}
@@ -141,7 +133,7 @@ export const ResponseCharting = (props: Props) => {
             </Row>
           </Box>
         )}
-      </Stack>
+      </Box>
     </ScrollContainer>
   );
 };

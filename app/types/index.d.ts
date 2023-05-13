@@ -937,6 +937,7 @@ export type Chart = {
   type: "bar" | "pie" | "line" | "doughnut";
   fields: string[];
   filters?: Condition[];
+  advancedFilters?: ConditionGroup;
 };
 
 export type LookupToken = {

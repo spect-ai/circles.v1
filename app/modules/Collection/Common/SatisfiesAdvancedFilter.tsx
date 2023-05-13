@@ -8,6 +8,7 @@ export function satisfiesAdvancedConditions(
 ): boolean {
   const { id, operator, conditions, conditionGroups, order } =
     rootConditionGroup;
+  if (!order || order.length === 0) return true;
   if (operator === "and") {
     return order.every((oid: string) => {
       const condition = conditions[oid];
