@@ -16,7 +16,6 @@ interface Props {
 }
 
 const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
-  console.log({ slug });
   if (!form) {
     return (
       <>
@@ -62,7 +61,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { params, req } = context;
   const slug = params?.formId;
 
-  console.log({ slug });
+  context.res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=1, stale-while-revalidate"
+  );
 
   if (!slug) return { props: { form: null } };
 

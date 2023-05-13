@@ -1,5 +1,11 @@
 {
   "github": {
     "silent": true
-  }
+  },
+  "crons": [
+    {
+      "path": "r/3c3cab39-4ecf-4230-83cb-157954d5283d",
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }
