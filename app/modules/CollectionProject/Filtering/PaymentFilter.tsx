@@ -1,5 +1,5 @@
 import Popover from "@/app/common/components/Popover";
-import { IconEth, Stack, Tag, Text, Box } from "degen";
+import { IconEth, Stack, Tag, Text, Box, Button } from "degen";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -11,21 +11,27 @@ function PaymentFilter() {
 
   const paymentOptions = ["none", "Paid", "Pending", "Pending Signature"];
   return (
-    <Stack direction={"horizontal"} space="1" align={"center"}>
-      <Text variant="label">
-        <IconEth
-          size={"5"}
-          color={paymentFilter === "none" ? "inherit" : "accent"}
-        />
-      </Text>
+    <Stack direction={"horizontal"} align={"center"}>
       <Popover
         width="fit"
         butttonComponent={
-          <Box cursor="pointer" onClick={() => setIsOpen(true)}>
-            <Tag hover tone={paymentFilter === "none" ? "secondary" : "accent"}>
-              {paymentFilter}
-            </Tag>
-          </Box>
+          <Button
+            variant="transparent"
+            size="extraSmall"
+            onClick={() => setIsOpen(true)}
+          >
+            <Box display="flex" flexDirection="row" alignItems="center" gap="0">
+              <Text variant="label">
+                <IconEth
+                  size={"5"}
+                  color={paymentFilter === "none" ? "inherit" : "accent"}
+                />
+              </Text>
+              <Text variant="label">
+                {paymentFilter === "none" ? "Payment" : paymentFilter}
+              </Text>
+            </Box>
+          </Button>
         }
         isOpen={isOpen}
         setIsOpen={setIsOpen}

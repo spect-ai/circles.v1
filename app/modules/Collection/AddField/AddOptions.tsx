@@ -59,7 +59,7 @@ export default function AddOptions({
           <Box display="flex" flexDirection="column" gap="4" width="full">
             {fieldOptions.map((option, index) => (
               <Box key={index}>
-                <Stack direction="horizontal" align="center" space="1">
+                <Stack direction="horizontal" align="flex-start" space="1">
                   {collection.collectionType === 1 && (
                     <Box
                       style={{

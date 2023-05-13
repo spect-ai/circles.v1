@@ -451,6 +451,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
             handleClose();
           }
         }}
+        size={collection?.collectionType === 1 ? "small" : "medium"}
       >
         <Box padding="8">
           <Stack>

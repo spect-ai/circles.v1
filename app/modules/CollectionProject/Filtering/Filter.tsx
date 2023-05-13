@@ -41,16 +41,12 @@ function Filter() {
   return (
     <Box>
       <Stack direction="horizontal" align="center" space="1">
-        <Hidden xs sm>
-          <Text variant="label">Filter By</Text>
-        </Hidden>
         <Button
-          shape="circle"
-          size="small"
+          size="extraSmall"
           variant="transparent"
           onClick={() => setIsOpen(true)}
         >
-          <Box display="flex" alignItems="center">
+          <Box display="flex" alignItems="center" gap="1">
             <Text
               color={
                 advancedConditions?.order?.length ? "accent" : "textSecondary"
@@ -58,6 +54,9 @@ function Filter() {
             >
               <FilterIcon size={18} />
             </Text>
+            <Hidden xs sm>
+              <Text variant="label">Filter</Text>
+            </Hidden>
             {advancedConditions?.order?.length > 0 && (
               <Box
                 backgroundColor="foregroundSecondary"

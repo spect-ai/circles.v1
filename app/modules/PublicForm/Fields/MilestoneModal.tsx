@@ -124,6 +124,7 @@ export default function MilestoneModal({
         handleClose();
       }}
       title={`Add Milestone`}
+      size="small"
     >
       <Box
         padding={{
