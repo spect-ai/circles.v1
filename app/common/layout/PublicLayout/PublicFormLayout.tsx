@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import { useAtom } from "jotai";
 import { connectedUserAtom, isSidebarExpandedAtom } from "@/app/state/global";
 import { useAccount, useConnect } from "wagmi";
-import dynamic from "next/dynamic";
 import { io } from "socket.io-client";
 import { socketAtom } from "@/app/state/socket";
 
