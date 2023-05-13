@@ -91,19 +91,22 @@ export default function TableView() {
     }
   }, [dataSlug, setExpandedDataSlug, cardSlug, newCard]);
 
-  const updateData = useCallback(async ({ row }: { row: any }) => {
-    if (!row) return false;
-    const res = await updateCollectionDataGuarded(collection.id, row.id, row);
-    if (!res) return false;
-    if (res.id) {
-      console.log("update success!!");
-      updateCollection(res);
-      return true;
-    } else {
-      logError(res.message || "Error updating data");
-      return false;
-    }
-  }, []);
+  const updateData = useCallback(
+    async ({ row, collectionId }: { row: any; collectionId: string }) => {
+      if (!row) return false;
+      const res = await updateCollectionDataGuarded(collectionId, row.id, row);
+      if (!res) return false;
+      if (res.id) {
+        console.log("update success!!");
+        updateCollection(res);
+        return true;
+      } else {
+        logError(res.message || "Error updating data");
+        return false;
+      }
+    },
+    []
+  );
 
   const debouncedOnChange = _.debounce(async (newData, operations) => {
     // throttle the update to avoid spamming the server
@@ -114,7 +117,7 @@ export default function TableView() {
         operations[0].fromRowIndex,
         operations[0].toRowIndex
       )[0];
-      const res = await updateData({ row });
+      const res = await updateData({ row, collectionId: collection.id });
       !res && setData(tempData);
     }
   }, 300);
@@ -565,6 +568,7 @@ export default function TableView() {
                   setIsRewardFieldOpen(false);
                   await updateData({
                     row: tempData[row],
+                    collectionId: collection.id,
                   });
                   console.log({ updatedData: data[row][propertyId] });
                 }
@@ -592,6 +596,7 @@ export default function TableView() {
                   setIsURLFieldOpen(false);
                   await updateData({
                     row: tempData[row],
+                    collectionId: collection.id,
                   });
                 }
                 setIsURLFieldOpen(false);
@@ -638,6 +643,7 @@ export default function TableView() {
                   console.log({ tempData });
                   await updateData({
                     row: tempData[row],
+                    collectionId: collection.id,
                   });
                 }
                 setMultipleMilestoneModalOpen(false);
