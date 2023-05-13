@@ -17,11 +17,13 @@ import "@/app/styles/Table.css";
 import "react-toastify/dist/ReactToastify.css";
 import "react-tippy/dist/tippy.css";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 
 const Root = dynamic(() => import("@/app/common/Root"));
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const url = useLocation().href;
+  const router = useRouter();
+  const url = `https:/circles.spect.network/${router.route}`;
 
   return (
     <Root pageProps={pageProps}>
