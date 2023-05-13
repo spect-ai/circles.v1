@@ -78,7 +78,7 @@ const Analytics = (props: Props) => {
             onClick={() => setAnalyticsViewId("Insights")}
           >
             <Text variant="small" weight="semiBold">
-              Insights
+              Measure Drop-off
             </Text>
           </ViewTab>
         </Link>
@@ -103,7 +103,7 @@ const Analytics = (props: Props) => {
             onClick={() => setAnalyticsViewId("ResponseCharting")}
           >
             <Text variant="small" weight="semiBold">
-              ResponseCharting
+              Visualize Responses
             </Text>
           </ViewTab>
         </Link>
