@@ -35,6 +35,7 @@ import { useCircle } from "@/app/modules/Circle/CircleContext";
 import RewardTokenOptions from "../../AddField/RewardTokenOptions";
 import { updateField } from "@/app/services/Collection";
 import { logError } from "@/app/common/utils/utils";
+import CheckBox from "@/app/common/components/Table/Checkbox";
 
 type Props = {
   id: string;
@@ -63,6 +64,7 @@ const EditableField = ({
   const [allowCustom, setAllowCustom] = useState(false);
   const [maxSelections, setMaxSelections] = useState<number>();
   const [immutable, setImmutable] = useState(false);
+  const [required, setRequired] = useState(false);
 
   const [defaultRewardOptions, setDefaultRewardOptions] = useState<Registry>(
     {}
@@ -89,13 +91,53 @@ const EditableField = ({
         fields.find((field) => field.value === property?.type)?.label || "",
       value: property?.type,
     });
+    setAllowCustom(property?.allowCustom || false);
+    setMaxSelections(property?.maxSelections);
+    setImmutable(property?.immutable || false);
+    setRequired(property?.required || false);
   }, []);
+
+  const onUpdateField = async (type: Option) => {
+    const fieldOptions = [
+      {
+        label: "Option 1",
+        value: `option-${uuid()}`,
+      },
+    ];
+    const tempCollection = collection;
+    updateCollection({
+      ...tempCollection,
+      properties: {
+        ...tempCollection.properties,
+        [id]: {
+          ...tempCollection.properties[id],
+          options: type.value.includes("Select") ? fieldOptions : undefined,
+          type: type.value as PropertyType,
+        },
+      },
+    });
+    // setIsDirty(true);
+    setType(type);
+    const res = await updateField(collection.id, {
+      ...collection.properties[id],
+      type: type.value as PropertyType,
+      options: type.value.includes("Select") ? fieldOptions : undefined,
+    });
+
+    if (res.id) {
+      updateCollection(res);
+    } else {
+      updateCollection(tempCollection);
+      logError("Error updating field type");
+    }
+  };
 
   return (
     <Draggable draggableId={id} index={index}>
       {(provided, snapshot) => (
         <Container
           padding="0"
+          marginTop="4"
           borderRadius="large"
           mode={mode}
           isDragging={snapshot.isDragging}
@@ -154,8 +196,8 @@ const EditableField = ({
           </Text>
         )} */}
               <Stack space="1">
-                <Box width="full" display="flex" flexDirection="row" gap="2">
-                  {collection.properties[id]?.type !== "readonly" && (
+                {collection.properties[id]?.type !== "readonly" && (
+                  <Box width="full" display="flex" flexDirection="row" gap="2">
                     <NameInput
                       defaultValue={collection.properties[id]?.name}
                       autoFocus
@@ -173,13 +215,18 @@ const EditableField = ({
                         }
                       }}
                     />
-                  )}
-                  {collection.properties[id].required && (
-                    <Tag size="small" tone="accent">
-                      Required
-                    </Tag>
-                  )}
-                </Box>
+                    {collection.properties[id].required && (
+                      <Tag size="small" tone="accent">
+                        Required
+                      </Tag>
+                    )}
+                    {collection.properties[id].immutable && (
+                      <Tag size="small" tone="blue">
+                        Immutable
+                      </Tag>
+                    )}
+                  </Box>
+                )}
                 <Editor
                   value={collection.properties[id]?.description}
                   placeholder={
@@ -297,6 +344,7 @@ const EditableField = ({
                           collection.properties[id].options?.[0] as Option
                         }
                         propertyId={id}
+                        focused={hover}
                       />
                     )}
                     {(collection.properties[id]?.type === "multiSelect" ||
@@ -307,6 +355,7 @@ const EditableField = ({
                           [collection.properties[id]?.options as Option[]][0]
                         }
                         propertyId={id}
+                        focused={hover}
                       />
                     )}
                     {collection.properties[id]?.type === "reward" && (
@@ -373,144 +422,163 @@ const EditableField = ({
                       </Box>
                     )}
                   </Box>
-                  <Box width="1/3" marginTop="4">
-                    <Stack>
-                      <Dropdown
-                        size="small"
-                        options={fieldOptionsDropdown}
-                        selected={type}
-                        onChange={async (type) => {
-                          const fieldOptions = [
-                            {
-                              label: "Option 1",
-                              value: `option-${uuid()}`,
-                            },
-                          ];
-                          // setIsDirty(true);
-                          setType(type);
-                          const res = await updateField(collection.id, {
-                            ...collection.properties[id],
-                            type: type.value as PropertyType,
-                            options: type.value.includes("Select")
-                              ? fieldOptions
-                              : undefined,
-                          });
-
-                          if (res.id) {
-                            updateCollection(res);
-                          } else {
-                            logError("Error updating field type");
-                          }
-                        }}
-                        multiple={false}
-                        isClearable={false}
-                      />
-                      {(collection.properties[id]?.type === "singleSelect" ||
-                        collection.properties[id]?.type === "multiSelect") && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{
+                      opacity: hover ? 1 : 0,
+                    }}
+                    style={{
+                      width: "33%",
+                    }}
+                  >
+                    <Box width="full" marginTop="4">
+                      <Stack>
+                        <Dropdown
+                          size="small"
+                          options={fieldOptionsDropdown}
+                          selected={type}
+                          onChange={(type) => {
+                            onUpdateField(type);
+                          }}
+                          multiple={false}
+                          isClearable={false}
+                        />
                         <Stack direction="horizontal" align="center" space="2">
-                          <input
-                            type="checkbox"
-                            name={"Settings"}
-                            checked={allowCustom}
-                            onChange={async () => {
-                              setAllowCustom(!allowCustom);
+                          <CheckBox
+                            isChecked={required}
+                            onClick={async () => {
+                              setRequired(!required);
                               const res = await updateField(collection.id, {
                                 ...collection.properties[id],
-                                allowCustom: !allowCustom,
+                                required: !required,
                               });
                               if (res.id) {
                                 updateCollection(res);
                               } else {
-                                setAllowCustom(allowCustom);
-                                logError("Error updating field custom answer");
+                                setRequired(required);
+                                logError("Error updating field required");
                               }
-                            }}
-                            style={{
-                              width: "16px",
-                              height: "16px",
-                              cursor: "pointer",
                             }}
                           />
                           <Text size="small" weight="light">
-                            Allow custom answer
+                            Required
                           </Text>
                         </Stack>
-                      )}
-                      {(collection.properties[id]?.type === "singleSelect" ||
-                        collection.properties[id]?.type === "multiSelect") && (
-                        <Stack direction="horizontal" align="center" space="2">
-                          <input
-                            type="checkbox"
-                            name={"Settings"}
-                            checked={immutable}
-                            onChange={async () => {
-                              setImmutable(!immutable);
-                              const res = await updateField(collection.id, {
-                                ...collection.properties,
-                                [id]: {
-                                  ...collection.properties[id],
+                        {(collection.properties[id]?.type === "singleSelect" ||
+                          collection.properties[id]?.type ===
+                            "multiSelect") && (
+                          <Stack
+                            direction="horizontal"
+                            align="center"
+                            space="2"
+                          >
+                            <CheckBox
+                              isChecked={allowCustom}
+                              onClick={async () => {
+                                setAllowCustom(!allowCustom);
+                                const res = await updateField(collection.id, {
+                                  id: collection.properties[id].id,
+                                  allowCustom: !allowCustom,
+                                });
+                                if (res.id) {
+                                  updateCollection(res);
+                                } else {
+                                  setAllowCustom(allowCustom);
+                                  logError(
+                                    "Error updating field custom answer"
+                                  );
+                                }
+                              }}
+                            />
+                            <Text size="small" weight="light">
+                              Allow custom answer
+                            </Text>
+                          </Stack>
+                        )}
+                        {(collection.properties[id]?.type === "singleSelect" ||
+                          collection.properties[id]?.type ===
+                            "multiSelect") && (
+                          <Stack
+                            direction="horizontal"
+                            align="center"
+                            space="2"
+                          >
+                            <CheckBox
+                              isChecked={immutable}
+                              onClick={async () => {
+                                setImmutable(!immutable);
+                                const res = await updateField(collection.id, {
+                                  id: collection.properties[id].id,
                                   immutable: !immutable,
-                                },
-                              });
-                              if (res.id) {
-                                updateCollection(res);
-                              } else {
-                                setImmutable(immutable);
-                                logError("Error updating field immutability");
-                              }
-                            }}
-                            style={{
-                              width: "16px",
-                              height: "16px",
-                              cursor: "pointer",
-                            }}
-                          />
-                          <Text size="small" weight="light">
-                            Immutable
-                          </Text>
-                        </Stack>
-                      )}
-                      {collection.properties[id]?.type === "multiSelect" && (
-                        <Stack direction="horizontal" align="center" space="2">
-                          <MaxSelectionsInput
-                            value={maxSelections}
-                            onChange={async (e) => {
-                              const temp = maxSelections;
-                              setMaxSelections(parseInt(e.target.value));
-                              const res = await updateField(collection.id, {
-                                ...collection.properties,
-                                [id]: {
-                                  ...collection.properties[id],
+                                });
+                                if (res.id) {
+                                  updateCollection(res);
+                                } else {
+                                  setImmutable(immutable);
+                                  logError("Error updating field immutability");
+                                }
+                              }}
+                            />
+                            <Text size="small" weight="light">
+                              Immutable
+                            </Text>
+                          </Stack>
+                        )}
+                        {collection.properties[id]?.type === "multiSelect" && (
+                          <Stack
+                            direction="horizontal"
+                            align="center"
+                            space="2"
+                          >
+                            <MaxSelectionsInput
+                              value={maxSelections}
+                              onChange={async (e) => {
+                                const temp = maxSelections;
+                                setMaxSelections(parseInt(e.target.value));
+                                const res = await updateField(collection.id, {
+                                  id: collection.properties[id].id,
                                   maxSelections: maxSelections,
-                                },
-                              });
-                              if (res.id) {
-                                updateCollection(res);
-                              } else {
-                                setMaxSelections(temp);
-                                logError("Error updating field immutability");
-                              }
-                            }}
-                            placeholder="2"
-                            type="number"
-                            step={1}
-                          />
-                          <Text size="small" weight="light">
-                            Max. selections
-                          </Text>
-                        </Stack>
-                      )}
-                    </Stack>
-                  </Box>
+                                });
+                                if (res.id) {
+                                  updateCollection(res);
+                                } else {
+                                  setMaxSelections(temp);
+                                  logError("Error updating field immutability");
+                                }
+                              }}
+                              placeholder="2"
+                              type="number"
+                              step={1}
+                            />
+                            <Text size="small" weight="light">
+                              Max. selections
+                            </Text>
+                          </Stack>
+                        )}
+                      </Stack>
+                    </Box>
+                  </motion.div>
                 </Stack>
               )}
               {collection.properties[id]?.type === "reward" && (
-                <Box marginTop="2">
-                  <RewardTokenOptions
-                    networks={defaultRewardOptions}
-                    setNetworks={setDefaultRewardOptions}
-                  />
-                </Box>
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{
+                    opacity: hover ? 1 : 0,
+                    height: hover ? "auto" : 0,
+                  }}
+                  exit={{ opacity: 0, height: 0 }}
+                  style={{
+                    width: "33%",
+                  }}
+                >
+                  <Box marginTop="2">
+                    <RewardTokenOptions
+                      networks={defaultRewardOptions}
+                      setNetworks={setDefaultRewardOptions}
+                    />
+                  </Box>
+                </motion.div>
               )}
             </Stack>
           </Box>
@@ -557,6 +625,7 @@ const NameInput = styled.input`
   color: rgb(255, 255, 255, 0.75);
   font-weight: 600;
   overflow: hidden;
+  width: 100%;
 `;
 
 const MaxSelectionsInput = styled.input`
