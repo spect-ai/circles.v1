@@ -56,6 +56,8 @@ import SelectComponent from "./SelectComponent";
 import TelegramComponent from "./TelegramComponent";
 import { logError } from "@/app/common/utils/utils";
 import { satisfiesAdvancedConditions } from "../Common/SatisfiesAdvancedFilter";
+import { sortFieldValues } from "../Common/SortFieldValues";
+import { useCircle } from "../../Circle/CircleContext";
 
 export default function TableView() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
@@ -66,6 +68,7 @@ export default function TableView() {
   const [multipleMilestoneModalOpen, setMultipleMilestoneModalOpen] =
     useState(false);
   const [data, setData] = useState<any[]>();
+  const { registry } = useCircle();
   const {
     localCollection: collection,
     updateCollection,
@@ -214,79 +217,26 @@ export default function TableView() {
               collection.collectionType === 0 ? "0x0" : projectViewId
             ].sort?.property || ""
           ];
-        const propertyType = property.type;
-        const propertyOptions = property.options as Option[];
         const direction =
           collection.projectMetadata.views[
             collection.collectionType === 0 ? "0x0" : projectViewId
           ].sort?.direction || "asc";
         const propertyId = property.id;
-        filteredData = filteredData.sort((a: any, b: any) => {
-          if (propertyType === "singleSelect") {
-            const aIndex = propertyOptions.findIndex(
-              (option) => option.value === a[propertyId]?.value
-            );
-            const bIndex = propertyOptions.findIndex(
-              (option) => option.value === b[propertyId]?.value
-            );
-            if (direction === "asc") {
-              return aIndex - bIndex;
-            }
-            return bIndex - aIndex;
-          }
-          if (propertyType === "user") {
-            if (direction === "asc") {
-              return a[propertyId]?.label?.localeCompare(b[propertyId]?.label);
-            }
-            return b[propertyId]?.label?.localeCompare(a[propertyId]?.label);
-          }
-          if (propertyType === "date") {
-            const aDate = new Date(a[propertyId]);
-            const bDate = new Date(b[propertyId]);
-            if (direction === "asc") {
-              return aDate.getTime() - bDate.getTime();
-            }
-            return bDate.getTime() - aDate.getTime();
-          }
-          if (propertyType === "reward") {
-            // property has chain, token and value, need to sort it based on chain first, then token and then value
-            const aChain = a[propertyId]?.chain.label;
-            const bChain = b[propertyId]?.chain.label;
-            if (aChain !== bChain) {
-              if (direction === "asc") {
-                return aChain?.localeCompare(bChain);
-              }
-              return bChain?.localeCompare(aChain);
-            }
-            const aToken = a[propertyId]?.token.label;
-            const bToken = b[propertyId]?.token.label;
-            if (aToken !== bToken) {
-              if (direction === "asc") {
-                return aToken.localeCompare(bToken);
-              }
-              return bToken.localeCompare(aToken);
-            }
-            const aValue = a[propertyId]?.value;
-            const bValue = b[propertyId]?.value;
-            if (direction === "asc") {
-              return aValue - bValue;
-            }
-            return bValue - aValue;
-          }
 
-          if (
-            propertyType === "multiSelect" ||
-            propertyType === "user[]" ||
-            propertyType === "payWall" ||
-            propertyType === "multiURL"
-          )
-            return;
-
-          if (direction === "asc") {
-            return a[propertyId]?.localeCompare(b[propertyId]);
-          }
-          return b[propertyId]?.localeCompare(a[propertyId]);
-        });
+        sortFieldValues(
+          filteredData,
+          collection,
+          propertyId,
+          direction,
+          registry
+        )
+          .then((sortedData) => {
+            console.log({ sortedData });
+            setData(sortedData);
+          })
+          .catch((err) => {
+            logError(`Error sorting data: ${err}`);
+          });
       } else {
         // sort the data based on the timestamp of their first activity
         filteredData = filteredData.sort((a: any, b: any) => {
@@ -304,9 +254,8 @@ export default function TableView() {
           );
           return aTime.getTime() - bTime.getTime();
         });
+        setData(filteredData);
       }
-      console.log({ filteredData });
-      setData(filteredData);
     }
   }, [
     collection.collectionType,

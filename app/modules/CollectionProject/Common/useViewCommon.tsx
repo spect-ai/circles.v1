@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { reorder } from "@/app/common/utils/utils";
+import { logError, reorder } from "@/app/common/utils/utils";
 import {
   updateCollectionDataGuarded,
   updateFormCollection,
@@ -17,8 +17,11 @@ import {
 } from "../../Collection/Common/SatisfiesFilter";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { satisfiesAdvancedConditions } from "../../Collection/Common/SatisfiesAdvancedFilter";
+import { sortFieldValues } from "../../Collection/Common/SortFieldValues";
+import { useCircle } from "../../Circle/CircleContext";
 
 export default function useViewCommon() {
+  const { registry } = useCircle();
   const {
     localCollection: collection,
     projectViewId,
@@ -122,80 +125,45 @@ export default function useViewCommon() {
     }
 
     if (view.sort?.property) {
-      const { property, direction } = view.sort;
-      const propertyType = collection.properties[property].type;
-      const propertyOptions = collection.properties[property]
-        .options as Option[];
-      newCardOrder = newCardOrder.map((group) => {
-        return group?.sort((a, b) => {
-          if (propertyType === "singleSelect") {
-            const aIndex = propertyOptions.findIndex(
-              (option) => option.value === collection.data?.[a][property]?.value
-            );
-            const bIndex = propertyOptions.findIndex(
-              (option) => option.value === collection.data?.[b][property]?.value
-            );
-            if (direction === "asc") {
-              return aIndex - bIndex;
-            }
-            return bIndex - aIndex;
-          }
-          if (propertyType === "user") {
-            if (direction === "asc") {
-              return collection.data?.[a][property]?.label?.localeCompare(
-                collection.data[b][property]?.label
-              );
-            }
-            return collection.data?.[b][property]?.label?.localeCompare(
-              collection.data[a][property]?.label
-            );
-          }
-          if (propertyType === "date") {
-            const aDate = new Date(collection.data?.[a][property]);
-            const bDate = new Date(collection.data?.[b][property]);
-            if (direction === "asc") {
-              return aDate.getTime() - bDate.getTime();
-            }
-            return bDate.getTime() - aDate.getTime();
-          }
-          if (propertyType === "reward") {
-            // property has chain, token and value, need to sort it based on chain first, then token and then value
-            const aChain = collection.data?.[a][property]?.chain.label;
-            const bChain = collection.data?.[b][property]?.chain.label;
-            if (aChain !== bChain) {
-              if (direction === "asc") {
-                return aChain?.localeCompare(bChain);
-              }
-              return bChain?.localeCompare(aChain);
-            }
-            const aToken = collection.data?.[a][property]?.token.label;
-            const bToken = collection.data?.[b][property]?.token.label;
-            if (aToken !== bToken) {
-              if (direction === "asc") {
-                return aToken.localeCompare(bToken);
-              }
-              return bToken.localeCompare(aToken);
-            }
-            const aValue = collection.data?.[a][property]?.value;
-            const bValue = collection.data?.[b][property]?.value;
-            if (direction === "asc") {
-              return aValue - bValue;
-            }
-            return bValue - aValue;
-          }
-
-          if (direction === "asc") {
-            return collection.data?.[a][property]?.localeCompare(
-              collection.data[b][property]
-            );
-          }
-          return collection.data?.[b][property]?.localeCompare(
-            collection.data[a][property]
-          );
+      const property =
+        collection.properties[
+          collection.projectMetadata.views[
+            collection.collectionType === 0 ? "0x0" : projectViewId
+          ].sort?.property || ""
+        ];
+      const direction =
+        collection.projectMetadata.views[
+          collection.collectionType === 0 ? "0x0" : projectViewId
+        ].sort?.direction || "asc";
+      const propertyId = property.id;
+      const cardToColumnIndex = newCardOrder.reduce((acc, group, index) => {
+        group.forEach((cardId) => {
+          acc[cardId] = index;
         });
+        return acc;
+      }, {} as any);
+      const flattenedCards = newCardOrder.flat().map((cardId) => {
+        return collection.data?.[cardId];
       });
-    }
-    setCardOrders(newCardOrder);
+
+      const sortedCardOutput = Array.from(
+        { length: newCardOrder.length },
+        () => []
+      ) as string[][];
+      sortFieldValues(
+        flattenedCards,
+        collection,
+        propertyId,
+        direction,
+        registry
+      ).then((sortedCards) => {
+        sortedCards.forEach((card: { slug: string }) => {
+          console.log({ idx: cardToColumnIndex[card.slug] });
+          sortedCardOutput[cardToColumnIndex[card.slug]].push(card.slug);
+        });
+        setCardOrders(sortedCardOutput);
+      });
+    } else setCardOrders(newCardOrder);
   }, [
     searchFilter,
     view.groupByColumn,

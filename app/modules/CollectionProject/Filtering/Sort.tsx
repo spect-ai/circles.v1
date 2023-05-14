@@ -15,6 +15,7 @@ import {
   BsSortDown,
   BsSortUp,
 } from "react-icons/bs";
+import { RiSortDesc, RiSortAsc } from "react-icons/ri";
 
 export default function Sort() {
   const {
@@ -46,6 +47,13 @@ export default function Sort() {
     "longText",
     "multiURL",
     "milestone",
+    "ethAddress",
+    "email",
+    "user",
+    "discord",
+    "github",
+    "telegram",
+    "readonly",
   ];
 
   useEffect(() => {
@@ -93,6 +101,12 @@ export default function Sort() {
           variant="transparent"
           shape="circle"
           onClick={() => {
+            if (!sortProperty) {
+              toast.error(
+                `Please click "Sort" and select a field to sort by, first`
+              );
+              return;
+            }
             setIsAsc(!isAsc);
             updateFormCollection(collection.id, {
               projectMetadata: {
@@ -112,6 +126,7 @@ export default function Sort() {
               .then((res) => {
                 console.log({
                   res: collection?.projectMetadata?.views?.[projectViewId],
+                  id: res.id,
                 });
                 if (res.id) {
                   updateCollection(res);
@@ -126,8 +141,8 @@ export default function Sort() {
         >
           <Text color={sortProperty ? "accent" : "textSecondary"}>
             {!sortProperty && <BsArrowDownUp size={18} />}
-            {sortProperty && isAsc && <BsSortUp size={18} />}
-            {sortProperty && !isAsc && <BsSortDown size={18} />}
+            {sortProperty && isAsc && <RiSortAsc size={18} />}
+            {sortProperty && !isAsc && <RiSortDesc size={18} />}
           </Text>
         </Button>
         <Popover
