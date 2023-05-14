@@ -36,23 +36,13 @@ import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import dynamic from "next/dynamic";
 import PublicField from "./Fields/PublicField";
 import { satisfiesAdvancedConditions } from "../Collection/Common/SatisfiesAdvancedFilter";
+import StartPage from "../Collection/Form/FormBuilder/StartPage";
+import ConnectPage from "../Collection/Form/FormBuilder/ConnectPage";
+import ConnectDiscordPage from "../Collection/Form/FormBuilder/ConnectDiscordPage";
+import SubmittedPage from "../Collection/Form/FormBuilder/SubmittedPage";
+import CollectPage from "../Collection/Form/FormBuilder/CollectPage";
+import CollectPayment from "./Fields/CollectPayment";
 
-const StartPage = dynamic(
-  () => import("../Collection/Form/FormBuilder/StartPage")
-);
-const ConnectPage = dynamic(
-  () => import("../Collection/Form/FormBuilder/ConnectPage")
-);
-const CollectPage = dynamic(
-  () => import("../Collection/Form/FormBuilder/CollectPage")
-);
-const CollectPayment = dynamic(() => import("./Fields/CollectPayment"));
-const SubmittedPage = dynamic(
-  () => import("../Collection/Form/FormBuilder/SubmittedPage")
-);
-const ConnectDiscordPage = dynamic(
-  () => import("../Collection/Form/FormBuilder/ConnectDiscordPage")
-);
 const Modal = dynamic(() => import("@/app/common/components/Modal"));
 
 // const PublicField = dynamic(() => import("./Fields/PublicField"), {

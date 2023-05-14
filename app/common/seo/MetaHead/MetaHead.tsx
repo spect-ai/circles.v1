@@ -1,5 +1,5 @@
 import { NextSeo } from "next-seo";
-import { useRouter } from "next/router";
+import { useLocation } from "react-use";
 
 type props = {
   title: string;
@@ -12,7 +12,7 @@ export default function MetaHead({
   image,
 }: props): JSX.Element {
   const siteURL = "https://circles.spect.network";
-  const pathName = useRouter().pathname;
+  const pathName = useLocation().pathname;
   const pageURL = pathName === "/" ? siteURL : siteURL + pathName;
   const twitterHandle = "@JoinSpect";
   const siteName = "Spect";

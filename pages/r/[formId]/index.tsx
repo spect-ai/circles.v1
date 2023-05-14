@@ -1,17 +1,14 @@
-import PublicFormLayout from "@/app/common/layout/PublicLayout/PublicFormLayout";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
-import {
-  CircleContext,
-  useProviderCircleContext,
-} from "@/app/modules/Circle/CircleContext";
-import {
-  LocalProfileContext,
-  useProviderLocalProfile,
-} from "@/app/modules/Profile/ProfileSettings/LocalProfileContext";
-import PublicForm from "@/app/modules/PublicForm";
 import { FormType } from "@/app/types";
 import { GetServerSidePropsContext, NextPage } from "next";
+import dynamic from "next/dynamic";
 import React from "react";
+
+const PublicFormLayout = dynamic(
+  () => import("@/app/common/layout/PublicLayout/PublicFormLayout")
+);
+
+const PublicForm = dynamic(() => import("@/app/modules/PublicForm"));
 
 interface Props {
   slug: string;
@@ -19,7 +16,6 @@ interface Props {
 }
 
 const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
-  console.log({ slug });
   if (!form) {
     return (
       <>
@@ -41,9 +37,6 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
     );
   }
 
-  const context = useProviderCircleContext();
-  const profileContext = useProviderLocalProfile();
-
   return (
     <>
       <MetaHead
@@ -58,13 +51,8 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
           "https://ik.imagekit.io/spectcdn/spect_landscape.pngcz0kiyzu43m_fb9pRIjVW?updatedAt=1681837726214"
         }
       />
-      <LocalProfileContext.Provider value={profileContext}>
-        <CircleContext.Provider value={context}>
-          <PublicFormLayout>
-            <PublicForm form={form} />
-          </PublicFormLayout>
-        </CircleContext.Provider>
-      </LocalProfileContext.Provider>
+
+      <PublicForm form={form} />
     </>
   );
 };
@@ -72,6 +60,11 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { params, req } = context;
   const slug = params?.formId;
+
+  context.res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=1, stale-while-revalidate"
+  );
 
   if (!slug) return { props: { form: null } };
 
