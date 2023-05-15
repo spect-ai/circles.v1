@@ -85,7 +85,7 @@ export default function AutomationCenter() {
               <Text variant="large" color={"textTertiary"} align="center">
                 {canDo("manageCircleSettings")
                   ? `Create Automations to reduce repetitive tasks.`
-                  : `Ouch ! This Circle doesnot have automations. And You do not have permission to create new automations.`}
+                  : `Ouch ! This space does not have automations. And you do not have permission to create new automations.`}
               </Text>
             </Box>
           )}

@@ -112,7 +112,7 @@ export default function Circle() {
               onClick={async () => {
                 const data = await joinCircle(circle.id);
                 if (data) {
-                  toast("You have joined circle successfully", {
+                  toast("You have joined space!", {
                     theme: "dark",
                   });
                   fetchCircle();

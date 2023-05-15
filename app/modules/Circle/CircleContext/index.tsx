@@ -194,7 +194,7 @@ export function useProviderCircleContext() {
     if (circle?.id) {
       const getPrivateCredentials = async () => {
         const res = await getPrivateCircleCredentials(circle?.id);
-        setPrivateCredentials(res);
+        if (res && typeof res !== "boolean") setPrivateCredentials(res);
       };
 
       try {

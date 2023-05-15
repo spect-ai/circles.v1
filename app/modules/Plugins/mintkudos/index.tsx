@@ -3,32 +3,24 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import mixpanel from "@/app/common/utils/mixpanel";
+import { logError } from "@/app/common/utils/utils";
 import useCredentials from "@/app/services/Credentials";
-import {
-  getPrivateCircleCredentials,
-  GetPrivateCirclePropertiesDto,
-} from "@/app/services/PrivateCircle";
 import {
   CommunityKudosType,
   KudosRequestType,
   KudosType,
-  Permissions,
   UserType,
 } from "@/app/types";
 import { CheckCircleOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { Box, Button, Input, MediaPicker, Stack, Text, Textarea } from "degen";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
-import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
-import ResponseMatchDistribution, {
-  quizValidFieldTypes,
-} from "../common/ResponseMatchDistribution";
-import { logError } from "@/app/common/utils/utils";
+import ResponseMatchDistribution from "../common/ResponseMatchDistribution";
 
 const ScrollContainer = styled(Box)`
   overflow-x: auto;
@@ -271,7 +263,7 @@ export default function SendKudos({ handleClose }: Props) {
                 </Stack>
               </Box>
               <Accordian
-                name="Set Conditions"
+                name="DISTRIBUTE WHEN RESPONSES MATCH (IDEAL FOR QUIZZES)"
                 defaultOpen={
                   minimumNumberOfAnswersThatNeedToMatch > 0 ? true : false
                 }

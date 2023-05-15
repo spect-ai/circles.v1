@@ -60,7 +60,7 @@ export default function AddConditions({
             <Box
               width={{
                 xs: "full",
-                md: "48",
+                md: firstRowMessage ? "48" : "12",
               }}
               marginTop={{
                 xs: "2",
@@ -80,11 +80,13 @@ export default function AddConditions({
                 >
                   <DeleteOutlined style={{ fontSize: "1.2rem" }} />
                 </Button>
-                <Text size="base">
-                  {index === 0
-                    ? `${firstRowMessage || "Show field when"}`
-                    : "and"}
-                </Text>
+                {firstRowMessage && (
+                  <Text size="base">
+                    {index === 0
+                      ? `${firstRowMessage || "Show field when"}`
+                      : "and"}
+                  </Text>
+                )}
               </Stack>
             </Box>
             <Box

@@ -43,6 +43,11 @@ export default function Messages({ form }: Props) {
           💰 This form distributes erc20 tokens to responders
         </Text>
       )}
+      {form.formMetadata.zealyXP && (
+        <Text weight="semiBold">
+          😎 This form distributes XP on Zealy to responders
+        </Text>
+      )}
       {form.formMetadata.sybilProtectionEnabled && (
         <Text weight="semiBold">✋ This form is Sybil protected</Text>
       )}

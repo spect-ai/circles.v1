@@ -64,7 +64,7 @@ export const joinCircleFromGuildxyz = async (circleId: string) => {
   );
   if (res.ok) {
     const data = await res.json();
-    toast("You have joined circle successfully", {
+    toast("You have joined space!", {
       theme: "dark",
     });
     console.log({ data });

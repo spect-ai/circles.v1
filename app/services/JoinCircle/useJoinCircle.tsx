@@ -21,7 +21,7 @@ export default function useJoinCircle() {
         );
         if (res.id) {
           window.location.replace(`/${res.slug}`);
-          toast("You have joined the circle!", {
+          toast("You have joined the space!", {
             theme: "dark",
           });
         } else {

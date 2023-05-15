@@ -21,6 +21,8 @@ import { useCircle } from "../../CircleContext";
 import { defaultPermissions, permissionText } from "./contants";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Hidden } from "react-grid-system";
+import { toast } from "react-toastify";
+import { reservedRoles } from "../InviteMembersModal/constants";
 
 type props = {
   role?: string;
@@ -68,8 +70,8 @@ export default function AddRole({ role }: props) {
             size="small"
           >
             {circle.roles[role]?.mutable && canDo("manageRoles")
-              ? "Edit"
-              : "View"}
+              ? "Edit "
+              : "View "}
             <Hidden xs sm>
               Permissions
             </Hidden>
@@ -210,6 +212,11 @@ export default function AddRole({ role }: props) {
                             console.log({ payload });
                             res = await updateRole(circle?.id, role, payload);
                           } else {
+                            if (reservedRoles.includes(name)) {
+                              toast.warning(`Role name "${name}" is reserved.`);
+                              setLoading(false);
+                              return;
+                            }
                             const payload = {
                               name: name,
                               description: role

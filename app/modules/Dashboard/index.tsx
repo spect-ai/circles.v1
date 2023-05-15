@@ -247,7 +247,7 @@ function Dashboard() {
               </Stack>
             </Hidden>
           </Stack>
-          {(!currentUser.discordUsername ||
+          {/* {(!currentUser.discordUsername ||
             currentUser.discordUsername === "undefined#undefined") && (
             <Box
               display="flex"
@@ -269,7 +269,7 @@ function Dashboard() {
               </Text>
               <ConnectDiscordButton width="fit" />
             </Box>
-          )}
+          )} */}
           <Box
             marginTop={{
               xs: "2",

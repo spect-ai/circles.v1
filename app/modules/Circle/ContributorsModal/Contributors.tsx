@@ -7,6 +7,7 @@ import { useQuery } from "react-query";
 import AddRole from "./AddRoleModal";
 import InviteMemberModal from "./InviteMembersModal";
 import MemberDisplay from "./MemberDisplay";
+import { reservedRoles } from "./InviteMembersModal/constants";
 
 function Contributors() {
   const { canDo } = useRoleGate();
@@ -87,9 +88,10 @@ function Contributors() {
         </Box>
       </Stack>
       <Stack>
-        {Object.keys(circle?.roles).map((role) => (
-          <RoleSection key={role} roleName={role} />
-        ))}
+        {Object.keys(circle?.roles).map((role) => {
+          if (reservedRoles.includes(role)) return null;
+          return <RoleSection key={role} roleName={role} />;
+        })}
       </Stack>
     </Box>
   );
