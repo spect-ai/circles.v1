@@ -34,19 +34,26 @@ export default function ConnectZealyModal({ setIsOpen, isOpen }: Props) {
       size="small"
     >
       <Box padding="8" paddingTop="4">
-        <Stack>
-          <Input
-            label="Zealy Questboard URL"
-            placeholder="https://zealy.io/c/buidl/questboard"
-            value={zealyUrl}
-            onChange={(e) => setZealyUrl(e.target.value)}
-          />
-          <Input
-            label="API Key"
-            placeholder="API Key"
-            value={zealyApiKey}
-            onChange={(e) => setZealyApiKey(e.target.value)}
-          />
+        <Stack space="4">
+          <Stack space="1">
+            <Text variant="label">Zealy Questboard URL</Text>
+            <Input
+              label
+              placeholder="https://zealy.io/c/buidl/questboard"
+              value={zealyUrl}
+              onChange={(e) => setZealyUrl(e.target.value)}
+            />
+          </Stack>{" "}
+          <Stack space="1">
+            <Text variant="label">API Key</Text>
+
+            <Input
+              label
+              placeholder="API Key"
+              value={zealyApiKey}
+              onChange={(e) => setZealyApiKey(e.target.value)}
+            />
+          </Stack>
           <Box
             display="flex"
             flexDirection="row"
@@ -56,12 +63,12 @@ export default function ConnectZealyModal({ setIsOpen, isOpen }: Props) {
             marginTop="6"
           >
             <Box display="flex" flexDirection="column">
-              <Box cursor="pointer" onClick={() => {}}>
+              {/* <Box cursor="pointer" onClick={() => {}}>
                 <Text variant="small">How do I generate an API Key?</Text>
               </Box>
               <Box cursor="pointer" onClick={() => {}}>
                 <Text variant="small">Who can access this?</Text>
-              </Box>
+              </Box> */}
             </Box>
             <Box width="32">
               <PrimaryButton

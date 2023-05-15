@@ -131,6 +131,15 @@ export default function Membership({}: Props) {
             ) {
               return null;
             }
+            const indexOfApplicantRole =
+              circle.memberRoles[member]?.indexOf("applicant");
+            if (indexOfApplicantRole > -1)
+              circle.memberRoles[member]?.splice(indexOfApplicantRole, 1);
+            const indexOfVoterRole =
+              circle.memberRoles[member]?.indexOf("voter");
+            if (indexOfVoterRole > -1)
+              circle.memberRoles[member]?.splice(indexOfVoterRole, 1);
+            if (circle.memberRoles[member]?.length === 0) return null;
             return (
               <Member
                 key={member}
