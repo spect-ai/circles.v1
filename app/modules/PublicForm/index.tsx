@@ -7,6 +7,15 @@ import styled from "@emotion/styled";
 import { useLocation } from "react-use";
 import { ToastContainer } from "react-toastify";
 import FormFields from "./FormFields";
+import {
+  LocalProfileContext,
+  useProviderLocalProfile,
+} from "../Profile/ProfileSettings/LocalProfileContext";
+import {
+  CircleContext,
+  useProviderCircleContext,
+} from "../Circle/CircleContext";
+import PublicFormLayout from "@/app/common/layout/PublicLayout/PublicFormLayout";
 
 type Props = {
   form?: FormType;
@@ -18,43 +27,56 @@ function PublicForm({ form: fetchedForm }: Props) {
   const { pathname } = useLocation();
   const route = pathname?.split("/")[3];
 
+  const context = useProviderCircleContext();
+  const profileContext = useProviderLocalProfile();
+
   return (
-    <ScrollContainer
-      backgroundColor={
-        route === "embed" ? "transparent" : "backgroundSecondary"
-      }
-    >
-      <ToastContainer
-        toastStyle={{
-          backgroundColor: `${
-            mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
-          }`,
-          color: `${
-            mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
-          }`,
-        }}
-      />
-      {route !== "embed" && (
-        <CoverImage
-          src={form?.formMetadata.cover || ""}
-          backgroundColor="accentSecondary"
-        />
-      )}
-      <Container embed={route === "embed"}>
-        <FormContainer
-          backgroundColor={route === "embed" ? "transparent" : "background"}
-          borderRadius={route === "embed" ? "none" : "2xLarge"}
-          style={{
-            boxShadow: `0rem 0.2rem 0.5rem ${
-              mode === "dark" ? "rgba(0, 0, 0, 0.25)" : "rgba(0, 0, 0, 0.1)"
-            }`,
-          }}
-        >
-          <FormFields form={form} setForm={setForm} />
-        </FormContainer>
-        <Box marginBottom="8" />
-      </Container>
-    </ScrollContainer>
+    <LocalProfileContext.Provider value={profileContext}>
+      <CircleContext.Provider value={context}>
+        <PublicFormLayout>
+          <ScrollContainer
+            backgroundColor={
+              route === "embed" ? "transparent" : "backgroundSecondary"
+            }
+          >
+            <ToastContainer
+              toastStyle={{
+                backgroundColor: `${
+                  mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+                }`,
+                color: `${
+                  mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+                }`,
+              }}
+            />
+            {route !== "embed" && (
+              <CoverImage
+                src={form?.formMetadata.cover || ""}
+                backgroundColor="accentSecondary"
+              />
+            )}
+            <Container embed={route === "embed"}>
+              <FormContainer
+                backgroundColor={
+                  route === "embed" ? "transparent" : "background"
+                }
+                borderRadius={route === "embed" ? "none" : "2xLarge"}
+                style={{
+                  boxShadow: `0rem 0.2rem 0.5rem ${
+                    mode === "dark"
+                      ? "rgba(0, 0, 0, 0.25)"
+                      : "rgba(0, 0, 0, 0.1)"
+                  }`,
+                }}
+              >
+                <FormFields form={form} setForm={setForm} />
+              </FormContainer>
+              <Box marginBottom="8" />
+            </Container>
+          </ScrollContainer>
+        </PublicFormLayout>
+      </CircleContext.Provider>
+    </LocalProfileContext.Provider>
   );
 }
 

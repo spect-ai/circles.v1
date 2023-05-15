@@ -420,34 +420,74 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
                               }
                             )
                           ).json();
-                          console.log({ res });
                           setFetchingMetadata(false);
-                          setNfts([
-                            {
-                              ...res,
-                              balance: 0,
-                            },
-                            ...nfts,
-                          ]);
-                          setLookupTokens([
-                            ...lookupTokens,
-                            {
-                              contractAddress: res.contract.address,
-                              tokenType:
-                                res.tokenType === "ERC721"
-                                  ? "erc721"
-                                  : "erc1155",
-                              metadata: {
-                                name:
-                                  res.tokenType === "ERC721"
-                                    ? res.contract.name
-                                    : res.title,
-                                image: res.media[0]?.gateway || "",
+                          if (!res.tokenId) {
+                            console.log("adding lookup token");
+                            setNfts([
+                              {
+                                contract: res,
+                                balance: 0,
+                                tokenId: "",
+                                tokenType: "ERC721",
+                                description: "",
+                                media: [],
+                                rawMetadata: {
+                                  name: res.openSea.name,
+                                  image: res.openSea.imageUrl,
+                                  description: res.openSea.description,
+                                },
+                                timeLastUpdated: "",
+                                title: res.name,
+                                tokenUri: {
+                                  gateway: "",
+                                  raw: "",
+                                },
                               },
-                              tokenId: res.tokenId,
-                              chainId,
-                            },
-                          ]);
+                              ...nfts,
+                            ]);
+                            setLookupTokens([
+                              ...lookupTokens,
+                              {
+                                contractAddress: res.address,
+                                tokenType:
+                                  res.tokenType === "ERC721"
+                                    ? "erc721"
+                                    : "erc1155",
+                                metadata: {
+                                  name: res.name,
+                                  image: res.openSea.imageUrl,
+                                },
+                                chainId,
+                              },
+                            ]);
+                          } else {
+                            setNfts([
+                              {
+                                ...res,
+                                balance: 0,
+                              },
+                              ...nfts,
+                            ]);
+                            setLookupTokens([
+                              ...lookupTokens,
+                              {
+                                contractAddress: res.contract.address,
+                                tokenType:
+                                  res.tokenType === "ERC721"
+                                    ? "erc721"
+                                    : "erc1155",
+                                metadata: {
+                                  name:
+                                    res.tokenType === "ERC721"
+                                      ? res.contract.name
+                                      : res.title,
+                                  image: res.media[0]?.gateway || "",
+                                },
+                                tokenId: res.tokenId,
+                                chainId,
+                              },
+                            ]);
+                          }
                           setTokenAddress("");
                           setTokenId("");
                         }}
@@ -480,7 +520,8 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
                               nft.tokenType === "ERC721"
                                 ? lookupTokens.find(
                                     (t) =>
-                                      t.contractAddress === nft.contract.address
+                                      t.contractAddress ===
+                                      nft.contract?.address
                                   )
                                 : lookupTokens.find(
                                     (t) =>
@@ -496,7 +537,6 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
                                 )
                               );
                             } else {
-                              console.log({ nft });
                               setLookupTokens([
                                 ...lookupTokens,
                                 {
@@ -512,7 +552,10 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
                                         : nft.title,
                                     image: nft.media[0]?.gateway || "",
                                   },
-                                  tokenId: nft.tokenId,
+                                  tokenId:
+                                    nft.tokenType === "ERC721"
+                                      ? ""
+                                      : nft.tokenId,
                                   chainId,
                                 },
                               ]);
@@ -547,6 +590,7 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
                               <Avatar
                                 src={
                                   nft.media[0]?.gateway ||
+                                  nft.rawMetadata.image ||
                                   `https://api.dicebear.com/5.x/initials/svg?seed=${nft.title}`
                                 }
                                 label=""
