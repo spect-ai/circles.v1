@@ -20,6 +20,7 @@ export default class MyDocument extends Document {
               />
               <Script
                 strategy="lazyOnload"
+                async
                 // eslint-disable-next-line react/no-danger
                 dangerouslySetInnerHTML={{
                   __html: `
@@ -33,7 +34,6 @@ export default class MyDocument extends Document {
                 }}
               />
               <Script
-                strategy="lazyOnload"
                 src="//code.tidio.co/x1bt9qhixmj7iqkf50xb9bjc4zstsuws.js"
                 async
               />
