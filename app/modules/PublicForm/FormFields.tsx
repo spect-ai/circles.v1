@@ -359,6 +359,7 @@ function FormFields({ form, setForm }: Props) {
       case "date":
       case "singleURL":
       case "email":
+      case "slider":
         return !value;
       case "singleSelect":
         return !value || !value.value || !value.label;

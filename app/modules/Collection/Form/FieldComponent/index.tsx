@@ -313,6 +313,8 @@ function FieldComponent({
           onChange={(value: number | number[]) => {
             setFormData({ ...formData, [id]: value });
           }}
+          minLabel={collection.properties[id]?.sliderOptions?.minLabel}
+          maxLabel={collection.properties[id]?.sliderOptions?.maxLabel}
           value={formData[id]}
         />
       )}

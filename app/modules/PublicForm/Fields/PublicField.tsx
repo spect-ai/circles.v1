@@ -354,6 +354,8 @@ export default function PublicField({
           max={form.properties[propertyId]?.sliderOptions?.max || 10}
           step={form.properties[propertyId]?.sliderOptions?.step || 1}
           value={data && data[propertyId]}
+          minLabel={form.properties[propertyId]?.sliderOptions?.minLabel}
+          maxLabel={form.properties[propertyId]?.sliderOptions?.maxLabel}
           onChange={(value: number | number[]) => {
             setData({ ...data, [propertyId]: value });
           }}

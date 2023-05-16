@@ -11,6 +11,8 @@ type Props = {
   step: number;
   value: number;
   onChange: (value: number | number[]) => void;
+  minLabel: string | undefined;
+  maxLabel: string | undefined;
   disabled?: boolean;
 };
 
@@ -19,10 +21,6 @@ type MarksProps = {
   max: number;
   step: number;
 };
-
-const StyledContainer = styled.div`
-  padding: 0.5rem 0.75rem;
-`;
 
 const Marks = ({ min, max, step }: MarksProps) => {
   const marks: Record<string, ReactElement> = {};
@@ -38,46 +36,62 @@ const Marks = ({ min, max, step }: MarksProps) => {
   return marks;
 };
 
-const Slider = ({ label, min, max, step, value, onChange }: Props) => {
+const Slider = ({
+  label,
+  min,
+  max,
+  step,
+  value,
+  onChange,
+  minLabel,
+  maxLabel,
+  disabled,
+}: Props) => {
   const { mode } = useTheme();
   return (
-    <Box paddingBottom="6">
+    <Box paddingY="4" paddingX="2">
       <Stack>
         {label && (
           <Box>
             <Text variant="label">{label}</Text>
           </Box>
         )}
-        <StyledContainer>
-          <RCSlider
-            defaultValue={value}
-            onChange={onChange}
-            marks={Marks({ min, max, step })}
-            min={min}
-            max={max}
-            step={step}
-            trackStyle={{
-              backgroundColor: "rgb(191,90,242,0.8)",
-              height: 10,
-            }}
-            handleStyle={{
-              borderColor: "rgb(191,90,242)",
-              height: 22,
-              width: 22,
-              marginLeft: 0,
-              marginTop: -5,
-              backgroundColor: "rgb(20,20,20)",
-            }}
-            railStyle={{
-              backgroundColor: "rgb(191,90,242,0.1)",
-              height: 10,
-            }}
-            dotStyle={{
-              backgroundColor: "transparent",
-              borderColor: "transparent",
-            }}
-          />
-        </StyledContainer>
+        <RCSlider
+          defaultValue={value}
+          onChange={onChange}
+          marks={Marks({ min, max, step })}
+          min={min}
+          max={max}
+          step={step}
+          trackStyle={{
+            backgroundColor: "rgb(191,90,242,0.8)",
+            height: 10,
+          }}
+          handleStyle={{
+            borderColor: "rgb(191,90,242)",
+            height: 22,
+            width: 22,
+            marginLeft: 0,
+            marginTop: -5,
+            backgroundColor: "rgb(20,20,20)",
+            display: value ? "block" : "none",
+          }}
+          railStyle={{
+            backgroundColor: "rgb(191,90,242,0.1)",
+            height: 10,
+          }}
+          dotStyle={{
+            backgroundColor: "transparent",
+            borderColor: "transparent",
+          }}
+          disabled={disabled}
+        />
+        <Box marginTop="6">
+          <Stack direction="horizontal" justify="space-between">
+            <Text variant="label">{minLabel}</Text>
+            <Text variant="label">{maxLabel}</Text>
+          </Stack>
+        </Box>
       </Stack>
     </Box>
   );

@@ -108,6 +108,8 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
   const [sliderMin, setSliderMin] = useState(1);
   const [sliderMax, setSliderMax] = useState(5);
   const [sliderStep, setSliderStep] = useState(1);
+  const [minLabel, setMinLabel] = useState("");
+  const [maxLabel, setMaxLabel] = useState("");
 
   let validConditionFields = [] as string[];
   if (collection.collectionType === 0) {
@@ -176,6 +178,10 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
   });
 
   const onSave = async () => {
+    if (sliderMin >= sliderMax) {
+      toast.error("Min value should be less than max value");
+      return;
+    }
     setLoading(true);
     let res: CollectionType | undefined;
     let rewardOptions = {} as Registry | undefined;
@@ -212,6 +218,8 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
           min: sliderMin,
           max: sliderMax,
           step: sliderStep,
+          minLabel,
+          maxLabel,
         },
       });
       if (collection.collectionType === 1 && res) {
@@ -253,6 +261,8 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
             min: sliderMin,
             max: sliderMax,
             step: sliderStep,
+            minLabel,
+            maxLabel,
           },
         },
         pageId
@@ -359,6 +369,8 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
         setSliderMin(property.sliderOptions?.min || 1);
         setSliderMax(property.sliderOptions?.max || 10);
         setSliderStep(property.sliderOptions?.step || 1);
+        setMinLabel(property.sliderOptions?.minLabel || "");
+        setMaxLabel(property.sliderOptions?.maxLabel || "");
       }
       setInitializing(false);
     }
@@ -578,10 +590,14 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
                 min={sliderMin}
                 max={sliderMax}
                 step={sliderStep}
+                minLabel={minLabel}
+                maxLabel={maxLabel}
                 setMin={setSliderMin}
                 setMax={setSliderMax}
                 setStep={setSliderStep}
                 setIsDirty={setIsDirty}
+                setMinLabel={setMinLabel}
+                setMaxLabel={setMaxLabel}
               />
             )}
             {/* {!["discord", "github", "twitter", "telegram", "wallet"].includes(

@@ -25,6 +25,11 @@ export const fields = [
     label: "Read Only",
     value: "readonly",
   },
+  {
+    label: "Slider",
+    value: "slider",
+    icon: getPropertyIcon("slider"),
+  },
 ];
 
 export const fieldOptionsDropdown = [
