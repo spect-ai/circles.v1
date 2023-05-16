@@ -211,6 +211,7 @@ export default function DataDrawer({
                             "ethAddress",
                             "email",
                             "number",
+                            "slider",
                           ].includes(property.type) && (
                             <Text size="small">{data[property.id]}</Text>
                           )}

@@ -13,6 +13,7 @@ import SingleSelect from "./SingleSelect";
 import TelegramField from "./TelegramField";
 import dynamic from "next/dynamic";
 import styled from "@emotion/styled";
+import Slider from "@/app/common/components/Slider";
 
 const Editor = dynamic(() => import("@/app/common/components/Editor"), {
   ssr: false,
@@ -345,6 +346,19 @@ export default function PublicField({
             propertyId={propertyId}
           />
         </Box>
+      )}
+      {form.properties[propertyId]?.type === "slider" && (
+        <Slider
+          label=""
+          min={form.properties[propertyId]?.sliderOptions?.min || 1}
+          max={form.properties[propertyId]?.sliderOptions?.max || 10}
+          step={form.properties[propertyId]?.sliderOptions?.step || 1}
+          value={data && data[propertyId]}
+          onChange={(value: number | number[]) => {
+            setData({ ...data, [propertyId]: value });
+          }}
+          disabled={disabled}
+        />
       )}
       {form.properties[propertyId]?.type === "reward" && (
         <Box marginTop="0">

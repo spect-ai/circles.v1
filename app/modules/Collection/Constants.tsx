@@ -42,6 +42,11 @@ export const fieldOptionsDropdown = [
         value: "readonly",
         icon: getPropertyIcon("readonly"),
       },
+      {
+        label: "Slider (new)",
+        value: "slider",
+        icon: getPropertyIcon("slider"),
+      },
     ],
   },
   {
@@ -130,6 +135,7 @@ export const fieldOptionsDropdown = [
     label: "Other Input",
     options: [
       { label: "Number", value: "number", icon: getPropertyIcon("number") },
+      { label: "Slider", value: "slider", icon: getPropertyIcon("slider") },
       { label: "Date", value: "date", icon: getPropertyIcon("date") },
       {
         label: "Read Only",

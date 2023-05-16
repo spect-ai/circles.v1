@@ -39,6 +39,7 @@ import Editor from "@/app/common/components/Editor";
 import { logError } from "@/app/common/utils/utils";
 import { v4 as uuid } from "uuid";
 import { quizValidFieldTypes } from "../../Plugins/common/ResponseMatchDistribution";
+import SliderOptions from "./SliderOptions";
 
 type Props = {
   propertyId?: string;
@@ -103,6 +104,10 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
 
   const [isDirty, setIsDirty] = useState(false);
   const [initializing, setInitializing] = useState(propertyId ? true : false);
+
+  const [sliderMin, setSliderMin] = useState(1);
+  const [sliderMax, setSliderMax] = useState(5);
+  const [sliderStep, setSliderStep] = useState(1);
 
   let validConditionFields = [] as string[];
   if (collection.collectionType === 0) {
@@ -203,6 +208,11 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
         maxSelections,
         allowCustom,
         immutable,
+        sliderOptions: {
+          min: sliderMin,
+          max: sliderMax,
+          step: sliderStep,
+        },
       });
       if (collection.collectionType === 1 && res) {
         res = await updateFormCollection(collection.id, {
@@ -239,6 +249,11 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
           maxSelections,
           allowCustom,
           immutable,
+          sliderOptions: {
+            min: sliderMin,
+            max: sliderMax,
+            step: sliderStep,
+          },
         },
         pageId
       );
@@ -339,6 +354,11 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
       }
       if (property.type === "payWall") {
         setPayWallOption(property.payWallOptions as PayWallOptions);
+      }
+      if (property.type === "slider") {
+        setSliderMin(property.sliderOptions?.min || 1);
+        setSliderMax(property.sliderOptions?.max || 10);
+        setSliderStep(property.sliderOptions?.step || 1);
       }
       setInitializing(false);
     }
@@ -551,6 +571,17 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
               <PayWall
                 payWallOption={payWallOption}
                 setPayWallOption={setPayWallOption}
+              />
+            )}
+            {type.value === "slider" && (
+              <SliderOptions
+                min={sliderMin}
+                max={sliderMax}
+                step={sliderStep}
+                setMin={setSliderMin}
+                setMax={setSliderMax}
+                setStep={setSliderStep}
+                setIsDirty={setIsDirty}
               />
             )}
             {/* {!["discord", "github", "twitter", "telegram", "wallet"].includes(

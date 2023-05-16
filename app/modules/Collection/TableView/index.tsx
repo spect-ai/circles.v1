@@ -335,6 +335,8 @@ export default function TableView() {
         return ExpandableCell;
       case "number":
         return floatColumn;
+      case "slider":
+        return textColumn;
       case "date":
         return textColumn;
         return dateColumn;

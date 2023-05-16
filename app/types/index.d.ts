@@ -1026,6 +1026,13 @@ export type Property = {
   allowCustom?: boolean;
   milestoneFields?: string[];
   immutable?: boolean;
+  sliderOptions?: SliderOptions;
+};
+
+export type SliderOptions = {
+  min: number;
+  max: number;
+  step: number;
 };
 
 export type PropertyType =
@@ -1039,6 +1046,7 @@ export type PropertyType =
   | "date"
   | "singleSelect"
   | "multiSelect"
+  | "slider"
   | "ethAddress"
   | "milestone"
   | "singleURL"

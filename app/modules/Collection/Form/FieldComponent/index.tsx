@@ -44,6 +44,7 @@ import { useAtom } from "jotai";
 import { isSidebarExpandedAtom } from "@/app/state/global";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { useScroll } from "react-use";
+import Slider from "@/app/common/components/Slider";
 
 type Props = {
   id: string;
@@ -303,6 +304,17 @@ function FieldComponent({
             propertyId={id}
           />
         </Box>
+      )}
+      {collection.properties[id]?.type === "slider" && (
+        <Slider
+          min={collection.properties[id]?.sliderOptions?.min || 1}
+          max={collection.properties[id]?.sliderOptions?.max || 10}
+          step={collection.properties[id]?.sliderOptions?.step || 1}
+          onChange={(value: number | number[]) => {
+            setFormData({ ...formData, [id]: value });
+          }}
+          value={formData[id]}
+        />
       )}
       {collection.properties[id]?.type === "reward" && (
         <Box marginTop="4">

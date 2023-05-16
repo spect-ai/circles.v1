@@ -24,7 +24,10 @@ const AddChart = ({ handleClose, chartId }: Props) => {
 
   const fieldOptions = Object.values(collection.properties || {})
     .filter(
-      (field) => field.type === "singleSelect" || field.type === "multiSelect"
+      (field) =>
+        field.type === "singleSelect" ||
+        field.type === "multiSelect" ||
+        field.type === "slider"
     )
     .map((field) => ({
       label: field.name,
