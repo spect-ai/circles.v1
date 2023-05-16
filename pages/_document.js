@@ -1,5 +1,6 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
 import { ServerStyleSheet } from "styled-components";
+import Script from "next/script";
 import { GA_ANALYTICS_MEASUREMENT_ID } from "../lib/gtag";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -12,12 +13,12 @@ export default class MyDocument extends Document {
           {/* enable analytics script only for production */}
           {isProd && (
             <>
-              <script
+              <Script
                 strategy="worker"
                 async
                 src={`https://www.googletagmanager.com/gtag/js?id=${GA_ANALYTICS_MEASUREMENT_ID}`}
               />
-              <script
+              <Script
                 strategy="worker"
                 // eslint-disable-next-line react/no-danger
                 dangerouslySetInnerHTML={{
@@ -31,24 +32,24 @@ export default class MyDocument extends Document {
           `,
                 }}
               />
-              <script
+              <Script
                 strategy="worker"
                 src="//code.tidio.co/x1bt9qhixmj7iqkf50xb9bjc4zstsuws.js"
                 async
-              ></script>
+              />
             </>
           )}
-          <script
+          <Script
             strategy="worker"
             async
             src="https://telegram.org/js/telegram-widget.js"
-          ></script>
-          <script
+          />
+          <Script
             strategy="worker"
             async
             src="https://platform.twitter.com/widgets.js"
             charSet="utf-8"
-          ></script>
+          />
         </Head>
         <body>
           <Main />
