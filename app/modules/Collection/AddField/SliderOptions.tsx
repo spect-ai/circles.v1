@@ -31,7 +31,7 @@ const SliderOptions = ({
   return (
     <Stack direction="horizontal">
       <Box width="full">
-        <Stack space="1">
+        <Stack>
           <Input
             label="Min"
             type="number"
@@ -56,7 +56,7 @@ const SliderOptions = ({
         </Stack>
       </Box>
       <Box width="full">
-        <Stack space="1">
+        <Stack>
           <Input
             label="Max"
             type="number"

@@ -48,7 +48,7 @@ export default function Sort() {
         !unSortableProperties.includes(collection.properties[property]?.type)
       ) {
         return {
-          label: property,
+          label: collection.properties[property]?.name,
           value: property,
         };
       }
@@ -76,7 +76,9 @@ export default function Sort() {
           width="fit"
           butttonComponent={
             <Box cursor="pointer" onClick={() => setIsOpen(true)}>
-              <Tag hover>{sortProperty || "none"}</Tag>
+              <Tag hover>
+                {collection.properties[sortProperty].name || "none"}
+              </Tag>
             </Box>
           }
           isOpen={isOpen}

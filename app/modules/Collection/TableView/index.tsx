@@ -217,6 +217,12 @@ export default function TableView() {
           ].sort?.direction || "asc";
         const propertyId = property.id;
         filteredData = filteredData.sort((a: any, b: any) => {
+          if (propertyType === "number" || propertyType === "slider") {
+            if (direction === "asc") {
+              return a[propertyId] - b[propertyId];
+            }
+            return b[propertyId] - a[propertyId];
+          }
           if (propertyType === "singleSelect") {
             const aIndex = propertyOptions.findIndex(
               (option) => option.value === a[propertyId]?.value

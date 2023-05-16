@@ -45,6 +45,7 @@ export function satisfiesConditions(
         }
 
       case "number":
+      case "slider":
         switch (comparatorValue) {
           case "is":
             return parseFloat(data[propertyId]) === parseFloat(value);

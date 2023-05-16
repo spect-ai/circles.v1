@@ -73,12 +73,15 @@ export default function FilterValueField({
         />
       );
     case "number":
+    case "slider":
       return (
         <Input
           label=""
           type="number"
           placeholder={`Enter number`}
           value={value}
+          min={collection.properties[propertyId]?.sliderOptions?.min}
+          max={collection.properties[propertyId]?.sliderOptions?.max}
           onChange={(e) => onChange(e.target.value)}
         />
       );

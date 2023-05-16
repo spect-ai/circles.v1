@@ -49,7 +49,7 @@ const Slider = ({
 }: Props) => {
   const { mode } = useTheme();
   return (
-    <Box paddingY="4" paddingX="2">
+    <Box paddingY="4" paddingX="3">
       <Stack>
         {label && (
           <Box>

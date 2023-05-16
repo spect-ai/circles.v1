@@ -363,6 +363,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
       {[
         "shortText",
         "number",
+        "slider",
         "ethAddress",
         "email",
         "date",
