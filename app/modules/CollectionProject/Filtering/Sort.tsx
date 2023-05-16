@@ -77,7 +77,7 @@ export default function Sort() {
           butttonComponent={
             <Box cursor="pointer" onClick={() => setIsOpen(true)}>
               <Tag hover>
-                {collection.properties[sortProperty].name || "none"}
+                {collection.properties[sortProperty]?.name || "none"}
               </Tag>
             </Box>
           }
