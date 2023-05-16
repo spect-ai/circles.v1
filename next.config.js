@@ -12,6 +12,9 @@ const nextConfig = {
         : null,
     ].filter(Boolean);
   },
+  experimental: {
+    nextScriptWorkers: true,
+  },
   reactStrictMode: true,
   images: {
     domains: [

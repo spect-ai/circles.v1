@@ -13,10 +13,12 @@ export default class MyDocument extends Document {
           {isProd && (
             <>
               <script
+                strategy="worker"
                 async
                 src={`https://www.googletagmanager.com/gtag/js?id=${GA_ANALYTICS_MEASUREMENT_ID}`}
               />
               <script
+                strategy="worker"
                 // eslint-disable-next-line react/no-danger
                 dangerouslySetInnerHTML={{
                   __html: `
@@ -30,16 +32,19 @@ export default class MyDocument extends Document {
                 }}
               />
               <script
+                strategy="worker"
                 src="//code.tidio.co/x1bt9qhixmj7iqkf50xb9bjc4zstsuws.js"
                 async
               ></script>
             </>
           )}
           <script
+            strategy="worker"
             async
             src="https://telegram.org/js/telegram-widget.js"
           ></script>
           <script
+            strategy="worker"
             async
             src="https://platform.twitter.com/widgets.js"
             charSet="utf-8"
