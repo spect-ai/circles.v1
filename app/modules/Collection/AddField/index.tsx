@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Accordian from "@/app/common/components/Accordian";
 import Dropdown from "@/app/common/components/Dropdown";
-import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
@@ -43,11 +42,7 @@ import AddOptions from "./AddOptions";
 import MilestoneOptions from "./MilestoneOptions";
 import PayWall from "./PayWallOptions";
 import RewardTokenOptions from "./RewardTokenOptions";
-import { useKeyPressEvent } from "react-use";
 import Editor from "@/app/common/components/Editor";
-import { logError } from "@/app/common/utils/utils";
-import { v4 as uuid } from "uuid";
-import { quizValidFieldTypes } from "../../Plugins/common/ResponseMatchDistribution";
 import SliderOptions from "./SliderOptions";
 
 type Props = {
