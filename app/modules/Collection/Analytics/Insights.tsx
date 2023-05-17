@@ -57,8 +57,17 @@ export const Insights = (props: Props) => {
   }, []);
 
   return (
-    <Box padding="0">
-      <Box display="flex" flexDirection="row" paddingY="8" width="full" gap="6">
+    <Box paddingY="8">
+      <Text variant="large" weight="semiBold" color="accent">
+        Page metrics for forms shared via link
+      </Text>
+      <Box
+        display="flex"
+        flexDirection="row"
+        width="full"
+        gap="6"
+        marginTop="4"
+      >
         <Box
           display="flex"
           flexDirection="column"
@@ -107,27 +116,10 @@ export const Insights = (props: Props) => {
           </Text>
         </Box>
       </Box>
-      <ScrollContainer padding="0" width="3/4">
-        {/* <Row>
-          <Col xs={12} sm={6}>
-            <Box width="1/2">
-              <Text variant="label">Page</Text>
-            </Box>
-          </Col>
-          <Col xs={12} sm={6}>
-            <Box width="1/2">
-              <Text variant="label">Average Time Spent</Text>
-            </Box>
-          </Col>
-          <Col xs={12} sm={6}>
-            <Box width="1/2">
-              <Text variant="label">Drop off</Text>
-            </Box>
-          </Col>
-        </Row> */}
+      <ScrollContainer marginTop="4" width="3/4">
         <Box display="flex" flexDirection="column" gap="4">
           <Text variant="label" weight="bold">
-            Forms shared via link
+            Metrics for each page
           </Text>
           <Table
             columns={["Page", "Views", "Drop off Rate"]}
