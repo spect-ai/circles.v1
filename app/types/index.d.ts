@@ -1345,6 +1345,7 @@ export type PoapCredential = {
   event: POAPEventType;
 };
 
+// TODO: Remove "any" types
 export type Action = {
   id: string;
   type: string;
@@ -1356,6 +1357,27 @@ export type Action = {
   value: any;
   icon: string;
   label: string;
+};
+
+export type CreateCardActionData = {
+  selectedCollection: Option;
+  values: CreateCardActionDataValue[];
+};
+
+export type CreateCardActionDataValue = {
+  type: "mapping" | "default" | "responder";
+  default?: Default;
+  mapping?: Mapping;
+};
+
+type Mapping = {
+  from?: Option;
+  to?: Option;
+};
+
+type Default = {
+  field?: Option;
+  value?: any;
 };
 
 export type Trigger = {

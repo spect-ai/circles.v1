@@ -88,18 +88,10 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [showConfirmOnDelete, setShowConfirmOnDelete] = useState(false);
   const [showConfirmOnClose, setShowConfirmOnClose] = useState(false);
-
-  // const [viewConditions, setViewConditions] = useState<Condition[]>(
-  //   (propertyId && collection.properties[propertyId]?.viewConditions) || []
-  // );
   const [advancedConditions, setAdvancedConditions] = useState<ConditionGroup>(
     (propertyId && collection.properties[propertyId]?.advancedConditions) ||
       ({} as ConditionGroup)
   );
-
-  // const [modalSize, setModalSize] = useState<"small" | "medium" | "large">(
-  //   viewConditions?.length > 0 ? "large" : "small"
-  // );
   const [advancedDefaultOpen, setAdvancedDefaultOpen] = useState(
     advancedConditions?.order?.length > 0 ? true : false
   );
@@ -231,17 +223,6 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
           maxLabel,
         },
       });
-      if (collection.collectionType === 1 && res) {
-        res = await updateFormCollection(collection.id, {
-          projectMetadata: {
-            ...res.projectMetadata,
-            cardOrders: {
-              ...(res.projectMetadata?.cardOrders || {}),
-              [name.trim()]: cardOrder,
-            },
-          },
-        });
-      }
     } else {
       if (!pageId && collection.collectionType === 0) {
         logError("Pageid is missing in update, try again");
