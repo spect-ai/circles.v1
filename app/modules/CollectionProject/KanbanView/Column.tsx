@@ -274,7 +274,11 @@ export default function Column({
                             </Box>
                           );
                         }
-                        if (property.type === "reward") {
+                        if (
+                          property.type === "reward" &&
+                          value?.value &&
+                          value?.token?.label
+                        ) {
                           return (
                             <Box key={propertyId}>
                               <Tag tone="green">
@@ -284,7 +288,7 @@ export default function Column({
                                   align="center"
                                 >
                                   <Text color="green" weight="semiBold">
-                                    {`${value.value} ${value.token.label} `}
+                                    {`${value.value} ${value.token?.label} `}
                                   </Text>
                                 </Stack>
                               </Tag>

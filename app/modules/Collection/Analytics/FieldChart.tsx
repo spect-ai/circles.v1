@@ -1,5 +1,13 @@
-import { Chart, CollectionType, Option } from "@/app/types";
-import { Box, Button, IconPencil, IconTrash, Stack, Text } from "degen";
+import { Chart, CollectionType, ConditionGroup, Option } from "@/app/types";
+import {
+  Box,
+  Button,
+  IconPencil,
+  IconTrash,
+  Stack,
+  Text,
+  useTheme,
+} from "degen";
 import { useEffect, useState } from "react";
 import { Bar, Doughnut, Line, Pie } from "react-chartjs-2";
 import { satisfiesConditions } from "../Common/SatisfiesFilter";
@@ -8,6 +16,9 @@ import { updateFormCollection } from "@/app/services/Collection";
 import { BarOptions, LineOptions, PieOptions } from "./ChartOptions";
 import { ImEmbed } from "react-icons/im";
 import { logError } from "@/app/common/utils/utils";
+import { satisfiesAdvancedConditions } from "../Common/SatisfiesAdvancedFilter";
+import Plot from "./Plot";
+import { Tooltip } from "react-tippy";
 
 type Props =
   | {
@@ -42,13 +53,18 @@ const FieldChart = ({
   const [labels, setLabels] = useState<string[]>([]);
   const [hover, setHover] = useState(false);
   const property = collection.properties[chart?.fields[0]];
+  const { mode } = useTheme();
 
   useEffect(() => {
     if (!property) return;
     const arr = Object.values(collection.data || {})
       .map((item) => {
         if (
-          satisfiesConditions(item, collection.properties, chart?.filters || [])
+          satisfiesAdvancedConditions(
+            item,
+            collection.properties,
+            chart?.advancedFilters || ({} as ConditionGroup)
+          )
         ) {
           if (property.type === "multiSelect") {
             return item[property.id]?.map((item: Option) => item.label);
@@ -99,7 +115,8 @@ const FieldChart = ({
       });
     }
     setDataRows(rowData);
-  }, []);
+  }, [chart, collection.data, collection.properties]);
+
   return (
     <Box
       borderWidth={disabled ? "0" : "0.375"}
@@ -111,7 +128,12 @@ const FieldChart = ({
     >
       <Stack space="0">
         {!disabled && (
-          <Stack space="1">
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="flex-start"
+            justifyContent="space-between"
+          >
             <Text weight="semiBold" ellipsis size="small">
               {chart?.name}
             </Text>
@@ -120,159 +142,82 @@ const FieldChart = ({
                 opacity: hover ? 1 : 0,
               }}
             >
-              <Stack direction="horizontal" space="1" align="center">
-                <Button
-                  size="extraSmall"
-                  shape="circle"
-                  variant="transparent"
-                  onClick={() => {
-                    if (disabled) return;
-                    setChartId(chart.id);
-                    setIsEmbedOpen(true);
-                  }}
-                >
-                  <Box marginTop="1">
+              <Stack direction="horizontal" space="1" align="flex-start">
+                <Tooltip title="Embed chart" theme={mode} position="top">
+                  {" "}
+                  <Button
+                    size="extraSmall"
+                    shape="circle"
+                    variant="transparent"
+                    onClick={() => {
+                      if (disabled) return;
+                      setChartId(chart.id);
+                      setIsEmbedOpen(true);
+                    }}
+                  >
+                    <Box>
+                      <Text color="accent">
+                        <ImEmbed size={16} />
+                      </Text>
+                    </Box>
+                  </Button>
+                </Tooltip>
+                <Tooltip title="Edit chart" theme={mode} position="top">
+                  {" "}
+                  <Button
+                    size="extraSmall"
+                    shape="circle"
+                    variant="transparent"
+                    onClick={() => {
+                      if (disabled) return;
+                      setChartId(chart.id);
+                      setIsAddChartOpen(true);
+                    }}
+                  >
                     <Text color="accent">
-                      <ImEmbed size={16} />
+                      <IconPencil size="4" />
                     </Text>
-                  </Box>
-                </Button>
-                <Button
-                  size="extraSmall"
-                  shape="circle"
-                  variant="transparent"
-                  onClick={() => {
-                    if (disabled) return;
-                    setChartId(chart.id);
-                    setIsAddChartOpen(true);
-                  }}
-                >
-                  <Text color="accent">
-                    <IconPencil size="4" />
-                  </Text>
-                </Button>
-                <Button
-                  size="extraSmall"
-                  shape="circle"
-                  variant="transparent"
-                  onClick={async () => {
-                    delete collection.formMetadata.charts?.[chart.id];
-                    const res = await updateFormCollection(collection.id, {
-                      formMetadata: {
-                        ...collection.formMetadata,
-                        chartOrder: collection.formMetadata.chartOrder?.filter(
-                          (item) => item !== chart.id
-                        ),
-                      },
-                    });
-                    if (res.id) {
-                      updateCollection(res);
-                    } else {
-                      logError("Error deleting chart");
-                    }
-                  }}
-                >
-                  <Text color="red">
-                    <IconTrash size="4" />
-                  </Text>
-                </Button>
+                  </Button>
+                </Tooltip>
+                <Tooltip title="Delete chart" theme={mode} position="top">
+                  {" "}
+                  <Button
+                    size="extraSmall"
+                    shape="circle"
+                    variant="transparent"
+                    onClick={async () => {
+                      delete collection.formMetadata.charts?.[chart.id];
+                      const res = await updateFormCollection(collection.id, {
+                        formMetadata: {
+                          ...collection.formMetadata,
+                          chartOrder:
+                            collection.formMetadata.chartOrder?.filter(
+                              (item) => item !== chart.id
+                            ),
+                        },
+                      });
+                      if (res.id) {
+                        updateCollection(res);
+                      } else {
+                        logError("Error deleting chart");
+                      }
+                    }}
+                  >
+                    <Text color="red">
+                      <IconTrash size="4" />
+                    </Text>
+                  </Button>
+                </Tooltip>
               </Stack>
             </motion.div>
-          </Stack>
-        )}
-
-        {dataRows.some((a) => a > 0) ? (
-          <Box>
-            {chart.type === "bar" && (
-              <Bar
-                options={BarOptions}
-                data={{
-                  labels: labels,
-                  datasets: [
-                    {
-                      label: chart?.name,
-                      data: dataRows,
-                      backgroundColor: "rgb(191,90,242,0.7)",
-                      borderColor: "rgb(191,90,242)",
-                      barPercentage: 0.8,
-                      borderRadius: 10,
-                      borderWidth: 2,
-                    },
-                  ],
-                }}
-              />
-            )}
-            {chart.type === "line" && (
-              <Line
-                options={LineOptions}
-                data={{
-                  labels: labels,
-                  datasets: [
-                    {
-                      label: chart?.name,
-                      data: dataRows,
-                      backgroundColor: "rgb(191,90,242,0.7)",
-                      borderColor: "rgb(191,90,242)",
-                      borderWidth: 2,
-                    },
-                  ],
-                }}
-              />
-            )}
-            {chart.type === "pie" && (
-              <Pie
-                options={PieOptions}
-                data={{
-                  labels: labels,
-                  datasets: [
-                    {
-                      label: chart?.name,
-                      data: dataRows,
-                      backgroundColor: [
-                        "rgb(191,90,242,0.7)",
-                        "rgb(191,90,212,0.5)",
-                        "rgb(191,90,162,0.35)",
-                        "rgb(191,90,132,0.2)",
-                      ],
-                      borderColor: "rgb(191,90,242)",
-                      borderRadius: 10,
-                      borderWidth: 2,
-                    },
-                  ],
-                }}
-              />
-            )}
-            {chart.type === "doughnut" && (
-              <Doughnut
-                options={PieOptions}
-                data={{
-                  labels: labels,
-                  datasets: [
-                    {
-                      label: chart?.name,
-                      data: dataRows,
-                      backgroundColor: [
-                        "rgb(191,90,242,0.7)",
-                        "rgb(191,90,212,0.5)",
-                        "rgb(191,90,162,0.35)",
-                        "rgb(191,90,132,0.2)",
-                      ],
-                      borderColor: "rgb(191,90,242)",
-                      borderRadius: 10,
-                      borderWidth: 2,
-                    },
-                  ],
-                }}
-              />
-            )}
-          </Box>
-        ) : (
-          <Box>
-            <Text variant="label">
-              {property ? "No data added" : "Field deleted"}
-            </Text>
           </Box>
         )}
+        <Plot
+          chart={chart}
+          dataRows={dataRows}
+          labels={labels}
+          property={property}
+        />
       </Stack>
     </Box>
   );

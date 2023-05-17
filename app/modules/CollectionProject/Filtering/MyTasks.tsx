@@ -1,5 +1,6 @@
-import { Box, Tag } from "degen";
+import { Box, Button, Text } from "degen";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import { CgCardSpades } from "react-icons/cg";
 
 type Props = {};
 
@@ -11,17 +12,27 @@ export default function MyTasks({}: Props) {
   } = useLocalCollection();
   if (collection.collectionType === 1)
     return (
-      <Box
-        cursor="pointer"
-        onClick={() => {
-          setShowMyTasks(!showMyTasks);
-        }}
-        marginLeft="2"
+      <Button
+        variant="transparent"
+        size="extraSmall"
+        onClick={() => setShowMyTasks(!showMyTasks)}
       >
-        <Tag hover tone={showMyTasks ? "accent" : undefined}>
-          Show my cards
-        </Tag>
-      </Box>
+        <Box
+          cursor="pointer"
+          marginLeft="2"
+          alignItems="center"
+          display="flex"
+          gap="1"
+          flexDirection="row"
+        >
+          <Text color={showMyTasks ? "accent" : "textSecondary"}>
+            {" "}
+            <CgCardSpades size={18} />
+          </Text>
+
+          <Text variant="label">My cards</Text>
+        </Box>
+      </Button>
     );
   else return null;
 }

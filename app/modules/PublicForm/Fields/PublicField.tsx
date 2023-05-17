@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { isEmail, isURL } from "@/app/common/utils/utils";
-import { FormType, Option, Property, Registry, Reward } from "@/app/types";
+import {
+  ConditionGroup,
+  FormType,
+  Option,
+  Property,
+  Registry,
+  Reward,
+} from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -14,6 +21,7 @@ import TelegramField from "./TelegramField";
 import dynamic from "next/dynamic";
 import styled from "@emotion/styled";
 import Slider from "@/app/common/components/Slider";
+import { satisfiesAdvancedConditions } from "../../Collection/Common/SatisfiesAdvancedFilter";
 
 const Editor = dynamic(() => import("@/app/common/components/Editor"), {
   ssr: false,
@@ -58,10 +66,10 @@ export default function PublicField({
     {} as { [key: string]: boolean }
   );
   if (
-    !satisfiesConditions(
+    !satisfiesAdvancedConditions(
       data,
       form.properties as { [propertyId: string]: Property },
-      form.properties[propertyId].viewConditions || []
+      form.properties[propertyId].advancedConditions || ({} as ConditionGroup)
     )
   ) {
     return null;

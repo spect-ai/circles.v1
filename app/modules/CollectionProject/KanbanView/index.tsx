@@ -28,10 +28,8 @@ export default function KanbanView() {
     setLoading,
     updateCollection,
     cardOrders,
-    filteredOnGroupByColumn,
   } = useViewCommon();
 
-  console.log({ columns, cardOrders });
   return (
     <Box
       marginX={{

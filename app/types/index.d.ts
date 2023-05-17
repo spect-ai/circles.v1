@@ -937,6 +937,7 @@ export type Chart = {
   type: "bar" | "pie" | "line" | "doughnut";
   fields: string[];
   filters?: Condition[];
+  advancedFilters?: ConditionGroup;
 };
 
 export type LookupToken = {
@@ -962,6 +963,7 @@ export type ProjectMetadata = {
         direction: "asc" | "desc";
       };
       groupByColumn: string;
+      advancedFilters?: ConditionGroup;
     };
   };
   cardOrders: {
@@ -1020,6 +1022,7 @@ export type Property = {
   required?: boolean;
   description?: string;
   viewConditions?: Condition[];
+  advancedConditions?: ConditionGroup;
   payWallOptions?: PayWallOptions;
   internal?: boolean;
   maxSelections?: number;
@@ -1370,6 +1373,13 @@ export type Condition = {
   service: string;
   data: any;
 };
+export type ConditionGroup = {
+  id: string;
+  operator: "and" | "or";
+  conditions: { [id: string]: Condition };
+  conditionGroups?: { [id: string]: ConditionGroup };
+  order: string[];
+};
 
 export type Automation = {
   id: string;
@@ -1377,6 +1387,7 @@ export type Automation = {
   description: string;
   trigger: Trigger;
   conditions?: Condition[];
+  advancedConditions?: ConditionGroup;
   actions: Action[];
   triggerCategory: "collection" | "root";
   triggerCollectionSlug?: string;

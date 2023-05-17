@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Accordian from "@/app/common/components/Accordian";
 import Dropdown from "@/app/common/components/Dropdown";
+import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
+import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
+import { prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance } from "@/app/common/utils/constants";
+import { logError } from "@/app/common/utils/utils";
 import {
   addField,
   deleteField,
@@ -11,27 +16,31 @@ import {
 } from "@/app/services/Collection";
 import {
   CollectionType,
-  Condition,
+  ConditionGroup,
   FormUserType,
-  Registry,
   PayWallOptions,
   Property,
   PropertyType,
+  Registry,
 } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
 import { Box, IconTrash, Input, Stack, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useKeyPressEvent } from "react-use";
+import { v4 as uuid } from "uuid";
 import { useCircle } from "../../Circle/CircleContext";
-import { fieldOptionsDropdown, fields } from "../Constants";
+import { quizValidFieldTypes } from "../../Plugins/common/ResponseMatchDistribution";
+import AddAdvancedConditions from "../Common/AddAdvancedConditions";
+import {
+  fieldOptionsDropdownInForms,
+  fieldOptionsDropdownInProjects,
+  fields,
+} from "../Constants";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import AddOptions from "./AddOptions";
 import MilestoneOptions from "./MilestoneOptions";
-import { prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance } from "@/app/common/utils/constants";
-import { AnimatePresence } from "framer-motion";
-import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
-import Accordian from "@/app/common/components/Accordian";
-import AddConditions from "../Common/AddConditions";
 import PayWall from "./PayWallOptions";
 import RewardTokenOptions from "./RewardTokenOptions";
 import { useKeyPressEvent } from "react-use";
@@ -85,14 +94,19 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
   const [showConfirmOnDelete, setShowConfirmOnDelete] = useState(false);
   const [showConfirmOnClose, setShowConfirmOnClose] = useState(false);
 
-  const [viewConditions, setViewConditions] = useState<Condition[]>(
-    (propertyId && collection.properties[propertyId]?.viewConditions) || []
+  // const [viewConditions, setViewConditions] = useState<Condition[]>(
+  //   (propertyId && collection.properties[propertyId]?.viewConditions) || []
+  // );
+  const [advancedConditions, setAdvancedConditions] = useState<ConditionGroup>(
+    (propertyId && collection.properties[propertyId]?.advancedConditions) ||
+      ({} as ConditionGroup)
   );
+
   // const [modalSize, setModalSize] = useState<"small" | "medium" | "large">(
   //   viewConditions?.length > 0 ? "large" : "small"
   // );
   const [advancedDefaultOpen, setAdvancedDefaultOpen] = useState(
-    viewConditions?.length > 0 ? true : false
+    advancedConditions?.order?.length > 0 ? true : false
   );
   const [reasonFieldNeedsUserAttention, setReasonFieldNeedsUserAttention] =
     useState(propertyId ? reasonFieldNeedsAttention[propertyId] : "");
@@ -209,7 +223,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
         isPartOfFormView: collection.properties[propertyId]?.isPartOfFormView,
         required: required === 1,
         milestoneFields,
-        viewConditions,
+        advancedConditions,
         payWallOptions,
         maxSelections,
         allowCustom,
@@ -227,7 +241,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
           projectMetadata: {
             ...res.projectMetadata,
             cardOrders: {
-              ...res.projectMetadata.cardOrders,
+              ...(res.projectMetadata?.cardOrders || {}),
               [name.trim()]: cardOrder,
             },
           },
@@ -252,7 +266,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
           default: defaultValue,
           required: required === 1,
           milestoneFields,
-          viewConditions,
+          advancedConditions,
           payWallOptions,
           maxSelections,
           allowCustom,
@@ -386,8 +400,10 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
 
   useEffect(() => {
     // setModalSize(viewConditions?.length > 0 ? "large" : "small");
-    setAdvancedDefaultOpen(viewConditions?.length > 0 ? true : false);
-  }, [viewConditions]);
+    setAdvancedDefaultOpen(
+      advancedConditions?.order?.length > 0 ? true : false
+    );
+  }, [advancedConditions]);
 
   useEffect(() => {
     if (propertyId && collection.projectMetadata?.cardOrders) {
@@ -396,7 +412,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
   }, [collection.projectMetadata?.cardOrders, propertyId]);
 
   useEffect(() => {
-    if (viewConditions && propertyId) {
+    if (advancedConditions?.order && propertyId) {
       const res = getIfFieldNeedsAttention({
         id: propertyId,
         name: name.trim(),
@@ -407,13 +423,13 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
         userType: userType,
         default: defaultValue,
         required: required === 1,
-        viewConditions,
+        advancedConditions,
         maxSelections,
         allowCustom,
       });
       setReasonFieldNeedsUserAttention(res?.reason);
     }
-  }, [viewConditions]);
+  }, [advancedConditions]);
 
   return (
     <Box>
@@ -474,6 +490,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
             handleClose();
           }
         }}
+        size={collection?.collectionType === 1 ? "small" : "medium"}
       >
         <Box padding="8">
           <Stack>
@@ -539,7 +556,11 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
               />
             )}
             <Dropdown
-              options={fieldOptionsDropdown}
+              options={
+                collection?.collectionType === 1
+                  ? fieldOptionsDropdownInProjects
+                  : fieldOptionsDropdownInForms
+              }
               selected={type}
               onChange={(type) => {
                 setIsDirty(true);
@@ -600,64 +621,22 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
                 setMaxLabel={setMaxLabel}
               />
             )}
-            {/* {!["discord", "github", "twitter", "telegram", "wallet"].includes(
-              type.value
-            ) && (
-              <Accordian name="Default Value" defaultOpen={false}>
-                <Field
-                  collection={collection}
-                  property={{
-                    name: name.trim(),
-                    options: fieldOptions,
-                    rewardOptions: networks,
-                    userType: userType,
-                    default: defaultValue,
-                    type: type.value as PropertyType,
-                    isPartOfFormView: true,
-                  }}
-                  type={type.value}
-                  data={defaultValue}
-                  setData={(data) => {
-                    setIsDirty(true);
-                    setDefaultValue(data);
-                  }}
-                />
-              </Accordian>
-            )} */}
 
             {collection.collectionType === 0 && (
               <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
-                <AddConditions
-                  viewConditions={viewConditions}
-                  setViewConditions={(conditions) => {
+                <AddAdvancedConditions
+                  rootConditionGroup={advancedConditions}
+                  setRootConditionGroup={(conditionGroup) => {
                     setIsDirty(true);
-                    setViewConditions(conditions);
+                    setAdvancedConditions(conditionGroup);
                   }}
-                  buttonText="Add condition when field is visible"
+                  firstRowMessage="When"
+                  buttonText="Add Condition"
+                  groupButtonText="Group Conditions"
                   collection={collection}
-                  buttonWidth="fit"
                   dropDownPortal={true}
                   validConditionFields={validConditionFields}
                 />
-                {/* {["shortText", "longText", "ethAddress"].includes(
-                  type.value
-                ) && <Input label="" placeholder="Default Value" />}
-
-                <Text>Notify User Type on Changes</Text>
-                <Dropdown
-                  placeholder="Select User Types"
-                  options={[
-                    { label: "Assignee", value: "assignee" },
-                    { label: "Reviewer", value: "reviewer" },
-                    { label: "Grantee", value: "grantee" },
-                    { label: "Applicant", value: "applicant" },
-                  ]}
-                  selected={notifyUserType}
-                  onChange={(type: Option[]) => {
-                    setNotifyUserType(type);
-                  }}
-                  multiple={true}
-                /> */}
               </Accordian>
             )}
 

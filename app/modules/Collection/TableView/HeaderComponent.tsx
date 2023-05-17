@@ -58,7 +58,7 @@ export default function HeaderComponent({
           onMouseLeave={() => setShowEdit(false)}
         >
           <Stack direction="horizontal" justify="space-between">
-            <Stack direction="horizontal" space="2">
+            <Stack direction="horizontal" align="center" space="2">
               <Text variant="label">{getPropertyIcon(propertyType)}</Text>
               <Text variant="label">{smartTrim(columnName, 17)}</Text>
             </Stack>
