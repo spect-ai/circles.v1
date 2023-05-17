@@ -31,9 +31,7 @@ export default function MetaHead({
         images: [
           {
             url: image,
-            width: 1200,
-            height: 630,
-            alt: "Spect Circles",
+            alt: title,
           },
         ],
         site_name: siteName,
