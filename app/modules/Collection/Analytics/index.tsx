@@ -63,50 +63,46 @@ const Analytics = (props: Props) => {
           md: "0",
         }}
       >
-        <Link href={`/${cId}/r/${colId}?tab=analytics&subTab=insights`}>
-          <ViewTab
-            paddingX="4"
-            backgroundColor={
-              analyticsViewId === "Insights"
-                ? "backgroundSecondary"
-                : "background"
-            }
-            borderTopWidth={analyticsViewId === "Insights" ? "0.375" : "0"}
-            borderRightWidth={analyticsViewId === "Insights" ? "0.375" : "0"}
-            borderLeftWidth={analyticsViewId === "Insights" ? "0.375" : "0"}
-            key={"pending"}
-            onClick={() => setAnalyticsViewId("Insights")}
-          >
-            <Text variant="small" weight="semiBold">
-              Measure Drop-off
-            </Text>
-          </ViewTab>
-        </Link>
-        <Link href={`/${cId}/r/${colId}?tab=analytics&subTab=responseCharting`}>
-          <ViewTab
-            paddingX="4"
-            backgroundColor={
-              analyticsViewId === "ResponseCharting"
-                ? "backgroundSecondary"
-                : "background"
-            }
-            borderTopWidth={
-              analyticsViewId === "ResponseCharting" ? "0.375" : "0"
-            }
-            borderRightWidth={
-              analyticsViewId === "ResponseCharting" ? "0.375" : "0"
-            }
-            borderLeftWidth={
-              analyticsViewId === "ResponseCharting" ? "0.375" : "0"
-            }
-            key={"pending"}
-            onClick={() => setAnalyticsViewId("ResponseCharting")}
-          >
-            <Text variant="small" weight="semiBold">
-              Visualize Responses
-            </Text>
-          </ViewTab>
-        </Link>
+        <ViewTab
+          paddingX="4"
+          backgroundColor={
+            analyticsViewId === "Insights"
+              ? "backgroundSecondary"
+              : "background"
+          }
+          borderTopWidth={analyticsViewId === "Insights" ? "0.375" : "0"}
+          borderRightWidth={analyticsViewId === "Insights" ? "0.375" : "0"}
+          borderLeftWidth={analyticsViewId === "Insights" ? "0.375" : "0"}
+          key={"pending"}
+          onClick={() => setAnalyticsViewId("Insights")}
+        >
+          <Text variant="small" weight="semiBold">
+            Measure Drop-off
+          </Text>
+        </ViewTab>
+        <ViewTab
+          paddingX="4"
+          backgroundColor={
+            analyticsViewId === "ResponseCharting"
+              ? "backgroundSecondary"
+              : "background"
+          }
+          borderTopWidth={
+            analyticsViewId === "ResponseCharting" ? "0.375" : "0"
+          }
+          borderRightWidth={
+            analyticsViewId === "ResponseCharting" ? "0.375" : "0"
+          }
+          borderLeftWidth={
+            analyticsViewId === "ResponseCharting" ? "0.375" : "0"
+          }
+          key={"pending"}
+          onClick={() => setAnalyticsViewId("ResponseCharting")}
+        >
+          <Text variant="small" weight="semiBold">
+            Visualize Responses
+          </Text>
+        </ViewTab>
       </ViewTabsContainer>
       <Container marginX="8" paddingY="0" marginTop="2">
         {analyticsViewId === "Insights" && <Insights />}

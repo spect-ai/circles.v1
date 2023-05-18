@@ -101,7 +101,9 @@ export default function Plot({ dataRows, chart, labels, property }: Props) {
       ) : (
         <Box>
           <Text variant="label">
-            {property ? "No data found" : "Field deleted"}
+            {property || chart.id === "who cares"
+              ? "No data found"
+              : "Field deleted"}
           </Text>
         </Box>
       )}

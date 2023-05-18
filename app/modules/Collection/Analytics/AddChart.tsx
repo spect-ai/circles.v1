@@ -151,22 +151,26 @@ const AddChart = ({ handleClose, chartId }: Props) => {
         padding="8"
         paddingTop="4"
       >
-        <Box display="flex" flexDirection="row" gap="8">
-          <Box width="1/2" display="flex" flexDirection="column" gap="4">
+        <Box
+          display="flex"
+          flexDirection={{
+            xs: "column",
+            md: "row",
+          }}
+          gap="8"
+        >
+          <Box
+            width={{
+              xs: "full",
+              md: "1/2",
+            }}
+            display="flex"
+            flexDirection="column"
+            gap="4"
+          >
             <Box display="flex" flexDirection="column">
-              <Box marginLeft="2">
-                {" "}
-                <Text
-                  variant="label"
-                  color="textSecondary"
-                  weight="semiBold"
-                  size="small"
-                >
-                  Chart Title
-                </Text>
-              </Box>
               <Input
-                label
+                label="Chart Title"
                 placeholder="Vote distribution by guild"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -179,7 +183,6 @@ const AddChart = ({ handleClose, chartId }: Props) => {
               multiple={false}
               label="Field to chart"
               isClearable={false}
-              variant="label"
             />
             <Dropdown
               options={chartOptions}
@@ -195,10 +198,14 @@ const AddChart = ({ handleClose, chartId }: Props) => {
               multiple={false}
               label="Chart type"
               isClearable={false}
-              variant="label"
             />
           </Box>
-          <Box width="1/2">
+          <Box
+            width={{
+              xs: "full",
+              md: "1/2",
+            }}
+          >
             {" "}
             <Plot
               chart={{
@@ -214,12 +221,7 @@ const AddChart = ({ handleClose, chartId }: Props) => {
           </Box>
         </Box>
         <Box marginLeft="2">
-          <Text
-            variant="label"
-            size="small"
-            weight="semiBold"
-            color="textSecondary"
-          >
+          <Text size="small" weight="semiBold" color="textSecondary">
             Segment Responses
           </Text>
           <AddAdvancedConditions

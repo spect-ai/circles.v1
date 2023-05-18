@@ -46,7 +46,6 @@ export const Insights = (props: Props) => {
           }
         );
         const data = await res.json();
-
         if (!res.ok) throw new Error(data.message);
         setResponseMetrics(data);
         console.log({ data });
@@ -65,7 +64,10 @@ export const Insights = (props: Props) => {
         display="flex"
         flexDirection="row"
         width="full"
-        gap="6"
+        gap={{
+          md: "6",
+          xs: "2",
+        }}
         marginTop="4"
       >
         <Box
@@ -116,7 +118,13 @@ export const Insights = (props: Props) => {
           </Text>
         </Box>
       </Box>
-      <ScrollContainer marginTop="4" width="3/4">
+      <ScrollContainer
+        marginTop="4"
+        width={{
+          md: "3/4",
+          xs: "full",
+        }}
+      >
         <Box display="flex" flexDirection="column" gap="4">
           <Text variant="label" weight="bold">
             Metrics for each page
@@ -124,9 +132,15 @@ export const Insights = (props: Props) => {
           <Table
             columns={["Page", "Views", "Drop off Rate"]}
             columnWidths={{
+              xl: [6, 3, 3],
               lg: [6, 3, 3],
+              md: [6, 3, 3],
+              sm: [6, 3, 3],
+              xs: [4, 3, 3],
             }}
             rows={collection.formMetadata.pageOrder.map((pageId) => {
+              if (["connect", "connectDiscord", "collect"].includes(pageId))
+                return [];
               if (pageId === "submitted")
                 return [
                   collection.formMetadata.pages[pageId].name,
