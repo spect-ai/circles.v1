@@ -1,3 +1,4 @@
+import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { reservedRoles } from "@/app/modules/Circle/ContributorsModal/InviteMembersModal/constants";
@@ -67,6 +68,12 @@ export default function GiveRole({ setAction, actionMode, action }: Props) {
           );
         })}{" "}
       </Stack>
+      <Box marginTop="4" marginBottom="-4">
+        <Editor
+          value={`:::tip\nEnsure you have "Collect Responder Profile" plugin enabled.\n:::`}
+          disabled={true}
+        />
+      </Box>
     </Box>
   );
 }
