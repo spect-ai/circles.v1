@@ -113,14 +113,6 @@ function Filter() {
           >
             <Box padding="8">
               <Stack>
-                {/* <AddConditions
-                  viewConditions={viewCondtions}
-                  setViewConditions={setViewCondtions}
-                  firstRowMessage="Add a filter"
-                  buttonText="Add Filter"
-                  collection={collection}
-                  dropDownPortal={true}
-                /> */}
                 <AddAdvancedConditions
                   rootConditionGroup={advancedConditions}
                   setRootConditionGroup={setAdvancedConditions}

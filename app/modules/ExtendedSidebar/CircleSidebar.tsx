@@ -140,7 +140,7 @@ function CircleSidebar() {
           <CircleOptions />
         </Stack>
 
-        <Container subH="10.6rem">
+        <Container subH="8.1rem">
           <Stack direction="vertical" space="2">
             <Stack direction="horizontal" space="2">
               <Box width="1/2">
@@ -447,7 +447,7 @@ function CircleSidebar() {
           </Stack>
         </Container>
       </Stack>
-      <PrimaryButton
+      {/* <PrimaryButton
         variant="tertiary"
         onClick={() => {
           process.env.NODE_ENV === "production" &&
@@ -459,7 +459,7 @@ function CircleSidebar() {
         }}
       >
         Use a Template
-      </PrimaryButton>
+      </PrimaryButton> */}
     </Box>
   );
 }

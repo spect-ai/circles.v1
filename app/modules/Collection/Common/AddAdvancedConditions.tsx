@@ -41,7 +41,14 @@ function Condition({
 }) {
   return (
     <Box marginBottom="2" width="full">
-      <Stack direction="horizontal" align="flex-start" space="1">
+      <Stack
+        direction={{
+          xs: "vertical",
+          md: "horizontal",
+        }}
+        align="flex-start"
+        space="1"
+      >
         <Box
           width={{
             xs: "full",
@@ -52,7 +59,17 @@ function Condition({
             md: "0",
           }}
         >
-          <Stack direction="horizontal" align="center" space="1">
+          <Stack
+            direction={{
+              xs: "vertical",
+              md: "horizontal",
+            }}
+            align={{
+              xs: "flex-start",
+              md: "center",
+            }}
+            space="1"
+          >
             {message && ["and", "or"].includes(message) ? (
               <Dropdown
                 options={[
@@ -245,6 +262,8 @@ export default function AddAdvancedConditions({
                 }}
                 onComparatorChange={(comparator: OptionType) => {
                   condition.data.comparator = comparator;
+                  condition.data.value = "";
+
                   setRootConditionGroup({
                     ...rootConditionGroup,
                     conditions: {
@@ -279,7 +298,14 @@ export default function AddAdvancedConditions({
             const conditionGroup = rootConditionGroup.conditionGroups[oid];
 
             return (
-              <Stack direction="horizontal" align="flex-start" space="1">
+              <Stack
+                direction={{
+                  xs: "vertical",
+                  md: "horizontal",
+                }}
+                align="flex-start"
+                space="1"
+              >
                 <Box
                   width={{
                     xs: "full",
@@ -386,6 +412,7 @@ export default function AddAdvancedConditions({
                           onComparatorChange={(comparator: OptionType) => {
                             conditionGroup.conditions[cgoid].data.comparator =
                               comparator;
+                            condition.data.value = "";
                             setRootConditionGroup({
                               ...rootConditionGroup,
                               conditionGroups: {
