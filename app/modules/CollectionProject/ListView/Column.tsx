@@ -272,7 +272,11 @@ export default function Column({
                               </Box>
                             );
                           }
-                          if (property.type === "reward") {
+                          if (
+                            property.type === "reward" &&
+                            value?.value &&
+                            value?.token?.label
+                          ) {
                             return (
                               <Box key={propertyId}>
                                 <Tag tone="green">

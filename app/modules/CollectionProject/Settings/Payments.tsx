@@ -23,7 +23,7 @@ export default function Payments({
     .map((prop) => {
       if (collection.properties[prop].type === "reward")
         return {
-          value: collection.properties[prop].name,
+          value: prop,
           label: collection.properties[prop].name,
         };
     })
@@ -34,7 +34,7 @@ export default function Payments({
       const propertyType = collection.properties[prop].type;
       if (["user", "user[]", "ethAddress"].includes(propertyType))
         return {
-          value: collection.properties[prop].name,
+          value: prop,
           label: collection.properties[prop].name,
         };
     })

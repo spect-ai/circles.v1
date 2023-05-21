@@ -59,7 +59,7 @@ export default function AddOptions({
           <Box display="flex" flexDirection="column" gap="4" width="full">
             {fieldOptions.map((option, index) => (
               <Box key={index}>
-                <Stack direction="horizontal" align="center" space="1">
+                <Stack direction="horizontal" align="flex-start" space="1">
                   {collection.collectionType === 1 && (
                     <Box
                       style={{
@@ -188,7 +188,7 @@ export default function AddOptions({
 
             <Stack direction="horizontal" align="center" space="2">
               <Tooltip
-                title="Ensures no one can update this field. If field is updated, all associated data will be deleted and the activity will be recorded. This can be particularly useful for voting & protecting responses from being tampered with by stewards."
+                title="Ensures no one can update this field. If field is updated, all associated data will be deleted and the activity will be recorded. This can be particularly useful for voting & protecting responses from being tampered with."
                 theme={mode}
               >
                 <CheckBox

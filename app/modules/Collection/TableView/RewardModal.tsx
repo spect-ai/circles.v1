@@ -4,6 +4,7 @@ import { Reward } from "@/app/types";
 import { Box } from "degen";
 import { memo, useState } from "react";
 import RewardField from "../../PublicForm/Fields/RewardField";
+import { useCircle } from "../../Circle/CircleContext";
 
 type Props = {
   form: any;
@@ -15,6 +16,7 @@ type Props = {
 
 function RewardModal({ propertyId, dataId, handleClose, form, value }: Props) {
   const [data, setData] = useState(value);
+  const { registry } = useCircle();
 
   return (
     <Modal
@@ -30,10 +32,15 @@ function RewardModal({ propertyId, dataId, handleClose, form, value }: Props) {
         );
       }}
       title="Reward"
+      size="small"
     >
       <Box padding="8">
         <RewardField
-          rewardOptions={form.properties[propertyId].rewardOptions}
+          rewardOptions={
+            form.collectionType === 0
+              ? form.properties[propertyId].rewardOptions
+              : registry
+          }
           value={data}
           updateData={(reward: Reward) => {
             setData(reward);

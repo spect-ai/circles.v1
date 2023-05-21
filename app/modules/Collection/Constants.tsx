@@ -32,7 +32,7 @@ export const fields = [
   },
 ];
 
-export const fieldOptionsDropdown = [
+export const fieldOptionsDropdownInForms = [
   {
     label: "Suggested",
     options: [
@@ -63,7 +63,7 @@ export const fieldOptionsDropdown = [
         icon: getPropertyIcon("shortText"),
       },
       {
-        label: "Long Text",
+        label: "Multi-Line Rich Text",
         value: "longText",
         icon: getPropertyIcon("longText"),
       },
@@ -102,11 +102,6 @@ export const fieldOptionsDropdown = [
     label: "Links",
     options: [
       { label: "URL", value: "singleURL", icon: getPropertyIcon("singleURL") },
-      {
-        label: "Multiple URL",
-        value: "multiURL",
-        icon: getPropertyIcon("multiURL"),
-      },
     ],
   },
   {
@@ -147,6 +142,99 @@ export const fieldOptionsDropdown = [
         value: "readonly",
         icon: getPropertyIcon("readonly"),
       },
+    ],
+  },
+];
+
+export const fieldOptionsDropdownInProjects = [
+  {
+    label: "Suggested",
+    options: [
+      { label: "Discord", value: "discord", icon: getPropertyIcon("discord") },
+      {
+        label: "Ethereum Address",
+        value: "ethAddress",
+        icon: getPropertyIcon("ethAddress"),
+      },
+    ],
+  },
+  {
+    label: "Text",
+    options: [
+      {
+        label: "Short Text",
+        value: "shortText",
+        icon: getPropertyIcon("shortText"),
+      },
+    ],
+  },
+  {
+    label: "Contact Info",
+    options: [
+      { label: "Email", value: "email", icon: getPropertyIcon("email") },
+      // { label: "Twitter", value: "twitter", icon: <FaTwitter /> },
+      { label: "Discord", value: "discord", icon: getPropertyIcon("discord") },
+      {
+        label: "Telegram",
+        value: "telegram",
+        icon: getPropertyIcon("telegram"),
+      },
+      { label: "Github", value: "github", icon: getPropertyIcon("github") },
+    ],
+  },
+  {
+    label: "Choices",
+    options: [
+      {
+        label: "Single Select",
+        value: "singleSelect",
+        icon: getPropertyIcon("singleSelect"),
+      },
+      {
+        label: "Multiple Select",
+        value: "multiSelect",
+        icon: getPropertyIcon("multiSelect"),
+      },
+    ],
+  },
+  {
+    label: "Links",
+    options: [
+      { label: "URL", value: "singleURL", icon: getPropertyIcon("singleURL") },
+    ],
+  },
+  {
+    label: "Web3 Input",
+    options: [
+      {
+        label: "Ethereum Address",
+        value: "ethAddress",
+        icon: getPropertyIcon("ethAddress"),
+      },
+      { label: "Reward", value: "reward", icon: getPropertyIcon("reward") },
+      {
+        label: "Milestone",
+        value: "milestone",
+        icon: getPropertyIcon("milestone"),
+      },
+    ],
+  },
+  {
+    label: "Users in this Space",
+    options: [
+      {
+        label: "Multiple Users",
+        value: "user[]",
+        icon: getPropertyIcon("user[]"),
+      },
+      { label: "Single User", value: "user", icon: getPropertyIcon("user") },
+    ],
+  },
+  {
+    label: "Other Input",
+    options: [
+      { label: "Number", value: "number", icon: getPropertyIcon("number") },
+      { label: "Date", value: "date", icon: getPropertyIcon("date") },
     ],
   },
 ];

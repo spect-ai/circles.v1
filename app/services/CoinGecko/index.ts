@@ -16,3 +16,22 @@ export const getPlatformTokenPrice = async (
   const data = await response.json();
   return data[tokenAddress.toLowerCase()]?.usd;
 };
+
+export const getMultipleTokenPrices = async (
+  tokenAddresses: string,
+  platformId: string
+) => {
+  const response = await fetch(
+    `https://api.coingecko.com/api/v3/simple/token_price/${platformId}?contract_addresses=${tokenAddresses}&vs_currencies=usd`
+  );
+  const data = await response.json();
+  return data;
+};
+
+export const getMultipleCurrencyPrices = async (tokens: string) => {
+  const response = await fetch(
+    `https://api.coingecko.com/api/v3/simple/price?ids=${tokens}&vs_currencies=usd`
+  );
+  const data = await response.json();
+  return data;
+};

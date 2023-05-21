@@ -26,6 +26,7 @@ type Props =
       creatable?: boolean;
       formatCreateLabel?: (inputValue: string) => string;
       formatOptionLabel?: (option: OptionType) => any;
+      variant?: "small" | "base" | "label" | "extraLarge" | "large";
     }
   | {
       multiple: true;
@@ -40,6 +41,7 @@ type Props =
       creatable?: boolean;
       formatCreateLabel?: (inputValue: string) => string;
       formatOptionLabel?: (option: OptionType) => any;
+      variant?: "small" | "base" | "label" | "extraLarge" | "large";
     };
 
 const { Option } = components;
@@ -65,13 +67,19 @@ const Dropdown: FC<Props> = ({
   formatCreateLabel,
   formatOptionLabel,
   label,
+  variant,
 }) => {
   const { mode } = useTheme();
 
   return (
     <Stack space="2">
-      <Box marginLeft="4">
-        <Text color="textSecondary" weight="semiBold" size="small">
+      <Box marginLeft="2">
+        <Text
+          variant={variant || undefined}
+          color="textSecondary"
+          weight="semiBold"
+          size="small"
+        >
           {label}
         </Text>
       </Box>

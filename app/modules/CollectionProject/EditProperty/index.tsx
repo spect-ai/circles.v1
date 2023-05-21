@@ -81,8 +81,8 @@ function EditProperty({ propertyId, disabled }: Props) {
                 }}
                 mode={mode}
               >
-                {getPropertyIcon(property.type)}
-                {property.name}
+                <Box width="4">{getPropertyIcon(property.type)}</Box>
+                <Text wordBreak="break-word">{property.name}</Text>
                 {property.required && <Box color="accent">*</Box>}
               </PropertyButton>
             </Box>

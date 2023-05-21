@@ -1,13 +1,21 @@
 import Popover from "@/app/common/components/Popover";
 import { updateFormCollection } from "@/app/services/Collection";
 import { CollectionType, Option } from "@/app/types";
-import { Box, Stack, Tag, Text } from "degen";
+import { Box, Button, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { MenuContainer, MenuItem } from "../EditValue";
 import { logError } from "@/app/common/utils/utils";
+import {
+  BsArrowDown,
+  BsArrowDownUp,
+  BsArrowUp,
+  BsSortDown,
+  BsSortUp,
+} from "react-icons/bs";
+import { RiSortDesc, RiSortAsc } from "react-icons/ri";
 
 export default function Sort() {
   const {
@@ -28,6 +36,9 @@ export default function Sort() {
   );
 
   const [sortOptions, setSortOptions] = useState<Option[]>([]);
+  const [sortPropertyToLabel, setSortPropertyToLabel] = useState<{
+    [key: string]: string;
+  }>({} as { [key: string]: string });
 
   const unSortableProperties = [
     "user[]",
@@ -36,6 +47,13 @@ export default function Sort() {
     "longText",
     "multiURL",
     "milestone",
+    "ethAddress",
+    "email",
+    "user",
+    "discord",
+    "github",
+    "telegram",
+    "readonly",
   ];
 
   useEffect(() => {
@@ -55,6 +73,12 @@ export default function Sort() {
     });
     options = options.filter((option) => option !== undefined);
     setSortOptions([noneOption, ...(options as Option[])]);
+    setSortPropertyToLabel(
+      options.reduce((acc, option) => {
+        if (option) acc[option.value] = option.label;
+        return acc;
+      }, {} as { [key: string]: string })
+    );
   }, [JSON.stringify(collection.propertyOrder), isOpen]);
 
   useEffect(() => {
@@ -70,16 +94,68 @@ export default function Sort() {
 
   return (
     <Box width="fit">
-      <Stack direction="horizontal" align="center" space="1">
-        <Text variant="label">Sort</Text>
+      <Stack direction="horizontal" align="center" space="0">
+        <Button
+          size="extraSmall"
+          variant="transparent"
+          shape="circle"
+          onClick={() => {
+            if (!sortProperty) {
+              toast.error(
+                `Please click "Sort" and select a field to sort by, first`
+              );
+              return;
+            }
+            setIsAsc(!isAsc);
+            updateFormCollection(collection.id, {
+              projectMetadata: {
+                ...collection.projectMetadata,
+                views: {
+                  ...(collection.projectMetadata?.views || {}),
+                  [projectViewId]: {
+                    ...collection.projectMetadata?.views?.[projectViewId],
+                    sort: {
+                      property: sortProperty,
+                      direction: !isAsc ? "asc" : "desc",
+                    },
+                  },
+                },
+              },
+            })
+              .then((res) => {
+                console.log({
+                  res: collection?.projectMetadata?.views?.[projectViewId],
+                  id: res.id,
+                });
+                if (res.id) {
+                  updateCollection(res);
+                } else {
+                  throw new Error("Error updating collection");
+                }
+              })
+              .catch((err) => {
+                logError("Error updating collection");
+              });
+          }}
+        >
+          <Text color={sortProperty ? "accent" : "textSecondary"}>
+            {!sortProperty && <BsArrowDownUp size={18} />}
+            {sortProperty && isAsc && <RiSortAsc size={18} />}
+            {sortProperty && !isAsc && <RiSortDesc size={18} />}
+          </Text>
+        </Button>
         <Popover
           width="fit"
           butttonComponent={
-            <Box cursor="pointer" onClick={() => setIsOpen(true)}>
-              <Tag hover>
-                {collection.properties[sortProperty]?.name || "none"}
-              </Tag>
-            </Box>
+            <Button
+              size="extraSmall"
+              variant="transparent"
+              onClick={() => setIsOpen(true)}
+            >
+              <Text variant="label">
+                {sortPropertyToLabel?.[sortProperty] || "Sort"}
+              </Text>
+            </Button>
           }
           isOpen={isOpen}
           setIsOpen={setIsOpen}
@@ -144,46 +220,15 @@ export default function Sort() {
             </Box>
           </motion.div>
         </Popover>
-        {sortProperty && (
+        {/* {sortProperty && (
           <Box
             cursor="pointer"
             onClick={() => {
-              setIsAsc(!isAsc);
-              updateFormCollection(collection.id, {
-                projectMetadata: {
-                  ...collection.projectMetadata,
-                  views: {
-                    ...(collection.projectMetadata?.views || {}),
-                    [projectViewId]: {
-                      ...collection.projectMetadata?.views?.[projectViewId],
-                      sort: {
-                        property: sortProperty,
-                        direction: !isAsc ? "asc" : "desc",
-                      },
-                    },
-                  },
-                },
-              })
-                .then((res) => {
-                  console.log({
-                    res: collection?.projectMetadata?.views?.[projectViewId],
-                  });
-                  if (res.id) {
-                    updateCollection(res);
-                  } else {
-                    throw new Error("Error updating collection");
-                  }
-                })
-                .catch((err) => {
-                  logError("Error updating collection");
-                });
+              
             }}
           >
-            <Tag hover tone="accent">
-              {isAsc ? "asc" : "desc"}
-            </Tag>
           </Box>
-        )}
+        )} */}
       </Stack>
     </Box>
   );

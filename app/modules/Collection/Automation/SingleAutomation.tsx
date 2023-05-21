@@ -9,6 +9,7 @@ import {
   Action,
   CollectionType,
   Condition,
+  ConditionGroup,
   Option,
   Trigger,
 } from "@/app/types";
@@ -30,6 +31,7 @@ import { validateActions } from "./Validation/ActionValidations";
 import { validateConditions } from "./Validation/ConditionValidations";
 import { validateTrigger } from "./Validation/TriggerValidations";
 import { logError } from "@/app/common/utils/utils";
+import AddAdvancedConditions from "../Common/AddAdvancedConditions";
 
 type Props = {
   automation: any;
@@ -57,7 +59,9 @@ export default function SingleAutomation({
 
   const [trigger, setTrigger] = useState({} as Trigger);
   const [actions, setActions] = useState([] as Action[]);
-  const [conditions, setConditions] = useState([] as Condition[]);
+  const [advancedConditions, setAdvancedConditions] = useState<ConditionGroup>(
+    {} as ConditionGroup
+  );
   const [name, setName] = useState(automation?.name || "");
   const [description, setDescription] = useState(automation?.description || "");
   const [actionValidationResults, setActionValidationResults] = useState({
@@ -113,7 +117,7 @@ export default function SingleAutomation({
     description: string,
     trigger: Trigger,
     actions: Action[],
-    conditions: Condition[],
+    advancedConditions: ConditionGroup,
     slug: string
   ) => {
     if (!circle) return;
@@ -122,7 +126,7 @@ export default function SingleAutomation({
       description,
       trigger,
       actions,
-      conditions,
+      advancedConditions,
     };
     let res;
     if (automationMode === "create") {
@@ -216,7 +220,7 @@ export default function SingleAutomation({
         );
         setTrigger(automation.trigger);
         setActions(automation.actions);
-        setConditions(automation.conditions || []);
+        setAdvancedConditions(automation.advancedConditions || {});
       }
     }
   }, [automation, collection, collectionOption]);
@@ -233,7 +237,7 @@ export default function SingleAutomation({
           console.error(err);
           toast.error("Something went wrong while fetching collection");
         });
-  }, [actions, trigger, conditions, name, collectionOption]);
+  }, [actions, trigger, advancedConditions, name, collectionOption]);
 
   useEffect(() => {
     setName(automation?.name || "");
@@ -345,7 +349,7 @@ export default function SingleAutomation({
                 description,
                 trigger,
                 actions,
-                conditions,
+                advancedConditions,
                 (collection as CollectionType)?.slug
               );
               setSaving(false);
@@ -619,15 +623,27 @@ export default function SingleAutomation({
                 width="full"
               >
                 <Text variant="base" weight="semiBold" color="accent">
-                  Only If
+                  Only
                 </Text>
-                <AddConditions
+                {/* <AddConditions
                   viewConditions={conditions}
                   setViewConditions={(conditions) => {
                     setConditions(conditions);
                   }}
                   firstRowMessage="It is true that"
                   buttonText="Add Condition"
+                  collection={collection}
+                  dropDownPortal={false}
+                /> */}
+                <AddAdvancedConditions
+                  rootConditionGroup={advancedConditions}
+                  setRootConditionGroup={(conditions) => {
+                    console.log(conditions);
+                    setAdvancedConditions(conditions);
+                  }}
+                  firstRowMessage="When"
+                  buttonText="Add Condition"
+                  groupButtonText="Group Conditions"
                   collection={collection}
                   dropDownPortal={false}
                 />
