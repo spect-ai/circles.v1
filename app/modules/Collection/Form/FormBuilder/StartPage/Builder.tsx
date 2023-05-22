@@ -12,6 +12,7 @@ import Footer from "./Footer";
 import Messages from "./Messages";
 import { logError } from "@/app/common/utils/utils";
 import { Editor } from "@avp1598/react-beautiful-editor";
+import { useCircle } from "@/app/modules/Circle/CircleContext";
 
 type Props = {
   setCurrentPage: (page: string) => void;
@@ -19,6 +20,7 @@ type Props = {
 
 const BuilderStartPage = ({ setCurrentPage }: Props) => {
   const [connectedUser] = useAtom(connectedUserAtom);
+  const { circle, setCircleData } = useCircle();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
 
@@ -80,7 +82,20 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
               const res = await updateFormCollection(collection.id, {
                 name,
               });
-              res.id && updateCollection(res);
+              if (res.id) {
+                updateCollection(res);
+                if (circle)
+                  setCircleData({
+                    ...circle,
+                    collections: {
+                      ...(circle.collections || {}),
+                      [res.id]: {
+                        ...circle.collections[res.id],
+                        name: res.name,
+                      },
+                    },
+                  });
+              }
             }
           }}
         />

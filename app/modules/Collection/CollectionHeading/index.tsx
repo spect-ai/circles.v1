@@ -303,7 +303,7 @@ function CollectionHeading() {
                           Preview
                         </PopoverOption>
                       </a>
-                      {view === 0 && (
+                      {view !== 1 && (
                         <PopoverOption
                           onClick={() => {
                             setView(1);
@@ -313,7 +313,7 @@ function CollectionHeading() {
                           Responses
                         </PopoverOption>
                       )}
-                      {view === 1 && (
+                      {view !== 0 && (
                         <PopoverOption
                           onClick={() => {
                             setView(0);
@@ -321,6 +321,16 @@ function CollectionHeading() {
                           }}
                         >
                           Edit Form
+                        </PopoverOption>
+                      )}
+                      {view !== 2 && (
+                        <PopoverOption
+                          onClick={() => {
+                            setView(2);
+                            setIsOpen(false);
+                          }}
+                        >
+                          Analytics
                         </PopoverOption>
                       )}
                     </Box>

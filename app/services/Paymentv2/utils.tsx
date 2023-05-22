@@ -783,7 +783,6 @@ export const findAndUpdateCompletedPaymentIds = async (
   transactionHash: { [key: string]: string }
 ) => {
   let filteredPaymentIds = [] as string[];
-  if (!["100", "56", "43114", "43113"].includes(chainId)) return;
   if (transactionHash["tokens"]) {
     filteredPaymentIds = findPaymentIdsByTokenAndChain(
       chainId,

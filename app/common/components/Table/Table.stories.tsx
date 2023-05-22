@@ -15,7 +15,6 @@ const Template: Story<TableProps> = (args) => {
   return (
     <Table
       {...args}
-      checked={checked}
       onClick={(checked) => {
         setChecked(checked);
       }}
@@ -32,6 +31,4 @@ Default.args = {
     ["Row 1", "Row 2", "Row 3"],
     ["Row 1", "Row 2", "Row 3"],
   ],
-  showButton: true,
-  checked: [true, true, false, false],
 };

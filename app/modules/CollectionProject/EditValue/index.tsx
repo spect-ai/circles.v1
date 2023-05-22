@@ -126,6 +126,25 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                           </Stack>
                         </CustomTag>
                       ))}
+                    {["singleSelect", "user"].includes(property.type) && value && (
+                      <CustomTag
+                        mode={mode}
+                        key={value.value}
+                        borderCol={colorMapping[value.value]}
+                      >
+                        <Stack direction="horizontal" space="1" align="center">
+                          <Text>{value.label}</Text>
+                          <Box
+                            cursor="pointer"
+                            onClick={() => {
+                              setValue(null);
+                            }}
+                          >
+                            <IconClose size="4" color="red" />
+                          </Box>
+                        </Stack>
+                      </CustomTag>
+                    )}
                     <FieldInput
                       mode={mode}
                       autoFocus

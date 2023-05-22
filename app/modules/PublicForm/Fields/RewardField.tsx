@@ -33,7 +33,16 @@ export default function RewardField({
     rewardOptions[firstChainId]?.tokenDetails
   )[0];
 
-  const [tokenOptions, setTokenOptions] = useState<Option[]>([]);
+  const [tokenOptions, setTokenOptions] = useState<Option[]>(
+    Object.entries(
+      rewardOptions?.[value?.chain?.value || firstChainId]?.tokenDetails || {}
+    ).map(([address, token]) => {
+      return {
+        label: token.symbol,
+        value: address,
+      };
+    })
+  );
   const [selectedChain, setSelectedChain] = useState<Option>({
     label: value?.chain?.label || firstChainName,
     value: value?.chain?.value || firstChainId,
@@ -42,26 +51,6 @@ export default function RewardField({
     label: value?.token?.label || firstTokenSymbol,
     value: value?.token?.value || firstTokenAddress,
   });
-
-  useEffect(() => {
-    if (rewardOptions && selectedChain) {
-      const tokens = Object.entries(
-        rewardOptions[selectedChain.value].tokenDetails
-      ).map(([address, token]) => {
-        return {
-          label: token.symbol,
-          value: address,
-        };
-      });
-      setSelectedToken(tokens[0]);
-      updateData({
-        chain: selectedChain,
-        token: tokens[0],
-        value: value?.value,
-      });
-      setTokenOptions(tokens);
-    }
-  }, [selectedChain]);
 
   return (
     <Stack
@@ -91,11 +80,21 @@ export default function RewardField({
           selected={selectedChain}
           onChange={(option) => {
             setSelectedChain(option);
+            const tokens = Object.entries(
+              rewardOptions[option.value].tokenDetails
+            ).map(([address, token]) => {
+              return {
+                label: token.symbol,
+                value: address,
+              };
+            });
+            setSelectedToken(tokens[0]);
             updateData({
               chain: option,
-              token: selectedToken,
+              token: tokens[0],
               value: value?.value,
             });
+            setTokenOptions(tokens);
           }}
           multiple={false}
           isClearable={false}

@@ -12,6 +12,7 @@ import Archive from "./Archive";
 import General from "./General";
 import Payments from "./Payments";
 import { logError } from "@/app/common/utils/utils";
+import { useCircle } from "../../Circle/CircleContext";
 
 export default function Settings() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +20,7 @@ export default function Settings() {
 
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
+  const { setCircleData, circle } = useCircle();
 
   const [name, setName] = useState(collection.name);
   const [rewardField, setRewardField] = useState({
@@ -81,12 +83,23 @@ export default function Settings() {
                 },
               })
                 .then((res) => {
-                  console.log({ res });
-                  if (res.id) updateCollection(res);
-                  else logError("Error updating collection name");
+                  if (res.id) {
+                    updateCollection(res);
+                    if (circle)
+                      setCircleData({
+                        ...circle,
+                        collections: {
+                          ...(circle.collections || {}),
+                          [res.id]: {
+                            ...circle.collections[res.id],
+                            name: res.name,
+                          },
+                        },
+                      });
+                  } else logError("Error updating collection");
                 })
                 .catch(() => {
-                  logError("Error updating collection name");
+                  logError("Error updating collection");
                 });
               setIsOpen(false);
             }}

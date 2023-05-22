@@ -551,44 +551,46 @@ export default function CreateCard({
             >
               + Default Value
             </PrimaryButton>
-            <PrimaryButton
-              variant="tertiary"
-              onClick={() => {
-                if (
-                  collection.collectionType === 0 &&
-                  collection.formMetadata.allowAnonymousResponses
-                ) {
-                  toast.warning(
-                    "You can only map the responder if the form collects responder profile"
-                  );
-                  return;
-                }
-                // if (
-                //   collection.collectionType === 0 &&
-                //   !collection.formMetadata.walletConnectionRequired
-                // ) {
-                //   toast.warning(
-                //     "The selected form does not require wallet connection, so the responder cannot be mapped. Please change it in the form settings"
-                //   );
-                //   return;
-                // }
-                setFieldType("responder");
-                setValues([
-                  ...values,
-                  {
-                    type: "responder",
-                    mapping: {
-                      to: {
-                        label: "",
-                        value: "",
+            {collection.collectionType === 0 && (
+              <PrimaryButton
+                variant="tertiary"
+                onClick={() => {
+                  if (
+                    collection.collectionType === 0 &&
+                    collection.formMetadata.allowAnonymousResponses
+                  ) {
+                    toast.warning(
+                      "You can only map the responder if the form collects responder profile"
+                    );
+                    return;
+                  }
+                  // if (
+                  //   collection.collectionType === 0 &&
+                  //   !collection.formMetadata.walletConnectionRequired
+                  // ) {
+                  //   toast.warning(
+                  //     "The selected form does not require wallet connection, so the responder cannot be mapped. Please change it in the form settings"
+                  //   );
+                  //   return;
+                  // }
+                  setFieldType("responder");
+                  setValues([
+                    ...values,
+                    {
+                      type: "responder",
+                      mapping: {
+                        to: {
+                          label: "",
+                          value: "",
+                        },
                       },
                     },
-                  },
-                ]);
-              }}
-            >
-              + Map Responder
-            </PrimaryButton>
+                  ]);
+                }}
+              >
+                + Map Responder
+              </PrimaryButton>
+            )}
             {collection.formMetadata &&
               collection.formMetadata.allowAnonymousResponses && (
                 <Tooltip title="You can only map the responder if the form collects responder profile">

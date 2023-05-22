@@ -42,7 +42,7 @@ export default function AddView({ viewType, handleClose }: Props) {
   }, [collection.properties, viewType]);
 
   return (
-    <Modal handleClose={handleClose} title="Add View">
+    <Modal handleClose={handleClose} title="Add View" size="small">
       <Box padding="8">
         <Stack>
           <Input

@@ -18,7 +18,10 @@ export default function Filtering() {
       height="10"
       display="flex"
       flexDirection="row"
-      justifyContent="space-between"
+      justifyContent={{
+        xs: "flex-start",
+        lg: "space-between",
+      }}
       alignItems="center"
       backgroundColor="background"
       borderBottomRadius="large"

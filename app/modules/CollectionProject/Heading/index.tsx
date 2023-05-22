@@ -297,9 +297,10 @@ export default function ProjectHeading() {
                     >
                       <Text color="accent">
                         <Grid
-                          size={18}
+                          size={22}
                           style={{
                             marginTop: 4,
+                            marginLeft: 0.5,
                           }}
                         />
                       </Text>

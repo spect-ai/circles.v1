@@ -83,10 +83,7 @@ export default function Governance() {
           }`,
         }}
       />
-      <Loader
-        loading={isLoading || loading}
-        text="Fetching some thanos level data ..."
-      />
+
       {openDrawer && (
         <ProposalDrawer
           proposalId={proposalId}

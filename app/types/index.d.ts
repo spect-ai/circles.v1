@@ -937,6 +937,7 @@ export type Chart = {
   type: "bar" | "pie" | "line" | "doughnut";
   fields: string[];
   filters?: Condition[];
+  advancedFilters?: ConditionGroup;
 };
 
 export type LookupToken = {
@@ -962,6 +963,7 @@ export type ProjectMetadata = {
         direction: "asc" | "desc";
       };
       groupByColumn: string;
+      advancedFilters?: ConditionGroup;
     };
   };
   cardOrders: {
@@ -1020,6 +1022,7 @@ export type Property = {
   required?: boolean;
   description?: string;
   viewConditions?: Condition[];
+  advancedConditions?: ConditionGroup;
   payWallOptions?: PayWallOptions;
   internal?: boolean;
   maxSelections?: number;
@@ -1342,6 +1345,7 @@ export type PoapCredential = {
   event: POAPEventType;
 };
 
+// TODO: Remove "any" types
 export type Action = {
   id: string;
   type: string;
@@ -1353,6 +1357,27 @@ export type Action = {
   value: any;
   icon: string;
   label: string;
+};
+
+export type CreateCardActionData = {
+  selectedCollection: Option;
+  values: CreateCardActionDataValue[];
+};
+
+export type CreateCardActionDataValue = {
+  type: "mapping" | "default" | "responder";
+  default?: Default;
+  mapping?: Mapping;
+};
+
+type Mapping = {
+  from?: Option;
+  to?: Option;
+};
+
+type Default = {
+  field?: Option;
+  value?: any;
 };
 
 export type Trigger = {
@@ -1370,6 +1395,13 @@ export type Condition = {
   service: string;
   data: any;
 };
+export type ConditionGroup = {
+  id: string;
+  operator: "and" | "or";
+  conditions: { [id: string]: Condition };
+  conditionGroups?: { [id: string]: ConditionGroup };
+  order: string[];
+};
 
 export type Automation = {
   id: string;
@@ -1377,6 +1409,7 @@ export type Automation = {
   description: string;
   trigger: Trigger;
   conditions?: Condition[];
+  advancedConditions?: ConditionGroup;
   actions: Action[];
   triggerCategory: "collection" | "root";
   triggerCollectionSlug?: string;

@@ -14,7 +14,10 @@ export function SearchCard() {
       flexDirection="row"
       alignItems="center"
       paddingLeft="4"
-      width="1/3"
+      width={{
+        xs: "48",
+        md: "72",
+      }}
     >
       <IconSearch size="4" color="foreground" />
       <Input
