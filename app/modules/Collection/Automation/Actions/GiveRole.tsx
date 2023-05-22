@@ -72,6 +72,7 @@ export default function GiveRole({ setAction, actionMode, action }: Props) {
         <Editor
           value={`:::tip\nEnsure you have "Collect Responder Profile" plugin enabled.\n:::`}
           disabled={true}
+          version={1}
         />
       </Box>
     </Box>
