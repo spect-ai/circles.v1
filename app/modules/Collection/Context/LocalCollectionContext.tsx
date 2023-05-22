@@ -60,7 +60,7 @@ export const LocalCollectionContext = createContext<LocalCollectionContextType>(
 
 export function useProviderLocalCollection() {
   const router = useRouter();
-  const { collection: colId } = router.query;
+  const { collection: colId, cardSlug } = router.query;
   const { refetch: fetchCollection, data } = useQuery<CollectionType>(
     ["collection", colId],
     () =>
@@ -252,6 +252,9 @@ export function useProviderLocalCollection() {
             setLocalCollection(res.data);
             if (res.data.collectionType === 1) {
               setProjectViewId(res.data.projectMetadata.viewOrder[0]);
+            }
+            if (res.data.collectionType === 0 && cardSlug) {
+              setView(1);
             }
           }
 
