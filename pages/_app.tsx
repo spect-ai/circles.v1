@@ -1,6 +1,5 @@
-// import Root from "@/app/common/Root";
 import { AppProps } from "next/app";
-import { useLocation } from "react-use";
+import "avp-tiptap/dist/Editor.css";
 
 import "@fontsource/inter/300.css";
 import "@fontsource/inter/400.css";

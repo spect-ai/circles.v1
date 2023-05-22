@@ -222,17 +222,6 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
           maxLabel,
         },
       });
-      if (collection.collectionType === 1 && res) {
-        res = await updateFormCollection(collection.id, {
-          projectMetadata: {
-            ...res.projectMetadata,
-            cardOrders: {
-              ...res.projectMetadata.cardOrders,
-              [name.trim()]: cardOrder,
-            },
-          },
-        });
-      }
     } else {
       if (!pageId && collection.collectionType === 0) {
         logError("Pageid is missing in update, try again");

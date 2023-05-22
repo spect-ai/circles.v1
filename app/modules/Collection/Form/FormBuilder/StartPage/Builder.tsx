@@ -1,17 +1,17 @@
-import Editor from "@/app/common/components/Editor";
+// import Editor from "@/app/common/components/Editor";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { NameInput } from "@/app/modules/PublicForm/FormFields";
 import { updateFormCollection } from "@/app/services/Collection";
 import { connectedUserAtom } from "@/app/state/global";
-import { Avatar, Box, FileInput, Stack, Text } from "degen";
+import { Avatar, Box, FileInput, Stack, Text, useTheme } from "degen";
 import { useAtom } from "jotai";
 import { useState } from "react";
-import { toast } from "react-toastify";
 import { useLocalCollection } from "../../../Context/LocalCollectionContext";
 import Footer from "./Footer";
 import Messages from "./Messages";
 import { logError } from "@/app/common/utils/utils";
+import { Editor } from "@avp1598/react-beautiful-editor";
 
 type Props = {
   setCurrentPage: (page: string) => void;
@@ -29,8 +29,11 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const [verifyingCaptcha, setVerifyingCaptcha] = useState(false);
 
+  const { mode } = useTheme();
+
   return (
     <Box
+      className="bounds"
       style={{
         minHeight: "calc(100vh - 20rem)",
       }}
@@ -81,7 +84,7 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
             }
           }}
         />
-        <Editor
+        {/* <Editor
           value={description}
           onSave={async (value) => {
             setDescription(value);
@@ -94,7 +97,35 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
           }}
           placeholder={`Edit description`}
           isDirty={true}
-        />
+        /> */}
+        <Box
+          style={{
+            color: mode === "dark" ? "white" : "black",
+          }}
+        >
+          <Editor
+            value={description}
+            onChange={(value) => {
+              setDescription(value);
+            }}
+            theme={mode}
+            uploadImage={async (file) => {
+              console.log("file", file);
+              return "https://picsum.photos/400/600";
+            }}
+            placeholder="Enter form description"
+            embedBoundsSelector=".bounds"
+            onBlur={async () => {
+              if (connectedUser) {
+                const res = await updateFormCollection(collection.id, {
+                  description,
+                });
+                res.id && updateCollection(res);
+              }
+            }}
+            // readonly
+          />
+        </Box>
         <Messages form={collection} />
       </Stack>
       <Footer
