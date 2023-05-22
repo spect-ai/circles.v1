@@ -69,10 +69,10 @@
     eth-rpc-errors "^4.0.3"
     penpal "^6.0.1"
 
-"@avp1598/react-beautiful-editor@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@avp1598/react-beautiful-editor/-/react-beautiful-editor-0.0.3.tgz#f9ef78d5b100db1e6821814732b9511d2cfd1724"
-  integrity sha512-CTU5z/5glyAsRFyqvrOGUD7ikRkVjDBF5APOxhXd7D2sq9fy1WXzvrZ4jJL206eP+Ddn2teqm5j7dmZ0IksCZg==
+"@avp1598/react-beautiful-editor@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@avp1598/react-beautiful-editor/-/react-beautiful-editor-0.1.1.tgz#065b4a4f7b48be24beff5978010556e493206731"
+  integrity sha512-gF7YLS/Yu6+oPP2KyEQ6CokXOvK1+BiiN8A6rDuG58RbSWby1k7GzlUyJVT8KSxEMxlF9Ch7oqrswJxpG7mVAQ==
   dependencies:
     "@tiptap/core" "^2.0.3"
     "@tiptap/extension-bubble-menu" "^2.0.3"
