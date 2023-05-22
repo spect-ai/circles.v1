@@ -93,9 +93,12 @@ export default function NotificationPanel() {
                 </Stack>
               }
             >
-              {notifications?.reverse().map((notif) => (
-                <NotificationItem key={notif.timestamp} notif={notif} />
-              ))}
+              {notifications?.reverse &&
+                notifications
+                  .reverse()
+                  .map((notif) => (
+                    <NotificationItem key={notif.timestamp} notif={notif} />
+                  ))}
             </InfiniteScroll>
           </Stack>
         </ScrollContainer>

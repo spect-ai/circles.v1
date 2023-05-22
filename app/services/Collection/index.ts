@@ -441,31 +441,6 @@ export const linkDiscord = async (
   ).json();
 };
 
-export const linkDiscordToCollection = async (
-  collectionId: string,
-  payload: {
-    threadName: string;
-    selectedChannel: Option;
-    isPrivate?: boolean;
-    rolesToAdd?: { [key: string]: boolean };
-    stakeholdersToAdd?: string[];
-  }
-) => {
-  return await (
-    await fetch(
-      `${process.env.API_HOST}/collection/v1/${collectionId}/linkDiscordThreadToCollection`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      }
-    )
-  ).json();
-};
-
 export const postFormMessage = async (
   collectionId: string,
   payload: {
