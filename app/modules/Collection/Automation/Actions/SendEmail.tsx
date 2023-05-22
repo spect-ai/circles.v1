@@ -55,7 +55,10 @@ export default function SendEmail({
           selected={
             action.data?.toEmailProperties?.map(
               (propertyId: string) =>
-                ({ value: propertyId, label: propertyId } as Option)
+                ({
+                  value: propertyId,
+                  label: collection.properties[propertyId].name,
+                } as Option)
             ) || []
           }
           onChange={(value) => {
