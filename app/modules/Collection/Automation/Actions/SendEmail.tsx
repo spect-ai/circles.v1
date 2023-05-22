@@ -57,7 +57,7 @@ export default function SendEmail({
               (propertyId: string) =>
                 ({
                   value: propertyId,
-                  label: collection.properties[propertyId].name,
+                  label: collection.properties[propertyId]?.name,
                 } as Option)
             ) || []
           }
