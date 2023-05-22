@@ -1,25 +1,14 @@
-import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import {
-  Milestone,
-  Option,
-  Registry,
-  UserType,
-  VerifiableCredential,
-} from "@/app/types";
-import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
+import { UserType, VerifiableCredential } from "@/app/types";
+import { Box, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import LinkCredentialsModal from "./LinkCredentialsModal";
-import { Credential } from "@/app/types";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import Image from "next/image";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import AddEducationModal from "./AddEducationModal";
-import router from "next/router";
 import { useQuery } from "react-query";
 import { useAtom } from "jotai";
 import { userDataAtom } from "@/app/state/global";
@@ -113,7 +102,11 @@ export default function ViewEducationModal({
             </Box>
             <ScrollContainer>
               <Box>
-                <Editor value={education.description} disabled={true} />
+                <Editor
+                  value={education.description}
+                  disabled={true}
+                  version={2}
+                />
               </Box>
               {education.linkedCredentials?.length > 0 && (
                 <Box>

@@ -142,7 +142,12 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
             rows={Math.floor(form.name?.length / 20) + 1}
           />
           {form.description && (
-            <Editor value={form.description} isDirty={true} disabled />
+            <Editor
+              value={form.description}
+              isDirty={true}
+              disabled
+              version={form.editorVersion}
+            />
           )}
         </Stack>
       )}

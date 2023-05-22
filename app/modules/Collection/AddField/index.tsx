@@ -519,6 +519,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
                   }}
                   placeholder={`Edit description`}
                   isDirty={isDirty}
+                  version={collection.editorVersion}
                 />
               </Box>
             )}

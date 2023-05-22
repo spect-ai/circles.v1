@@ -575,6 +575,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                       collection.data?.[cardSlug as string]?.__cardStatus__ ===
                       "closed"
                     }
+                    version={collection.editorVersion}
                   />
                 </Box>
                 <Box marginY={"3"}>

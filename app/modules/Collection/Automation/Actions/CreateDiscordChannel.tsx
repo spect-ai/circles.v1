@@ -262,6 +262,7 @@ export default function CreateDiscordChannel({
                   ":::tip\nEnsure you have a discord field in your form which the user will use to connect their discord account."
                 }
                 disabled={true}
+                version={1}
               />
             </Box>
           )}

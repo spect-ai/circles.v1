@@ -188,6 +188,7 @@ const ConnectPage: NextPage = () => {
                         value={collection.description}
                         isDirty={true}
                         disabled
+                        version={collection.editorVersion}
                       />
                     )}
                   </Stack>

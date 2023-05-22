@@ -667,6 +667,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                   isDirty={isDirty}
                   setIsDirty={setIsDirty}
                   disabled={value.status !== "Pending" && !newCard}
+                  version={2}
                 />
               </Box>
             </Stack>

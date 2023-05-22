@@ -108,7 +108,11 @@ export default function PublicField({
           </Text>
         )}
         {form.properties[propertyId]?.description && !hideDescription && (
-          <Editor value={form.properties[propertyId].description} disabled />
+          <Editor
+            value={form.properties[propertyId].description}
+            disabled
+            version={form.editorVersion}
+          />
         )}
       </Stack>
       {form.properties[propertyId]?.type === "shortText" && (
@@ -261,6 +265,7 @@ export default function PublicField({
             placeholder={`Enter text, use / for commands`}
             isDirty={true}
             disabled={disabled}
+            version={form.editorVersion}
           />
         </Box>
       )}
@@ -403,7 +408,7 @@ export default function PublicField({
       )}
       {form.properties[propertyId]?.type === "milestone" && (
         <MilestoneField
-          form={form}
+          form={form as any}
           data={data}
           setData={setData}
           propertyId={propertyId}

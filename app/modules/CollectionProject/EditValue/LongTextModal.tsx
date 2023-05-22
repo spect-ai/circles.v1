@@ -32,6 +32,7 @@ export default function LongTextModal({
               }}
               isDirty={isDirty}
               setIsDirty={setIsDirty}
+              version={2}
             />
           </Box>
         </Stack>

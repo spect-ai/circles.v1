@@ -806,6 +806,7 @@ export interface CollectionType {
   dataActivities?: MappedItem<MappedItem<CollectionActivity>>;
   dataActivityOrder?: MappedItem<string[]>;
   collectionType: 0 | 1;
+  editorVersion: 1 | 2;
   formMetadata: FormMetadata;
   projectMetadata: ProjectMetadata;
   archived: boolean;
@@ -1104,6 +1105,7 @@ export interface FormType {
   slug: string;
   private: boolean;
   description: string;
+  editorVersion: 1 | 2;
   properties: {
     [key: string]: Property;
   };

@@ -216,7 +216,11 @@ export default function DataDrawer({
                             <Text size="small">{data[property.id]}</Text>
                           )}
                           {property?.type === "longText" && (
-                            <Editor value={data[property.id]} disabled />
+                            <Editor
+                              value={data[property.id]}
+                              disabled
+                              version={collection.editorVersion}
+                            />
                           )}
                           {property?.type == "singleURL" && (
                             <Box
@@ -360,6 +364,7 @@ export default function DataDrawer({
                                         "No description added"
                                       }
                                       disabled
+                                      version={collection.editorVersion}
                                     />
                                     <Stack
                                       direction="horizontal"

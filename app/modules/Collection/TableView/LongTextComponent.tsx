@@ -37,6 +37,7 @@ export default function LongTextComponent({
         disabled={
           collection.collectionType === 0 ? columnData.isPartOfFormView : false
         }
+        version={collection.editorVersion}
       />
     </Box>
   );

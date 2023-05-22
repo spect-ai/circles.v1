@@ -88,7 +88,7 @@ export default function CardActivity({
                   space="2"
                 >
                   {activity.comment && (
-                    <Editor value={activity.content} disabled />
+                    <Editor value={activity.content} disabled version={2} />
                   )}
                 </Stack>
               </Stack>
@@ -126,6 +126,7 @@ export default function CardActivity({
                   }}
                   isDirty={isDirty}
                   setIsDirty={setIsDirty}
+                  version={2}
                 />
               </Box>
             )}

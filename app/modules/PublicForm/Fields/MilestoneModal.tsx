@@ -181,6 +181,7 @@ export default function MilestoneModal({
               }}
               placeholder={`Enter Description, press / for commands`}
               isDirty={true}
+              version={form.editorVersion}
             />
           </Box>
         </Box>

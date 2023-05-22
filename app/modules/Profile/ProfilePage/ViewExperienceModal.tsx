@@ -99,7 +99,11 @@ export default function ViewExperienceModal({
             </Box>
             <ScrollContainer>
               <Box>
-                <Editor value={experience.description} disabled={true} />
+                <Editor
+                  value={experience.description}
+                  disabled={true}
+                  version={2}
+                />
               </Box>
               {experience.linkedCredentials?.length > 0 && (
                 <Box>

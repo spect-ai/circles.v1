@@ -87,6 +87,7 @@ function RoleCard({ roleKey, role }: Props) {
         }}
         isDirty={isDirty}
         setIsDirty={setIsDirty}
+        version={2}
       />
       <AddRole role={roleKey} />
     </Container>

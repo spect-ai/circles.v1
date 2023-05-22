@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Milestone } from "@/app/types";
+import { CollectionType, Milestone } from "@/app/types";
 import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import MilestoneModal from "./MilestoneModal";
 
 type Props = {
-  form: any;
+  form: CollectionType;
   dataId?: string;
   propertyId: string;
   data: any;
@@ -106,7 +106,11 @@ export default function MilestoneField({
                       </Text>
                     )}
                     {showDescription && milestone.description && (
-                      <Editor value={milestone.description} disabled={true} />
+                      <Editor
+                        value={milestone.description}
+                        disabled={true}
+                        version={form.editorVersion}
+                      />
                     )}
                   </Box>
                   {!disabled && (

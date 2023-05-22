@@ -168,6 +168,7 @@ function FieldComponent({
               value={collection.properties[id]?.description}
               disabled
               bounds=".bounds"
+              version={collection.editorVersion}
             />
           )}
         </Box>
@@ -256,7 +257,12 @@ function FieldComponent({
           overflow="auto"
           id="editorContainer"
         >
-          <Editor placeholder={`Use / for commands`} isDirty={true} />
+          <Editor
+            placeholder={`Use / for commands`}
+            isDirty={true}
+            version={collection.editorVersion}
+            bounds=".bounds"
+          />
         </Box>
       )}
       {(collection.properties[id]?.type === "singleSelect" ||

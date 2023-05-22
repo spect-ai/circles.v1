@@ -113,6 +113,7 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
           }}
           placeholder={`Edit description`}
           isDirty={true}
+          version={collection.editorVersion}
         />
         <Messages form={collection} />
       </Stack>

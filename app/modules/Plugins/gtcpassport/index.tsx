@@ -94,6 +94,7 @@ export default function SybilResistance({ handleClose }: Props) {
                 ":::tip\nAdd scores to the following stamps. A responder to this form would require a total score of 100% to fill out the form"
               }
               disabled={true}
+              version={1}
             />
           </Box>
           <Box

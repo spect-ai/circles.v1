@@ -201,6 +201,7 @@ export default function AddExperienceModal({
               }}
               placeholder={`Enter Description, press / for commands`}
               isDirty={true}
+              version={2}
             />
           </Box>
         </Box>
