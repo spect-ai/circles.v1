@@ -93,10 +93,6 @@ function FieldComponent({
     value: member,
   }));
 
-  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
-    isSidebarExpandedAtom
-  );
-
   const [forceRefresh, setForceRefresh] = useState(true);
   const { formActions } = useRoleGate();
   const { y } = useScroll(scrollContainerRef);
@@ -126,6 +122,7 @@ function FieldComponent({
       borderRadius="large"
       isDragging={snapshot.isDragging}
       mode={mode}
+      className="bounds"
     >
       <Stack direction="vertical" space="1">
         {fieldNeedsAttention[id] && (
@@ -167,7 +164,11 @@ function FieldComponent({
         </Stack>
         <Box>
           {collection.properties[id]?.description && forceRefresh && (
-            <Editor value={collection.properties[id]?.description} disabled />
+            <Editor
+              value={collection.properties[id]?.description}
+              disabled
+              bounds=".bounds"
+            />
           )}
         </Box>
       </Stack>

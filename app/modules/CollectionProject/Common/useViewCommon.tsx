@@ -162,7 +162,6 @@ export default function useViewCommon() {
         registry
       ).then((sortedCards) => {
         sortedCards.forEach((card: { slug: string }) => {
-          console.log({ idx: cardToColumnIndex[card.slug] });
           sortedCardOutput[cardToColumnIndex[card.slug]].push(card.slug);
         });
         setCardOrders(sortedCardOutput);

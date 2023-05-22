@@ -2,7 +2,7 @@ import {
   getMultipleCurrencyPrices,
   getMultipleTokenPrices,
 } from "@/app/services/CoinGecko";
-import { CollectionType, Property, Registry } from "@/app/types";
+import { CollectionType, Registry } from "@/app/types";
 
 export function sortRewardBasedOnValue(
   data: any,
@@ -107,7 +107,6 @@ export async function sortFieldValues(
       return data?.sort((a: any, b: any) => {
         const aVal = a?.[propertyId];
         const bVal = b?.[propertyId];
-        console.log({ aVal, bVal });
         if ((!aVal || a?.length === 0) && (!bVal || b?.length === 0)) return 0;
         if (!aVal || a?.length === 0) return 1;
         if (!bVal || b?.length === 0) return -1;

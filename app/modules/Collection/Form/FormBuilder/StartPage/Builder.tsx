@@ -11,8 +11,8 @@ import { useLocalCollection } from "../../../Context/LocalCollectionContext";
 import Footer from "./Footer";
 import Messages from "./Messages";
 import { logError } from "@/app/common/utils/utils";
-import { Editor } from "@avp1598/react-beautiful-editor";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
+import Editor from "@/app/common/components/Editor";
 
 type Props = {
   setCurrentPage: (page: string) => void;
@@ -99,7 +99,8 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
             }
           }}
         />
-        {/* <Editor
+        <Editor
+          bounds=".bounds"
           value={description}
           onSave={async (value) => {
             setDescription(value);
@@ -112,35 +113,7 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
           }}
           placeholder={`Edit description`}
           isDirty={true}
-        /> */}
-        <Box
-          style={{
-            color: mode === "dark" ? "white" : "black",
-          }}
-        >
-          <Editor
-            value={description}
-            onChange={(value) => {
-              setDescription(value);
-            }}
-            theme={mode}
-            uploadImage={async (file) => {
-              console.log("file", file);
-              return "https://picsum.photos/400/600";
-            }}
-            placeholder="Enter form description"
-            embedBoundsSelector=".bounds"
-            onBlur={async () => {
-              if (connectedUser) {
-                const res = await updateFormCollection(collection.id, {
-                  description,
-                });
-                res.id && updateCollection(res);
-              }
-            }}
-            // readonly
-          />
-        </Box>
+        />
         <Messages form={collection} />
       </Stack>
       <Footer

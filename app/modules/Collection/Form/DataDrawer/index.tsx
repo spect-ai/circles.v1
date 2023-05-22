@@ -192,7 +192,7 @@ export default function DataDrawer({
                           >
                             {property.name}
                           </Text>
-                          {property.description && (
+                          {/* {property.description && (
                             <Text
                               weight="medium"
                               variant="small"
@@ -200,7 +200,7 @@ export default function DataDrawer({
                             >
                               {property.description}
                             </Text>
-                          )}
+                          )} */}
                         </Stack>
                         <ResponseFieldCard
                           mode={mode}

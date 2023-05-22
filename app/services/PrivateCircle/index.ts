@@ -59,8 +59,12 @@ export const getPrivateCircleCredentials = async (
     }
   );
   if (res.ok) {
-    const data = await res.json();
-    return data;
+    try {
+      const data = await res.json();
+      return data;
+    } catch (e) {
+      return false;
+    }
   } else {
     return false;
   }

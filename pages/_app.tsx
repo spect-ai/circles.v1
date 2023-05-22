@@ -1,5 +1,5 @@
 import { AppProps } from "next/app";
-import "avp-tiptap/dist/Editor.css";
+import "@avp1598/react-beautiful-editor/dist/Editor.css";
 
 import "@fontsource/inter/300.css";
 import "@fontsource/inter/400.css";

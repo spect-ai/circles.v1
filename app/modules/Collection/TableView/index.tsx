@@ -264,7 +264,6 @@ export default function TableView() {
           registry
         )
           .then((sortedData) => {
-            console.log({ sortedData });
             setData(sortedData);
           })
           .catch((err) => {
