@@ -84,9 +84,6 @@ export default function SendKudos({ handleClose }: Props) {
     collection.formMetadata?.responseDataForMintkudos || {}
   );
 
-  const validFieldsCount = Object.keys(
-    collection.formMetadata.responseDataForMintkudos || {}
-  ).length;
   const uploadFile = async (file: File) => {
     if (file) {
       setUploading(true);
@@ -331,7 +328,7 @@ export default function SendKudos({ handleClose }: Props) {
               flexDirection="row"
               justifyContent="flex-end"
             >
-              {kudos.imageUrl && (
+              {collection.formMetadata.mintkudosTokenId && (
                 <PrimaryButton
                   onClick={async () => {
                     setLoading(true);
@@ -368,7 +365,7 @@ export default function SendKudos({ handleClose }: Props) {
                   Remove kudos
                 </PrimaryButton>
               )}
-              {!kudos.imageUrl && (
+              {!collection.formMetadata.mintkudosTokenId && (
                 <Button
                   loading={loading}
                   width="full"
