@@ -25,18 +25,6 @@ export function Collection() {
   const [faqOpen, setFaqOpen] = useState(false);
   const { mode } = useTheme();
 
-  const router = useRouter();
-  const { responses } = router.query;
-
-  useEffect(() => {
-    if (responses !== undefined) setView(1);
-    else setView(0);
-  }, [responses]);
-
-  // if ((collection as any).guacamole.guacamole) {
-  //   return <SkeletonLoader />;
-  // }
-
   if (!collection?.id && loading) {
     return <SkeletonLoader />;
   }
