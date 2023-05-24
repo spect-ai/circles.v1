@@ -95,7 +95,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.18.2",
-    "@builder.io/partytown": "^0.8.0",
     "@commitlint/cli": "^17.0.2",
     "@commitlint/config-conventional": "^17.0.2",
     "@next/eslint-plugin-next": "^12.1.6",
