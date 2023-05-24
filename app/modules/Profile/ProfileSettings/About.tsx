@@ -7,16 +7,20 @@ import { useProfile } from "./LocalProfileContext";
 export function About() {
   const { bio, setBio, setIsDirty, skills, setSkills } = useProfile();
   return (
-    <Stack>
+    <Stack space="0">
       <Stack direction="horizontal" justify="space-between">
-        <Text variant="label">Bio</Text>
+        <Box marginLeft="4">
+          <Text size="small" weight="semiBold" color="textSecondary">
+            Bio
+          </Text>
+        </Box>
         <Tag>{100 - bio?.length}</Tag>
       </Stack>
       <Textarea
         label
         hideLabel
         maxLength={100}
-        rows={2}
+        rows={3}
         placeholder="About you under 100 characters"
         value={bio}
         onChange={(e) => {

@@ -9,10 +9,8 @@ export function Notification() {
   const { setIsDirty, setEmail, email } = useProfile();
   return (
     <Stack>
-      <Text variant="label">Email</Text>
       <Input
-        label
-        hideLabel
+        label="Email"
         placeholder="Email"
         inputMode="email"
         type="email"

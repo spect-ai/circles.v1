@@ -478,58 +478,45 @@ export default function DataDrawer({
                         <Text weight="semiBold" variant="large" color="accent">
                           Responder
                         </Text>
-                        <a
-                          href={`/profile/${
-                            collection?.profiles?.[
-                              collection?.dataOwner[data?.slug]
-                            ]?.username
-                          }`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <Stack
-                            direction="horizontal"
-                            align="center"
-                            space="2"
-                          >
-                            <Avatar
-                              src={
-                                collection.profiles[
-                                  collection.dataOwner[data.slug]
-                                ].avatar
-                              }
-                              address={
-                                collection.profiles[
-                                  collection.dataOwner[data.slug]
-                                ].ethAddress
-                              }
-                              label=""
-                              size="6"
-                              username={
-                                collection.profiles[
-                                  collection.dataOwner[data.slug]
-                                ].username
-                              }
-                              userId={
-                                collection.profiles[
-                                  collection.dataOwner[data.slug]
-                                ].id
-                              }
-                              profile={
-                                collection.profiles[
-                                  collection.dataOwner[data.slug]
-                                ]
-                              }
-                            />
-                            <Text color="accentText" weight="semiBold">
-                              {
-                                collection.profiles[
-                                  collection.dataOwner[data.slug]
-                                ].username
-                              }
-                            </Text>
-                          </Stack>
-                        </a>
+
+                        <Stack direction="horizontal" align="center" space="2">
+                          <Avatar
+                            src={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].avatar
+                            }
+                            address={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].ethAddress
+                            }
+                            label=""
+                            size="6"
+                            username={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].username
+                            }
+                            userId={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].id
+                            }
+                            profile={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ]
+                            }
+                          />
+                          <Text color="accentText" weight="semiBold">
+                            {
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].username
+                            }
+                          </Text>
+                        </Stack>
                       </Stack>
                     )}
                   {collection.data?.[dataId]?.["__lookup__"] && (

@@ -28,16 +28,10 @@ type PublicLayoutProps = {
 
 const Container = styled(Box)<{ issidebarexpanded: string }>`
   @media (max-width: 992px) {
-    max-width: ${(props) =>
-      props.issidebarexpanded === "true"
-        ? "calc(100vw - 22rem)"
-        : "calc(100vw - 0rem)"};
+    max-width: "calc(100vw - 0rem)"
   }
 
-  max-width: ${(props) =>
-    props.issidebarexpanded === "true"
-      ? "calc(100vw - 22rem)"
-      : "calc(100vw - 2rem)"};
+  max-width:  "calc(100vw - 2rem)"
   flex-grow: 1;
 `;
 
@@ -226,7 +220,7 @@ function PublicLayout(props: PublicLayoutProps) {
               <Sidebar />
             </Hidden>
             <AnimatePresence initial={false}>
-              {isSidebarExpanded && <ExtendedSidebar />}
+              {isSidebarExpanded && circle && <ExtendedSidebar />}
               {showChangelog && changelogData && (
                 <Changelog
                   handleClose={() => setShowChangelog(false)}

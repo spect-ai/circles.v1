@@ -44,19 +44,6 @@ const TaskWalletHeader = () => {
           </Tag>
         </Stack>
       </Stack>
-      <Stack direction="horizontal">
-        <Link href={`/profile/${currentUser?.username}`}>
-          <PrimaryButton
-            variant="secondary"
-            onClick={() => {
-              setIsProfilePanelExpanded(false);
-            }}
-          >
-            View Profile
-          </PrimaryButton>
-        </Link>
-        {currentUser?.id == currentUser?.id && <Logout />}
-      </Stack>
     </Stack>
   );
 };

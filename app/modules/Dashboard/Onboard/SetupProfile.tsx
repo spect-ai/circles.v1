@@ -149,20 +149,6 @@ export function SetUpProfile() {
           </Box>
         </>
       )}
-
-      <PrimaryButton
-        onClick={() => {
-          void onSaveProfile();
-          void router.push(`/profile/${currentUser?.username}`);
-        }}
-        disabled={
-          (skill.length == 0 && skills?.length == 0) ||
-          email?.length == 0 ||
-          !isEmail(email || "")
-        }
-      >
-        View Profile
-      </PrimaryButton>
     </Box>
   );
 }

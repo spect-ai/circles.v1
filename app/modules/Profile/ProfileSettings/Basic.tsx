@@ -1,7 +1,7 @@
 import ConnectDiscordButton from "@/app/common/components/ConnectDiscordButton";
 import { UserType } from "@/app/types";
 import { GithubOutlined } from "@ant-design/icons";
-import { Button, Input, MediaPicker, Stack, Text } from "degen";
+import { Box, Button, Input, MediaPicker, Stack, Text } from "degen";
 import Link from "next/link";
 import router from "next/router";
 import { useEffect } from "react";
@@ -41,52 +41,58 @@ export function BasicInfo() {
   }, [username]);
 
   return (
-    <Stack>
-      <Text variant="label">Profile Picture</Text>
-      {!loading && (
-        <MediaPicker
-          compact
-          defaultValue={{
-            type: "image/png",
-            url: avatar,
-          }}
-          label="Choose or drag and drop media"
-          uploaded={!!avatar}
-          onChange={uploadFile}
-          uploading={uploading}
-          onReset={() => {
-            setAvatar("");
+    <Stack space="4">
+      <Stack space="1">
+        <Box marginLeft="4">
+          <Text size="small" weight="semiBold" color="textSecondary">
+            Profile Picture
+          </Text>
+        </Box>
+        {!loading && (
+          <MediaPicker
+            compact
+            defaultValue={{
+              type: "image/png",
+              url: avatar,
+            }}
+            label="Choose or drag and drop media"
+            uploaded={!!avatar}
+            onChange={uploadFile}
+            uploading={uploading}
+            onReset={() => {
+              setAvatar("");
+              setIsDirty(true);
+            }}
+            maxSize={10}
+          />
+        )}
+      </Stack>
+      <Stack space="1">
+        <Input
+          label="Username"
+          placeholder="Username"
+          value={username}
+          maxLength={15}
+          onChange={(e) => {
+            setUsername(e.target.value);
             setIsDirty(true);
           }}
-          maxSize={10}
+          required
         />
-      )}
-      <Text variant="label">Username</Text>
-      <Input
-        label
-        hideLabel
-        placeholder="Username"
-        value={username}
-        maxLength={15}
-        onChange={(e) => {
-          setUsername(e.target.value);
-          setIsDirty(true);
-        }}
-        required
-      />
-      {usernameError && (
-        <Text color="red" variant="small">
-          {usernameError}
-        </Text>
-      )}
-      <Text variant="label">ETH Address</Text>
-      <Input
-        label
-        hideLabel
-        placeholder={currentUser?.ethAddress}
-        value={""}
-        disabled
-      />
+        {usernameError && (
+          <Text color="red" variant="small">
+            {usernameError}
+          </Text>
+        )}
+      </Stack>
+      <Stack space="1">
+        <Input
+          label="Ethereum Address"
+          placeholder={currentUser?.ethAddress}
+          value={""}
+          disabled
+        />
+      </Stack>
       <Stack
         direction={{
           xs: "vertical",

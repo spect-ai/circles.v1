@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ReactElement, useEffect, useState } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Avatar, Box, Button, Stack, Text, IconMenu } from "degen";
 import { useRouter } from "next/router";
 import Logo from "@/app/common/components/Logo";
@@ -25,13 +25,16 @@ import { logError } from "@/app/common/utils/utils";
 import { Hidden, Visible } from "react-grid-system";
 import { socketAtom } from "@/app/state/socket";
 
-export const ScrollContainer = styled(Box)`
+export const ScrollContainer = styled(Box)<{ explorePage: string }>`
   ::-webkit-scrollbar {
     display: none;
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 10rem);
+  height: ${(props) =>
+    props.explorePage === "true"
+      ? "calc(100vh - 8rem)"
+      : "calc(100vh - 10rem)"};
   overflow-y: auto;
 `;
 
@@ -86,6 +89,8 @@ function Sidebar(): ReactElement {
       });
   }, [socket]);
 
+  console.log({ c: cId === undefined || !circle });
+
   return (
     <>
       <Box
@@ -118,50 +123,61 @@ function Sidebar(): ReactElement {
             />
           )}
         </Box>
-        <Box borderBottomWidth="0.375" paddingY="3">
-          <Stack space="2" align="center">
-            <Visible xs sm>
-              <Button
-                shape="circle"
-                variant={isSidebarExpanded ? "secondary" : "transparent"}
-                size="extraSmall"
-                onClick={() => {
-                  setIsSidebarExpanded(!isSidebarExpanded);
-                  process.env.NODE_ENV === "production" &&
-                    mixpanel.track("Expand Sidebar Button", {
-                      user: currentUser?.username,
-                      url: window.location.href,
-                    });
-                }}
-              >
-                <Text color="accent">
-                  <IconMenu size="4" />
-                </Text>
-              </Button>
-            </Visible>
-            <Hidden xs sm>
-              <Button
-                shape="circle"
-                variant={isSidebarExpanded ? "secondary" : "transparent"}
-                size="small"
-                onClick={() => {
-                  setIsSidebarExpanded(!isSidebarExpanded);
-                  process.env.NODE_ENV === "production" &&
-                    mixpanel.track("Expand Sidebar Button", {
-                      user: currentUser?.username,
-                      url: window.location.href,
-                    });
-                }}
-              >
-                <Text color="accent">
-                  <IconMenu size="5" />
-                </Text>
-              </Button>
-            </Hidden>
-          </Stack>
-        </Box>
+        <motion.div
+          initial={{ height: 0 }}
+          animate={{ height: "auto", transition: { duration: 0.2 } }}
+          exit={{ height: 0 }}
+        >
+          {cId && circle && (
+            <Box borderBottomWidth="0.375" paddingY="3">
+              <Stack space="2" align="center">
+                <Visible xs sm>
+                  <Button
+                    shape="circle"
+                    variant={isSidebarExpanded ? "secondary" : "transparent"}
+                    size="extraSmall"
+                    onClick={() => {
+                      setIsSidebarExpanded(!isSidebarExpanded);
+                      process.env.NODE_ENV === "production" &&
+                        mixpanel.track("Expand Sidebar Button", {
+                          user: currentUser?.username,
+                          url: window.location.href,
+                        });
+                    }}
+                  >
+                    <Text color="accent">
+                      <IconMenu size="4" />
+                    </Text>
+                  </Button>
+                </Visible>
+                <Hidden xs sm>
+                  <Button
+                    shape="circle"
+                    variant={isSidebarExpanded ? "secondary" : "transparent"}
+                    size="small"
+                    onClick={() => {
+                      setIsSidebarExpanded(!isSidebarExpanded);
+                      process.env.NODE_ENV === "production" &&
+                        mixpanel.track("Expand Sidebar Button", {
+                          user: currentUser?.username,
+                          url: window.location.href,
+                        });
+                    }}
+                  >
+                    <Text color="accent">
+                      <IconMenu size="5" />
+                    </Text>
+                  </Button>
+                </Hidden>
+              </Stack>
+            </Box>
+          )}
+        </motion.div>
         {!isLoading && (
-          <ScrollContainer borderBottomWidth={connectedUser ? "0.375" : "0"}>
+          <ScrollContainer
+            borderBottomWidth={connectedUser ? "0.375" : "0"}
+            explorePage={cId === undefined || !circle ? "true" : "false"}
+          >
             {!myCirclesLoading &&
               connectedUser &&
               myCircles?.map &&

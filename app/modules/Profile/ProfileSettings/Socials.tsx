@@ -46,10 +46,8 @@ export function Socials() {
 
   return (
     <Stack>
-      <Text variant="label">Twitter</Text>
       <Input
-        label
-        hideLabel
+        label="Twitter"
         placeholder="https://twitter.com/owocki"
         inputMode="url"
         value={twitter}
@@ -71,10 +69,8 @@ export function Socials() {
           Invalid Twitter URL, must start with https://twitter.com/
         </Text>
       )}
-      <Text variant="label">Github</Text>
       <Input
-        label
-        hideLabel
+        label="Github"
         placeholder="https://github.com/geohot"
         inputMode="url"
         value={github}
@@ -96,10 +92,8 @@ export function Socials() {
           Invalid Github URL, must start with https://github.com/
         </Text>
       )}
-      <Text variant="label">Behance</Text>
       <Input
-        label
-        hideLabel
+        label="Behance"
         placeholder="https://www.behance.net/kindredstudio"
         inputMode="url"
         value={behance}
@@ -121,10 +115,8 @@ export function Socials() {
           Invalid Behance URL, must start with https://www.behance.net/
         </Text>
       )}
-      <Text variant="label">Website</Text>
       <Input
-        label
-        hideLabel
+        label="Website"
         placeholder="https://ethereum.org"
         inputMode="url"
         value={website}

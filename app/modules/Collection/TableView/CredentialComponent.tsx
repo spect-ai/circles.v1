@@ -15,30 +15,22 @@ const CredentialComponent = ({ rowData }: CellProps) => {
         alignItems="center"
         width="full"
       >
-        <a
-          href={`/profile/${
-            collection.profiles[collection.dataOwner[rowData.id]].username
-          }`}
-          target="_blank"
-          rel="noreferrer"
+        <Button
+          variant="transparent"
+          width="full"
+          justifyContent="flex-start"
+          size="small"
         >
-          <Button
-            variant="transparent"
-            width="full"
-            justifyContent="flex-start"
-            size="small"
-          >
-            <Box display="flex" flexDirection="row" alignItems="center" gap="2">
-              <Box display="flex" flexDirection="row" gap="2">
-                <UserOutlined />
-                {collection.profiles[collection.dataOwner[rowData.id]].username}
-              </Box>
-              <Box width="4">
-                <NewTabIcon />
-              </Box>
+          <Box display="flex" flexDirection="row" alignItems="center" gap="2">
+            <Box display="flex" flexDirection="row" gap="2">
+              <UserOutlined />
+              {collection.profiles[collection.dataOwner[rowData.id]].username}
             </Box>
-          </Button>
-        </a>
+            <Box width="4">
+              <NewTabIcon />
+            </Box>
+          </Box>
+        </Button>
       </Box>
     </>
   );

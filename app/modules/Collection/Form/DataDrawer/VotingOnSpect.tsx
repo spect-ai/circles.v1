@@ -257,23 +257,17 @@ export default function SpectVoting({
                       width="1/3"
                       alignItems="center"
                     >
-                      <a
-                        href={`/profile/${getMemberDetails(voterId)?.username}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <Stack direction="horizontal" align="center" space="2">
-                          <Avatar
-                            src={getMemberDetails(voterId)?.avatar}
-                            address={getMemberDetails(voterId)?.ethAddress}
-                            label=""
-                            size="8"
-                          />
-                          <Text color="accentText" weight="semiBold">
-                            {getMemberDetails(voterId)?.username}
-                          </Text>
-                        </Stack>
-                      </a>
+                      <Stack direction="horizontal" align="center" space="2">
+                        <Avatar
+                          src={getMemberDetails(voterId)?.avatar}
+                          address={getMemberDetails(voterId)?.ethAddress}
+                          label=""
+                          size="8"
+                        />
+                        <Text color="accentText" weight="semiBold">
+                          {getMemberDetails(voterId)?.username}
+                        </Text>
+                      </Stack>
                     </Box>
                     <Box
                       display="flex"

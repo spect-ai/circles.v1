@@ -103,27 +103,6 @@ export default function ExploreSidebar() {
                 </Box>
               </Stack>
             )}
-            {currentUser?.id && (
-              <Stack key="Profile" direction="horizontal" space="0">
-                {/* <Box borderRightWidth="0.5" /> */}
-                <Box width="full" padding="1">
-                  <Link
-                    href={`/profile/${currentUser?.username}`}
-                    key="Profile"
-                  >
-                    <PrimaryButton
-                      variant={
-                        router.query?.user === currentUser?.username
-                          ? "tertiary"
-                          : "transparent"
-                      }
-                    >
-                      Profile
-                    </PrimaryButton>
-                  </Link>
-                </Box>
-              </Stack>
-            )}
             {!currentUser?.id && (
               <PrimaryButton onClick={openConnectModal}>Sign In</PrimaryButton>
             )}

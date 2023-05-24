@@ -178,17 +178,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                   {["multiSelect", "user[]"].includes(property.type) ? (
                     value?.length ? (
                       value?.map((val: any) => (
-                        <Box
-                          cursor="pointer"
-                          key={val.value}
-                          onClick={(e) => {
-                            if (property.type === "user[]") {
-                              e.stopPropagation();
-                              // open new tab and direct to profile
-                              window.open(`/profile/${val.label}`, "_blank");
-                            }
-                          }}
-                        >
+                        <Box key={val.value}>
                           <CustomTag
                             mode={mode}
                             key={val.value}
@@ -231,16 +221,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                       "Empty"
                     )
                   ) : value ? (
-                    <Box
-                      cursor="pointer"
-                      onClick={(e) => {
-                        if (property.type === "user") {
-                          e.stopPropagation();
-                          // open new tab and direct to profile
-                          window.open(`/profile/${value.label}`, "_blank");
-                        }
-                      }}
-                    >
+                    <Box>
                       <CustomTag
                         mode={mode}
                         borderCol={colorMapping[value.value]}

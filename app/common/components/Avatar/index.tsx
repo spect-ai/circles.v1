@@ -192,19 +192,6 @@ export default function ClickableAvatar({
                     </InfoBox>
                   </Box>
                 </Box>
-                <Box
-                  display="flex"
-                  flexDirection="row"
-                  justifyContent="flex-end"
-                >
-                  <a href={`/profile/${username}`} target="_blank">
-                    <PrimaryButton variant="transparent">
-                      <Stack direction="horizontal" space="1" align="center">
-                        View <BsArrowUpRight />
-                      </Stack>
-                    </PrimaryButton>
-                  </a>
-                </Box>
               </Box>
               <Box
                 borderColor="textSecondary"
@@ -306,9 +293,6 @@ export function ClickableAvatarGroup({
             <Text variant="large" weight="semiBold" whiteSpace="nowrap">
               {username}
             </Text>
-            <Link href={`/profile/${username}`}>
-              <PrimaryButton>View</PrimaryButton>
-            </Link>
             {address && (
               <Tag size="medium" hover>
                 {address.substring(0, 5) + "..."}
