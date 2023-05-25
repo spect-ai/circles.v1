@@ -272,6 +272,42 @@ export default function useProfileUpdate() {
     }
   };
 
+  const createAPIKey = async () => {
+    const res = await fetch(`${process.env.API_HOST}/user/v1/apiKey`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      credentials: "include",
+    });
+    console.log({ res });
+    if (res.ok) {
+      const data = await res.json();
+      return data;
+    } else {
+      return false;
+    }
+  };
+
+  const deleteApiKey = async (apiKey: string) => {
+    const res = await fetch(`${process.env.API_HOST}/user/v1/apiKey`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "DELETE",
+      body: JSON.stringify({ apiKey }),
+      credentials: "include",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data;
+    } else {
+      return false;
+    }
+  };
+
   return {
     updateProfile,
     addExperience,
@@ -281,5 +317,7 @@ export default function useProfileUpdate() {
     updateEducation,
     removeEducation,
     preprocessDate,
+    createAPIKey,
+    deleteApiKey,
   };
 }

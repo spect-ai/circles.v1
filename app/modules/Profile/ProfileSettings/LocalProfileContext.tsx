@@ -33,6 +33,8 @@ type ProfileSettingsType = {
   website: string;
   usernameError: string;
   setUsernameError: React.Dispatch<React.SetStateAction<string>>;
+  apiKeys: string[];
+  setApiKeys: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 export const LocalProfileContext = createContext<ProfileSettingsType>(
@@ -58,6 +60,7 @@ export function useProviderLocalProfile() {
   const [discordUsername, setDiscordUsername] = useState("");
   const [telegramId, setTelegramId] = useState("");
   const [telegramUsername, setTelegramUsername] = useState("");
+  const [apiKeys, setApiKeys] = useState([] as string[]);
 
   const [behance, setBehance] = useState("");
   const [website, setWebsite] = useState("");
@@ -117,6 +120,7 @@ export function useProviderLocalProfile() {
     setTelegramId(currentUser?.telegramId || "");
     setGithubId(currentUser?.githubId || "");
     setGithubUsername(currentUser?.githubUsername || "");
+    setApiKeys(currentUser?.apiKeys || []);
     setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, isLoading]);
@@ -162,6 +166,8 @@ export function useProviderLocalProfile() {
     setGithubId,
     githubUsername,
     setGithubUsername,
+    apiKeys,
+    setApiKeys,
   };
 }
 export const useProfile = () => useContext(LocalProfileContext);

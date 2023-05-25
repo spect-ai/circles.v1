@@ -54,6 +54,7 @@ export interface UserType {
   twitter: string;
   behance: string;
   website: string;
+  apiKeys: string[];
 }
 
 export interface Payment {
