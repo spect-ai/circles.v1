@@ -19,9 +19,10 @@ import PublicFormLayout from "@/app/common/layout/PublicLayout/PublicFormLayout"
 
 type Props = {
   form?: FormType;
+  embed?: boolean;
 };
 
-function PublicForm({ form: fetchedForm }: Props) {
+function PublicForm({ form: fetchedForm, embed }: Props) {
   const [form, setForm] = useState<FormType | undefined>(fetchedForm);
   const { mode } = useTheme();
   const { pathname } = useLocation();
@@ -29,6 +30,42 @@ function PublicForm({ form: fetchedForm }: Props) {
 
   const context = useProviderCircleContext();
   const profileContext = useProviderLocalProfile();
+
+  if (embed) {
+    return (
+      <ScrollContainer
+        backgroundColor={
+          route === "embed" ? "transparent" : "backgroundSecondary"
+        }
+      >
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: `${
+              mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+            }`,
+            color: `${
+              mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+            }`,
+          }}
+        />
+        {route !== "embed" && (
+          <CoverImage
+            src={form?.formMetadata.cover || ""}
+            backgroundColor="accentSecondary"
+          />
+        )}
+        <Container embed={route === "embed"}>
+          <FormContainer
+            backgroundColor={route === "embed" ? "transparent" : "background"}
+            borderRadius={route === "embed" ? "none" : "2xLarge"}
+          >
+            <FormFields form={form} setForm={setForm} />
+          </FormContainer>
+          <Box marginBottom="8" />
+        </Container>
+      </ScrollContainer>
+    );
+  }
 
   return (
     <LocalProfileContext.Provider value={profileContext}>
