@@ -33,11 +33,7 @@ function PublicForm({ form: fetchedForm, embed }: Props) {
 
   if (embed) {
     return (
-      <ScrollContainer
-        backgroundColor={
-          route === "embed" ? "transparent" : "backgroundSecondary"
-        }
-      >
+      <ScrollContainer>
         <ToastContainer
           toastStyle={{
             backgroundColor: `${
@@ -48,20 +44,10 @@ function PublicForm({ form: fetchedForm, embed }: Props) {
             }`,
           }}
         />
-        {route !== "embed" && (
-          <CoverImage
-            src={form?.formMetadata.cover || ""}
-            backgroundColor="accentSecondary"
-          />
-        )}
-        <Container embed={route === "embed"}>
-          <FormContainer
-            backgroundColor={route === "embed" ? "transparent" : "background"}
-            borderRadius={route === "embed" ? "none" : "2xLarge"}
-          >
+        <Container embed={true} id="container">
+          <FormContainer>
             <FormFields form={form} setForm={setForm} />
           </FormContainer>
-          <Box marginBottom="8" />
         </Container>
       </ScrollContainer>
     );
@@ -161,7 +147,7 @@ const ScrollContainer = styled(Box)`
   &::-webkit-scrollbar {
     width: 0.2rem;
   }
-  max-height: calc(100vh);
+  height: 100vh;
   overflow-y: auto;
 `;
 
