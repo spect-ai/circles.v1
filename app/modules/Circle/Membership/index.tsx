@@ -65,7 +65,7 @@ export default function Membership({}: Props) {
         {isEmebedOpen && (
           <Embed
             setIsOpen={setIsEmebedOpen}
-            embedRoute={`https://circles-v1-production.vercel.app/${circle?.slug}/embed?tab=membership`}
+            embedRoute={`https://circles.spect.network/${circle?.slug}/embed?tab=membership`}
           />
         )}
         {isContributorsModalOpen && (
