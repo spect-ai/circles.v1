@@ -21,8 +21,6 @@ export default function APIAccess() {
   const { apiKeys, setApiKeys } = useProfile();
   const [localApiKeys, setLocalApiKeys] = useState(apiKeys);
 
-  console.log({ apiKeys });
-
   useEffect(() => {
     setLocalApiKeys(apiKeys);
   }, [apiKeys]);
@@ -71,7 +69,6 @@ export default function APIAccess() {
         <Text variant="label">Your API keys</Text>
         {localApiKeys?.length > 0 &&
           localApiKeys.map((key, index) => {
-            console.log({ key });
             return (
               <ScrollContainer key={index}>
                 <Box
