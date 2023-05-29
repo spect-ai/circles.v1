@@ -173,7 +173,7 @@ export default function ImportClaimCodes({
                   },
                 });
                 if (!res?.formMetadata?.poapEventId) {
-                  logError("Update collection failed");
+                  logError(res.message);
                   setLoading(false);
                   return;
                 }

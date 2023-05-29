@@ -1,9 +1,7 @@
-import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
-import { VerifiableCredential, Credential } from "@/app/types";
+import { Credential } from "@/app/types";
 import { Box, Text, useTheme } from "degen";
 import { CredentialCard, PluginAdded } from "../LinkCredentialsModal";
 import Image from "next/image";
-import styled from "styled-components";
 
 type Props = {
   credentials: Credential[];

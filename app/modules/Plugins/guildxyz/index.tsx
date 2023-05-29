@@ -11,6 +11,7 @@ import { useCircle } from "../../Circle/CircleContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   handleClose: () => void;
@@ -227,7 +228,8 @@ export default function RoleGate({ handleClose }: Props) {
                       },
                       collection.id
                     );
-                    setLocalCollection(res);
+                    if (res.id) setLocalCollection(res);
+                    else logError(res.message);
                   }
                   setLoading(false);
                   handleClose();

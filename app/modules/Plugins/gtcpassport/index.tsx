@@ -276,7 +276,7 @@ export default function SybilResistance({ handleClose }: Props) {
                   if (res.id) {
                     updateCollection(res);
                   } else {
-                    logError("Update collection failed");
+                    logError(res.message);
                   }
                   handleClose();
                   setLoading(false);

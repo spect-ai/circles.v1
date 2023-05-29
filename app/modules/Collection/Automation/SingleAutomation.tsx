@@ -135,13 +135,14 @@ export default function SingleAutomation({
         triggerCategory: "collection",
         triggerCollectionSlug: slug,
       });
+      console.log({ res });
     } else {
       res = await updateAutomation(circle?.id, automation.id, newAutomation);
     }
     if (res) {
       void fetchCircle();
+      handleClose();
     }
-    handleClose();
   };
 
   const { refetch: fetchCollection } = useQuery<CollectionType>(
@@ -344,7 +345,7 @@ export default function SingleAutomation({
               setActionValidationResults(actionValidationResults);
               if (!actionValidationResults.isValid) return;
 
-              const res = await onSave(
+              await onSave(
                 name,
                 description,
                 trigger,
@@ -353,7 +354,6 @@ export default function SingleAutomation({
                 (collection as CollectionType)?.slug
               );
               setSaving(false);
-              if (automationMode === "create") handleClose();
             } catch (err) {
               console.error(err);
               logError("Something went wrong while saving automation");

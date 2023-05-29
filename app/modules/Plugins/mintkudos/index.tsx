@@ -32,7 +32,7 @@ type Props = {
 };
 
 export default function SendKudos({ handleClose }: Props) {
-  const { circle, setMintkudosCommunityId, mintkudosCommunityId } = useCircle();
+  const { circle, mintkudosCommunityId } = useCircle();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);
@@ -40,13 +40,8 @@ export default function SendKudos({ handleClose }: Props) {
   const [headlineContent, setHeadlineContent] = useState(
     "Thanks for filling up the form!"
   );
-  const {
-    mintKudos,
-    recordCollectionKudos,
-    getKudos,
-    addCustomKudosDesign,
-    getCommunityKudosDesigns,
-  } = useCredentials();
+  const { mintKudos, recordCollectionKudos, addCustomKudosDesign } =
+    useCredentials();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -84,9 +79,6 @@ export default function SendKudos({ handleClose }: Props) {
     collection.formMetadata?.responseDataForMintkudos || {}
   );
 
-  const validFieldsCount = Object.keys(
-    collection.formMetadata.responseDataForMintkudos || {}
-  ).length;
   const uploadFile = async (file: File) => {
     if (file) {
       setUploading(true);

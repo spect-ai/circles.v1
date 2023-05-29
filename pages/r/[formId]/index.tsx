@@ -39,18 +39,30 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
 
   return (
     <>
-      <MetaHead
-        title={form.name}
-        description={
-          form.description ||
-          "Incentivized forms for communities to collect feedback, run surveys, onboarding, and more."
-        }
-        image={
-          form.formMetadata.cover ||
-          form.formMetadata.logo ||
-          "https://ik.imagekit.io/spectcdn/spect_landscape.pngcz0kiyzu43m_fb9pRIjVW?updatedAt=1681837726214"
-        }
-      />
+      {form.parents[0].pricingPlan === 0 ? (
+        <MetaHead
+          title={"Spect forms"}
+          description={
+            "Incentivized forms for communities to collect feedback, run surveys, onboarding, and more."
+          }
+          image={
+            "https://ik.imagekit.io/spectcdn/spect_landscape.pngcz0kiyzu43m_fb9pRIjVW?updatedAt=1681837726214"
+          }
+        />
+      ) : (
+        <MetaHead
+          title={form.name}
+          description={
+            form.description ||
+            "Incentivized forms for communities to collect feedback, run surveys, onboarding, and more."
+          }
+          image={
+            form.formMetadata.cover ||
+            form.formMetadata.logo ||
+            "https://ik.imagekit.io/spectcdn/spect_landscape.pngcz0kiyzu43m_fb9pRIjVW?updatedAt=1681837726214"
+          }
+        />
+      )}
 
       <PublicForm form={form} />
     </>
@@ -81,6 +93,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       }
     )
   )?.json();
+
+  console.log({ form: form.parents[0] });
 
   if (!form?.id) {
     return {
