@@ -89,8 +89,6 @@ function Sidebar(): ReactElement {
       });
   }, [socket]);
 
-  console.log({ c: cId === undefined || !circle });
-
   return (
     <>
       <Box
