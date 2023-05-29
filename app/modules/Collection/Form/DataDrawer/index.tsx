@@ -596,8 +596,8 @@ export default function DataDrawer({
   );
 }
 
-const ScrollContainer = styled(Box)`.
-  height: calc(100vh - 4rem);
+const ScrollContainer = styled(Box)`
+  height: calc(100vh - 8rem);
   overflow-y: auto;
 
   ::-webkit-scrollbar {
