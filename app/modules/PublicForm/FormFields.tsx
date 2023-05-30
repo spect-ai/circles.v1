@@ -31,7 +31,6 @@ import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 import Stepper from "@/app/common/components/Stepper";
-import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 
 import dynamic from "next/dynamic";
 import PublicField from "./Fields/PublicField";
@@ -116,10 +115,10 @@ function FormFields({ form, setForm }: Props) {
         property.required &&
         property.isPartOfFormView &&
         isEmpty(propertyId, data[propertyId]) &&
-        satisfiesConditions(
+        satisfiesAdvancedConditions(
           data,
           form.properties,
-          form.properties[propertyId].viewConditions as Condition[]
+          form.properties[propertyId].advancedConditions as ConditionGroup
         )
       ) {
         requiredFieldsNotSet[propertyId] = true;
