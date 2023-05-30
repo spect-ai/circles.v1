@@ -1022,7 +1022,7 @@ export type Property = {
   onUpdateNotifyUserTypes?: FormUserType[];
   required?: boolean;
   description?: string;
-  viewConditions?: Condition[];
+  // viewConditions?: Condition[];
   advancedConditions?: ConditionGroup;
   payWallOptions?: PayWallOptions;
   internal?: boolean;

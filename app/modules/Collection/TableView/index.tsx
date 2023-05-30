@@ -31,11 +31,7 @@ import CardDrawer from "../../CollectionProject/CardDrawer";
 import Filtering from "../../CollectionProject/Filtering";
 import IncentiveFilter from "../../CollectionProject/Filtering/IncentiveFilter";
 import AddField from "../AddField";
-import {
-  isMyCard,
-  paymentStatus,
-  satisfiesConditions,
-} from "../Common/SatisfiesFilter";
+import { isMyCard, paymentStatus } from "../Common/SatisfiesFilter";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataDrawer from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";

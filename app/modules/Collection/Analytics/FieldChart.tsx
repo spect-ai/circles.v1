@@ -9,11 +9,8 @@ import {
   useTheme,
 } from "degen";
 import { useEffect, useState } from "react";
-import { Bar, Doughnut, Line, Pie } from "react-chartjs-2";
-import { satisfiesConditions } from "../Common/SatisfiesFilter";
 import { motion } from "framer-motion";
 import { updateFormCollection } from "@/app/services/Collection";
-import { BarOptions, LineOptions, PieOptions } from "./ChartOptions";
 import { ImEmbed } from "react-icons/im";
 import { logError } from "@/app/common/utils/utils";
 import { satisfiesAdvancedConditions } from "../Common/SatisfiesAdvancedFilter";
