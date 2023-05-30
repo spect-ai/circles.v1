@@ -134,7 +134,11 @@ export default function PostCardOnDiscordThread({
                 property.type === "singleSelect" ||
                 property.type === "email" ||
                 property.type === "date" ||
-                property.type === "ethAddress"
+                property.type === "ethAddress" ||
+                property.type === "number" ||
+                property.type === "longText" ||
+                property.type === "multiSelect" ||
+                property.type === "singleURL"
             )
             .map(([propertyId, property]) => ({
               label: property.name,
