@@ -13,7 +13,6 @@ import { useQuery } from "react-query";
 import {
   isMyCard,
   paymentStatus,
-  satisfiesConditions,
 } from "../../Collection/Common/SatisfiesFilter";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { satisfiesAdvancedConditions } from "../../Collection/Common/SatisfiesAdvancedFilter";

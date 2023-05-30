@@ -188,47 +188,48 @@ export function satisfiesCondition(
   }
 }
 
-export function satisfiesConditions(
-  data: any,
-  properties: { [propertyId: string]: Property },
-  conditions: Condition[],
-  operator: "and" | "or" = "and"
-): boolean {
-  if (operator === "and") {
-    return conditions.every((condition) => {
-      const { field, comparator, value } = condition.data;
-      const propertyId = field?.value;
-      const comparatorValue = comparator?.value;
-      const property = properties[propertyId];
-      if (!property) return true;
-      if (!data) return false;
-      return satisfiesCondition(
-        data,
-        property,
-        propertyId,
-        value,
-        comparatorValue
-      );
-    });
-  } else if (operator === "or") {
-    return conditions.some((condition) => {
-      const { field, comparator, value } = condition.data;
-      const propertyId = field?.value;
-      const comparatorValue = comparator?.value;
-      const property = properties[propertyId];
-      if (!property) return true;
-      if (!data) return false;
-      return satisfiesCondition(
-        data,
-        property,
-        propertyId,
-        value,
-        comparatorValue
-      );
-    });
-  }
-  return false;
-}
+// export function satisfiesConditions(
+//   data: any,
+//   properties: { [propertyId: string]: Property },
+//   conditions: Condition[],
+//   operator: "and" | "or" = "and"
+// ): boolean {
+//   console.log({ properties, conditions });
+//   if (operator === "and") {
+//     return conditions.every((condition) => {
+//       const { field, comparator, value } = condition.data;
+//       const propertyId = field?.value;
+//       const comparatorValue = comparator?.value;
+//       const property = properties[propertyId];
+//       if (!property) return true;
+//       if (!data) return false;
+//       return satisfiesCondition(
+//         data,
+//         property,
+//         propertyId,
+//         value,
+//         comparatorValue
+//       );
+//     });
+//   } else if (operator === "or") {
+//     return conditions.some((condition) => {
+//       const { field, comparator, value } = condition.data;
+//       const propertyId = field?.value;
+//       const comparatorValue = comparator?.value;
+//       const property = properties[propertyId];
+//       if (!property) return true;
+//       if (!data) return false;
+//       return satisfiesCondition(
+//         data,
+//         property,
+//         propertyId,
+//         value,
+//         comparatorValue
+//       );
+//     });
+//   }
+//   return false;
+// }
 
 export const isMyCard = (
   data: any,

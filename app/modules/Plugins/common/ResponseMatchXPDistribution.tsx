@@ -6,8 +6,8 @@ import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import PublicField from "../../PublicForm/Fields/PublicField";
 import { logError } from "@/app/common/utils/utils";
-import CheckBox from "@/app/common/components/Table/Checkbox";
-import { satisfiesConditions } from "../../Collection/Common/SatisfiesFilter";
+import { satisfiesAdvancedConditions } from "../../Collection/Common/SatisfiesAdvancedFilter";
+import { ConditionGroup } from "@/app/types";
 
 export type Props = {
   setModalModal: (mode: string) => void;
@@ -52,10 +52,11 @@ export default function ResponseMatchXPDistribution({
           quizValidFieldTypes.includes(
             collection.properties[propertyId].type
           ) &&
-          satisfiesConditions(
+          satisfiesAdvancedConditions(
             localData,
             collection.properties,
-            collection.properties[propertyId].viewConditions || []
+            collection.properties[propertyId]
+              .advancedConditions as ConditionGroup
           )
       )
     );
