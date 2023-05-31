@@ -62,11 +62,29 @@ export default function CreateCard({
     if (mappedCollection)
       if (fieldType === "mapping" && fromPropertyOptionType) {
         return Object.entries(mappedCollection?.properties)
-          .filter(
-            ([propertyId, property]) =>
-              (property as Property).type === fromPropertyOptionType &&
-              !usedProperty[propertyId]
-          )
+          .filter(([propertyId, property]) => {
+            if (
+              [
+                "longText",
+                "email",
+                "ethAddress",
+                "url",
+                "number",
+                "date",
+              ].includes(fromPropertyOptionType)
+            ) {
+              return (
+                ["shortText", fromPropertyOptionType].includes(
+                  (property as Property).type
+                ) && !usedProperty[propertyId]
+              );
+            } else {
+              return (
+                (property as Property).type === fromPropertyOptionType &&
+                !usedProperty[propertyId]
+              );
+            }
+          })
           .map(([propertyId, property]) => ({
             label: (property as Property).name,
             value: propertyId,

@@ -18,6 +18,7 @@ export const getAutomationActionOptions = (
             "giveDiscordRole",
             "giveRole",
             "postOnDiscord",
+            "postOnDiscordThread",
             "sendEmail",
             "initiatePendingPayment",
             "createDiscordThread",

@@ -99,6 +99,14 @@ export default function PostCardOnDiscordThread({
       }}
       width="full"
     >
+      {collection.collectionType === 0 && (
+        <Box marginY="2">
+          <Text variant="small">
+            Please make sure there is a "Create Discord Thread" automation
+            before this automation.
+          </Text>
+        </Box>
+      )}
       <Box marginY="2">
         <Text variant="label">Message</Text>
       </Box>
