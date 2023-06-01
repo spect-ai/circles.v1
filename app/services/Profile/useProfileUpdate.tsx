@@ -28,7 +28,7 @@ export default function useProfileUpdate() {
 
   const updateProfile = async (body: UpdateProfileDTO) => {
     try {
-      const res = await fetch(`${process.env.API_HOST}/user/me`, {
+      const res = await fetch(`${process.env.API_HOST}/user/v1/me`, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",

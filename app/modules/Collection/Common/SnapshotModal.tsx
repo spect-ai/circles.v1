@@ -70,9 +70,7 @@ export const getBodyOfProposal = (
     }
     if (property.type === "user[]") {
       data[property.name]?.forEach((user: Option) => {
-        response = response.concat(
-          ` - ${user.label} : <https://${hostname}/profile/${user.label}>\n`
-        );
+        response = response.concat(` - ${user.label} \n`);
       });
     }
     if (property.type === "payWall") {

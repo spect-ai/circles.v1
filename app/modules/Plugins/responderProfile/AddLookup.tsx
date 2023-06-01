@@ -108,7 +108,7 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
         const tokenType = ["erc20", "nft", "kudos", "poaps"][selectedType];
         setLoading(true);
         fetch(
-          `${process.env.API_HOST}/user/getTokenBalances/${chainId}/${tokenType}/${circle?.id}`,
+          `${process.env.API_HOST}/user/v1/getTokenBalances/${chainId}/${tokenType}/${circle?.id}`,
           {
             credentials: "include",
           }
@@ -243,7 +243,7 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
                           try {
                             const res = await (
                               await fetch(
-                                `${process.env.API_HOST}/user/getTokenMetadata`,
+                                `${process.env.API_HOST}/common/getTokenMetadata`,
                                 {
                                   method: "POST",
                                   credentials: "include",
@@ -404,7 +404,7 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
                           setFetchingMetadata(true);
                           const res = await (
                             await fetch(
-                              `${process.env.API_HOST}/user/getTokenMetadata`,
+                              `${process.env.API_HOST}/common/getTokenMetadata`,
                               {
                                 method: "POST",
                                 credentials: "include",
