@@ -9,6 +9,8 @@ type Props = {
   propertyId: string;
   updateRequiredFieldNotSet: (key: string, value: any) => void;
   showAvatar?: boolean;
+  verify?: boolean;
+  showDisconnect?: boolean;
 };
 
 export default function GithubField({
@@ -17,6 +19,8 @@ export default function GithubField({
   propertyId,
   updateRequiredFieldNotSet,
   showAvatar,
+  verify = false,
+  showDisconnect = false,
 }: Props) {
   const [code, setCode] = useState("");
 
@@ -24,8 +28,6 @@ export default function GithubField({
     window.addEventListener(
       "message",
       (event) => {
-        // if (event.origin !== "http://example.org:8080")
-        //   return;
         if (event.data.code) {
           setCode(event.data.code);
         }
@@ -37,19 +39,36 @@ export default function GithubField({
   useEffect(() => {
     (async () => {
       if (!code) return;
-      console.log({ code });
-      const res = await fetch(
-        `${process.env.BOT_HOST}/connectGithub?code=${code}`
-      );
-      if (res.ok) {
-        const data = await res.json();
-        console.log({ data });
-        if (data.userData.id) {
-          setData((d: any) => ({
-            ...d,
-            [propertyId]: data.userData,
-          }));
-          updateRequiredFieldNotSet(propertyId, data.userData);
+      if (verify) {
+        const res = await fetch(
+          `${process.env.API_HOST}/user/v1/connectGithub?code=${code}`,
+          {
+            credentials: "include",
+          }
+        );
+        if (res.ok) {
+          const { userData } = await res.json();
+          if (userData.id) {
+            setData((d: any) => ({
+              ...d,
+              [propertyId]: userData,
+            }));
+            updateRequiredFieldNotSet(propertyId, userData);
+          }
+        }
+      } else {
+        const res = await fetch(
+          `${process.env.BOT_HOST}/connectGithub?code=${code}`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (data.userData.id) {
+            setData((d: any) => ({
+              ...d,
+              [propertyId]: data.userData,
+            }));
+            updateRequiredFieldNotSet(propertyId, data.userData);
+          }
         }
       }
     })();
@@ -69,6 +88,46 @@ export default function GithubField({
               </Text>
             </Box>
           </Stack>
+          {showDisconnect && (
+            <Box marginTop="2" paddingRight="4">
+              <Box
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                justifyContent="flex-end"
+              >
+                <Box
+                  cursor="pointer"
+                  onClick={async () => {
+                    console.log("disconnecting github");
+                    const res = await fetch(
+                      `${process.env.API_HOST}/user/v1/disconnectGithub`,
+                      {
+                        credentials: "include",
+                        method: "PATCH",
+                      }
+                    );
+                    if (res.ok) {
+                      setData((d: any) => ({
+                        ...d,
+                        [propertyId]: null,
+                      }));
+                      updateRequiredFieldNotSet(propertyId, null);
+                    }
+                  }}
+                >
+                  <Text
+                    size="extraSmall"
+                    font="mono"
+                    weight="bold"
+                    color="accent"
+                  >
+                    Disconnect
+                  </Text>
+                </Box>
+              </Box>
+            </Box>
+          )}
         </Box>
       ) : (
         <PrimaryButton

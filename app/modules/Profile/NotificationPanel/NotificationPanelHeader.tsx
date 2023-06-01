@@ -1,18 +1,10 @@
-import { Box, Avatar, Tag, Text, Button, Stack } from "degen";
-import { UserType } from "@/app/types";
-import Link from "next/link";
-import { useQuery } from "react-query";
-import React, { memo } from "react";
-import Logout from "@/app/common/components/LogoutButton";
 import { smartTrim } from "@/app/common/utils/utils";
-import { isProfilePanelExpandedAtom } from "@/app/state/global";
-import { useAtom } from "jotai";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { UserType } from "@/app/types";
+import { Avatar, Stack, Tag, Text } from "degen";
+import { memo } from "react";
+import { useQuery } from "react-query";
 
 const TaskWalletHeader = () => {
-  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
-    isProfilePanelExpandedAtom
-  );
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });

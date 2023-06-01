@@ -1,11 +1,10 @@
 import { Box, Stack, Text, Tag, Textarea } from "degen";
-import { skillsArray } from "../ProfilePage/constants";
 import React from "react";
 
 import { useProfile } from "./LocalProfileContext";
 
 export function About() {
-  const { bio, setBio, setIsDirty, skills, setSkills } = useProfile();
+  const { bio, setBio, setIsDirty } = useProfile();
   return (
     <Stack space="0">
       <Stack direction="horizontal" justify="space-between">

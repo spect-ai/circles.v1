@@ -32,38 +32,35 @@ const ConnectPage: NextPage = () => {
   const [connectedUser] = useAtom(connectedUserAtom);
 
   useEffect(() => {
-    if (query.discord && profileContext.discordId?.length) {
+    const verifiedSocials = profileContext?.verifiedSocials;
+    if (query.discord && verifiedSocials["discord"]?.id?.length) {
       setData((d: any) => ({
         ...d,
         discord: {
-          id: profileContext.discordId,
-          username: profileContext.discordUsername,
+          id: verifiedSocials["discord"].id,
+          username: verifiedSocials["discord"]?.username,
         },
       }));
     }
-    if (query.telegram && profileContext.telegramId?.length) {
+    if (query.telegram && verifiedSocials["telegram"]?.id?.length) {
       setData((d: any) => ({
         ...d,
         telegram: {
-          id: profileContext.telegramId,
-          username: profileContext.telegramUsername,
+          id: verifiedSocials["telegram"].id,
+          username: verifiedSocials["telegram"]?.username,
         },
       }));
     }
-    if (query.github && profileContext.githubId?.length) {
+    if (query.github && verifiedSocials["github"]?.id?.length) {
       setData((d: any) => ({
         ...d,
         github: {
-          id: profileContext.githubId,
-          username: profileContext.githubUsername,
+          id: verifiedSocials["github"].id,
+          username: verifiedSocials["github"]?.username,
         },
       }));
     }
-  }, [
-    profileContext.discordId,
-    profileContext.telegramId,
-    profileContext.githubId,
-  ]);
+  }, [profileContext.verifiedSocials]);
 
   useEffect(() => {
     const hasAllConnections =

@@ -11,30 +11,36 @@ type ProfileSettingsType = {
   setAvatar: React.Dispatch<React.SetStateAction<string>>;
   setUsername: React.Dispatch<React.SetStateAction<string>>;
   setEmail: React.Dispatch<React.SetStateAction<string>>;
-  setTwitter: React.Dispatch<React.SetStateAction<string>>;
-  setGithub: React.Dispatch<React.SetStateAction<string>>;
-  setBehance: React.Dispatch<React.SetStateAction<string>>;
-  setWebsite: React.Dispatch<React.SetStateAction<string>>;
   setBio: React.Dispatch<React.SetStateAction<string>>;
-  setSkills: React.Dispatch<React.SetStateAction<string[]>>;
   email: string;
   avatar: string;
   uploading: boolean;
   loading: boolean;
   username: string;
   bio: string;
-  skills: string[];
   isDirty: boolean;
   uploadFile: (file: File) => void;
   onSaveProfile: () => void;
-  twitter: string;
-  github: string;
-  behance: string;
-  website: string;
   usernameError: string;
   setUsernameError: React.Dispatch<React.SetStateAction<string>>;
   apiKeys: string[];
   setApiKeys: React.Dispatch<React.SetStateAction<string[]>>;
+  verifiedSocials: {
+    [key: string]: {
+      id: string;
+      username: string;
+      avatar?: string;
+    };
+  };
+  setVerifiedSocials: React.Dispatch<
+    React.SetStateAction<{
+      [key: string]: {
+        id: string;
+        username: string;
+        avatar?: string;
+      };
+    }>
+  >;
 };
 
 export const LocalProfileContext = createContext<ProfileSettingsType>(
@@ -51,19 +57,17 @@ export function useProviderLocalProfile() {
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
   const [email, setEmail] = useState("");
-  const [skills, setSkills] = useState([] as string[]);
-  const [twitter, setTwitter] = useState("");
-  const [github, setGithub] = useState("");
-  const [githubId, setGithubId] = useState("");
-  const [githubUsername, setGithubUsername] = useState("");
-  const [discordId, setDiscordId] = useState("");
-  const [discordUsername, setDiscordUsername] = useState("");
-  const [telegramId, setTelegramId] = useState("");
-  const [telegramUsername, setTelegramUsername] = useState("");
+  const [verifiedSocials, setVerifiedSocials] = useState(
+    {} as {
+      [key: string]: {
+        id: string;
+        username: string;
+        avatar?: string;
+      };
+    }
+  );
   const [apiKeys, setApiKeys] = useState([] as string[]);
 
-  const [behance, setBehance] = useState("");
-  const [website, setWebsite] = useState("");
   const [usernameError, setUsernameError] = useState("");
 
   const [isDirty, setIsDirty] = useState(false);
@@ -92,12 +96,7 @@ export function useProviderLocalProfile() {
       username,
       avatar,
       bio,
-      skills,
       email,
-      twitter,
-      github,
-      behance,
-      website,
     });
     console.log(res);
     setLoading(false);
@@ -110,17 +109,37 @@ export function useProviderLocalProfile() {
     setUsername(currentUser?.username || "");
     setBio(currentUser?.bio || "");
     setEmail(currentUser?.email || "");
-    setTwitter(currentUser?.twitter || "");
-    setGithub(currentUser?.github || "");
-    setBehance(currentUser?.behance || "");
-    setWebsite(currentUser?.website || "");
-    setDiscordId(currentUser?.discordId || "");
-    setDiscordUsername(currentUser?.discordUsername || "");
-    setTelegramUsername(currentUser?.telegramUsername || "");
-    setTelegramId(currentUser?.telegramId || "");
-    setGithubId(currentUser?.githubId || "");
-    setGithubUsername(currentUser?.githubUsername || "");
     setApiKeys(currentUser?.apiKeys || []);
+
+    let verifiedSocials = {} as {
+      [key: string]: {
+        id: string;
+        username: string;
+        avatar?: string;
+      };
+    };
+    console.log({ currentUser });
+    if (currentUser?.discordId && currentUser?.discordUsername) {
+      verifiedSocials = {
+        ...verifiedSocials,
+        discord: {
+          id: currentUser?.discordId,
+          username: currentUser?.discordUsername,
+          avatar: currentUser?.discordAvatar || "",
+        },
+      };
+    }
+    if (currentUser?.githubId && currentUser?.githubUsername) {
+      verifiedSocials = {
+        ...verifiedSocials,
+        github: {
+          id: currentUser?.githubId,
+          username: currentUser?.githubUsername,
+          avatar: currentUser?.githubAvatar || "",
+        },
+      };
+    }
+    setVerifiedSocials(verifiedSocials);
     setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, isLoading]);
@@ -136,16 +155,6 @@ export function useProviderLocalProfile() {
     setEmail,
     bio,
     setBio,
-    skills,
-    setSkills,
-    twitter,
-    setTwitter,
-    github,
-    setGithub,
-    behance,
-    setBehance,
-    website,
-    setWebsite,
     loading,
     setLoading,
     isDirty,
@@ -154,20 +163,10 @@ export function useProviderLocalProfile() {
     onSaveProfile,
     usernameError,
     setUsernameError,
-    setDiscordId,
-    discordId,
-    setDiscordUsername,
-    discordUsername,
-    setTelegramId,
-    telegramId,
-    setTelegramUsername,
-    telegramUsername,
-    githubId,
-    setGithubId,
-    githubUsername,
-    setGithubUsername,
     apiKeys,
     setApiKeys,
+    verifiedSocials,
+    setVerifiedSocials,
   };
 }
 export const useProfile = () => useContext(LocalProfileContext);

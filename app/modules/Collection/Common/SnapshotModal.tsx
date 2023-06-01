@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Modal from "@/app/common/components/Modal";
-import { DateInput } from "@/app/modules/Profile/ProfilePage/AddExperienceModal";
 import { dateIsInvalid, logError, smartTrim } from "@/app/common/utils/utils";
 import useSnapshot from "@/app/services/Snapshot/useSnapshot";
 import { useQuery as useApolloQuery } from "@apollo/client";
@@ -19,6 +18,7 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 import Accordian from "@/app/common/components/Accordian";
 import uuid from "react-uuid";
 import SingleChoiceVotingOnSingleResponse from "../VotingModule/SingleChoiceVotingOnSingleResponse";
+import styled from "styled-components";
 
 export const getBodyOfProposal = (
   collection: CollectionType,
@@ -262,3 +262,20 @@ export const SnapshotModal = ({
     </Modal>
   );
 };
+
+const DateInput = styled.input<{ mode: string }>`
+  padding: 1rem;
+  border-radius: 0.55rem;
+  border 1px solid ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
+  background-color: ${(props) =>
+    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
+  width: 100%;
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255,0.7)" : "rgb(20,20,20,0.7)"};
+  outline: none;
+  &:focus {
+    border-color: rgb(191, 90, 242, 1);
+  }
+  transition: border-color 0.5s ease;
+`;

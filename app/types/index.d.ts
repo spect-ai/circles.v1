@@ -11,32 +11,16 @@ export interface UserType {
   email: string;
   discordId?: string;
   discordUsername?: string;
+  discordAvatar?: string;
   githubId?: string;
   githubUsername?: string;
-  twitterId?: string;
-  twitterUsername?: string;
+  githubAvatar?: string;
   telegramId?: string;
   telegramUsername?: string;
   _id: string;
   circles: string[];
-  projects: string[];
-  assignedCards: string[];
-  reviewingCards: string[];
-  assignedClosedCards: string[];
-  reviewingClosedCards: string[];
-  activeApplications: {
-    cardId: string;
-    applicationTitle: string;
-  }[];
-  cardDetails: any;
   activities: string[];
   notifications: Notification[];
-  retro: string[];
-  retroDetails: any;
-  bookmarks: string[];
-  followedCircles: string[];
-  followedUsers: string[];
-  followedByUsers: string[];
   userDetails: any;
   circleDetails: {
     [key: string]: {
@@ -44,16 +28,8 @@ export interface UserType {
       avatar: string;
     };
   };
-  experiences: LensExperience[];
-  education: LensEducation[];
-  skillsV2: LensSkills[];
-  lensHandle: string;
   collections: CollectionType;
   collectionsSubmittedTo: CollectionType[];
-  github: string;
-  twitter: string;
-  behance: string;
-  website: string;
   apiKeys: string[];
 }
 
@@ -330,19 +306,6 @@ export type SidebarConfig = {
   showDiscussion?: boolean;
 };
 
-// interface ProjectType {
-//   archived: boolean;
-//   columnOrder: string[];
-//   createdAt: string;
-//   id: string;
-//   name: string;
-//   parents: Circle[];
-//   private: boolean;
-//   slug: string;
-//   templates: any[];
-//   updatedAt: string;
-// }
-
 export interface CardType {
   id: string;
   title: string;
@@ -448,7 +411,7 @@ export interface ProjectType {
   unauthorized?: boolean;
 }
 
-export type ViewType = "List" | "Board" | "Gantt" | "Table";
+export type ViewType = "List" | "Board" | "Table";
 
 interface ActionValidation {
   valid: boolean;
@@ -541,14 +504,6 @@ export interface CollectionActivity {
   owner?: string;
   imageRef?: string;
 }
-
-// export interface Ref {
-//   actor: {
-//     id: string;
-//     type?: string;
-//     refType?: string;
-//   };
-// }
 
 export interface Activity {
   content: string;
@@ -1229,70 +1184,6 @@ export type Voting = {
   };
   periods?: MappedItem<VotingPeriod>;
   periodsOnCollection?: MappedItem<VotingPeriod>;
-};
-
-export type Experience = {
-  id: string;
-  role: string;
-  description: string;
-  organization: string;
-  startDate: string;
-  endDate: string;
-  isCurrent: boolean;
-  linkedCredentials?: string[];
-  lensExperienceId?: string;
-};
-
-export type Education = {
-  id: string;
-  title: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  linkedCredentials?: string[];
-  lensEducationId?: string;
-};
-
-export type Skill = {
-  id: string;
-  name: string;
-  linkedCredentials?: string[];
-  lensSkillId?: string;
-};
-
-export type LensSkills = {
-  title: string;
-  category: string;
-  icon: string;
-  nfts: NFT[];
-  poaps: string[];
-  linkedCredentials: Credential[];
-};
-
-export type LensExperience = {
-  jobTitle: string;
-  company: string;
-  companyLogo: string;
-  description: string;
-  start_date: LensDate;
-  end_date: LensDate;
-  linkedCredentials: Credential[];
-  currentlyWorking: boolean;
-  nfts: NFT[];
-  poaps: string[];
-};
-
-export type LensEducation = {
-  courseDegree: string;
-  school: string;
-  schoolLogo: string;
-  description: string;
-  start_date: LensDate;
-  end_date: LensDate;
-  currentlyStudying: boolean;
-  nfts: NFT[];
-  poaps: string[];
-  linkedCredentials: Credential[];
 };
 
 export type NFT = {

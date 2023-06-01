@@ -42,46 +42,23 @@ const ProfileInfo = ({ member }: Props) => {
             <Stack align="center">
               <Text weight="semiBold">{member.username}</Text>
               <Text variant="small">{smartTrim(member.ethAddress, 20)}</Text>
+
               <Stack direction="horizontal" wrap space="1">
-                {member.skillsV2?.map((skill) => (
-                  <Stack direction="horizontal" space="2" align="center">
-                    <Tag key={skill.title} tone="accent">
-                      {skill.title}
-                    </Tag>
-                    {/* <Text variant="label">|</Text> */}
-                  </Stack>
-                ))}
-              </Stack>
-              <Stack direction="horizontal" wrap space="1">
-                {member.twitter && (
-                  <a href={member.twitter} target="_blank" rel="noreferrer">
-                    <Button shape="circle" size="small" variant="transparent">
-                      <TwitterOutlined style={{ fontSize: "1.3rem" }} />
-                    </Button>
-                  </a>
-                )}
-                {member.discordId && (
+                {member.discordUsername && (
                   <Tooltip title={member.discordUsername}>
                     <Button shape="circle" size="small" variant="transparent">
                       <DiscordIcon />
                     </Button>
                   </Tooltip>
                 )}
-                {member.github && (
+                {member.githubUsername && (
                   <a
-                    href={"https://github.com/spect-ai"}
+                    href={`https://github.com/${member.githubUsername}`}
                     target="_blank"
                     rel="noreferrer"
                   >
                     <Button shape="circle" size="small" variant="transparent">
                       <GithubOutlined style={{ fontSize: "1.3rem" }} />
-                    </Button>
-                  </a>
-                )}
-                {member.website && (
-                  <a href={member.website} target="_blank" rel="noreferrer">
-                    <Button shape="circle" size="small" variant="transparent">
-                      <Globe />
                     </Button>
                   </a>
                 )}

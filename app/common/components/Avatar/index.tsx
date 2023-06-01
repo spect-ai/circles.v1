@@ -1,19 +1,13 @@
-import { Avatar, Box, Stack, Tag, Text, useTheme } from "degen";
-import Link from "next/link";
-import { useState } from "react";
-import PrimaryButton from "../PrimaryButton";
-import { AnimatePresence, motion } from "framer-motion";
+import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { grow } from "@/app/common/components/Modal/index";
 import { UserType } from "@/app/types";
-import { smartTrim } from "../../utils/utils";
-import { BsArrowUpRight, BsArrowUpRightSquare } from "react-icons/bs";
+import { GithubOutlined } from "@ant-design/icons";
+import { Avatar, Box, Button, Tag, Text, useTheme } from "degen";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
+import { Tooltip } from "react-tippy";
 import styled from "styled-components";
-import {
-  BehanceOutlined,
-  GithubOutlined,
-  LinkOutlined,
-  TwitterOutlined,
-} from "@ant-design/icons";
+import { smartTrim } from "../../utils/utils";
 
 interface AvatarProps {
   username: string;
@@ -123,68 +117,26 @@ export default function ClickableAvatar({
                       </Tag>
                     )}
                     <InfoBox gap="1">
-                      {profile?.githubId && !profile?.github && (
+                      {profile.discordUsername && (
+                        <Tooltip title={profile.discordUsername}>
+                          <Button
+                            shape="circle"
+                            size="small"
+                            variant="transparent"
+                          >
+                            <DiscordIcon />
+                          </Button>
+                        </Tooltip>
+                      )}
+                    </InfoBox>
+                    <InfoBox gap="1">
+                      {profile?.githubUsername && (
                         <a
-                          href={`https://github.com/${profile?.githubId}`}
+                          href={`https://github.com/${profile?.githubUsername}`}
                           target="_blank"
                           rel="noreferrer noopener"
                         >
                           <GithubOutlined
-                            style={{ color: "grey", fontSize: "1.2rem" }}
-                          />
-                        </a>
-                      )}
-                      {profile?.github && (
-                        <a
-                          href={`${profile.github}`}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                        >
-                          <GithubOutlined
-                            style={{ color: "grey", fontSize: "1.2rem" }}
-                          />
-                        </a>
-                      )}
-                      {profile?.twitterId && !profile?.twitter && (
-                        <a
-                          href={`https://twitter.com/${profile?.twitterId}`}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                        >
-                          <TwitterOutlined
-                            style={{ color: "grey", fontSize: "1.2rem" }}
-                          />
-                        </a>
-                      )}
-                      {profile?.twitter && (
-                        <a
-                          href={`${profile.twitter}`}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                        >
-                          <TwitterOutlined
-                            style={{ color: "grey", fontSize: "1.2rem" }}
-                          />
-                        </a>
-                      )}
-                      {profile?.behance && (
-                        <a
-                          href={`${profile.behance}`}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                        >
-                          <BehanceOutlined
-                            style={{ color: "grey", fontSize: "1.2rem" }}
-                          />
-                        </a>
-                      )}
-                      {profile?.website && (
-                        <a
-                          href={`${profile.website}`}
-                          target="_blank"
-                          rel="noreferrer noopener"
-                        >
-                          <LinkOutlined
                             style={{ color: "grey", fontSize: "1.2rem" }}
                           />
                         </a>
@@ -193,43 +145,18 @@ export default function ClickableAvatar({
                   </Box>
                 </Box>
               </Box>
-              <Box
-                borderColor="textSecondary"
-                style={{ margin: "0rem 0.5rem 0.5rem" }}
-              >
-                <Text variant="label" weight="bold">
-                  About Me
-                </Text>
-                {profile.bio && <Text variant="small">{profile.bio}</Text>}
-                {!profile.bio && <Text variant="small"> Not added </Text>}
-              </Box>
-              <Box
-                borderColor="textSecondary"
-                style={{ margin: "0rem 0.5rem 0.5rem" }}
-              >
-                <Text variant="label" weight="bold">
-                  Skills
-                </Text>
-                <InfoBox>
-                  {profile?.skillsV2
-                    ?.slice(0, 10)
-                    .map((skill: any, index: any) => (
-                      <SkillTag mode={mode} as="span" key={index}>
-                        <Box
-                          display="flex"
-                          flexDirection="column"
-                          alignItems="center"
-                          justifyContent="center"
-                        >
-                          <Text variant="small">{skill.title}</Text>
-                        </Box>
-                      </SkillTag>
-                    ))}
-                </InfoBox>
-                {!profile?.skillsV2?.length && (
-                  <Text variant="small"> Not added </Text>
-                )}
-              </Box>
+              {
+                <Box
+                  borderColor="textSecondary"
+                  style={{ margin: "0rem 0.5rem 0.5rem" }}
+                >
+                  <Text variant="label" weight="bold">
+                    About Me
+                  </Text>
+                  {profile.bio && <Text variant="small">{profile.bio}</Text>}
+                  {!profile.bio && <Text variant="small"> Not added </Text>}
+                </Box>
+              }
             </motion.div>
           )}
         </AnimatePresence>

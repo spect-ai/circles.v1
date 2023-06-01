@@ -125,9 +125,7 @@ function PublicLayout(props: PublicLayoutProps) {
   const { inviteCode, circle } = router.query;
 
   const onboard =
-    (currentUser?.skillsV2?.length == 0 || currentUser?.email?.length == 0) &&
-    myCircles?.length == 0 &&
-    !inviteCode;
+    currentUser?.email?.length == 0 && myCircles?.length == 0 && !inviteCode;
 
   useEffect(() => {
     void fetchCircles();

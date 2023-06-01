@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 import { useScreenClass } from "react-grid-system";
 import InfiniteScroll from "react-infinite-scroll-component";
 import styled from "styled-components";
-import TaskWalletHeader from "../TaskWallet/TaskWalletHeader";
+import TaskWalletHeader from "./NotificationPanelHeader";
 
 export default function NotificationPanel() {
   const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
