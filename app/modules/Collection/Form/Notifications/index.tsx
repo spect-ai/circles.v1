@@ -4,11 +4,11 @@ import { updateFormCollection } from "@/app/services/Collection";
 import { Box, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import { reservedRoles } from "@/app/modules/Circle/ContributorsModal/InviteMembersModal/constants";
 
 export function Notifications() {
   const { circle } = useCircle();
-  const [notifOnNewResponses, setNotifOnNewResponses] = useState(false);
-  const [circleRoles, setCircleRoles] = useState([] as string[]);
+  const circleRoles = Object.keys(circle?.roles || {});
   const [
     circleRolesToNotifyUponNewResponse,
     setCircleRolesToNotifyUponNewResponse,
@@ -16,38 +16,38 @@ export function Notifications() {
 
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
+  const [notifOnNewResponses, setNotifOnNewResponses] = useState(false);
+
+  console.log({
+    circleRolesToNotifyUponNewResponse,
+    circleRoles,
+    notifOnNewResponses,
+  });
 
   useEffect(() => {
-    if (collection.formMetadata) {
+    console.log("here");
+    if (collection) {
+      // const validRoles = new Set(circleRoles);
       const newResponseRolesToEmail = new Set(
         collection.circleRolesToNotifyUponNewResponse || []
       );
-      const updatedResponseRolesToEmail = new Set(
-        collection.circleRolesToNotifyUponUpdatedResponse || []
-      );
+      console.log({
+        newResponseRolesToEmail,
+        c: collection.circleRolesToNotifyUponNewResponse,
+      });
       const circleRolesToNotifyUponNewResponse = [] as boolean[];
-      const circleRolesToNotifyUponUpdatedResponse = [] as boolean[];
       for (const role of circleRoles) {
         circleRolesToNotifyUponNewResponse.push(
           newResponseRolesToEmail.has(role)
         );
-        circleRolesToNotifyUponUpdatedResponse.push(
-          updatedResponseRolesToEmail.has(role)
-        );
       }
-
+      setNotifOnNewResponses(
+        collection?.circleRolesToNotifyUponNewResponse?.length ? true : false
+      );
       setCircleRolesToNotifyUponNewResponse(circleRolesToNotifyUponNewResponse);
-      if (collection.circleRolesToNotifyUponNewResponse) {
-        setNotifOnNewResponses(
-          collection.circleRolesToNotifyUponNewResponse?.length > 0
-        );
-      }
+      console.log({ circleRolesToNotifyUponNewResponse });
     }
-  }, [circleRoles, collection]);
-
-  useEffect(() => {
-    if (circle && circle.roles) setCircleRoles(Object.keys(circle.roles));
-  }, [circle]);
+  }, []);
 
   return (
     <>
@@ -63,55 +63,62 @@ export function Notifications() {
             <Box display="flex" flexDirection="row" gap="2" alignItems="center">
               <CheckBox
                 isChecked={notifOnNewResponses}
-                onClick={() => {
-                  if (notifOnNewResponses) {
-                    setCircleRolesToNotifyUponNewResponse([]);
-                    setNotifOnNewResponses(false);
-                  } else {
-                    setNotifOnNewResponses(true);
-                  }
+                onClick={async () => {
+                  setNotifOnNewResponses(!notifOnNewResponses);
+                  setCircleRolesToNotifyUponNewResponse(
+                    circleRoles.map(() => notifOnNewResponses)
+                  );
+                  const res = await updateFormCollection(collection.id, {
+                    circleRolesToNotifyUponNewResponse: [],
+                  });
+                  updateCollection(res);
                 }}
               />
               <Text variant="base">Send notifications on new responses</Text>
             </Box>
             {notifOnNewResponses && (
               <Stack direction="horizontal" space="2" wrap>
-                {circleRoles?.map((role, index) => (
-                  <Box
-                    key={index}
-                    cursor="pointer"
-                    onClick={async () => {
-                      circleRolesToNotifyUponNewResponse[index] =
-                        !circleRolesToNotifyUponNewResponse[index];
-                      setCircleRolesToNotifyUponNewResponse([
-                        ...circleRolesToNotifyUponNewResponse,
-                      ]);
-                      const roleSet = new Set(
-                        collection.circleRolesToNotifyUponNewResponse || []
-                      );
-                      if (circleRolesToNotifyUponNewResponse[index]) {
-                        roleSet.add(role);
-                      } else {
-                        roleSet.delete(role);
-                      }
+                {circleRoles?.map((role, index) => {
+                  if (reservedRoles.includes(role)) return null;
+                  return (
+                    <Box
+                      key={index}
+                      cursor="pointer"
+                      onClick={async () => {
+                        circleRolesToNotifyUponNewResponse[index] =
+                          !circleRolesToNotifyUponNewResponse[index];
+                        setCircleRolesToNotifyUponNewResponse([
+                          ...circleRolesToNotifyUponNewResponse,
+                        ]);
+                        const roleSet = new Set(
+                          collection.circleRolesToNotifyUponNewResponse || []
+                        );
+                        if (circleRolesToNotifyUponNewResponse[index]) {
+                          roleSet.add(role);
+                        } else {
+                          roleSet.delete(role);
+                        }
 
-                      const res = await updateFormCollection(collection.id, {
-                        circleRolesToNotifyUponNewResponse: Array.from(roleSet),
-                      });
-                      updateCollection(res);
-                    }}
-                  >
-                    {circleRolesToNotifyUponNewResponse[index] ? (
-                      <Tag tone={"accent"} hover>
-                        <Box paddingX="2">{role}</Box>
-                      </Tag>
-                    ) : (
-                      <Tag hover>
-                        <Box paddingX="2">{role}</Box>
-                      </Tag>
-                    )}
-                  </Box>
-                ))}
+                        console.log({ roleSet });
+                        const res = await updateFormCollection(collection.id, {
+                          circleRolesToNotifyUponNewResponse:
+                            Array.from(roleSet),
+                        });
+                        updateCollection(res);
+                      }}
+                    >
+                      {circleRolesToNotifyUponNewResponse[index] ? (
+                        <Tag tone={"accent"} hover>
+                          <Box paddingX="2">{role}</Box>
+                        </Tag>
+                      ) : (
+                        <Tag hover>
+                          <Box paddingX="2">{role}</Box>
+                        </Tag>
+                      )}
+                    </Box>
+                  );
+                })}
               </Stack>
             )}
             {notifOnNewResponses && (

@@ -140,6 +140,7 @@ export default function DiscordRoleGate({ handleClose }: Props) {
           flexDirection="row"
           gap="2"
           justifyContent="flex-end"
+          paddingTop="8"
         >
           {(collection.formMetadata?.discordRoleGating?.length || 0) > 0 && (
             <PrimaryButton
