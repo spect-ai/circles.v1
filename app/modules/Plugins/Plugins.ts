@@ -120,10 +120,10 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
   },
   responderProfile: {
     id: "responderProfile",
-    name: "Collect Responder Profile",
+    name: "Who's the Responder?",
     version: "1.0.0",
     description:
-      "Collect information about the responder. Past experiences, educational achievments, skills along with linked NFTs & credentials!",
+      "Collect responders' verified ethereum address, NFT ownerships, community memberships and more!",
     tags: "credential curation, responder info",
     docs: "https://docs.guild.xyz",
     image:

@@ -164,3 +164,8 @@ export const logError = (error: string, showToast = true) => {
     });
   }
 };
+
+export function isIntegerString(str: string) {
+  if (typeof str != "string") return false;
+  return !isNaN(parseInt(str));
+}

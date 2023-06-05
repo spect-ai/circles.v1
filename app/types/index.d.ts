@@ -869,6 +869,8 @@ export type FormMetadata = {
   lookup?: {
     tokens: LookupToken[];
     snapshot: number;
+    verifiedAddress: boolean;
+    communities: boolean;
   };
   discordRoleGating?: {
     id: string;
@@ -903,9 +905,15 @@ export type LookupToken = {
   metadata: {
     name: string;
     image: string;
+    symbol: string;
   };
   chainId: number;
+  chainName: string;
   tokenId?: string;
+  tokenAttributes?: {
+    key: string;
+    value: string;
+  }[];
 };
 
 export type ProjectMetadata = {
@@ -1232,10 +1240,10 @@ export type Credential = {
 };
 
 export type PoapCredential = {
-  tokenId: string;
-  owner: string;
+  tokenId?: string;
+  owner?: string;
   chain: string;
-  created: string;
+  created?: string;
   event: POAPEventType;
 };
 
