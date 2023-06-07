@@ -91,7 +91,7 @@ const KudosClaimed = ({ lookupTokens, setLookupTokens, initKudos }: Props) => {
                     searchValue
                   );
                   console.log({ token });
-                  if (!token || !token.attributes) {
+                  if (!token) {
                     setFilteredKudos([]);
                     throw new Error(
                       "Mintkudos with the given token id not found"
@@ -99,10 +99,10 @@ const KudosClaimed = ({ lookupTokens, setLookupTokens, initKudos }: Props) => {
                   }
                   setFilteredKudos([
                     {
-                      description: token.attributes.description,
+                      description: token.rawMetadata.description || "",
                       id: searchValue,
-                      imageUri: token.attributes.imageUrl,
-                      name: token.attributes.name,
+                      imageUri: token.rawMetadata.image || "",
+                      name: token.rawMetadata.name,
                       service: "kudos",
                       type: "soulbound",
                     },
