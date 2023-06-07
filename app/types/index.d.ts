@@ -660,6 +660,7 @@ export type POAPEventType = {
   virtual_event: boolean;
   event_template_id: number;
   private_event: boolean;
+  claimed?: boolean;
 };
 
 export type KudosForType = {
