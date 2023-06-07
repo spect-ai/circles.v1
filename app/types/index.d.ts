@@ -904,11 +904,11 @@ export type LookupToken = {
   contractAddress: string;
   metadata: {
     name: string;
-    image: string;
+    image?: string;
     symbol: string;
   };
   chainId: number;
-  chainName: string;
+  chainName?: string;
   tokenId?: string;
   tokenAttributes?: {
     key: string;
@@ -1360,3 +1360,106 @@ export type PaymentDetails = {
   collection?: Option;
   data?: Option;
 };
+
+export type NFTFromAlchemy = {
+  balance?: number;
+  contract: {
+    address: string;
+    name: string;
+    symbol: string;
+    totalSupply?: number;
+  };
+  description?: string;
+  media?: {
+    bytes: number;
+    format: string;
+    gateway: string;
+    raw: string;
+    thumbnail: string;
+  }[];
+  rawMetadata: {
+    name: string;
+    image?: string;
+    description?: string;
+    attributes?: {
+      trait_type: string;
+      display_type: string;
+      value: string;
+    }[];
+  };
+  timeLastUpdated?: string;
+  title?: string;
+  tokenId?: string;
+  tokenType: string;
+  tokenUri?: {
+    gateway: string;
+    raw: string;
+  };
+  chainId: number;
+};
+
+export type NFTFromAnkr = {
+  contractAddress: string;
+  blockchain: string;
+  collectionName?: string;
+  symbol: string;
+  tokenId?: string;
+  contractType: string;
+  tokenUrl?: string;
+  name: string;
+  imageUrl?: string;
+  quantity?: string;
+};
+
+export declare enum NftTokenType {
+  ERC721 = "ERC721",
+  ERC1155 = "ERC1155",
+  UNKNOWN = "UNKNOWN",
+}
+
+export declare enum OpenSeaSafelistRequestStatus {
+  /** Verified collection. */
+  VERIFIED = "verified",
+  /** Collections that are approved on open sea and can be found in search results. */
+  APPROVED = "approved",
+  /** Collections that requested safelisting on OpenSea. */
+  REQUESTED = "requested",
+  /** Brand new collections. */
+  NOT_REQUESTED = "not_requested",
+}
+
+export type AlchemyNftContract = {
+  /** The type of the token in the contract. */
+  tokenType: NftTokenType;
+  /** The name of the contract. */
+  name?: string;
+  /** The symbol of the contract. */
+  symbol?: string;
+  /** The number of NFTs in the contract as an integer string. */
+  totalSupply?: string;
+  /** OpenSea's metadata for the contract. */
+  openSea?: {
+    floorPrice?: number;
+    /** The name of the collection on OpenSea. */
+    collectionName?: string;
+    /** The approval status of the collection on OpenSea. */
+    safelistRequestStatus?: OpenSeaSafelistRequestStatus;
+    /** The image URL determined by OpenSea. */
+    imageUrl?: string;
+    /** The description of the collection on OpenSea. */
+    description?: string;
+    /** The homepage of the collection as determined by OpenSea. */
+    externalUrl?: string;
+    /** The Twitter handle of the collection. */
+    twitterUsername?: string;
+    /** The Discord URL of the collection. */
+    discordUrl?: string;
+    /** Timestamp of when the OpenSea metadata was last ingested by Alchemy. */
+    lastIngestedAt?: string;
+  };
+  address: string;
+};
+
+export interface LookupTokenWithBalance extends LookupToken {
+  balance: string;
+}

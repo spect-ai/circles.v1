@@ -1,8 +1,8 @@
+import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { logError, smartTrim } from "@/app/common/utils/utils";
-import { ERC1155InterfaceId, ERC165Abi } from "@/app/services/nft";
-import { LookupToken } from "@/app/types";
-import { erc721ABI } from "@wagmi/core";
+import { getContractMetdata, getTokenMetadata } from "@/app/services/nft";
+import { LookupToken, NFT, NFTFromAlchemy } from "@/app/types";
 import { Avatar, Box, Input, Spinner, Stack, Text, useTheme } from "degen";
 import { ethers } from "ethers";
 import { AnimatePresence } from "framer-motion";
@@ -10,58 +10,45 @@ import { matchSorter } from "match-sorter";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import { readContracts } from "wagmi";
 import NFTDetailsModal, { NFTDetails } from "./NFTDetailsModal";
 
 type Props = {
   lookupTokens: LookupToken[];
   setLookupTokens: (lookupTokens: LookupToken[]) => void;
-  initNfts: NFTFromAnkr[];
+  initNfts: NFTFromAlchemy[];
 };
 
-const networks = [1, 137, 100, 42161, 56, 43114];
-const networkNames = [
-  "eth",
-  "polygon",
-  "optimism",
-  "arbitrum",
-  "bsc",
-  "avalanche",
-];
+const networks = [1, 137, 10, 42161];
+const networkNames = ["Ethereum", "Polygon", "Optimism", "Arbitrum"];
 const networkToIds = {
   eth: 1,
   polygon: 137,
-  optimism: 100,
+  optimism: 10,
   arbitrum: 42161,
-  bsc: 56,
-  avalanche: 43114,
 };
-
-export type NFTFromAnkr = {
-  contractAddress: string;
-  blockchain: string;
-  collectionName: string;
-  symbol: string;
-  tokenId: string;
-  contractType: string;
-  tokenUrl: string;
-  name: string;
-  imageUrl: string;
-  quantity: string;
+const networkIdToNames = {
+  1: "Ethereum",
+  137: "Polygon",
+  10: "Optimism",
+  42161: "Arbitrum",
 };
 
 const NFTOwnership = ({ lookupTokens, setLookupTokens, initNfts }: Props) => {
   const { mode } = useTheme();
-  const [filteredNFTs, setFilteredNFTs] = useState<NFTFromAnkr[]>([]);
-  const [nfts, setNfts] = useState<NFTFromAnkr[]>([]);
+  const [filteredNFTs, setFilteredNFTs] = useState<NFTFromAlchemy[]>([]);
+  const [nfts, setNfts] = useState<NFTFromAlchemy[]>([]);
   const [loading, setLoading] = useState(false);
   const [openNFTDetails, setOpenNFTDetails] = useState(false);
   const [showFetchAddressButton, setShowFetchAddressButton] =
     useState<boolean>(false);
-  const [currentlyEditing, setCurrentlyEditing] = useState<NFTFromAnkr>(
-    {} as NFTFromAnkr
+  const [currentlyEditing, setCurrentlyEditing] = useState<NFTFromAlchemy>(
+    {} as NFTFromAlchemy
   );
   const [searchValue, setSearchValue] = useState<string>("");
+  const [network, setNetwork] = useState<OptionType>({
+    label: "Ethereum",
+    value: "1",
+  });
 
   useEffect(() => {
     setLoading(true);
@@ -81,38 +68,44 @@ const NFTOwnership = ({ lookupTokens, setLookupTokens, initNfts }: Props) => {
               setLookupTokens([
                 ...lookupTokens,
                 {
-                  contractAddress: currentlyEditing.contractAddress,
+                  contractAddress: currentlyEditing.contract.address,
                   tokenType:
-                    currentlyEditing.contractType === "ERC721"
+                    currentlyEditing.tokenType === "ERC721"
                       ? "erc721"
                       : "erc1155",
                   metadata: {
-                    name: currentlyEditing.name,
-                    image: currentlyEditing.imageUrl,
-                    symbol: currentlyEditing.symbol,
+                    name:
+                      currentlyEditing.tokenType === "ERC721"
+                        ? currentlyEditing.contract.name ||
+                          currentlyEditing.title ||
+                          "An NFT"
+                        : currentlyEditing.title ||
+                          currentlyEditing.contract.name ||
+                          "An NFT",
+                    image:
+                      currentlyEditing?.media?.[0]?.gateway ||
+                      currentlyEditing.rawMetadata.image,
+                    symbol: currentlyEditing.contract.symbol,
                   },
                   tokenId: nftDetails.tokenId,
                   tokenAttributes: nftDetails.tokenAttributes,
-                  chainId:
-                    networkToIds[
-                      currentlyEditing.blockchain as keyof typeof networkToIds
-                    ],
-                  chainName: currentlyEditing.blockchain,
+                  chainId: parseInt(network.value),
                 },
               ]);
-              setCurrentlyEditing({} as NFTFromAnkr);
+              setCurrentlyEditing({} as NFTFromAlchemy);
               setOpenNFTDetails(false);
               setSearchValue("");
+              setShowFetchAddressButton(false);
               setFilteredNFTs(nfts);
             }}
           />
         )}
       </AnimatePresence>
-      <Text variant="small" color="textSecondary" weight="semiBold">
-        Pick the NFTs
-      </Text>
       <Stack direction="vertical" space="3">
-        <Stack direction="horizontal" space="2" align="center">
+        <Stack space="0">
+          <Text variant="small" color="textSecondary" weight="semiBold">
+            Pick the NFTs
+          </Text>
           <Input
             placeholder={"Search for a token or enter a token address"}
             label=""
@@ -122,6 +115,7 @@ const NFTOwnership = ({ lookupTokens, setLookupTokens, initNfts }: Props) => {
               try {
                 if (!e.target.value) {
                   setFilteredNFTs(nfts);
+                  setShowFetchAddressButton(false);
                   setShowFetchAddressButton(false);
                 } else {
                   setSearchValue(e.target.value);
@@ -139,6 +133,44 @@ const NFTOwnership = ({ lookupTokens, setLookupTokens, initNfts }: Props) => {
               }
             }}
           />
+        </Stack>
+        <Stack direction="horizontal" space="2" align="flex-end">
+          {showFetchAddressButton && (
+            <Box width="1/3">
+              <Stack space="0">
+                <Text variant="small" color="textSecondary" weight="semiBold">
+                  Pick a Network
+                </Text>
+                <Dropdown
+                  label=""
+                  options={[
+                    {
+                      label: "Ethereum",
+                      value: "1",
+                    },
+                    {
+                      label: "Polygon",
+                      value: "137",
+                    },
+                    {
+                      label: "Optimism",
+                      value: "10",
+                    },
+                    {
+                      label: "Arbitrum",
+                      value: "42161",
+                    },
+                  ]}
+                  selected={network}
+                  onChange={(value: any) => {
+                    setNetwork(value);
+                    setShowFetchAddressButton(true);
+                  }}
+                  multiple={false}
+                />{" "}
+              </Stack>
+            </Box>
+          )}
           {showFetchAddressButton && (
             <PrimaryButton
               variant="tertiary"
@@ -146,84 +178,41 @@ const NFTOwnership = ({ lookupTokens, setLookupTokens, initNfts }: Props) => {
               disabled={loading}
               onClick={async () => {
                 setLoading(true);
-                const nftTypes = [] as Partial<NFTFromAnkr>[];
-
                 try {
                   if (!ethers.utils.isAddress(searchValue))
                     throw new Error("Invalid nft contract address");
-                  const isERC1155 = (await readContracts({
-                    contracts: networks.map((chainId) => ({
-                      functionName: "supportsInterface",
-                      abi: ERC165Abi,
-                      address: searchValue as `0x${string}`,
-                      chainId,
-                      args: [ERC1155InterfaceId],
-                    })),
-                    allowFailure: true,
-                  })) as unknown as null[] | boolean[];
-                  const isERC721 = (await readContracts({
-                    contracts: networks.map((chainId) => ({
-                      functionName: "supportsInterface",
-                      abi: ERC165Abi,
-                      address: searchValue as `0x${string}`,
-                      chainId,
-                      args: [ERC1155InterfaceId],
-                    })),
-                    allowFailure: true,
-                  })) as unknown as null[] | boolean[];
-                  networkNames.forEach((network, index) => {
-                    if (isERC1155?.[index]) {
-                      nftTypes.push({
-                        contractAddress: searchValue,
-                        blockchain: network,
-                        collectionName: "",
-                        symbol: "",
-                        tokenId: "",
-                        contractType: "ERC1155",
-                        tokenUrl: "",
-                        name: "An ERC1155 NFT on " + network,
-                      });
-                    } else if (isERC721?.[index]) {
-                      nftTypes.push({
-                        contractAddress: searchValue,
-                        blockchain: network,
-                        collectionName: "",
-                        symbol: "",
-                        tokenId: "",
-                        contractType: "ERC721",
-                        tokenUrl: "",
-                        name: "An ERC721 NFT on " + network,
-                      });
-                    }
-                  });
-                  if (!nftTypes?.length) {
-                    setFilteredNFTs([]);
-                    throw new Error(
-                      "No NFT with the given contract address found"
-                    );
-                  }
-                  const networksWithTokens = nftTypes.map(
-                    (chain: Partial<NFTFromAnkr>) => {
-                      return networkToIds[
-                        chain.blockchain as keyof typeof networkToIds
-                      ];
-                    }
+                  const nftContract = await getContractMetdata(
+                    network.value,
+                    searchValue
                   );
-
-                  const names = await readContracts({
-                    contracts: networksWithTokens.map((chainId) => ({
-                      functionName: "name",
-                      abi: erc721ABI,
-                      address: searchValue as `0x${string}`,
-                      chainId,
-                    })),
-                  });
-                  console.log({ names });
-                  names.forEach((name, index) => {
-                    if (name) nftTypes[index].name = name;
-                  });
-                  console.log({ nftTypes });
-                  setFilteredNFTs(nftTypes as NFTFromAnkr[]);
+                  if (!nftContract) throw new Error("NFT Contract not found");
+                  setFilteredNFTs([
+                    {
+                      chainId: parseInt(network.value),
+                      contract: {
+                        address: searchValue,
+                        name:
+                          nftContract.name ||
+                          `An ${nftContract.tokenType} NFT on ${
+                            networkIdToNames[
+                              network.value as unknown as keyof typeof networkIdToNames
+                            ]
+                          }`,
+                        symbol: nftContract.symbol || "NFT",
+                      },
+                      tokenType: nftContract.tokenType,
+                      rawMetadata: {
+                        image: nftContract.openSea?.imageUrl,
+                        name:
+                          nftContract.openSea?.collectionName ||
+                          `An ${nftContract.tokenType} NFT on ${
+                            networkIdToNames[
+                              network.value as unknown as keyof typeof networkIdToNames
+                            ]
+                          }`,
+                      },
+                    },
+                  ]);
                 } catch (err) {
                   console.log(err);
                   toast.error((err as any)?.message || err);
@@ -278,8 +267,8 @@ const NFTOwnership = ({ lookupTokens, setLookupTokens, initNfts }: Props) => {
                 if (
                   lookupTokens.find(
                     (t) =>
-                      t.contractAddress === nft.contractAddress &&
-                      t.chainName === nft?.blockchain
+                      t.contractAddress === nft.contract.address &&
+                      t.chainId === nft?.chainId
                   )
                 ) {
                   return null;
@@ -293,6 +282,7 @@ const NFTOwnership = ({ lookupTokens, setLookupTokens, initNfts }: Props) => {
                     }}
                     key={index}
                     onClick={() => {
+                      console.log({ nft });
                       if (!nft.tokenId) {
                         setCurrentlyEditing(nft);
                         setOpenNFTDetails(true);
@@ -301,23 +291,21 @@ const NFTOwnership = ({ lookupTokens, setLookupTokens, initNfts }: Props) => {
                       setLookupTokens([
                         ...lookupTokens,
                         {
-                          contractAddress: nft.contractAddress,
+                          contractAddress: nft.contract.address,
                           tokenType:
-                            nft.contractType === "ERC721"
-                              ? "erc721"
-                              : "erc1155",
+                            nft.tokenType === "ERC721" ? "erc721" : "erc1155",
                           metadata: {
-                            name: nft.name,
-                            image: nft.imageUrl,
-                            symbol: nft.symbol,
+                            name:
+                              nft.tokenType === "ERC721"
+                                ? nft.title || nft.contract.name
+                                : nft.contract.name,
+                            image:
+                              nft.media?.[0]?.gateway || nft.rawMetadata.image,
+                            symbol: nft.contract.symbol,
                           },
                           tokenId:
-                            nft.contractType === "ERC721" ? "" : nft.tokenId,
-                          chainId:
-                            networkToIds[
-                              nft.blockchain as keyof typeof networkToIds
-                            ],
-                          chainName: nft.blockchain,
+                            nft.tokenType === "ERC721" ? "" : nft.tokenId,
+                          chainId: nft.chainId,
                         },
                       ]);
                     }}
@@ -325,13 +313,21 @@ const NFTOwnership = ({ lookupTokens, setLookupTokens, initNfts }: Props) => {
                     <Stack align="center">
                       <Avatar
                         src={
-                          nft.imageUrl ||
-                          `https://api.dicebear.com/5.x/initials/svg?seed=${nft.name}`
+                          nft.media?.[0]?.gateway ||
+                          nft.rawMetadata.image ||
+                          `https://api.dicebear.com/5.x/initials/svg?seed=${
+                            nft.title || nft.contract.name
+                          }`
                         }
                         label=""
                         shape="square"
                       />
-                      <Text align="center">{smartTrim(nft.name, 30)}</Text>
+                      <Text align="center">
+                        {" "}
+                        {nft.tokenType === "ERC721"
+                          ? smartTrim(nft.title || nft.contract.name, 30)
+                          : smartTrim(nft.contract.name, 30)}
+                      </Text>
                     </Stack>
                   </NFTCard>
                 );

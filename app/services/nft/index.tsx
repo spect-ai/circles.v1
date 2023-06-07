@@ -1,3 +1,4 @@
+import { AlchemyNftContract, NFTFromAlchemy } from "@/app/types";
 import { Signer, fetchSigner, getContract } from "@wagmi/core";
 
 export const ERC165Abi: any = [
@@ -36,14 +37,26 @@ export const isERC1155 = async (address: string) => {
   return await contract.supportsInterface(ERC1155InterfaceId);
 };
 
+export const getContractMetdata = async (
+  chainId: string,
+  contractAddress: string
+): Promise<AlchemyNftContract> => {
+  const res = await fetch(
+    `${process.env.API_HOST}/common/nft/contractMetadata?chainId=${chainId}&contractAddress=${contractAddress}`
+  );
+  if (!res?.ok) throw new Error("Error fetching contract metadata");
+  return await res.json();
+};
+
 export const getTokenMetadata = async (
   chainId: string,
   contractAddress: string,
-  tokenId?: number | string
-) => {
-  const tokenIdQuery = tokenId ? `&tokenId=${tokenId}` : "";
+  tokenId: number | string
+): Promise<NFTFromAlchemy> => {
   const res = await fetch(
-    `${process.env.API_HOST}/common/tokenMetadata?chainId=${chainId}&contractAddress=${contractAddress}${tokenIdQuery}`
+    `${process.env.API_HOST}/common/nft/metadata?chainId=${chainId}&contractAddress=${contractAddress}&tokenId=${tokenId}`
   );
+
+  if (!res?.ok) throw new Error("Error fetching token metadata");
   return await res.json();
 };

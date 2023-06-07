@@ -1,10 +1,10 @@
 import Modal from "@/app/common/components/Modal";
-import { getTokenMetadata } from "@/app/services/nft";
-import { Avatar, Box, Stack, useTheme, Text, Tag, Input } from "degen";
-import { useEffect, useState } from "react";
-import { NFTCard, NFTFromAnkr } from "./NFTOwnership";
-import { smartTrim } from "@/app/common/utils/utils";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { smartTrim } from "@/app/common/utils/utils";
+import { NFTFromAlchemy } from "@/app/types";
+import { Avatar, Box, Input, Stack, Tag, Text, useTheme } from "degen";
+import { useState } from "react";
+import { NFTCard } from "./NFTOwnership";
 
 export type NFTDetails = {
   tokenId: string;
@@ -16,7 +16,7 @@ export type NFTDetails = {
 
 type Props = {
   handleClose: () => void;
-  nft: NFTFromAnkr;
+  nft: NFTFromAlchemy;
   onSave: (nftDetails: NFTDetails) => void;
 };
 
@@ -41,13 +41,13 @@ export default function NFTDetailsModal({ handleClose, nft, onSave }: Props) {
         alignItems="flex-start"
         gap="4"
       >
-        {nft.contractType === "ERC721" && (
+        {nft.tokenType === "ERC721" && (
           <Text variant="small" color="textSecondary" weight="semiBold">
             You may optionally add a token ID or token attributes to this NFT
             for a more specific search.
           </Text>
         )}
-        {nft.contractType === "ERC1155" && (
+        {nft.tokenType === "ERC1155" && (
           <Text variant="small" color="textSecondary" weight="semiBold">
             As this is an ERC1155 token, you must add a token ID or token
             attributes to this NFT for a more specific search.
@@ -63,13 +63,20 @@ export default function NFTDetailsModal({ handleClose, nft, onSave }: Props) {
           <Stack align="center">
             <Avatar
               src={
-                nft.imageUrl ||
-                `https://api.dicebear.com/5.x/initials/svg?seed=${nft.name}`
+                nft.media?.[0]?.gateway ||
+                nft.rawMetadata.image ||
+                `https://api.dicebear.com/5.x/initials/svg?seed=${
+                  nft.title || nft.contract.name
+                }`
               }
               label=""
               shape="square"
             />
-            <Text align="center">{smartTrim(nft.name, 30)}</Text>
+            <Text align="center">
+              {nft.tokenType === "ERC721"
+                ? smartTrim(nft.title || nft.contract.name, 30)
+                : smartTrim(nft.contract.name, 30)}
+            </Text>
           </Stack>
         </NFTCard>
         <Stack space="1">
@@ -238,7 +245,7 @@ export default function NFTDetailsModal({ handleClose, nft, onSave }: Props) {
                 !nftDetails.tokenAttributes?.every(
                   (tokenAttribute) => tokenAttribute.key && tokenAttribute.value
                 )) &&
-              nft.contractType === "ERC1155"
+              nft.tokenType === "ERC1155"
             }
             onClick={() => onSave(nftDetails as NFTDetails)}
           >

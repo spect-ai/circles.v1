@@ -140,8 +140,9 @@ const KudosClaimed = ({ lookupTokens, setLookupTokens, initKudos }: Props) => {
           )}
           <Stack direction="horizontal" wrap space="2">
             {!loading &&
+              filteredKudos?.length > 0 &&
               filteredKudos?.map((kudo) => {
-                if (lookupTokens.find((t) => t.contractAddress === kudo.id)) {
+                if (lookupTokens.find((t) => t.tokenId === kudo.id)) {
                   return null;
                 }
 
@@ -157,13 +158,15 @@ const KudosClaimed = ({ lookupTokens, setLookupTokens, initKudos }: Props) => {
                       setLookupTokens([
                         ...lookupTokens,
                         {
-                          contractAddress: kudo.id,
+                          contractAddress:
+                            "0x60576a64851c5b42e8c57e3e4a5cf3cf4eeb2ed6",
                           tokenType: "kudos",
                           metadata: {
                             name: kudo.name,
                             image: kudo.imageUri,
                             symbol: "kudos",
                           },
+                          tokenId: kudo.id,
                           chainId: 137,
                           chainName: "polygon",
                         },

@@ -3,14 +3,14 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import { WrappableTabs } from "@/app/common/components/Tabs";
 import { logError } from "@/app/common/utils/utils";
-import { LookupToken, PoapCredential } from "@/app/types";
+import { LookupToken, NFTFromAlchemy, PoapCredential } from "@/app/types";
 import { Box, IconEth, IconUserGroup, Spinner, Stack, Text } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
 import ERC20Ownership, { TokenFromAnkr } from "./ERC20Ownership";
 import KudosClaimed from "./KudosClaimed";
-import NFTOwnership, { NFTFromAnkr } from "./NFTOwnership";
+import NFTOwnership from "./NFTOwnership";
 import PoapClaimed from "./POAPClaimed";
 import {
   SelectedCredential,
@@ -44,7 +44,7 @@ const AddLookup = ({ handleClose }: Props) => {
       : -1
   );
   const [tokens, setTokens] = useState<TokenFromAnkr[]>([]);
-  const [nfts, setNfts] = useState<NFTFromAnkr[]>([]);
+  const [nfts, setNfts] = useState<NFTFromAlchemy[]>([]);
   const [kudos, setKudos] = useState<Kudos[]>([]);
   const [poaps, setPoaps] = useState<PoapCredential[]>([]);
   const [loading, setLoading] = useState(false);
@@ -96,8 +96,7 @@ const AddLookup = ({ handleClose }: Props) => {
             let tokens = [];
             tokens = await res.json();
             if (tokenType === "erc20") {
-              const assets = tokens.assets;
-              assets.sort((a: TokenFromAnkr, b: TokenFromAnkr) => {
+              tokens.sort((a: TokenFromAnkr, b: TokenFromAnkr) => {
                 // sort by token price in descending order
                 if (parseFloat(a.tokenPrice) >= parseFloat(b.tokenPrice)) {
                   return -1;
@@ -107,7 +106,7 @@ const AddLookup = ({ handleClose }: Props) => {
                 }
                 return 0;
               });
-              setTokens(assets);
+              setTokens(tokens);
             } else if (tokenType === "nft") {
               // only show 1 nft from each collection
               try {
@@ -163,12 +162,11 @@ const AddLookup = ({ handleClose }: Props) => {
                 selectedTab={selectedType}
                 onTabClick={(index) => setSelectedType(index)}
                 tabs={[
-                  "Verified Eth Address",
+                  "General Information",
                   "ERC20 Ownership",
                   "NFT Ownership",
                   "Claimed Mintkudos",
                   "Claimed POAPs",
-                  "Community Memberships",
                 ]}
                 orientation="horizontal"
                 unselectedColor="transparent"
@@ -184,23 +182,42 @@ const AddLookup = ({ handleClose }: Props) => {
             {!loading && (
               <Stack space="1">
                 {selectedType === 0 && (
-                  <Box
-                    display="flex"
-                    flexDirection="row"
-                    gap="2"
-                    justifyContent="flex-start"
-                    alignItems="center"
-                  >
-                    <CheckBox
-                      isChecked={collectEthAddress}
-                      onClick={async () => {
-                        setCollectEthAddress(!collectEthAddress);
-                      }}
-                    />
-                    <Text variant="base">
-                      Collect Verified Ethereum Address
-                    </Text>
-                  </Box>
+                  <Stack space="2">
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      gap="2"
+                      justifyContent="flex-start"
+                      alignItems="center"
+                    >
+                      <CheckBox
+                        isChecked={collectEthAddress}
+                        onClick={async () => {
+                          setCollectEthAddress(!collectEthAddress);
+                        }}
+                      />
+                      <Text variant="base">
+                        Collect Verified Ethereum Address
+                      </Text>
+                    </Box>
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      gap="2"
+                      justifyContent="flex-start"
+                      alignItems="center"
+                    >
+                      <CheckBox
+                        isChecked={collectCommunityMemberships}
+                        onClick={async () => {
+                          setCollectCommunityMemberships(
+                            !collectCommunityMemberships
+                          );
+                        }}
+                      />
+                      <Text variant="base">Collect Community Memberships</Text>
+                    </Box>
+                  </Stack>
                 )}
                 {selectedType === 1 && (
                   <ERC20Ownership
@@ -229,26 +246,6 @@ const AddLookup = ({ handleClose }: Props) => {
                     setLookupTokens={setLookupTokens}
                     initPoap={poaps}
                   />
-                )}
-
-                {selectedType === 5 && (
-                  <Box
-                    display="flex"
-                    flexDirection="row"
-                    gap="2"
-                    justifyContent="flex-start"
-                    alignItems="center"
-                  >
-                    <CheckBox
-                      isChecked={collectCommunityMemberships}
-                      onClick={async () => {
-                        setCollectCommunityMemberships(
-                          !collectCommunityMemberships
-                        );
-                      }}
-                    />
-                    <Text variant="base">Collect Community Memberships</Text>
-                  </Box>
                 )}
               </Stack>
             )}
@@ -366,10 +363,7 @@ const AddLookup = ({ handleClose }: Props) => {
                   ...collection.formMetadata,
                   allowAnonymousResponses: !collectEthAddress,
                   lookup: {
-                    tokens:
-                      collection.formMetadata.allowAnonymousResponses === false
-                        ? []
-                        : lookupTokens,
+                    tokens: lookupTokens,
                     snapshot: 0,
                     verifiedAddress: collectEthAddress,
                     communities: collectCommunityMemberships,

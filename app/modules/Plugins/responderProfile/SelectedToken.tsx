@@ -44,7 +44,7 @@ export function SelectedCredential({
                             lookupTokens.filter(
                               (t) =>
                                 t.contractAddress !== token.contractAddress ||
-                                t.chainName !== token.chainName
+                                t.tokenId !== token.tokenId
                             )
                           );
                         }}

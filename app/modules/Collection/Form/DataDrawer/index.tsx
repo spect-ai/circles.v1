@@ -3,7 +3,11 @@ import Drawer from "@/app/common/components/Drawer";
 import { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import { MemberDetails } from "@/app/types";
+import {
+  LookupToken,
+  LookupTokenWithBalance,
+  MemberDetails,
+} from "@/app/types";
 import {
   Box,
   Button,
@@ -26,6 +30,8 @@ import SnapshotVoting from "./VotingOnSnapshot";
 import Avatar from "@/app/common/components/Avatar";
 import { timeSince, smartTrim } from "@/app/common/utils/utils";
 import DataActivity from "./DataActivity";
+import { TokenFromAnkr } from "@/app/modules/Plugins/responderProfile/ERC20Ownership";
+import { FaRegDotCircle } from "react-icons/fa";
 
 type props = {
   expandedDataSlug: string;
@@ -471,10 +477,19 @@ export default function DataDrawer({
                       </Stack>
                     );
                   })}
+                  {collection.data?.[dataId]?.["anonymous"] === false ||
+                  collection.data?.[dataId]?.["__lookup__"]?.tokens?.length >
+                    0 ||
+                  collection.data?.[dataId]?.["__lookupCommunities__"] ? (
+                    <Text weight="semiBold" variant="large" color="accent">
+                      About the Responder
+                    </Text>
+                  ) : null}
+
                   {collection.data?.[dataId]?.["anonymous"] === false &&
                     collection.dataOwner[data.slug] &&
                     collection.profiles[collection.dataOwner[data.slug]] && (
-                      <Stack space="1">
+                      <Stack space="4">
                         <Text weight="semiBold" variant="large" color="accent">
                           Responder
                         </Text>
@@ -517,16 +532,102 @@ export default function DataDrawer({
                             }
                           </Text>
                         </Stack>
+
+                        <Stack direction="vertical" space="1">
+                          <Text
+                            weight="semiBold"
+                            variant="small"
+                            color="textSecondary"
+                          >
+                            Verified Ethereum Address
+                          </Text>
+                          <Text variant="small">
+                            {
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].ethAddress
+                            }
+                          </Text>
+                        </Stack>
                       </Stack>
                     )}
-                  {collection.data?.[dataId]?.["__lookup__"] && (
+
+                  {collection.data?.[dataId]?.["__lookup__"]?.filter(
+                    (token: any) =>
+                      ["native", "erc20"].includes(
+                        token.tokenType?.toLowerCase()
+                      )
+                  )?.length > 0 && (
                     <Stack space="1">
-                      {/* <Text weight="semiBold" variant="large" color="accent">
-                        On Chain token balance
-                      </Text> */}
+                      <Text
+                        weight="semiBold"
+                        variant="small"
+                        color="textSecondary"
+                      >
+                        ERC20 token and currency balances
+                      </Text>
                       <Stack direction="horizontal" wrap space="2">
-                        {collection.data?.[dataId]?.["__lookup__"].map(
-                          (token: any) => (
+                        {collection.data?.[dataId]?.["__lookup__"]
+                          .filter((token: any) =>
+                            ["native", "erc20"].includes(
+                              token.tokenType?.toLowerCase()
+                            )
+                          )
+                          .map((token: LookupTokenWithBalance) => (
+                            <Box
+                              key={token.contractAddress}
+                              borderWidth="0.375"
+                              borderRadius="2xLarge"
+                              cursor="pointer"
+                              padding="2"
+                              style={{
+                                width: "32%",
+                              }}
+                            >
+                              <Stack align="center" space="2">
+                                {/* <DegenAvatar
+                                  src={
+                                    token.metadata.image ||
+                                    `https://api.dicebear.com/5.x/initials/svg?seed=${token.metadata.id}`
+                                  }
+                                  label=""
+                                  shape="square"
+                                /> */}
+                                <Text align="center">
+                                  {token.metadata.symbol} on {token.chainName}
+                                </Text>
+                                <Text variant="label" align="center">
+                                  Balance:{" "}
+                                  {parseFloat(token.balance).toFixed(2)}
+                                </Text>
+                              </Stack>
+                            </Box>
+                          ))}
+                      </Stack>
+                    </Stack>
+                  )}
+                  {collection.data?.[dataId]?.["__lookup__"]?.filter(
+                    (token: any) =>
+                      ["erc721", "erc1155"].includes(
+                        token.tokenType?.toLowerCase()
+                      )
+                  )?.length > 0 && (
+                    <Stack space="1">
+                      <Text
+                        weight="semiBold"
+                        variant="small"
+                        color="textSecondary"
+                      >
+                        NFTs
+                      </Text>
+                      <Stack direction="horizontal" wrap space="2">
+                        {collection.data?.[dataId]?.["__lookup__"]
+                          .filter((token: any) =>
+                            ["erc721", "erc1155"].includes(
+                              token.tokenType?.toLowerCase()
+                            )
+                          )
+                          .map((token: LookupTokenWithBalance) => (
                             <Box
                               key={token.contractAddress}
                               borderWidth="0.375"
@@ -541,19 +642,168 @@ export default function DataDrawer({
                                 <DegenAvatar
                                   src={
                                     token.metadata.image ||
-                                    `https://api.dicebear.com/5.x/initials/svg?seed=${token.metadata.id}`
+                                    `https://api.dicebear.com/5.x/initials/svg?seed=${token.metadata.name}`
                                   }
                                   label=""
                                   shape="square"
                                 />
                                 <Text align="center">
-                                  {smartTrim(token.metadata.id, 20)}
+                                  {smartTrim(token.metadata.name, 20)}
                                 </Text>
-                                <Text align="center">{token.balance}</Text>
+                                <Text align="center" variant="label">
+                                  Balance: {token.balance}
+                                </Text>
                               </Stack>
                             </Box>
-                          )
-                        )}
+                          ))}
+                      </Stack>
+                    </Stack>
+                  )}
+
+                  {collection.data?.[dataId]?.["__lookup__"]?.filter(
+                    (token: any) => token.tokenType === "kudos"
+                  )?.length > 0 && (
+                    <Stack space="1">
+                      <Text
+                        weight="semiBold"
+                        variant="small"
+                        color="textSecondary"
+                      >
+                        Claimed Mintkudos
+                      </Text>
+                      <Stack direction="horizontal" wrap space="2">
+                        {collection.data?.[dataId]?.["__lookup__"]
+                          .filter((token: any) => token.tokenType === "kudos")
+                          .map((token: LookupToken) => (
+                            <Box
+                              key={token.contractAddress}
+                              borderWidth="0.375"
+                              borderRadius="2xLarge"
+                              cursor="pointer"
+                              padding="2"
+                              style={{
+                                width: "32%",
+                              }}
+                            >
+                              <Stack align="center" space="2">
+                                <DegenAvatar
+                                  src={
+                                    token.metadata.image ||
+                                    `https://api.dicebear.com/5.x/initials/svg?seed=${token.metadata.name}`
+                                  }
+                                  label=""
+                                  shape="square"
+                                />
+                                <Text align="center">
+                                  {smartTrim(token.metadata.name, 20)}
+                                </Text>
+                              </Stack>
+                            </Box>
+                          ))}
+                      </Stack>
+                    </Stack>
+                  )}
+
+                  {collection.data?.[dataId]?.["__lookup__"]?.filter(
+                    (token: any) => token.tokenType === "poap"
+                  )?.length > 0 && (
+                    <Stack space="1">
+                      <Text
+                        weight="semiBold"
+                        variant="small"
+                        color="textSecondary"
+                      >
+                        Claimed POAPs
+                      </Text>
+                      <Stack direction="horizontal" wrap space="2">
+                        {collection.data?.[dataId]?.["__lookup__"]
+                          .filter((token: any) => token.tokenType === "poap")
+                          .map((token: LookupToken) => (
+                            <Box
+                              key={token.contractAddress}
+                              borderWidth="0.375"
+                              borderRadius="2xLarge"
+                              cursor="pointer"
+                              padding="2"
+                              style={{
+                                width: "32%",
+                              }}
+                            >
+                              <Stack align="center" space="2">
+                                <DegenAvatar
+                                  src={
+                                    token.metadata.image ||
+                                    `https://api.dicebear.com/5.x/initials/svg?seed=${token.metadata.name}`
+                                  }
+                                  label=""
+                                  shape="square"
+                                />
+                                <Text align="center">
+                                  {smartTrim(token.metadata.name, 20)}
+                                </Text>
+                              </Stack>
+                            </Box>
+                          ))}
+                      </Stack>
+                    </Stack>
+                  )}
+
+                  {collection.data?.[dataId]?.["__lookupCommunities__"] && (
+                    <Stack space="1">
+                      <Text
+                        weight="semiBold"
+                        variant="small"
+                        color="textSecondary"
+                      >
+                        Community Memberships
+                      </Text>
+                      <Stack direction="horizontal" wrap space="2">
+                        {collection.data?.[dataId]?.[
+                          "__lookupCommunities__"
+                        ].map((guild: any) => (
+                          <Box
+                            key={guild.id}
+                            borderWidth="0.375"
+                            borderRadius="2xLarge"
+                            cursor="pointer"
+                            padding="2"
+                            style={{
+                              width: "45%",
+                            }}
+                          >
+                            <Stack align="center" space="3">
+                              <DegenAvatar
+                                src={
+                                  guild.guildImage ||
+                                  `https://api.dicebear.com/5.x/initials/svg?seed=${guild.id}`
+                                }
+                                label=""
+                                shape="square"
+                              />
+                              <Text align="center">
+                                {smartTrim(guild.guildName, 20)}
+                              </Text>
+                              <Stack
+                                direction="horizontal"
+                                align="center"
+                                space="2"
+                                wrap
+                              >
+                                {guild.roles?.map((role: any) => (
+                                  <Stack
+                                    direction="horizontal"
+                                    key={role.id}
+                                    align="center"
+                                    space="1"
+                                  >
+                                    <FaRegDotCircle color="red" size={8} />
+                                    <Text variant="label">{role.name}</Text>
+                                  </Stack>
+                                ))}
+                              </Stack>
+                            </Stack>
+                          </Box>
+                        ))}
                       </Stack>
                     </Stack>
                   )}

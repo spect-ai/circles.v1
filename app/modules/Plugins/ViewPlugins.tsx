@@ -58,7 +58,11 @@ export const isPluginAdded = (
     case "googleCaptcha":
       return collection.formMetadata.captchaEnabled === true;
     case "responderProfile":
-      return collection.formMetadata.allowAnonymousResponses === false;
+      return (
+        collection.formMetadata.lookup?.verifiedAddress === true ||
+        !!collection.formMetadata.lookup?.tokens?.length ||
+        collection.formMetadata.lookup?.communities === true
+      );
     case "discordRole":
       return !!collection.formMetadata.discordRoleGating?.length;
     case "zealy":
