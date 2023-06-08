@@ -12,7 +12,7 @@ import {
   IconUserGroup,
   IconLightningBolt,
 } from "degen";
-import { CircleType, ProjectType, RetroType, UserType } from "@/app/types";
+import { CircleType, UserType } from "@/app/types";
 import styled from "styled-components";
 import { ProjectOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
@@ -25,14 +25,8 @@ import { useQuery } from "react-query";
 interface Props {
   card: string;
   index: number;
-  projects?: {
-    [key: string]: ProjectType;
-  };
   workstreams?: {
     [key: string]: CircleType;
-  };
-  retros?: {
-    [key: string]: RetroType;
   };
   collections?: {
     [key: string]: {
@@ -65,14 +59,7 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   overflow-x: hidden;
 `;
 
-const Card = ({
-  card,
-  index,
-  projects,
-  workstreams,
-  retros,
-  collections,
-}: Props) => {
+const Card = ({ card, index, workstreams, collections }: Props) => {
   const { mode } = useTheme();
   const router = useRouter();
   const { circle: cId } = router.query;
@@ -96,14 +83,8 @@ const Card = ({
       isDragging={snapshot.isDragging}
       mode={mode}
       onClick={() => {
-        if (projects?.[card]?.slug) {
-          void router.push(`/${cId}/${projects?.[card]?.slug}`);
-        }
         if (workstreams?.[card]?.slug) {
           void router.push(`/${workstreams?.[card]?.slug}`);
-        }
-        if (retros?.[card]?.slug) {
-          void router.push(`/${cId}?retroSlug=${retros?.[card]?.slug}`);
         }
         if (collections?.[card]?.slug) {
           process.env.NODE_ENV === "production" &&
@@ -116,23 +97,6 @@ const Card = ({
         }
       }}
     >
-      {projects?.[card]?.id && (
-        <>
-          <Stack direction={"horizontal"} align="center" justify={"flex-start"}>
-            <Box display={"block"}>
-              <ProjectOutlined style={{ fontSize: "1.1rem" }} />
-            </Box>
-            <Text ellipsis variant="base" weight={"semiBold"}>
-              {projects?.[card]?.name}
-            </Text>
-          </Stack>
-          <Box paddingTop={"2"}>
-            <Text color={"textSecondary"} ellipsis>
-              {projects?.[card]?.description}
-            </Text>
-          </Box>
-        </>
-      )}
       {workstreams?.[card]?.id && (
         <>
           <Stack direction={"horizontal"} align="center" justify={"flex-start"}>
@@ -146,23 +110,6 @@ const Card = ({
           <Box paddingTop={"2"}>
             <Text color={"textSecondary"} ellipsis>
               {workstreams?.[card]?.description}
-            </Text>
-          </Box>
-        </>
-      )}
-      {retros?.[card]?.id && (
-        <>
-          <Stack direction={"horizontal"} align="center" justify={"flex-start"}>
-            <Box display={"block"}>
-              <IconLightningBolt size={"5"} />
-            </Box>
-            <Text ellipsis variant="base" weight={"semiBold"}>
-              {retros?.[card]?.title}
-            </Text>
-          </Stack>
-          <Box paddingTop={"2"}>
-            <Text color={"textSecondary"} ellipsis>
-              {retros?.[card]?.description}
             </Text>
           </Box>
         </>
@@ -184,43 +131,12 @@ const Card = ({
           <Box paddingTop={"2"}></Box>
         </>
       )}
-      {/* <Stack direction={"horizontal"} align="center" justify={"flex-start"}>
-        <Box display={"block"}>
-          {projects?.[card]?.id && (
-            <ProjectOutlined style={{ fontSize: "1.1rem" }} />
-          )}
-          {workstreams?.[card]?.id && <IconUserGroup size={"5"} />}
-          {retros?.[card]?.id && <IconLightningBolt size={"5"} />}
-          {collections?.[card]?.id &&
-            (collections?.[card].viewType ? (
-              getViewIcon(collections?.[card].viewType || "")
-            ) : (
-              <Table size={18} style={{ marginTop: 4 }} />
-            ))}
-        </Box>
-
-        <Text ellipsis variant="base" weight={"semiBold"}>
-          {projects?.[card]?.name ||
-            workstreams?.[card].name ||
-            retros?.[card].title ||
-            collections?.[card].name}
-        </Text>
-      </Stack>
-      <Box paddingTop={"2"}>
-        <Text color={"textSecondary"} ellipsis>
-          {projects?.[card]?.description ||
-            workstreams?.[card].description ||
-            retros?.[card]?.description}
-        </Text>
-      </Box> */}
     </Container>
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const DraggableContentCallback = useCallback(DraggableContent, [
-    projects,
     card,
     workstreams,
-    retros,
     mode,
   ]);
 

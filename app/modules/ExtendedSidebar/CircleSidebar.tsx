@@ -38,7 +38,6 @@ import InviteMemberModal, {
   CustomButton,
 } from "../Circle/ContributorsModal/InviteMembersModal";
 import { BiBot } from "react-icons/bi";
-import TemplateModal from "../Circle/CircleOverview/FolderView/TemplateModal";
 
 export const Container = styled(Box)<{ subH?: string }>`
   @media (max-width: 768px) {
@@ -118,13 +117,6 @@ function CircleSidebar() {
   return (
     <Box paddingY="2" paddingLeft="3" paddingRight="3">
       <AnimatePresence>
-        {templateModalOpen && (
-          <TemplateModal
-            handleClose={() => {
-              setTemplateModalOpen(false);
-            }}
-          />
-        )}
         {isSettingsModalOpen && (
           <SettingsModal
             handleClose={() => {

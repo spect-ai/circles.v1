@@ -68,63 +68,26 @@ export interface ColumnType {
   };
 }
 
-export interface Permissions {
-  createNewCircle: boolean;
-  createNewProject: boolean;
-  createNewRetro: boolean;
-  createNewForm: boolean;
-  endRetroManually: boolean;
-  inviteMembers: boolean;
-  makePayment: boolean;
-  manageCircleSettings: boolean;
-  manageMembers: boolean;
-  managePaymentOptions: boolean;
-  manageProjectSettings: boolean;
-  manageRoles: boolean;
-  distributeCredentials: boolean;
-  manageCardProperties: {
-    Task: boolean;
-    Bounty: boolean;
-  };
-  createNewCard: {
-    Task: boolean;
-    Bounty: boolean;
-  };
-  manageRewards: {
-    Task: boolean;
-    Bounty: boolean;
-  };
-  reviewWork: {
-    Task: boolean;
-    Bounty: boolean;
-  };
-  canClaim: {
-    Task: boolean;
-    Bounty: boolean;
-  };
-}
-
-export type NonCardPermissions =
+export type PermissionString =
   | "createNewCircle"
-  | "createNewProject"
-  | "createNewRetro"
   | "createNewForm"
-  | "endRetroManually"
   | "inviteMembers"
   | "makePayment"
   | "manageCircleSettings"
   | "manageMembers"
   | "managePaymentOptions"
-  | "manageProjectSettings"
-  | "manageRoles"
-  | "distributeCredentials";
+  | "manageRoles";
 
-export type CardPermissions =
-  | "manageCardProperties"
-  | "createNewCard"
-  | "manageRewards"
-  | "reviewWork"
-  | "canClaim";
+export interface Permissions {
+  createNewCircle: boolean;
+  createNewForm: boolean;
+  inviteMembers: boolean;
+  makePayment: boolean;
+  manageCircleSettings: boolean;
+  manageMembers: boolean;
+  managePaymentOptions: boolean;
+  manageRoles: boolean;
+}
 
 export interface DiscordRoleMappingType {
   [roleId: string]: {
@@ -140,55 +103,6 @@ export type GuildxyzToCircleRoles = {
     id: number;
   };
 };
-
-export interface RetroType {
-  circle: string;
-  createdAt: string;
-  creator: string;
-  description: string;
-  duration: number;
-  id: string;
-  members: string[];
-  reward: {
-    chain: Chain;
-    token: Token;
-    value: number;
-  };
-  slug: string;
-  stats: {
-    [userId: string]: {
-      canGive: boolean;
-      canReceive: boolean;
-      owner: string;
-      votesAllocated: number;
-      votesGiven: {
-        [userId: string]: number;
-      };
-      votesRemaining: number;
-      feedbackGiven: {
-        [userId: string]: string;
-      };
-      voted?: boolean;
-    };
-  };
-  feedbackGiven: {
-    [key: string]: string;
-  };
-  feedbackReceived: {
-    [key: string]: string;
-  };
-  strategy: "Quadratic Voting" | "Normal Voting";
-  distribution: {
-    [userId: string]: number;
-  };
-  status: {
-    active: boolean;
-    paid: boolean;
-    archived: boolean;
-  };
-  title: string;
-  updatedtAt: string;
-}
 
 export interface BucketizedCircleType {
   memberOf: CircleType[];
@@ -225,7 +139,6 @@ export interface CircleType {
     };
   };
   slug: string;
-  templates: any[];
   updatedAt: string;
   whitelistedTokens: any;
   memberRoles: {
@@ -265,12 +178,7 @@ export interface CircleType {
   };
   guildxyzId: number;
   guildxyzToCircleRoles: GuildxyzToCircleRoles;
-  questbookWorkspaceUrl?: string;
-  questbookWorkspaceId?: string;
-  grantMilestoneProject?: string;
-  grantApplicantProject?: string;
   paymentAddress: string;
-  grantNotificationChannel?: DiscordChannel;
   automations: AutomationType;
   automationsIndexedByCollection: AutomationsIndexedByCollectionSlugType;
   rootAutomations: RootAutomationsType;
@@ -306,139 +214,7 @@ export type SidebarConfig = {
   showDiscussion?: boolean;
 };
 
-export interface CardType {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  creator: string;
-  reviewer: string[];
-  assignee: string[];
-  project: ProjectType;
-  circle: string;
-  reward: {
-    chain: Chain;
-    token: Token;
-    value: number;
-    transactionHash?: string;
-  };
-  type: "Task" | "Bounty";
-  deadline: string;
-  startDate: string;
-  labels: string[];
-  priority: number;
-  columnId: string;
-  activity: Activity[];
-  status: Status;
-  workThreadOrder: string[];
-  workThreads: {
-    [key: string]: WorkThreadType;
-  };
-  application: {
-    [applicationId: string]: ApplicationType;
-  };
-  applicationOrder: string[];
-  myApplication?: ApplicationType;
-  children: CardType[];
-  parent: CardType;
-  kudosMinted: KudosForType;
-  kudosClaimedBy: KudosClaimedType;
-  eligibleToClaimKudos: KudosClaimedType;
-  unauthorized?: boolean;
-  assignedCircle: string;
-}
-
-export interface ApplicationType {
-  applicationId: string;
-  content: string;
-  createdAt: string;
-  sstatus: "active" | "rejected" | "picked";
-  updatedAt: string;
-  user: string;
-  title: string;
-}
-
-export interface WorkThreadType {
-  workUnitOrder: string[];
-  workUnits: {
-    [key: string]: WorkUnitType;
-  };
-  active: boolean;
-  status: "accepted" | "inRevision" | "inReview" | "draft";
-  threadId: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface WorkUnitType {
-  user: string;
-  content: string;
-  pr: string;
-  workUnitId: string;
-  createdAt: string;
-  updatedAt: string;
-  type: "submission" | "revision" | "feedback";
-  workUnitId: string;
-}
-
-export interface ProjectType {
-  id: string;
-  name: string;
-  cards: {
-    [key: string]: CardType;
-  };
-  columnDetails: {
-    [key: string]: ColumnType;
-  };
-  columnOrder: string[];
-  createdAt: string;
-  updatedAt: string;
-  description: string;
-  archived: boolean;
-  slug: string;
-  private: boolean;
-  defaultView: ViewType;
-  parents: CircleType[];
-  discordDiscussionChannel: {
-    id: string;
-    name: string;
-  };
-  viewOrder?: string[];
-  viewDetails?: {
-    [key: string]: Views;
-  };
-  unauthorized?: boolean;
-}
-
 export type ViewType = "List" | "Board" | "Table";
-
-interface ActionValidation {
-  valid: boolean;
-  reason: string;
-}
-export interface CardActions {
-  addFeedback: ActionValidation;
-  addRevisionInstruction: ActionValidation;
-  applyToBounty: ActionValidation;
-  archive: ActionValidation;
-  canCreateCard: ActionValidation;
-  close: ActionValidation;
-  createDiscordThread: ActionValidation;
-  duplicate: ActionValidation;
-  pay: ActionValidation;
-  submit: ActionValidation;
-  updateAssignee: ActionValidation;
-  updateColumn: ActionValidation;
-  updateDeadline: ActionValidation;
-  updateStartDate: ActionValidation;
-  updateGeneralCardInfo: ActionValidation;
-  claim: ActionValidation;
-}
-
-export interface ProjectCardActionsType {
-  [cardId: string]: CardActions;
-}
 
 export interface Chain {
   chainId: string;
@@ -470,18 +246,6 @@ export type NetworkInfo = {
   surveyHubAddress: string;
   chainlinkVRFConsumerAddress: string;
 };
-
-export interface Template {
-  _id: string;
-  name: string;
-  type: string;
-  data: {
-    columnOrder: string[];
-    columnDetails: {
-      [key: string]: Column;
-    };
-  };
-}
 
 export interface MemberDetails {
   memberDetails: {
@@ -550,37 +314,6 @@ export interface CardDetails {
   };
 }
 
-export type Filter = {
-  assignee: string[];
-  reviewer: string[];
-  column: string[];
-  label: string[];
-  status: string[];
-  title: string;
-  type: string[];
-  priority: string[];
-  deadline: string;
-  assignedCircle: string[];
-};
-
-export type CardsType = {
-  [key: string]: CardType;
-};
-
-export type Views = {
-  type: ViewType;
-  hidden: boolean;
-  filters: Filter;
-  slug?: string;
-  name: string;
-};
-
-export type Status = {
-  active: boolean;
-  paid: boolean;
-  archived: boolean;
-};
-
 export type Notification = {
   content: string;
   avatar: string;
@@ -595,16 +328,6 @@ export type SafeAddresses = {
 
 export type ContentPlaceholder = {
   [key: string]: string;
-};
-
-export type AdvancedFilters = {
-  inputTitle: string;
-  groupBy: "Status" | "Assignee";
-  sortBy: "none" | "Priority" | "Deadline";
-  order: "asc" | "des";
-  show: {
-    subTasks: boolean;
-  };
 };
 
 export type KudosAttribute = {

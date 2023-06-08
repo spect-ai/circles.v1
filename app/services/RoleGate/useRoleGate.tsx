@@ -1,10 +1,8 @@
 import { useLocalCollection } from "@/app/modules/Collection/Context/LocalCollectionContext";
 import {
-  CardPermissions,
-  CardType,
   CircleType,
-  NonCardPermissions,
   CollectionPermissions,
+  PermissionString,
 } from "@/app/types";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
@@ -21,44 +19,19 @@ export default function useRoleGate() {
 
   const { localCollection: collection } = useLocalCollection();
 
-  const canDo = (roleAction: NonCardPermissions | CardPermissions) => {
+  const canDo = (roleAction: PermissionString) => {
     if (!connectedUser || !circle?.memberRoles) {
       return false;
     }
     const userRoles = circle?.memberRoles[connectedUser];
     if (userRoles) {
       for (const role of userRoles) {
-        if (
-          circle.roles[role].permissions[roleAction as NonCardPermissions] ===
-            true ||
-          circle.roles[role].permissions[roleAction as CardPermissions]
-            ?.Task === true
-        ) {
+        if (circle.roles[role].permissions[roleAction] === true) {
           return true;
         }
       }
     }
     return false;
-  };
-
-  const canMoveCard = (projectCard: CardType) => {
-    if (!connectedUser) {
-      return false;
-    }
-    const userRoles = circle?.memberRoles[connectedUser];
-    if (userRoles) {
-      for (const role of userRoles) {
-        if (circle.roles[role].permissions.manageCardProperties) {
-          return true;
-        }
-      }
-    }
-
-    return (
-      projectCard?.creator === connectedUser ||
-      projectCard.reviewer.includes(connectedUser) ||
-      projectCard.assignee.includes(connectedUser)
-    );
   };
 
   const formActions = (permission: CollectionPermissions) => {
@@ -132,7 +105,6 @@ export default function useRoleGate() {
 
   return {
     canDo,
-    canMoveCard,
     formActions,
   };
 }

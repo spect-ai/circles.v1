@@ -107,7 +107,6 @@ export default function CircleDashboard() {
         <Stack space="1">
           <FolderView
             filteredCollections={filteredCollections}
-            filteredProjects={filteredProjects}
             filteredWorkstreams={filteredWorkstreams}
           />
         </Stack>
