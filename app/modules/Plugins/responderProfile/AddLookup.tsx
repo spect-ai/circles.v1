@@ -60,78 +60,75 @@ const AddLookup = ({ handleClose }: Props) => {
 
   const { circle } = useCircle();
 
-  useEffect(() => {
-    if (selectedType > -1 && selectedType < 5) {
-      (async () => {
-        const tokenType = [
-          "ethAddress",
-          "erc20",
-          "nft",
-          "kudos",
-          "poaps",
-          "memberships",
-        ][selectedType];
+  const updateLocalTokens = async (selectedType: number) => {
+    if (selectedType > 0 && selectedType < 5) {
+      setLoading(true);
 
-        if (tokenType === "erc20" && tokens.length > 0) {
-          return;
-        } else if (tokenType === "nft" && nfts.length > 0) {
-          return;
-        } else if (tokenType === "kudos" && kudos.length > 0) {
-          return;
-        } else if (tokenType === "poaps" && poaps.length > 0) {
-          return;
-        } else if (["ethAddress", "memberships"].includes(tokenType)) {
-          return;
+      const tokenType = [
+        "ethAddress",
+        "erc20",
+        "nft",
+        "kudos",
+        "poaps",
+        "memberships",
+      ][selectedType];
+
+      if (
+        (tokenType === "erc20" && tokens.length > 0) ||
+        (tokenType === "nft" && nfts.length > 0) ||
+        (tokenType === "kudos" && kudos.length > 0) ||
+        (tokenType === "poaps" && poaps.length > 0) ||
+        ["ethAddress", "memberships"].includes(tokenType)
+      ) {
+        setLoading(false);
+        return;
+      }
+
+      fetch(
+        `${process.env.API_HOST}/user/v1/tokenBalances?tokenType=${tokenType}&circleId=${circle?.id}`,
+        {
+          credentials: "include",
         }
-
-        setLoading(true);
-
-        fetch(
-          `${process.env.API_HOST}/user/v1/tokenBalances?tokenType=${tokenType}&circleId=${circle?.id}`,
-          {
-            credentials: "include",
-          }
-        )
-          .then(async (res) => {
-            let tokens = [];
-            tokens = await res.json();
-            if (tokenType === "erc20") {
-              tokens.sort((a: TokenFromAnkr, b: TokenFromAnkr) => {
-                // sort by token price in descending order
-                if (parseFloat(a.tokenPrice) >= parseFloat(b.tokenPrice)) {
-                  return -1;
-                }
-                if (parseFloat(a.tokenPrice) < parseFloat(b.tokenPrice)) {
-                  return 1;
-                }
-                return 0;
-              });
-              setTokens(tokens);
-            } else if (tokenType === "nft") {
-              // only show 1 nft from each collection
-              try {
-                setNfts(tokens);
-                console.log({ tokens });
-              } catch (err) {
-                setNfts([]);
-                console.log(err);
+      )
+        .then(async (res) => {
+          let tokens = [];
+          tokens = await res.json();
+          if (tokenType === "erc20") {
+            tokens.sort((a: TokenFromAnkr, b: TokenFromAnkr) => {
+              // sort by token price in descending order
+              if (parseFloat(a.tokenPrice) >= parseFloat(b.tokenPrice)) {
+                return -1;
               }
-            } else if (tokenType === "kudos") {
-              setKudos(tokens);
-            } else if (tokenType === "poaps") {
-              setPoaps(tokens);
+              if (parseFloat(a.tokenPrice) < parseFloat(b.tokenPrice)) {
+                return 1;
+              }
+              return 0;
+            });
+            setTokens(tokens);
+          } else if (tokenType === "nft") {
+            // only show 1 nft from each collection
+            try {
+              setNfts(tokens);
+              console.log({ tokens });
+            } catch (err) {
+              setNfts([]);
+              console.log(err);
             }
-            setLoading(false);
-            //
-          })
-          .catch((err) => {
-            console.log(err);
-            logError("Error fetching tokens");
-            setLoading(false);
-          });
-      })();
+          } else if (tokenType === "kudos") {
+            setKudos(tokens);
+          } else if (tokenType === "poaps") {
+            setPoaps(tokens);
+          }
+          setLoading(false);
+          //
+        })
+        .catch((err) => {
+          console.log(err);
+          logError("Error fetching tokens");
+          setLoading(false);
+        });
     }
-  }, [selectedType]);
+  };
 
   return (
     <Modal size="large" title="Learn about responder" handleClose={handleClose}>
@@ -160,7 +157,10 @@ const AddLookup = ({ handleClose }: Props) => {
               </Text>
               <WrappableTabs
                 selectedTab={selectedType}
-                onTabClick={(index) => setSelectedType(index)}
+                onTabClick={(index) => {
+                  setSelectedType(index);
+                  updateLocalTokens(index);
+                }}
                 tabs={[
                   "General Information",
                   "ERC20 Ownership",
@@ -226,7 +226,7 @@ const AddLookup = ({ handleClose }: Props) => {
                     initTokens={tokens}
                   />
                 )}
-                {selectedType === 2 && !loading && (
+                {selectedType === 2 && (
                   <NFTOwnership
                     setLookupTokens={setLookupTokens}
                     lookupTokens={lookupTokens}
