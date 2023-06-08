@@ -18,12 +18,6 @@ export function Notifications() {
     useLocalCollection();
   const [notifOnNewResponses, setNotifOnNewResponses] = useState(false);
 
-  console.log({
-    circleRolesToNotifyUponNewResponse,
-    circleRoles,
-    notifOnNewResponses,
-  });
-
   useEffect(() => {
     console.log("here");
     if (collection) {

@@ -39,11 +39,6 @@ const Analytics = (props: Props) => {
   const [analyticsViewId, setAnalyticsViewId] =
     useState<"Insights" | "ResponseCharting">("Insights");
 
-  const router = useRouter();
-  const { circle: cId, collection: colId } = router.query;
-
-  useEffect(() => {}, []);
-
   return (
     <Box>
       <ViewTabsContainer

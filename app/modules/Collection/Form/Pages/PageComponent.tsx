@@ -33,8 +33,11 @@ export const PageComponent = ({
   setActivePage,
   setPropertyId,
 }: Props) => {
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+  const {
+    localCollection: collection,
+    updateCollection,
+    setCurrentPage,
+  } = useLocalCollection();
   const { mode } = useTheme();
   const [pageName, setPageName] = useState(name);
 
@@ -130,6 +133,7 @@ export const PageComponent = ({
                         ...collection,
                         ...update,
                       });
+                      setCurrentPage(newPageOrder[pageIndex - 1]);
                       updateFormCollection(collection.id, update);
                     }}
                   >
