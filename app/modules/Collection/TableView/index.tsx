@@ -674,6 +674,7 @@ export default function TableView() {
                       csvData["Data Slug"] = value;
                       return;
                     }
+
                     if (key === "__lookup__") {
                       value = value.map((v: any) => ({
                         contractAddress: undefined,
@@ -686,6 +687,18 @@ export default function TableView() {
                       csvData["Tokens Lookup"] = JSON.stringify(value);
                       return;
                     }
+                    if (key === "__lookupCommunities__") {
+                      value = value.map((v: any) => ({
+                        guildName: v.guildName,
+                        guildId: v.guildId,
+                        guildRoles: v.roles.map((r: any) => ({
+                          name: r.name,
+                          id: r.id,
+                        })),
+                      }));
+                      csvData["Community Lookup"] = JSON.stringify(value);
+                      return;
+                    }
                     if (key === "anonymous") {
                       const value =
                         collection?.profiles?.[collection?.dataOwner[da.slug]];
@@ -696,7 +709,22 @@ export default function TableView() {
                       return;
                     }
                     if (!collection.properties[key]) return;
-                    if (collection.properties[key].type === "reward") {
+                    if (collection.properties[key].type === "discord") {
+                      csvData[propertyName] = JSON.stringify({
+                        username: `${value?.username}#${value?.discriminator}`,
+                        id: value?.id,
+                      });
+                    } else if (collection.properties[key].type === "github") {
+                      csvData[propertyName] = JSON.stringify({
+                        username: value?.login,
+                        id: value?.id,
+                      });
+                    } else if (collection.properties[key].type === "telegram") {
+                      csvData[propertyName] = JSON.stringify({
+                        username: value?.username,
+                        id: value?.id,
+                      });
+                    } else if (collection.properties[key].type === "reward") {
                       csvData[propertyName] = JSON.stringify({
                         chain: value?.chain.label,
                         token: value?.token.label,
