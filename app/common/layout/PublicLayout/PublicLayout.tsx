@@ -124,13 +124,10 @@ function PublicLayout(props: PublicLayoutProps) {
   const router = useRouter();
   const { inviteCode, circle } = router.query;
 
-  const onboard =
-    currentUser?.email?.length == 0 && myCircles?.length == 0 && !inviteCode;
+  const onboard = !currentUser?.email && myCircles?.length == 0 && !inviteCode;
 
   useEffect(() => {
     void fetchCircles();
-    // void fetchNotifications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, connectedUser, circle]);
 
   useEffect(() => {

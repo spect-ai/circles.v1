@@ -38,19 +38,23 @@ export default function useProfileUpdate() {
         credentials: "include",
       });
       // console.log({ data: await res.json() });
+      const data = await res.json();
 
       if (res.ok) {
-        const data = await res.json();
         queryClient.setQueryData("getMyUser", data);
         setUserData(data);
 
         return true;
-      }
+      } else throw new Error(data?.message);
     } catch (error) {
+      console.log({ error });
       const toast = await (await import("react-toastify")).toast;
-      toast.error(`Error updating profile ${error}`, {
-        theme: "dark",
-      });
+      toast.error(
+        `Error updating profile ${(error as any)?.message || error}`,
+        {
+          theme: "dark",
+        }
+      );
       return false;
     }
   };

@@ -1,5 +1,4 @@
 import { Stack, IconTokens, Heading, Text, Box, Button } from "degen";
-import { NameInput } from "./BasicProfile";
 import { useState } from "react";
 import { RocketOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "react-query";
@@ -10,6 +9,7 @@ import { joinCirclesFromGuildxyz } from "@/app/services/JoinCircle";
 import { useRouter } from "next/router";
 import { createDefaultProject } from "@/app/services/Defaults";
 import { MdGroupWork } from "react-icons/md";
+import styled from "styled-components";
 
 type CreateCircleDto = {
   name: string;
@@ -122,25 +122,23 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
         >
           Let's goo
         </Button>
-        {/* <Box
-          width={"3/4"}
-          style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-        >
-          <Text align={"center"}>
-            Not here to manage your DAO? Set up your profile instead to receive
-            notifications about new opportunities being created on Spect.
-          </Text>
-        </Box> */}
-        {/* <PrimaryButton
-          onClick={async () => {
-            setStep(3);
-            setOnboardType("profile");
-            await joinCirclesFromGuildxyz(currentUser?.ethAddress as string);
-          }}
-        >
-          Set up Profile
-        </PrimaryButton> */}
       </Stack>
     </Box>
   );
 }
+
+export const NameInput = styled.input`
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.8rem;
+  caret-color: rgb(191, 90, 242);
+  color: rgb(191, 90, 242);
+  font-weight: 600;
+  text-align: center;
+`;

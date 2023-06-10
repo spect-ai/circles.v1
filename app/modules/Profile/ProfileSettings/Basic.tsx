@@ -45,24 +45,22 @@ export function BasicInfo() {
             Profile Picture
           </Text>
         </Box>
-        {!loading && (
-          <MediaPicker
-            compact
-            defaultValue={{
-              type: "image/png",
-              url: avatar,
-            }}
-            label="Choose or drag and drop media"
-            uploaded={!!avatar}
-            onChange={uploadFile}
-            uploading={uploading}
-            onReset={() => {
-              setAvatar("");
-              setIsDirty(true);
-            }}
-            maxSize={10}
-          />
-        )}
+        <MediaPicker
+          compact
+          defaultValue={{
+            type: "image/png",
+            url: avatar,
+          }}
+          label="Choose or drag and drop media"
+          uploaded={!!avatar}
+          onChange={uploadFile}
+          uploading={uploading}
+          onReset={() => {
+            setAvatar("");
+            setIsDirty(true);
+          }}
+          maxSize={10}
+        />
       </Stack>
       <Stack space="1">
         <Input

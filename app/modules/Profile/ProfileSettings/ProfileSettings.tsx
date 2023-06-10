@@ -29,6 +29,7 @@ interface Props {
 export default function ProfileSettings({ setIsOpen, openTab }: Props) {
   const [tab, setTab] = useState(openTab || 0);
   const onTabClick = (id: number) => setTab(id);
+  const [saving, setSaving] = useState(false);
 
   const {
     loading,
@@ -101,11 +102,17 @@ export default function ProfileSettings({ setIsOpen, openTab }: Props) {
           disabled={
             !isDirty || uploading || !username || usernameError.length > 0
           }
-          loading={loading}
+          loading={saving}
           icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
-          onClick={() => {
+          onClick={async () => {
+            setSaving(true);
+            const saved = await onSaveProfile();
+            if (!saved) {
+              setSaving(false);
+              return;
+            }
+            setSaving(false);
             handleClose();
-            onSaveProfile();
             setIsDirty(false);
           }}
         >
