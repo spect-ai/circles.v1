@@ -1,33 +1,33 @@
+import { logError } from "@/app/common/utils/utils";
+import { StampWithScoreAndVerification } from "@/app/types";
+
 export const getAllCredentials = async () => {
   return await (await fetch(`${process.env.API_HOST}/credentials/v1/`)).json();
 };
 
-export const getCredentialsByAddressAndIssuer = async (
-  address: string,
-  issuer: string
-) => {
-  console.log({ address, issuer });
-  return await (
-    await fetch(
-      `${process.env.API_HOST}/credentials/v1/credentialsByAddressAndIssuer?ethAddress=${address}&issuer=${issuer}`
-    )
-  ).json();
-};
-
-export const getPassportScoreAndCredentials = async (
-  address: string,
-  scores: any
-) => {
-  return await (
-    await fetch(
-      `${process.env.API_HOST}/credentials/v1/${address}/passportScoreAndStamps`,
-      {
-        method: "POST",
-        body: JSON.stringify({ scores }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
-  ).json();
+export const getPassportScoreAndStamps = async (
+  formSlug: string
+): Promise<{
+  stamps: StampWithScoreAndVerification[];
+  score: number;
+}> => {
+  const res = await fetch(
+    `${process.env.API_HOST}/collection/v2/form/slug/${formSlug}/gitcoinPassportScoreAndStamps`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+  if (res.status === 404) {
+    logError(`Error fetching passport score and stamps: Not found`);
+    throw new Error("Not found");
+  }
+  const data = await res.json();
+  if (!res.ok) {
+    logError(`Error fetching passport score and stamps: ${data.message}`);
+    throw new Error(data.message);
+  }
+  return data;
 };

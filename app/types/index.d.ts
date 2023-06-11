@@ -866,7 +866,18 @@ export type Stamp = {
   defaultScore: number;
   stampName: string;
   stampDescription: string;
-  score?: number;
+};
+
+export type StampWithScore = Stamp & {
+  score: number;
+};
+
+export type StampWithVerification = Stamp & {
+  verified: boolean;
+};
+
+export type StampWithScoreAndVerification = StampWithScore & {
+  verified: boolean;
 };
 
 export interface MappedItem<T> {
