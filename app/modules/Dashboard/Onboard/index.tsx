@@ -5,13 +5,26 @@ import { useState } from "react";
 import { CreateCircle } from "./CreateCircle";
 import useConnectDiscord from "@/app/services/Discord/useConnectDiscord";
 import { ToastContainer } from "react-toastify";
+import { useQuery } from "react-query";
+import { UserType } from "@/app/types";
+import { AddUsername } from "./AddUsername";
 
-const Onboard = () => {
+const Onboard = ({
+  type,
+  setType,
+}: {
+  type: "self" | "invite";
+  setType: (type: "self" | "invite" | "none") => void;
+}) => {
   useConnectDiscord();
-  const [onboardType, setOnboardType] =
-    useState<"circle" | "profile">("circle");
-  const [step, setStep] = useState(0);
   const { mode } = useTheme();
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
+  const [onboardType, setOnboardType] = useState<
+    "circle" | "profile" | "username"
+  >(currentUser?.username?.startsWith("fren") ? "username" : "circle");
+
   return (
     <Box position={"relative"} display="flex" width={"full"}>
       <ToastContainer
@@ -43,9 +56,18 @@ const Onboard = () => {
           zIndex: "1",
         }}
       >
-        {onboardType == "circle" && step == 0 && (
-          <CreateCircle setStep={setStep} setOnboardType={setOnboardType} />
+        {onboardType == "username" && (
+          <AddUsername
+            setOnboardType={() => {
+              if (type === "invite") {
+                setType("none");
+              } else {
+                setOnboardType("circle");
+              }
+            }}
+          />
         )}
+        {onboardType == "circle" && type === "self" && <CreateCircle />}
       </Box>
     </Box>
   );

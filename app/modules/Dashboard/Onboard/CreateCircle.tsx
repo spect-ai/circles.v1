@@ -1,4 +1,12 @@
-import { Stack, IconTokens, Heading, Text, Box, Button } from "degen";
+import {
+  Stack,
+  IconTokens,
+  Heading,
+  Text,
+  Box,
+  Button,
+  IconUserGroup,
+} from "degen";
 import { useState } from "react";
 import { RocketOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "react-query";
@@ -19,12 +27,9 @@ type CreateCircleDto = {
   gradient: string;
 };
 
-interface Props {
-  setStep: (step: number) => void;
-  setOnboardType: (type: "profile" | "circle") => void;
-}
+interface Props {}
 
-export function CreateCircle({ setStep, setOnboardType }: Props) {
+export function CreateCircle({}: Props) {
   const router = useRouter();
   const [circleName, setCircleName] = useState("");
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -55,24 +60,29 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
       }}
     >
       <Stack align="center">
-        {/* <IconTokens color={"accent"} size="8" /> */}
-        <Heading align="center">
-          Let&apos;s create a space for you & your frens
-        </Heading>
         <Text color="accent">
-          <MdGroupWork size="40" />
+          <Heading>👋</Heading>
         </Text>
+        <Stack direction="horizontal" align="center" space="2">
+          <Text variant="extraLarge">Gm </Text>
+          <Text variant="extraLarge" color="accent">
+            {currentUser?.username ? ` ${currentUser.username}` : ""}!
+          </Text>
+        </Stack>
+        <Text variant="extraLarge">
+          Let&apos;s create a space for you & your frens
+        </Text>
+
         <Box
           width={"3/4"}
+          marginTop="8"
           style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
         >
-          <Text align={"center"}>
-            Give your space a name and we&apos;ll get you started
-          </Text>
+          <Text align={"center"}>Give your space a name</Text>
         </Box>
 
         <NameInput
-          placeholder="My Space"
+          placeholder="Community Builders"
           value={circleName}
           onChange={(e) => {
             setCircleName(e.target.value);
