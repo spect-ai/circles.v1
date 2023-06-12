@@ -83,6 +83,8 @@ export default function DataDrawer({
     dataId && (await router.push(`/${cId}/r/${collection.slug}`));
   };
 
+  if (!dataId || !data) return null;
+
   return (
     <Drawer
       handleClose={handleClose}
@@ -490,10 +492,6 @@ export default function DataDrawer({
                     collection.dataOwner[data.slug] &&
                     collection.profiles[collection.dataOwner[data.slug]] && (
                       <Stack space="4">
-                        <Text weight="semiBold" variant="large" color="accent">
-                          Responder
-                        </Text>
-
                         <Stack direction="horizontal" align="center" space="2">
                           <Avatar
                             src={
