@@ -27,9 +27,11 @@ type CreateCircleDto = {
   gradient: string;
 };
 
-interface Props {}
+interface Props {
+  setOnboardType: () => void;
+}
 
-export function CreateCircle({}: Props) {
+export function CreateCircle({ setOnboardType }: Props) {
   const router = useRouter();
   const [circleName, setCircleName] = useState("");
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -116,6 +118,8 @@ export function CreateCircle({}: Props) {
                       user: currentUser?.username,
                     });
                   console.log("redirecting to circle");
+                  setOnboardType();
+
                   void router.push(`/${resJson.slug}`);
                 }
                 setLoading(false);

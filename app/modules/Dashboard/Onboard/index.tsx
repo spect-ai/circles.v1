@@ -13,7 +13,7 @@ const Onboard = ({
   type,
   setType,
 }: {
-  type: "self" | "invite";
+  type: "self" | "invite" | null;
   setType: (type: "self" | "invite" | "none") => void;
 }) => {
   useConnectDiscord();
@@ -23,7 +23,7 @@ const Onboard = ({
   });
   const [onboardType, setOnboardType] = useState<
     "circle" | "profile" | "username"
-  >(currentUser?.username?.startsWith("fren") ? "username" : "circle");
+  >(currentUser?.firstLogin ? "username" : "circle");
 
   return (
     <Box position={"relative"} display="flex" width={"full"}>
@@ -67,7 +67,13 @@ const Onboard = ({
             }}
           />
         )}
-        {onboardType == "circle" && type === "self" && <CreateCircle />}
+        {onboardType == "circle" && (
+          <CreateCircle
+            setOnboardType={() => {
+              setType("none");
+            }}
+          />
+        )}
       </Box>
     </Box>
   );

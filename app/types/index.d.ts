@@ -31,6 +31,7 @@ export interface UserType {
   collections: CollectionType;
   collectionsSubmittedTo: CollectionType[];
   apiKeys: string[];
+  firstLogin?: boolean;
 }
 
 export interface Payment {

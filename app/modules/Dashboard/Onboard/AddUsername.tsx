@@ -8,7 +8,7 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 
 interface Props {
-  setOnboardType: (type: "circle" | "profile" | "username") => void;
+  setOnboardType: () => void;
 }
 
 export function AddUsername({ setOnboardType }: Props) {
@@ -70,7 +70,7 @@ export function AddUsername({ setOnboardType }: Props) {
                 username: username,
               });
 
-              setOnboardType("circle");
+              setOnboardType();
             } catch (e) {
               console.log({ e });
               setUsernameError((e as any).message || e);
