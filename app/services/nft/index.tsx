@@ -57,6 +57,9 @@ export const getTokenMetadata = async (
     `${process.env.API_HOST}/common/nft/metadata?chainId=${chainId}&contractAddress=${contractAddress}&tokenId=${tokenId}`
   );
 
-  if (!res?.ok) throw new Error("Error fetching token metadata");
+  if (!res?.ok)
+    throw new Error(
+      `Error fetching token metadata with error ${await res.json()}`
+    );
   return await res.json();
 };

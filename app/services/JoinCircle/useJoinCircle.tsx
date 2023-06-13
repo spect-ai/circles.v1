@@ -13,7 +13,6 @@ export default function useJoinCircle() {
 
   useEffect(() => {
     if (inviteCode && connectedUser) {
-      console.log({ inviteCode, circleId });
       const asyncJoin = async () => {
         const res = await joinCircleFromInvite(
           circleId as string,

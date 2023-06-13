@@ -237,7 +237,7 @@ const NFTOwnership = ({ lookupTokens, setLookupTokens, initNfts }: Props) => {
           </Stack>
         )}
 
-        {!loading && filteredNFTs?.length === 0 && (
+        {!loading && nfts && filteredNFTs?.length === 0 && (
           <Box
             display="flex"
             justifyContent="flex-start"
@@ -254,7 +254,7 @@ const NFTOwnership = ({ lookupTokens, setLookupTokens, initNfts }: Props) => {
               }}
             >
               <Text variant="small" color="accent">
-                View Support Networks
+                View Supported Networks
               </Text>
             </Box>
           </Box>

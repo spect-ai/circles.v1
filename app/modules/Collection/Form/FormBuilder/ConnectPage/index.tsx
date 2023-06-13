@@ -1,22 +1,22 @@
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
+import Editor from "@/app/common/components/Editor";
 import Logout from "@/app/common/components/LogoutButton";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { StampCard } from "@/app/modules/PublicForm";
 import { NameInput, getUser } from "@/app/modules/PublicForm/FormFields";
 import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import { getForm } from "@/app/services/Collection";
-import {
-  getAllCredentials,
-  getPassportScoreAndCredentials,
-} from "@/app/services/Credentials/AggregatedCredentials";
+import { getPassportScoreAndStamps } from "@/app/services/Credentials/AggregatedCredentials";
 import { connectedUserAtom } from "@/app/state/global";
 import {
   CollectionType,
   FormType,
   GuildRole,
-  Stamp,
+  StampWithScoreAndVerification,
+  StampWithVerification,
   UserType,
 } from "@/app/types";
+import styled from "@emotion/styled";
 import { Avatar, Box, Button, Stack, Tag, Text, useTheme } from "degen";
 import { motion } from "framer-motion";
 import { useAtom } from "jotai";
@@ -25,8 +25,6 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import ProfileInfo from "./ProfileInfo";
-import Editor from "@/app/common/components/Editor";
-import styled from "@emotion/styled";
 
 type Props = {
   form: CollectionType;
@@ -36,9 +34,8 @@ type Props = {
 };
 
 const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
-  const [hasStamps, setHasStamps] = useState({} as any);
   const [currentScore, setCurrentScore] = useState(0);
-  const [stamps, setStamps] = useState([] as Stamp[]);
+  const [stamps, setStamps] = useState([] as StampWithScoreAndVerification[]);
 
   const [signedIn, setSignedIn] = useState(false);
   const { mode } = useTheme();
@@ -51,26 +48,6 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
     enabled: false,
   });
   const pageNumber = form.formMetadata.pageOrder.indexOf(currentPage);
-
-  const addStamps = async (form: FormType) => {
-    const stamps = await getAllCredentials();
-    const stampsWithScore = [];
-    if (
-      form.formMetadata.sybilProtectionEnabled &&
-      form.formMetadata.sybilProtectionScores
-    ) {
-      for (const stamp of stamps) {
-        if (form.formMetadata.sybilProtectionScores[stamp.id]) {
-          const stampWithScore = {
-            ...stamp,
-            score: form.formMetadata.sybilProtectionScores[stamp.id],
-          };
-          stampsWithScore.push(stampWithScore);
-        }
-      }
-      setStamps(stampsWithScore.sort((a, b) => b.score - a.score));
-    }
-  };
 
   useEffect(() => {
     (async () => {
@@ -90,7 +67,6 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
       }
       const res: FormType = await getForm(formId as string);
       setForm(res);
-      addStamps(res);
     })();
   }, [connectedUser]);
 
@@ -103,13 +79,14 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
       currentUser
     ) {
       void (async () => {
-        const res = await getPassportScoreAndCredentials(
-          currentUser?.ethAddress,
-          form.formMetadata.sybilProtectionScores
-        );
-        console.log({ res });
-        setCurrentScore(res?.score);
-        setHasStamps(res?.mappedStampsWithCredentials);
+        try {
+          const res = await getPassportScoreAndStamps(form.slug);
+          console.log({ res });
+          setCurrentScore(res?.score);
+          setStamps(res.stamps?.sort((a, b) => b.score - a.score));
+        } catch (e) {
+          console.log({ e });
+        }
       })();
     }
   }, [form, currentUser]);
@@ -237,54 +214,57 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
                 This form is sybil protected. You must have a minimum score of
                 100% to fill this form. Please check the assigned scores below.
               </Text>
-              <Text color="red" font="mono">
+              <Text color={currentScore >= 100 ? "green" : "red"} font="mono">
                 Your current score: {currentScore}%
               </Text>
               <StampScrollContainer>
-                {stamps?.map((stamp: Stamp, index: number) => {
-                  return (
-                    <StampCard mode={mode} key={index}>
-                      <Box
-                        display="flex"
-                        flexDirection="row"
-                        width="full"
-                        alignItems="center"
-                        gap="4"
-                      >
+                {stamps?.map(
+                  (stamp: StampWithScoreAndVerification, index: number) => {
+                    console.log({ stamp });
+                    return (
+                      <StampCard mode={mode} key={index}>
                         <Box
                           display="flex"
                           flexDirection="row"
-                          alignItems="center"
                           width="full"
-                          paddingRight="4"
+                          alignItems="center"
+                          gap="4"
                         >
                           <Box
-                            width="8"
-                            height="8"
+                            display="flex"
                             flexDirection="row"
-                            justifyContent="flex-start"
                             alignItems="center"
-                            marginRight="4"
+                            width="full"
+                            paddingRight="4"
                           >
-                            {mode === "dark"
-                              ? PassportStampIcons[stamp.providerName]
-                              : PassportStampIconsLightMode[stamp.providerName]}
-                          </Box>
-                          <Box>
-                            <Text as="h1">{stamp.stampName}</Text>
-                            <Text variant="small">
-                              {stamp.stampDescription}
-                            </Text>
-                          </Box>
-                        </Box>{" "}
-                        {hasStamps[stamp.id] && (
-                          <Tag tone="green">Verified</Tag>
-                        )}
-                        <Text variant="large">{stamp.score}%</Text>
-                      </Box>
-                    </StampCard>
-                  );
-                })}
+                            <Box
+                              width="8"
+                              height="8"
+                              flexDirection="row"
+                              justifyContent="flex-start"
+                              alignItems="center"
+                              marginRight="4"
+                            >
+                              {mode === "dark"
+                                ? PassportStampIcons[stamp.providerName]
+                                : PassportStampIconsLightMode[
+                                    stamp.providerName
+                                  ]}
+                            </Box>
+                            <Box>
+                              <Text as="h1">{stamp.stampName}</Text>
+                              <Text variant="small">
+                                {stamp.stampDescription}
+                              </Text>
+                            </Box>
+                          </Box>{" "}
+                          {stamp.verified && <Tag tone="green">Verified</Tag>}
+                          <Text variant="large">{stamp.score}%</Text>
+                        </Box>
+                      </StampCard>
+                    );
+                  }
+                )}
               </StampScrollContainer>
               <Box display="flex" flexDirection="row" gap="4">
                 <Button

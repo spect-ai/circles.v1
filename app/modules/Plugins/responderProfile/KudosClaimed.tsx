@@ -86,7 +86,7 @@ const KudosClaimed = ({ lookupTokens, setLookupTokens, initKudos }: Props) => {
                   if (!isIntegerString(searchValue))
                     throw new Error("Invalid token id");
                   const token = await getTokenMetadata(
-                    "polygon",
+                    "137",
                     "0x60576a64851c5b42e8c57e3e4a5cf3cf4eeb2ed6",
                     searchValue
                   );

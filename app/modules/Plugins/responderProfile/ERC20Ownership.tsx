@@ -140,7 +140,7 @@ const ERC20Ownership = ({
               }}
             >
               <Text variant="small" color="accent">
-                View Support Networks
+                View Supported Networks
               </Text>
             </Box>
           </Box>

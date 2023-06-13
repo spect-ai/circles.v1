@@ -77,7 +77,7 @@ export const Insights = (props: Props) => {
           justifyContent="flex-start"
           gap="2"
         >
-          <Text variant="label">Views</Text>
+          <Text variant="label">Unique Views</Text>
 
           <Text variant="large">{responseMetrics.totalViews || 0}</Text>
         </Box>
@@ -88,7 +88,7 @@ export const Insights = (props: Props) => {
           justifyContent="flex-start"
           gap="2"
         >
-          <Text variant="label">Started</Text>
+          <Text variant="label">Unique Starts</Text>
 
           <Text variant="large">{responseMetrics.totalStarted || 0}</Text>
         </Box>
@@ -114,7 +114,12 @@ export const Insights = (props: Props) => {
           <Text variant="label">Completion Rate</Text>
 
           <Text variant="large">
-            {responseMetrics.completionRate?.toFixed(0) || 0}%
+            {responseMetrics.completionRate?.toFixed(0) || 0}%{" "}
+          </Text>
+          <Text variant="small" color="textSecondary">
+            {responseMetrics.completionRate > 100
+              ? `(Same person may have submitted multiple times)`
+              : ``}
           </Text>
         </Box>
       </Box>
@@ -130,7 +135,7 @@ export const Insights = (props: Props) => {
             Metrics for each page
           </Text>
           <Table
-            columns={["Page", "Views", "Drop off Rate"]}
+            columns={["Page", "Unique Views", "Drop off Rate"]}
             columnWidths={{
               xl: [6, 3, 3],
               lg: [6, 3, 3],

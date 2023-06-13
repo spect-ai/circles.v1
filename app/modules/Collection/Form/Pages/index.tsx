@@ -10,6 +10,7 @@ import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { logError } from "@/app/common/utils/utils";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import uuid from "react-uuid";
 
 export default function Pages() {
   const {
@@ -53,7 +54,8 @@ export default function Pages() {
               const lastIndex = collection.formMetadata.pages["collect"]
                 ? pageOrder.length - 2
                 : pageOrder.length - 1;
-              const newPageId = `page-${lastIndex + 1}`;
+
+              const newPageId = `page-${uuid()}`;
               const res = await updateFormCollection(collection.id, {
                 ...collection,
                 formMetadata: {
