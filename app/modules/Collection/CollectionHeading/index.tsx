@@ -30,7 +30,6 @@ import { Embed } from "../Embed";
 import { SendOutlined } from "@ant-design/icons";
 import { smartTrim } from "@/app/common/utils/utils";
 import FormSettings from "../Form/FormSettings";
-import WarnConnectWallet from "./WarnConnectWallet";
 import { PopoverOption } from "../../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
 import ViewPlugins, { isPluginAdded } from "../../Plugins/ViewPlugins";
 import { ShareOnDiscord } from "../ShareOnDiscord";
@@ -59,7 +58,6 @@ function CollectionHeading() {
   const { formActions } = useRoleGate();
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
-  const [isWarningOpened, setIsWarningOpened] = useState(false);
   const [shareOnDiscordOpen, setShareOnDiscordOpen] = useState(false);
   const [isViewPluginsOpen, setIsViewPluginsOpen] = useState(false);
   const [numPluginsAdded, setNumPlugnsAdded] = useState(0);
@@ -480,17 +478,7 @@ function CollectionHeading() {
             embedRoute={`https://circles.spect.network/r/${collection.slug}/embed?`}
           />
         )}
-        {isWarningOpened && (
-          <WarnConnectWallet
-            onYes={() => {
-              setIsWarningOpened(false);
-              setIsShareOpen(!isShareOpen);
-            }}
-            onNo={() => {
-              setIsWarningOpened(false);
-            }}
-          />
-        )}
+
         {shareOnDiscordOpen && (
           <ShareOnDiscord
             isOpen={shareOnDiscordOpen}

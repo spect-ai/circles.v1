@@ -201,7 +201,6 @@ export default function Zealy({ handleClose, setupMode, setSetupMode }: Props) {
                             zealyXP: totalXp,
                             zealyXpPerField: xp,
                             responseDataForZealy: responseData,
-                            walletConnectionRequired: true,
                           },
                         });
                         if (!res?.formMetadata?.zealyXP) {

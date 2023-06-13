@@ -732,12 +732,6 @@ export type DiscordChannel = {
   id: string;
   name: string;
 };
-export type OpportunityInfoType = {
-  type: string;
-  experience: string;
-  skills: string[];
-  tags: string[];
-};
 
 export interface CollectionType {
   id: string;
@@ -805,7 +799,6 @@ export type PaymentConfig = {
 export type FormMetadata = {
   cover?: string;
   logo: string;
-  purpose?: string;
   formRoleGating?: GuildRole[];
   sybilProtectionEnabled?: boolean;
   sybilProtectionScores?: MappedItem<number>;
@@ -815,18 +808,13 @@ export type FormMetadata = {
   updatingResponseAllowed: boolean;
   numOfKudos?: number;
   credentialCurationEnabled?: boolean;
-  isAnOpportunity?: boolean;
-  opportunityInfo?: OpportunityInfoType;
   active: boolean;
-  canFillForm: boolean;
   hasPassedSybilCheck: boolean;
   previousResponses: any[];
   hasClaimedKudos: boolean;
   hasRole: boolean;
-  discordConnectionRequired: boolean;
   canClaimKudos: boolean;
   allowAnonymousResponses: boolean;
-  walletConnectionRequired: boolean;
   paymentConfig?: PaymentConfig;
   surveyTokenId?: number;
   surveyTokenClaimedByUser: boolean;
@@ -839,8 +827,6 @@ export type FormMetadata = {
   surveyDistributionType?: number;
   ceramicEnabled?: boolean;
   captchaEnabled?: boolean;
-  claimCodes?: string[];
-  claimCode?: string;
   poapEventId?: string;
   poapEditCode?: string;
   transactionHashes?: {

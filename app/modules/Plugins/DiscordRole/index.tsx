@@ -179,7 +179,6 @@ export default function DiscordRoleGate({ handleClose }: Props) {
                     discordRoleGating: discordRoles?.filter(
                       (role) => role.selected
                     ),
-                    walletConnectionRequired: true,
                   },
                 },
                 collection.id
