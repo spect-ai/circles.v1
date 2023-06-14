@@ -7,6 +7,7 @@ export interface SpectPlugin {
   tags: string;
   image: string;
   premium: boolean;
+  groups: string[];
 }
 
 export type PluginType =
@@ -34,6 +35,7 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     image:
       "https://ik.imagekit.io/spectcdn/gtcpassport_XqHKx4FMG?ik-sdk-version=javascript-1.4.3&updatedAt=1675753373123",
     premium: true,
+    groups: ["Sybil Protection", "Bot Protection", "Gating", "Onboarding"],
   },
   poap: {
     id: "poap",
@@ -45,6 +47,7 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     docs: "https://poap.xyz/",
     image: "https://ik.imagekit.io/spectcdn/poap.png",
     premium: true,
+    groups: ["Incentivization", "Quiz", "Survey"],
   },
   payments: {
     id: "payments",
@@ -57,19 +60,8 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     image:
       "https://ik.imagekit.io/spectcdn/payments.png?ik-sdk-version=javascript-1.4.3&updatedAt=1675753949461",
     premium: true,
+    groups: ["Donation", "Paywall"],
   },
-  // ceramic: {
-  //   id: "ceramic",
-  //   name: "Data Ownership with Ceramic (Testnet)",
-  //   version: "1.0.0",
-  //   description:
-  //     "Care about data ownership & composability? Use Ceramic to allow your responders to own their data.",
-  //   tags: "data ownership, data, ownership, ceramic, decentralized, decentralized data, decentralized data ownership, decentralized data storage, decentralized",
-  //   docs: "https://docs.guild.xyz",
-  //   image:
-  //     "https://ik.imagekit.io/spectcdn/ceramic.png?ik-sdk-version=javascript-1.4.3&updatedAt=1675754081907",
-  //   premium: true,
-  // },
   erc20: {
     id: "erc20",
     name: "Distribute ERC20 Tokens to Responders (Limited Beta)",
@@ -81,6 +73,7 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     image:
       "https://ik.imagekit.io/spectcdn/moneybagethereummb3dmodel001.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1676107655114",
     premium: true,
+    groups: ["Incentivization", "Quiz", "Survey"],
   },
   guildxyz: {
     id: "guildxyz",
@@ -93,6 +86,7 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     image:
       "https://ik.imagekit.io/spectcdn/GuildOnFire.png?ik-sdk-version=javascript-1.4.3&updatedAt=1675753128685",
     premium: true,
+    groups: ["Gating", "Survey", "Feedback"],
   },
   mintkudos: {
     id: "mintkudos",
@@ -105,6 +99,7 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     image:
       "https://ik.imagekit.io/spectcdn/CDfgJBIe_2x.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1675753635232",
     premium: true,
+    groups: ["Incentivization", "Quiz", "Survey"],
   },
   googleCaptcha: {
     id: "googleCaptcha",
@@ -117,10 +112,11 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     image:
       "https://ik.imagekit.io/spectcdn/google-android-apps-100705848-large.webp?ik-sdk-version=javascript-1.4.3&updatedAt=1678260406080",
     premium: true,
+    groups: ["Bot Protection"],
   },
   responderProfile: {
     id: "responderProfile",
-    name: "Who's the Responder?",
+    name: "Whos the Responder?",
     version: "1.0.0",
     description:
       "Collect responders' verified ethereum address, NFT ownerships, community memberships and more!",
@@ -129,9 +125,10 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     image:
       "https://ik.imagekit.io/spectcdn/survey_image.png?updatedAt=1681811990898",
     premium: true,
+    groups: ["Onboarding", "Survey"],
   },
   discordRole: {
-    id: "responderProfile",
+    id: "discordRole",
     name: "Role Gating With Discord Roles",
     version: "1.0.0",
     description:
@@ -141,6 +138,7 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     image:
       "https://ik.imagekit.io/spectcdn/discord_logo_chaks.png?updatedAt=1682681466430",
     premium: true,
+    groups: ["Gating", "Survey", "Feedback"],
   },
   zealy: {
     id: "zealy",
@@ -153,7 +151,20 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     image:
       "https://ik.imagekit.io/spectcdn/zealy_xp_chaks.png?updatedAt=1683276390713",
     premium: true,
+    groups: ["Incentivization", "Quiz", "Survey"],
   },
 };
 
 // force
+export function getGroupedPlugins(): { [key: string]: SpectPlugin[] } {
+  const groups: { [key: string]: SpectPlugin[] } = {};
+  for (const plugin of Object.values(spectPlugins)) {
+    for (const group of plugin.groups) {
+      if (!groups[group]) {
+        groups[group] = [];
+      }
+      groups[group].push(plugin);
+    }
+  }
+  return groups;
+}

@@ -1,5 +1,7 @@
+import Popover from "@/app/common/components/Popover";
 import { getViewIcon } from "@/app/modules/CollectionProject/Heading";
-import { CircleType, ProjectType, RetroType, UserType } from "@/app/types";
+import { duplicateCollection } from "@/app/services/Collection";
+import { CircleType, UserType } from "@/app/types";
 import {
   Box,
   Button,
@@ -9,23 +11,20 @@ import {
   Text,
   useTheme,
 } from "degen";
+import { motion } from "framer-motion";
 import mixpanel from "mixpanel-browser";
 import { useRouter } from "next/router";
-import { memo, useCallback, useRef, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import {
   Draggable,
   DraggableProvided,
   DraggableStateSnapshot,
 } from "react-beautiful-dnd";
 import { Table } from "react-feather";
+import { BiDotsVerticalRounded } from "react-icons/bi";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useCircle } from "../../CircleContext";
-import { BiDotsVerticalRounded } from "react-icons/bi";
-import Popover from "@/app/common/components/Popover";
-import { motion } from "framer-motion";
-import { useEffect } from "react";
-import { duplicateCollection } from "@/app/services/Collection";
 
 interface Props {
   card: string;
