@@ -573,7 +573,6 @@ export default function Payments({ handleClose }: Props) {
                     formMetadata: {
                       ...collection.formMetadata,
                       paymentConfig: payload,
-                      walletConnectionRequired: true,
                     },
                   });
                   if (res.id) {

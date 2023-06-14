@@ -28,7 +28,6 @@ export function BasicInfo() {
     verifiedSocials,
     setVerifiedSocials,
   } = useProfile();
-  console.log({ verifiedSocials });
   useEffect(() => {
     if (username.length === 0) {
       setUsernameError("Username cannot be empty");

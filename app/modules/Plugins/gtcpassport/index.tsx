@@ -265,7 +265,6 @@ export default function SybilResistance({ handleClose }: Props) {
                       ...collection.formMetadata,
                       sybilProtectionEnabled: true,
                       sybilProtectionScores,
-                      walletConnectionRequired: true,
                     },
                   });
                   if (res.id) {
