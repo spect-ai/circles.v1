@@ -1,6 +1,7 @@
 import { getViewIcon } from "@/app/modules/CollectionProject/Heading";
 import { CircleType, ProjectType, RetroType, UserType } from "@/app/types";
 import {
+  Avatar,
   Box,
   Button,
   IconCopy,
@@ -25,7 +26,10 @@ import { BiDotsVerticalRounded } from "react-icons/bi";
 import Popover from "@/app/common/components/Popover";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
-import { duplicateCollection } from "@/app/services/Collection";
+import { duplicateCollection, moveCollection } from "@/app/services/Collection";
+import { useProviderLocalProfile } from "@/app/modules/Profile/ProfileSettings/LocalProfileContext";
+import Logo from "@/app/common/components/Logo";
+import { MdOutlineDriveFileMove } from "react-icons/md";
 
 interface Props {
   card: string;
@@ -43,7 +47,6 @@ interface Props {
       archived: boolean;
     };
   };
-  setMoveModalOpen: (value: boolean) => void;
 }
 
 const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
@@ -68,9 +71,8 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
 const Card = ({ card, index, workstreams, collections }: Props) => {
   const { mode } = useTheme();
   const router = useRouter();
-  const [moveModalOpen, setMoveModalOpen] = useState(false);
   const { circle: cId } = router.query;
-
+  const { myCircles } = useProviderLocalProfile();
   const { circle, fetchCircle } = useCircle();
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -82,6 +84,7 @@ const Card = ({ card, index, workstreams, collections }: Props) => {
     snapshot: DraggableStateSnapshot
   ) => {
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+    const [isMovePopoverOpen, setIsMovePopoverOpen] = useState(false);
 
     return (
       <Container
@@ -196,36 +199,99 @@ const Card = ({ card, index, workstreams, collections }: Props) => {
                     borderRadius: "0.25rem",
                   }}
                 >
-                  <Box backgroundColor="background">
-                    <MenuContainer>
-                      <Stack space="0">
-                        <MenuItem
-                          padding="2"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setIsPopoverOpen(false);
-                            duplicateCollection(
-                              collections?.[card]?.slug,
-                              collections?.[card]?.collectionType
-                            )
-                              .then((res) => {
-                                fetchCircle();
-                              })
-                              .catch((err) => {
-                                console.log(err);
-                              });
-                          }}
-                        >
-                          <Stack direction="horizontal" align="center">
-                            <Text align="center">
-                              <IconCopy size="5" />
-                            </Text>
-                            <Text align="center">Duplicate</Text>
-                          </Stack>
-                        </MenuItem>
-                      </Stack>
-                    </MenuContainer>
-                  </Box>
+                  {!isMovePopoverOpen && (
+                    <Box backgroundColor="background">
+                      <MenuContainer>
+                        <Stack space="0">
+                          <MenuItem
+                            padding="2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsPopoverOpen(false);
+                              duplicateCollection(
+                                collections?.[card]?.slug,
+                                collections?.[card]?.collectionType
+                              )
+                                .then((res) => {
+                                  fetchCircle();
+                                })
+                                .catch((err) => {
+                                  console.log(err);
+                                });
+                            }}
+                          >
+                            <Stack direction="horizontal" align="center">
+                              <Text align="center">
+                                <IconCopy size="5" />
+                              </Text>
+                              <Text align="center">Duplicate</Text>
+                            </Stack>
+                          </MenuItem>
+                          <MenuItem
+                            padding="2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsMovePopoverOpen(true);
+                            }}
+                          >
+                            <Stack direction="horizontal" align="center">
+                              <Text align="center" color="textSecondary">
+                                <MdOutlineDriveFileMove size={22} />
+                              </Text>
+                              <Text align="center">Move</Text>
+                            </Stack>
+                          </MenuItem>
+                        </Stack>
+                      </MenuContainer>
+                    </Box>
+                  )}
+                  {isMovePopoverOpen && (
+                    <Box backgroundColor="background">
+                      <MenuContainer>
+                        <Stack space="0">
+                          {myCircles
+                            ?.filter((circle) => circle.slug !== cId)
+                            ?.map((circle) => {
+                              return (
+                                <MenuItem
+                                  padding="2"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsPopoverOpen(false);
+                                    setIsMovePopoverOpen(false);
+                                    moveCollection(
+                                      collections?.[card]?.slug,
+                                      circle.id
+                                    )
+                                      .then((res) => {
+                                        fetchCircle();
+                                      })
+                                      .catch((err) => {
+                                        console.log(err);
+                                      });
+                                  }}
+                                >
+                                  <Stack
+                                    direction="horizontal"
+                                    align="center"
+                                    space="2"
+                                  >
+                                    <Logo
+                                      href={``}
+                                      src={circle.avatar}
+                                      gradient={circle.gradient}
+                                      name={circle.name}
+                                      size={"7"}
+                                    />
+                                    <Text align="center">{circle.name}</Text>
+                                  </Stack>
+                                </MenuItem>
+                              );
+                            })}
+                        </Stack>
+                      </MenuContainer>
+                    </Box>
+                  )}
                 </motion.div>
               </Popover>
             </Box>
@@ -239,7 +305,6 @@ const Card = ({ card, index, workstreams, collections }: Props) => {
     card,
     workstreams,
     mode,
-    setMoveModalOpen,
   ]);
 
   return (

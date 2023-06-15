@@ -1,6 +1,6 @@
 // import { storeImage } from "@/app/common/utils/ipfs";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import { UserType } from "@/app/types";
+import { CircleType, UserType } from "@/app/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 
@@ -51,6 +51,21 @@ export function useProviderLocalProfile() {
   const { data: currentUser, isLoading } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+
+  const {
+    data: myCircles,
+    refetch: fetchCircles,
+    isLoading: loadingMyCircles,
+  } = useQuery<CircleType[]>(
+    "dashboardCircles",
+    () =>
+      fetch(`${process.env.API_HOST}/user/v1/circles`, {
+        credentials: "include",
+      }).then((res) => res.json()),
+    {
+      enabled: false,
+    }
+  );
 
   const [uploading, setUploading] = useState(false);
   const [avatar, setAvatar] = useState("");
@@ -167,6 +182,7 @@ export function useProviderLocalProfile() {
     setApiKeys,
     verifiedSocials,
     setVerifiedSocials,
+    myCircles,
   };
 }
 export const useProfile = () => useContext(LocalProfileContext);

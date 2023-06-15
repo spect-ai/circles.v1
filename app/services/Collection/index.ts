@@ -562,3 +562,32 @@ export const duplicateCollection = async (
   }
   return await res.json();
 };
+
+export const moveCollection = async (
+  collectionSlug: string,
+  circleId: string
+) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/collection/v2/slug/${collectionSlug}/move?circleId=${circleId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+
+  if (!res.ok) {
+    let err;
+    if (res.status === 404) err = "Not Found";
+    else {
+      const e = await res.json();
+      err = e.message || e;
+    }
+    logError(`Moving Collection failed: ${err}`, false);
+    toast.error("Moving failed, please contact support");
+    return;
+  }
+  return await res.json();
+};
