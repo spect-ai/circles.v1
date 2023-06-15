@@ -1185,3 +1185,12 @@ export type AlchemyNftContract = {
 export interface LookupTokenWithBalance extends LookupToken {
   balance: string;
 }
+
+export interface SpectTemplate {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  url: string;
+  tags: string[];
+}
