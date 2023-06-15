@@ -145,6 +145,7 @@ const Card = ({ card, index, workstreams, collections }: Props) => {
               justifyContent={"flex-start"}
               onClick={() => {}}
               gap="4"
+              style={{ maxWidth: "80%" }}
             >
               <Box display={"block"}>
                 {collections?.[card].viewType ? (
@@ -210,7 +211,8 @@ const Card = ({ card, index, workstreams, collections }: Props) => {
                               setIsPopoverOpen(false);
                               duplicateCollection(
                                 collections?.[card]?.slug,
-                                collections?.[card]?.collectionType
+                                collections?.[card]?.collectionType,
+                                cId as string
                               )
                                 .then((res) => {
                                   fetchCircle();

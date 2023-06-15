@@ -534,12 +534,13 @@ export const postFormPayment = async (
 
 export const duplicateCollection = async (
   collectionSlug: string,
-  type: 0 | 1
+  type: 0 | 1,
+  circleSlug: string
 ) => {
   const res = await fetch(
-    `${process.env.API_HOST}/collection/v2/${
-      type === 0 ? "form" : "project"
-    }/slug/${collectionSlug}/duplicate`,
+    `${process.env.API_HOST}/circle/v2/slug/${circleSlug}/${
+      type === 0 ? "duplicateForm" : "duplicateProject"
+    }?collectionSlug=${collectionSlug}&type=${type}}`,
     {
       method: "POST",
       headers: {
