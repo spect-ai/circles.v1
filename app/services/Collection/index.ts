@@ -534,12 +534,13 @@ export const postFormPayment = async (
 
 export const duplicateCollection = async (
   collectionSlug: string,
-  type: 0 | 1
+  type: 0 | 1,
+  circleSlug: string
 ) => {
   const res = await fetch(
-    `${process.env.API_HOST}/collection/v2/${
-      type === 0 ? "form" : "project"
-    }/slug/${collectionSlug}/duplicate`,
+    `${process.env.API_HOST}/circle/v2/slug/${circleSlug}/${
+      type === 0 ? "duplicateForm" : "duplicateProject"
+    }?collectionSlug=${collectionSlug}&type=${type}}`,
     {
       method: "POST",
       headers: {
@@ -558,6 +559,35 @@ export const duplicateCollection = async (
     }
     logError(`Duplication failed: ${err}`, false);
     toast.error("Duplication failed, please contact support");
+    return;
+  }
+  return await res.json();
+};
+
+export const moveCollection = async (
+  collectionSlug: string,
+  circleId: string
+) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/collection/v2/slug/${collectionSlug}/move?circleId=${circleId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+
+  if (!res.ok) {
+    let err;
+    if (res.status === 404) err = "Not Found";
+    else {
+      const e = await res.json();
+      err = e.message || e;
+    }
+    logError(`Moving Collection failed: ${err}`, false);
+    toast.error("Moving failed, please contact support");
     return;
   }
   return await res.json();
