@@ -64,6 +64,7 @@ const AddNodePopover = ({
                   url: "",
                   onChange: onNodeDataUpdate,
                   setShowLogs,
+                  onDelete: onDeleteNode,
                 },
               })
             );
@@ -84,6 +85,7 @@ const AddNodePopover = ({
                   filter: "",
                   onChange: onNodeDataUpdate,
                   setShowLogs,
+                  onDelete: onDeleteNode,
                 },
               })
             );
@@ -104,6 +106,7 @@ const AddNodePopover = ({
                   filter: "",
                   onChange: onNodeDataUpdate,
                   setShowLogs,
+                  onDelete: onDeleteNode,
                 },
               })
             );

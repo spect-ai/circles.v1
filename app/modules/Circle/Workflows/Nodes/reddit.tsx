@@ -46,6 +46,7 @@ function RedditNode({
           type: "url",
           description: "Please enter the url of your subreddit",
           defaultValue: url,
+          placeholder: "https://www.reddit.com/r/ourguild/",
           onChange: (value) => {
             onChange({ url: value, filter: filter, id });
           },
@@ -55,6 +56,7 @@ function RedditNode({
           type: "text",
           description: "The flair to filter the posts by",
           defaultValue: filter,
+          placeholder: "Guild.Log",
           onChange: (value) => {
             onChange({ url: url, filter: value, id });
           },

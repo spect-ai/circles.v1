@@ -42,10 +42,10 @@ function YoutubeNode({
       ]}
       fields={[
         {
-          name: "Youtube channel ID",
+          name: "Youtube channel handle",
           type: "url",
-          description:
-            "Please enter the channel Id of the youtube channel you want to get the videos from",
+          description: "Please enter the handle of the youtube channel",
+          placeholder: "@guildxyz",
           defaultValue: channelId,
           onChange: (value) => {
             onChange({ channelId: value, filter: filter, id });
@@ -57,6 +57,7 @@ function YoutubeNode({
           description:
             "Please enter the filter you want to apply to the youtube channel",
           defaultValue: filter,
+          placeholder: "Community Call",
           onChange: (value) => {
             onChange({ channelId: channelId, filter: value, id });
           },

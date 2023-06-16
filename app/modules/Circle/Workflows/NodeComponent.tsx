@@ -28,6 +28,7 @@ type props = {
     description: string;
     defaultValue: string;
     onChange: (value: string) => void;
+    placeholder?: string;
   }[];
   setShowLogs: (nodeId: string) => void;
   onDelete: () => void;
@@ -125,6 +126,7 @@ export const NodeComponent = ({
               onChange={(e) => field.onChange(e.target.value)}
               required
               type={field.type as any}
+              placeholder={field.placeholder}
             />
           ))}
           {outputs.map((output, idx) => (

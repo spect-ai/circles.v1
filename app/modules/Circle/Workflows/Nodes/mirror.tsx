@@ -45,6 +45,7 @@ function MirrorNode({
           type: "url",
           description: "The url of your mirror blog",
           defaultValue: url,
+          placeholder: "https://guild.mirror.xyz/",
           onChange: (value) => {
             onChange({ url: value, id });
           },
