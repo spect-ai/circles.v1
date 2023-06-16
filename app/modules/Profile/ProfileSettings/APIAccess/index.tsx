@@ -140,30 +140,6 @@ export default function APIAccess() {
   );
 }
 
-export const MenuContainer = styled(Box)<{ cWidth?: string }>`
-  width: ${(props) => props.cWidth || "25rem"};
-  border-bottom-left-radius: 0.25rem;
-  border-bottom-right-radius: 0.25rem;
-  background: rgb(28, 25, 31);
-  transition: all 0.15s ease-out;
-
-  max-height: 20rem;
-  overflow-y: auto;
-
-  ::-webkit-scrollbar {
-    width: 0.5rem;
-  }
-
-  @media (max-width: 768px) {
-    width: 15rem;
-  }
-`;
-
-export const MenuItem = styled(Box)`
-  width: 100%;
-  transition: background 0.2s ease;
-`;
-
 export const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
     display: none;

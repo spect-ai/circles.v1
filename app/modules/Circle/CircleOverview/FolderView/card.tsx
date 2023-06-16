@@ -189,6 +189,7 @@ const Card = ({ card, index, workstreams, collections }: Props) => {
                 isOpen={isPopoverOpen}
                 setIsOpen={(isOpen) => {
                   setIsPopoverOpen(isOpen);
+                  setIsMovePopoverOpen(false);
                 }}
               >
                 <motion.div
@@ -276,6 +277,7 @@ const Card = ({ card, index, workstreams, collections }: Props) => {
                                   <Stack
                                     direction="horizontal"
                                     align="center"
+                                    justify={"flex-start"}
                                     space="2"
                                   >
                                     <Logo
@@ -285,7 +287,7 @@ const Card = ({ card, index, workstreams, collections }: Props) => {
                                       name={circle.name}
                                       size={"7"}
                                     />
-                                    <Text align="center">{circle.name}</Text>
+                                    <Text>{circle.name}</Text>
                                   </Stack>
                                 </MenuItem>
                               );
@@ -319,6 +321,13 @@ const Card = ({ card, index, workstreams, collections }: Props) => {
 export default memo(Card);
 
 const MenuContainer = styled(Box)`
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  max-height: 12rem;
   width: 10.5rem;
   background: rgb(191, 90, 242, 0.05);
   transition: all 0.15s ease-out;
