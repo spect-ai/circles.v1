@@ -1,14 +1,22 @@
-import { SpectTemplate } from "@/app/types";
+import { CollectionType, SpectTemplate } from "@/app/types";
 import { Box, Button, IconSearch, Input, Stack, Text } from "degen";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Template from "./Template";
 import Logo from "@/app/common/components/Logo";
+import { getAllTemplates } from "@/app/services/Templates";
+import { matchSorter } from "match-sorter";
 
 export default function Templates() {
   const [template, setTemplate] = useState<SpectTemplate | null>(null);
-
+  const [templates, setTemplates] = useState<SpectTemplate[]>([]);
+  const [templateGroups, setTemplateGroups] = useState<{
+    [key: string]: string[];
+  }>({});
+  const [filteredTemplates, setFilteredTemplates] = useState<SpectTemplate[]>(
+    []
+  );
   const sidebarItems = [
     "Popular",
     "New",
@@ -25,57 +33,40 @@ export default function Templates() {
   const [selectedSidebarItem, setSelectedSidebarItem] = useState(
     sidebarItems[0]
   );
-  const spectTemplates = [
-    {
-      id: "1",
-      name: "Community Feedback",
-      description:
-        "Get feedback from your community on a topic of your choice.",
-      preview: "",
-      tags: ["Community Management", "Onboarding"],
-      image: "",
-      url: "",
-    },
-    {
-      id: "2",
-
-      name: "Community Feedback",
-      description:
-        "Get feedback from your community on a topic of your choice.",
-      preview: "",
-      tags: ["Community Management", "Onboarding"],
-
-      image: "",
-      url: "",
-    },
-    {
-      id: "3",
-
-      name: "Community Feedback",
-      description:
-        "Get feedback from your community on a topic of your choice.",
-      preview: "",
-      tags: ["Community Management", "Onboarding"],
-      url: "",
-
-      image: "",
-    },
-    {
-      id: "4",
-
-      name: "Community Feedback",
-      description:
-        "Get feedback from your community on a topic of your choice.",
-      preview: "",
-      tags: ["Community Management", "Onboarding"],
-      image: "",
-      url: "",
-    },
-  ];
 
   const onClick = (template: SpectTemplate) => {
     setTemplate(template);
   };
+
+  const updateFilteredTemplates = (
+    selectedSidebarItem?: string,
+    filteredBy?: string
+  ) => {
+    if (selectedSidebarItem) {
+      const fiteredTemplateIds = templateGroups[selectedSidebarItem];
+      const filteredTemplates = templates.filter((item) =>
+        fiteredTemplateIds.includes(item.id)
+      );
+      setFilteredTemplates(filteredTemplates);
+    } else if (filteredBy) {
+      const filteredTemplates = matchSorter(templates, filteredBy, {
+        keys: ["name"],
+      });
+      setFilteredTemplates(filteredTemplates);
+    }
+  };
+
+  console.log({ filteredTemplates });
+  useEffect(() => {
+    void (async () => {
+      const { templateData, templatesByGroup } =
+        (await getAllTemplates()) as any;
+      console.log({ templateData, templatesByGroup });
+      setTemplates(templateData);
+      setTemplateGroups(templatesByGroup);
+      updateFilteredTemplates(selectedSidebarItem);
+    })();
+  }, []);
 
   return (
     <>
@@ -99,7 +90,7 @@ export default function Templates() {
             paddingY="3"
             display="flex"
             flexDirection="row"
-            gap="2"
+            gap="4"
             alignItems="center"
           >
             <Logo
@@ -125,17 +116,21 @@ export default function Templates() {
           display="flex"
           flexDirection="row"
           width="full"
-          padding="32"
+          gap="32"
           paddingTop="24"
-          gap="16"
         >
-          <Box display="flex" flexDirection="column" width="1/4">
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            width="1/4"
+          >
             {" "}
             <Stack direction="vertical" space="4">
               <Input
                 placeholder="Search Templates"
                 onChange={(e) => {
-                  console.log(e.target.value);
+                  updateFilteredTemplates(undefined, e.target.value);
                 }}
                 label=""
                 prefix={<IconSearch size="4" />}
@@ -147,7 +142,10 @@ export default function Templates() {
                     variant={
                       selectedSidebarItem === item ? "tertiary" : "transparent"
                     }
-                    onClick={() => setSelectedSidebarItem(item)}
+                    onClick={() => {
+                      setSelectedSidebarItem(item);
+                      updateFilteredTemplates(item);
+                    }}
                   >
                     {" "}
                     <Text>{item}</Text>
@@ -156,32 +154,34 @@ export default function Templates() {
               </Stack>
             </Stack>
           </Box>
-          <Box
-            display="flex"
-            flexDirection="column"
-            justifyContent="flex-start"
-            width="3/4"
-          >
-            {!template && (
-              <Stack direction="horizontal" space="4" wrap>
-                {spectTemplates.map((item) => (
-                  <TemplateCard
-                    key={template}
-                    template={item}
-                    onClick={async () => {
-                      onClick(item);
-                    }}
-                  />
-                ))}
-              </Stack>
-            )}
-            {template && (
-              <Template
-                template={template}
-                handleBack={() => setTemplate(null)}
-              />
-            )}
-          </Box>
+          <ScrollContainer width="3/4">
+            <Box
+              display="flex"
+              flexDirection="column"
+              justifyContent="flex-start"
+              width="3/4"
+            >
+              {!template && (
+                <Stack direction="horizontal" space="4" wrap>
+                  {filteredTemplates.map((item) => (
+                    <TemplateCard
+                      key={item.id}
+                      template={item}
+                      onClick={async () => {
+                        onClick(item);
+                      }}
+                    />
+                  ))}
+                </Stack>
+              )}
+              {template && (
+                <Template
+                  template={template}
+                  handleBack={() => setTemplate(null)}
+                />
+              )}
+            </Box>
+          </ScrollContainer>
         </Box>
       </Box>
     </>
@@ -214,7 +214,7 @@ const TemplateCard = ({
             {template.name}
           </Text>
           <Text size="extraSmall" align="center">
-            {template.description}
+            {template.shortDescription}
           </Text>
           {/* <a href={template.docs} target="_blank">
               <Text color="accent">View Docs</Text>
@@ -244,4 +244,17 @@ const TemplateImage = styled.img`
   @media (max-width: 768px) {
     height: 7rem;
   }
+`;
+
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  @media (max-width: 768px) {
+    height: calc(100vh - 3rem);
+  }
+  height: calc(100vh - 12rem);
 `;

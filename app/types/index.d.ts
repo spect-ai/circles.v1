@@ -1189,6 +1189,7 @@ export interface LookupTokenWithBalance extends LookupToken {
 export interface SpectTemplate {
   id: string;
   name: string;
+  shortDescription: string;
   description: string;
   image: string;
   url: string;

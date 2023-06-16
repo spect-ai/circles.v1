@@ -28,7 +28,7 @@ import styled from "styled-components";
 import { useCircle } from "../../CircleContext";
 import { useProviderLocalProfile } from "@/app/modules/Profile/ProfileSettings/LocalProfileContext";
 import { MdOutlineDriveFileMove } from "react-icons/md";
-import Logo from "next-seo/lib/jsonld/logo";
+import Logo from "@/app/common/components/Logo";
 
 interface Props {
   card: string;

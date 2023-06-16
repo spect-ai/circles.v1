@@ -39,7 +39,7 @@ export default function Templates({ template, handleBack }: Props) {
         <Box marginTop="8">
           <StyledIframe
             src={`http://localhost:3000/erer-3`}
-            title="Figma Embed"
+            title={template.name}
             allowFullScreen
           />
         </Box>
