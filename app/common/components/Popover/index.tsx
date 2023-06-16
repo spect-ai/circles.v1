@@ -39,7 +39,9 @@ export function useOutsideAlerter(
         )
       ) {
         // alert("You clicked outside of me!");
-        setIsOpen(false);
+        setTimeout(() => {
+          setIsOpen(false);
+        }, 200);
       }
     }
     // Bind the event listener
@@ -75,21 +77,19 @@ const Popover: FC<Props> = ({
   return (
     <Box width={width as any} data-tour={tourId}>
       <div ref={setAnchorElement}>{butttonComponent}</div>
-      <AnimatePresence>
-        {isOpen && (
-          <Portal>
-            <Box
-              position="absolute"
-              zIndex="10"
-              ref={setPopperElement}
-              style={styles.popper}
-              {...attributes.popper}
-            >
-              <div ref={wrapperRef}>{children}</div>
-            </Box>
-          </Portal>
-        )}
-      </AnimatePresence>
+      {isOpen && (
+        <Portal>
+          <Box
+            position="absolute"
+            zIndex="10"
+            ref={setPopperElement}
+            style={styles.popper}
+            {...attributes.popper}
+          >
+            <div ref={wrapperRef}>{children}</div>
+          </Box>
+        </Portal>
+      )}
     </Box>
   );
 };

@@ -39,6 +39,7 @@ import InviteMemberModal, {
 } from "../Circle/ContributorsModal/InviteMembersModal";
 import { BiBot } from "react-icons/bi";
 import TemplateModal from "../Circle/CircleOverview/FolderView/TemplateModal";
+import { RiFlowChart } from "react-icons/ri";
 
 export const Container = styled(Box)<{ subH?: string }>`
   @media (max-width: 768px) {
@@ -182,6 +183,7 @@ function CircleSidebar() {
                     "automation",
                     "governance",
                     "membership",
+                    "workflows",
                   ].includes(router.query?.tab as string) &&
                   !cSlug &&
                   !pId
@@ -198,6 +200,26 @@ function CircleSidebar() {
                 }}
               >
                 Dashboard
+              </PrimaryButton>
+            </Link>
+            <Link href={`/${cId}?tab=workflows`}>
+              <PrimaryButton
+                center
+                variant={
+                  cId && router.query?.tab === "workflows" && !cSlug && !pId
+                    ? "tertiary"
+                    : "transparent"
+                }
+                icon={<RiFlowChart size="16" />}
+                onClick={() => {
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Workflows", {
+                      user: currentUser?.username,
+                      url: window.location.href,
+                    });
+                }}
+              >
+                Workflows
               </PrimaryButton>
             </Link>
             {circle?.sidebarConfig?.showPayment && (
@@ -298,6 +320,7 @@ function CircleSidebar() {
                 </Link>
               </Box>
             )}
+
             {/* <Link href={`/${cId}?tab=credential`}>
             <PrimaryButton
               variant={

@@ -33,6 +33,9 @@ const Container = styled(Box)<{ issidebarexpanded: string }>`
 
   max-width:  "calc(100vw - 2rem)"
   flex-grow: 1;
+
+  height: 100%;
+  width: 100%;
 `;
 
 // show this only desktop screens
@@ -253,7 +256,10 @@ function PublicLayout(props: PublicLayoutProps) {
                   </Button>
                 </Box>
               </Visible>
-              <Container issidebarexpanded={isSidebarExpanded.toString()}>
+              <Container
+                issidebarexpanded={isSidebarExpanded.toString()}
+                id="layoutContainer"
+              >
                 {children}
               </Container>
             </Box>
