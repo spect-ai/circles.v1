@@ -258,7 +258,6 @@ const ConnectPage: NextPage = () => {
               )}
               {query.wallet === "true" ? (
                 <>
-                  query.discord === "true" && connectedUser && (
                   <DiscordField
                     data={data}
                     setData={setData}
