@@ -211,6 +211,7 @@ function CircleSidebar() {
                     : "transparent"
                 }
                 icon={<RiFlowChart size="16" />}
+                suffix={<Text color="accent">Beta</Text>}
                 onClick={() => {
                   process.env.NODE_ENV === "production" &&
                     mixpanel.track("Workflows", {
@@ -219,7 +220,7 @@ function CircleSidebar() {
                     });
                 }}
               >
-                Workflows
+                AI Workflows
               </PrimaryButton>
             </Link>
             {circle?.sidebarConfig?.showPayment && (
