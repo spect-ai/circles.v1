@@ -352,7 +352,46 @@ const AddLookup = ({ handleClose }: Props) => {
         width="full"
         padding="8"
         paddingTop="0"
+        gap={"4"}
       >
+        {(collection.formMetadata.lookup?.tokens?.length ||
+          collection.formMetadata.lookup?.communities ||
+          collection.formMetadata.lookup?.verifiedAddress) && (
+          <Box width="48">
+            <PrimaryButton
+              loading={saving}
+              variant="tertiary"
+              onClick={async () => {
+                setSaving(true);
+                const res = await updateFormCollection(collection.id, {
+                  formMetadata: {
+                    ...collection.formMetadata,
+                    allowAnonymousResponses: false,
+                    lookup: {
+                      tokens: [],
+                      snapshot: 0,
+                      verifiedAddress: false,
+                      communities: false,
+                    },
+                  },
+                });
+                if (res.id) updateCollection(res);
+                else logError("Error updating collection");
+                setSaving(false);
+
+                handleClose();
+              }}
+              disabled={
+                loading ||
+                (lookupTokens?.length === 0 &&
+                  !collectCommunityMemberships &&
+                  !collectEthAddress)
+              }
+            >
+              Disable
+            </PrimaryButton>
+          </Box>
+        )}
         <Box width="48">
           <PrimaryButton
             loading={saving}
