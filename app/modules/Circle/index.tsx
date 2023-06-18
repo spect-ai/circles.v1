@@ -18,6 +18,7 @@ import Governance from "./Governance";
 import Membership from "./Membership";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
+import Workflows from "./Workflows";
 
 const BoxContainer = styled(Box)`
   @media (max-width: 992px) {
@@ -67,6 +68,10 @@ export default function Circle() {
 
   if (router.query.tab === "membership") {
     return <Membership />;
+  }
+
+  if (router.query.tab === "workflows") {
+    return <Workflows />;
   }
 
   if (circle?.unauthorized && !isLoading && circle?.id)

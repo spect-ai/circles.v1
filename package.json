@@ -33,6 +33,7 @@
     "@rainbow-me/rainbowkit": "^0.12.9",
     "@snapshot-labs/snapshot.js": "^0.4.56",
     "@svgr/webpack": "^6.2.1",
+    "@ts-rest/core": "^3.26.2",
     "@vercel/og": "^0.5.4",
     "@wagmi/core": "^0.10.10",
     "chart.js": "^4.3.0",
@@ -84,6 +85,7 @@
     "react-toastify": "^9.1.1",
     "react-use": "^17.4.0",
     "react-uuid": "^1.0.3",
+    "reactflow": "^11.7.2",
     "reactour": "^1.18.7",
     "reaptcha": "^1.12.1",
     "rich-markdown-editor": "^11.21.3",
@@ -94,6 +96,7 @@
     "wagmi": "^0.12.12"
   },
   "devDependencies": {
+    "@avp1598/spect-shared-types": "^0.2.1",
     "@babel/core": "^7.18.2",
     "@commitlint/cli": "^17.0.2",
     "@commitlint/config-conventional": "^17.0.2",
