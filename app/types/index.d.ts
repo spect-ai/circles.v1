@@ -1461,3 +1461,15 @@ export type AlchemyNftContract = {
 export interface LookupTokenWithBalance extends LookupToken {
   balance: string;
 }
+
+export type GithubFieldFromOauthData = {
+  id: string;
+  login?: string;
+  avatar_url?: string;
+};
+
+export type DiscordFieldFromOauthData = {
+  id: string;
+  username?: string;
+  avatar?: string;
+};

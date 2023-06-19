@@ -416,7 +416,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
               }}
               mode={mode}
             >
-              {value ? (
+              {value || value === 0 ? (
                 <Text>
                   {property.type === "date"
                     ? new Date(value).toDateString()
