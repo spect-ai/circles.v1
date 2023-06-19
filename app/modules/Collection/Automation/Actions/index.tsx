@@ -10,6 +10,7 @@ import InitiatePendingPayment from "./InitiatePendingPayment";
 import PostCardOnDiscord from "./PostOnDiscord";
 import PostCardOnDiscordThread from "./PostOnDiscordThread";
 import SendEmail from "./SendEmail";
+import RemoveDiscordRole from "./RemoveDiscordRole";
 
 type Props = {
   actionType: string;
@@ -68,6 +69,14 @@ export default function SingleAction({
       )}
       {actionType === "giveDiscordRole" && (
         <GiveDiscordRole
+          action={action}
+          actionMode={actionMode}
+          setAction={setAction}
+          collection={collection}
+        />
+      )}
+      {actionType === "removeDiscordRole" && (
+        <RemoveDiscordRole
           action={action}
           actionMode={actionMode}
           setAction={setAction}

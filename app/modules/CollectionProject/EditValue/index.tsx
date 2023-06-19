@@ -445,6 +445,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                   setValue(tempValue);
                   setIsEditing(false);
                 }}
+                type={"text"}
               />
             </FieldInputContainer>
           ) : (
@@ -454,17 +455,13 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                   toast.error("You can't edit a closed card");
                   return;
                 }
-                if (Object.keys(value || {}).length === 0) {
-                  setIsEditing(true);
-                }
+                setIsEditing(true);
               }}
               mode={mode}
             >
               {value ? (
                 <Text>
-                  {value.username
-                    ? `${value.username}#${value.discriminator}`
-                    : value.login || value}
+                  {value.username ? `${value.username}` : value.login || value}
                 </Text>
               ) : (
                 "Empty"

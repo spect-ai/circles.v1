@@ -278,6 +278,16 @@ export const automationActionOptions = [
         data: {},
       },
       {
+        label: "Remove Discord Role",
+        value: "removeDiscordRole",
+        id: "removeDiscordRole",
+        name: "Remove Discord Role",
+        service: "circle",
+        type: "removeDiscordRole",
+        group: "Discord",
+        data: {},
+      },
+      {
         label: "Create Discord Channel",
         value: "createDiscordChannel",
         id: "createDiscordChannel",

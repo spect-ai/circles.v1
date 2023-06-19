@@ -15,6 +15,8 @@ import PohIcon from "./passport/pohStampIcon.svg";
 import POAPIcon from "./passport/poapStampIcon.svg";
 import EthStampIcon from "./passport/ethStampIcon.svg";
 import NFTStampIcon from "./passport/nftStampIcon.svg";
+import ZkSyncStampIcon from "./passport/zksyncStampIcon.svg";
+import CoinbaseStampIcon from "./passport/coinbaseStampIcon.svg";
 
 export const PassportStampIcons = {
   Brightid: <BrightIdStampIcon />,
@@ -33,6 +35,8 @@ export const PassportStampIcons = {
   POAP: <POAPIcon />,
   ETH: <EthStampIcon />,
   NFT: <NFTStampIcon />,
+  ZkSync: <ZkSyncStampIcon />,
+  Coinbase: <CoinbaseStampIcon />,
 };
 
 export const PassportStampIconsLightMode = {
@@ -52,4 +56,6 @@ export const PassportStampIconsLightMode = {
   POAP: <POAPIcon />,
   ETH: <EthStampIcon />,
   NFT: <NFTStampIcon />,
+  ZkSync: <ZkSyncStampIcon />,
+  Coinbase: <CoinbaseStampIcon />,
 };

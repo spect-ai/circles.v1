@@ -17,7 +17,7 @@ type Props = {
   collection: CollectionType;
 };
 
-export default function GiveDiscordRole({
+export default function RemoveDiscordRole({
   setAction,
   actionMode,
   action,
@@ -109,7 +109,7 @@ export default function GiveDiscordRole({
       }}
     >
       <Box marginBottom="4">
-        <Text variant="label">Pick the roles to give</Text>
+        <Text variant="label">Pick the roles to remove</Text>
       </Box>
       <Stack direction="horizontal" wrap>
         {discordRoles?.map((role) => {
@@ -136,7 +136,7 @@ export default function GiveDiscordRole({
         {collection.collectionType === 0 && (
           <Editor
             value={
-              ":::tip\nEnsure you have a discord field added to your form which the user will use to connect their discord account. Also, make sure the spect bot's role in your server is placed above the roles you are giving.\n:::"
+              ":::tip\nEnsure you have a discord field added to your form which the user will use to connect their discord account. Also, make sure the spect bot's role in your server is placed above the roles you are removing.\n:::"
             }
             disabled={true}
             version={1}
@@ -145,7 +145,7 @@ export default function GiveDiscordRole({
         {collection.collectionType === 1 && (
           <Editor
             value={
-              ":::tip\nMake sure the spect bot's role in your server is placed above the roles you are giving.\n:::"
+              ":::tip\nMake sure the spect bot's role in your server is placed above the roles you are removing.\n:::"
             }
             disabled={true}
             version={1}

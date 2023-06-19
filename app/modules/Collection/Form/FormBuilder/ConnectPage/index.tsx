@@ -17,7 +17,16 @@ import {
   UserType,
 } from "@/app/types";
 import styled from "@emotion/styled";
-import { Avatar, Box, Button, Stack, Tag, Text, useTheme } from "degen";
+import {
+  Avatar,
+  Box,
+  Button,
+  Spinner,
+  Stack,
+  Tag,
+  Text,
+  useTheme,
+} from "degen";
 import { motion } from "framer-motion";
 import { useAtom } from "jotai";
 import { useRouter } from "next/router";
@@ -36,6 +45,7 @@ type Props = {
 const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
   const [currentScore, setCurrentScore] = useState(0);
   const [stamps, setStamps] = useState([] as StampWithScoreAndVerification[]);
+  const [loadingPassport, setLoadingPassport] = useState(false);
 
   const [signedIn, setSignedIn] = useState(false);
   const { mode } = useTheme();
@@ -48,6 +58,13 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
     enabled: false,
   });
   const pageNumber = form.formMetadata.pageOrder.indexOf(currentPage);
+
+  const getPassportInfo = async (slug: string) => {
+    const res = await getPassportScoreAndStamps(slug);
+    console.log({ res });
+    setCurrentScore(res?.score);
+    setStamps(res.stamps?.sort((a, b) => b.score - a.score));
+  };
 
   useEffect(() => {
     (async () => {
@@ -79,15 +96,18 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
       currentUser
     ) {
       void (async () => {
+        if (!stamps?.length) setLoadingPassport(true);
         try {
-          const res = await getPassportScoreAndStamps(form.slug);
-          console.log({ res });
-          setCurrentScore(res?.score);
-          setStamps(res.stamps?.sort((a, b) => b.score - a.score));
+          await getPassportInfo(form.slug);
         } catch (e) {
           console.log({ e });
         }
+        setLoadingPassport(false);
       })();
+    }
+    if (!currentUser?.id) {
+      setCurrentScore(0);
+      setStamps([]);
     }
   }, [form, currentUser]);
 
@@ -200,85 +220,138 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
             </Box>
           </Box>
         )}
-        {form.formMetadata.sybilProtectionEnabled &&
-          !form.formMetadata.hasPassedSybilCheck && (
-            <Box
-              display="flex"
-              flexDirection="column"
-              padding="4"
-              marginTop="4"
-              gap="4"
-            >
-              {" "}
+        {form.formMetadata.sybilProtectionEnabled && (
+          <Box
+            display="flex"
+            flexDirection="column"
+            padding="4"
+            marginTop="4"
+            gap="4"
+          >
+            {" "}
+            <Stack space="1">
               <Text weight="bold">
-                This form is sybil protected. You must have a minimum score of
-                100% to fill this form. Please check the assigned scores below.
+                This form is sybil protected using Gitcoin Passport. You must
+                have a minimum score of 100% to fill this form.
               </Text>
-              <Text color={currentScore >= 100 ? "green" : "red"} font="mono">
-                Your current score: {currentScore}%
+              <Box
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                justifyContent="flex-start"
+                marginTop="2"
+                cursor="pointer"
+              >
+                <a
+                  href="https://docs.passport.gitcoin.co/overview/introducing-gitcoin-passport"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <Text color="accent">Learn More</Text>
+                </a>
+              </Box>
+            </Stack>
+            {loadingPassport && (
+              <Text color="accent" font="mono">
+                <Stack direction="horizontal" space="2" align="center">
+                  <Spinner size="small" />
+                  Loading Passport
+                </Stack>
               </Text>
-              <StampScrollContainer>
-                {stamps?.map(
-                  (stamp: StampWithScoreAndVerification, index: number) => {
-                    console.log({ stamp });
-                    return (
-                      <StampCard mode={mode} key={index}>
-                        <Box
-                          display="flex"
-                          flexDirection="row"
-                          width="full"
-                          alignItems="center"
-                          gap="4"
-                        >
+            )}
+            {!currentUser && (
+              <Stack space="2">
+                <Text variant="label">
+                  Please sign in to verify your Gitcoin passport. Make sure to
+                  connect the same account that contains your stamps.
+                </Text>
+              </Stack>
+            )}
+            {!loadingPassport && currentUser && (
+              <Box>
+                {" "}
+                <Text color={currentScore >= 100 ? "green" : "red"} font="mono">
+                  Your current score: {currentScore}%
+                </Text>
+                <StampScrollContainer>
+                  {stamps?.map(
+                    (stamp: StampWithScoreAndVerification, index: number) => {
+                      console.log({ stamp });
+                      return (
+                        <StampCard mode={mode} key={index}>
                           <Box
                             display="flex"
                             flexDirection="row"
-                            alignItems="center"
                             width="full"
-                            paddingRight="4"
+                            alignItems="center"
+                            gap="4"
                           >
                             <Box
-                              width="8"
-                              height="8"
+                              display="flex"
                               flexDirection="row"
-                              justifyContent="flex-start"
                               alignItems="center"
-                              marginRight="4"
+                              width="full"
+                              paddingRight="4"
                             >
-                              {mode === "dark"
-                                ? PassportStampIcons[stamp.providerName]
-                                : PassportStampIconsLightMode[
-                                    stamp.providerName
-                                  ]}
-                            </Box>
-                            <Box>
-                              <Text as="h1">{stamp.stampName}</Text>
-                              <Text variant="small">
-                                {stamp.stampDescription}
-                              </Text>
-                            </Box>
-                          </Box>{" "}
-                          {stamp.verified && <Tag tone="green">Verified</Tag>}
-                          <Text variant="large">{stamp.score}%</Text>
-                        </Box>
-                      </StampCard>
-                    );
-                  }
-                )}
-              </StampScrollContainer>
-              <Box display="flex" flexDirection="row" gap="4">
-                <Button
-                  variant="tertiary"
-                  size="small"
-                  onClick={() =>
-                    window.open("https://passport.gitcoin.co/", "_blank")
-                  }
-                >
-                  Get Stamps
-                </Button>
+                              <Box
+                                width="8"
+                                height="8"
+                                flexDirection="row"
+                                justifyContent="flex-start"
+                                alignItems="center"
+                                marginRight="4"
+                              >
+                                {mode === "dark"
+                                  ? PassportStampIcons[stamp.providerName]
+                                  : PassportStampIconsLightMode[
+                                      stamp.providerName
+                                    ]}
+                              </Box>
+                              <Box>
+                                <Text as="h1">{stamp.stampName}</Text>
+                                <Text variant="small">
+                                  {stamp.stampDescription}
+                                </Text>
+                              </Box>
+                            </Box>{" "}
+                            {stamp.verified && <Tag tone="green">Verified</Tag>}
+                            <Text variant="large">{stamp.score}%</Text>
+                          </Box>
+                        </StampCard>
+                      );
+                    }
+                  )}
+                </StampScrollContainer>
+                <Box display="flex" flexDirection="row" gap="4">
+                  <Button
+                    variant="tertiary"
+                    size="small"
+                    onClick={() =>
+                      window.open("https://passport.gitcoin.co/", "_blank")
+                    }
+                  >
+                    Get Stamps
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    onClick={async () => {
+                      setLoadingPassport(true);
+                      try {
+                        await getPassportInfo(form.slug);
+                      } catch (e) {
+                        console.log({ e });
+                      }
+                      setLoadingPassport(false);
+                    }}
+                  >
+                    Check Score Again
+                  </Button>
+                </Box>
               </Box>
-            </Box>
-          )}
+            )}
+          </Box>
+        )}
       </motion.div>
       <Stack direction="horizontal" justify="space-between">
         <Box
@@ -323,7 +396,7 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
                   onClick={() => {
                     if (
                       form.formMetadata.sybilProtectionEnabled &&
-                      !form.formMetadata.hasPassedSybilCheck
+                      currentScore < 100
                     ) {
                       toast.error(
                         "You must have a minimum score of 100% to fill this form"

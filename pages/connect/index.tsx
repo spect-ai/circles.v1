@@ -29,39 +29,6 @@ const ConnectPage: NextPage = () => {
     {} as CollectionType
   );
 
-  const [connectedUser] = useAtom(connectedUserAtom);
-
-  useEffect(() => {
-    const verifiedSocials = profileContext?.verifiedSocials;
-    if (query.discord && verifiedSocials["discord"]?.id?.length) {
-      setData((d: any) => ({
-        ...d,
-        discord: {
-          id: verifiedSocials["discord"].id,
-          username: verifiedSocials["discord"]?.username,
-        },
-      }));
-    }
-    if (query.telegram && verifiedSocials["telegram"]?.id?.length) {
-      setData((d: any) => ({
-        ...d,
-        telegram: {
-          id: verifiedSocials["telegram"].id,
-          username: verifiedSocials["telegram"]?.username,
-        },
-      }));
-    }
-    if (query.github && verifiedSocials["github"]?.id?.length) {
-      setData((d: any) => ({
-        ...d,
-        github: {
-          id: verifiedSocials["github"].id,
-          username: verifiedSocials["github"]?.username,
-        },
-      }));
-    }
-  }, [profileContext.verifiedSocials]);
-
   useEffect(() => {
     const hasAllConnections =
       Object.keys(query).length > 0 &&
@@ -258,7 +225,6 @@ const ConnectPage: NextPage = () => {
               )}
               {query.wallet === "true" ? (
                 <>
-                  query.discord === "true" && connectedUser && (
                   <DiscordField
                     data={data}
                     setData={setData}
