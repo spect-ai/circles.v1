@@ -59,7 +59,7 @@ export const ResponseCharting = (props: Props) => {
         {isEmebedOpen && (
           <Embed
             setIsOpen={setIsEmebedOpen}
-            embedRoute={`https://circles.spect.network/embed/form/${collection?.slug}/charts?chartId=${chartId}`}
+            embedRoute={`https://circles-v1-production.vercel.app/embed/form/${collection?.slug}/charts?chartId=${chartId}`}
           />
         )}
       </AnimatePresence>
