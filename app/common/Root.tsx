@@ -163,13 +163,16 @@ const connectors = (chains: any) =>
     {
       groupName: "Wallets",
       wallets: [
-        metaMaskWallet({ chains }),
+        metaMaskWallet({
+          chains,
+          projectId: "a71a2b69b4ce96eaa0799a1448eb16c9",
+        }),
         rainbowWallet({
           chains,
           projectId: "a71a2b69b4ce96eaa0799a1448eb16c9",
           name: "Spect",
         }),
-        trustWallet({ chains }),
+        trustWallet({ chains, projectId: "a71a2b69b4ce96eaa0799a1448eb16c9" }),
         walletConnectWallet({
           chains,
           projectId: "a71a2b69b4ce96eaa0799a1448eb16c9",

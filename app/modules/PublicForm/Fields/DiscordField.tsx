@@ -86,7 +86,7 @@ export default function DiscordField({
                 src={`https://cdn.discordapp.com/avatars/${data[propertyId].id}/${data[propertyId].avatar}.png`}
               />
             )}
-            <Box>
+            <Box overflow={"hidden"}>
               <Text size="extraSmall" font="mono" weight="bold">
                 {data[propertyId].username}
               </Text>

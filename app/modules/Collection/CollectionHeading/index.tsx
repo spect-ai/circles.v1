@@ -475,7 +475,7 @@ function CollectionHeading() {
         {isEmbedModalOpen && (
           <Embed
             setIsOpen={setIsEmbedModalOpen}
-            embedRoute={`https://circles.spect.network/r/${collection.slug}/embed?`}
+            embedRoute={`https://circles-v1-production.vercel.app/r/${collection.slug}/embed?`}
           />
         )}
 

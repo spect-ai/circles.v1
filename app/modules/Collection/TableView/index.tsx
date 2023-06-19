@@ -711,7 +711,10 @@ export default function TableView() {
                     if (!collection.properties[key]) return;
                     if (collection.properties[key].type === "discord") {
                       csvData[propertyName] = JSON.stringify({
-                        username: `${value?.username}#${value?.discriminator}`,
+                        username:
+                          value?.discriminator === "0"
+                            ? value?.username
+                            : `${value?.username}#${value?.discriminator}`,
                         id: value?.id,
                       });
                     } else if (collection.properties[key].type === "github") {

@@ -33,7 +33,7 @@ export default function useConnectDiscord() {
         void router.push("/");
       }
     } else {
-      logError("Something went wrong while getting data from the discord bot");
+      // logError("Something went wrong while getting data from the discord bot");
     }
   };
   useEffect(() => {
