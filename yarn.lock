@@ -98,10 +98,10 @@
     react-rnd "^10.4.1"
     tippy.js "^6.3.7"
 
-"@avp1598/spect-shared-types@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@avp1598/spect-shared-types/-/spect-shared-types-0.2.1.tgz#17726abfef6efd0e39cf11895fc3374c5c3a4431"
-  integrity sha512-sTddOpxPJL7tHiRxtXhssSnCap/jppg5hGkbLsZNstSFzUv3BmDOUeIkd4lVvmfwAvMRa6Yj2uuVUKLDiTAqUA==
+"@avp1598/spect-shared-types@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@avp1598/spect-shared-types/-/spect-shared-types-0.2.3.tgz#383679112279a6f0f0235ff2ee3aa173d170a964"
+  integrity sha512-cF0poeRBEPM/JZ6R0DMKlwvl+cmvR0jSTF2WaYW7sWufS5GNngbtn70fg9fIsaiYIplSEuMtAY19g6l/MQSL6g==
   dependencies:
     "@ts-rest/core" "^3.26.2"
     typescript "^5.1.3"

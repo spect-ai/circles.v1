@@ -96,7 +96,7 @@
     "wagmi": "^0.12.12"
   },
   "devDependencies": {
-    "@avp1598/spect-shared-types": "^0.2.1",
+    "@avp1598/spect-shared-types": "^0.2.3",
     "@babel/core": "^7.18.2",
     "@commitlint/cli": "^17.0.2",
     "@commitlint/config-conventional": "^17.0.2",

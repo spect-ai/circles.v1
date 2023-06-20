@@ -1,15 +1,15 @@
 import {
-  MirrorNodeData,
-  mirrorNodeDataSchema,
+  DiscourseNodeData,
+  discourseNodeDataSchema,
 } from "@avp1598/spect-shared-types";
 import NodeFactory from "../../../Common/NodeFactory";
-import { isURL } from "@/app/common/utils/utils";
 import { toast } from "react-toastify";
+import { isURL } from "@/app/common/utils/utils";
 
-const Mirror = new NodeFactory<MirrorNodeData>({
-  label: "Mirror",
-  description: "Blog posts from your mirror page",
-  type: "mirror",
+const Discourse = new NodeFactory<DiscourseNodeData>({
+  label: "Discourse",
+  description: "Discourse forum posts",
+  type: "discourse",
   icon: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -29,26 +29,26 @@ const Mirror = new NodeFactory<MirrorNodeData>({
   inputs: [],
   outputs: [
     {
-      name: "Text Output",
+      name: "Transcript",
     },
   ],
   validateNode: (data) => {
-    data = mirrorNodeDataSchema.parse(data);
-    if (!data.url || !isURL(data.url) || !data.url.includes("mirror.xyz")) {
-      toast.error("Please enter a valid Mirror URL on the Mirror node");
+    data = discourseNodeDataSchema.parse(data);
+    if (!data.url || !isURL(data.url)) {
+      toast.error("Please enter a valid Discourse URL on the Discourse Node");
       return false;
     }
     return true;
   },
   fields: [
     {
-      label: "Mirror Url",
+      label: "Discourse Category Url",
       value: "url",
       type: "url",
-      description: "The url of your mirror blog",
-      placeholder: "https://guild.mirror.xyz/",
+      description: "The url of your Discourse forum, the specific category",
+      placeholder: "https://forum.hop.exchange/c/events/5",
     },
   ],
 });
 
-export default Mirror;
+export default Discourse;
