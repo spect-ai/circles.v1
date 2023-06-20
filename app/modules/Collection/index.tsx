@@ -41,13 +41,6 @@ export function Collection() {
           }`,
         }}
       />
-      {/* <PrimaryButton
-        onClick={() => {
-          void migrateAllCOllections();
-        }}
-      >
-        Migrate
-      </PrimaryButton> */}
       <AnimatePresence>
         {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
       </AnimatePresence>

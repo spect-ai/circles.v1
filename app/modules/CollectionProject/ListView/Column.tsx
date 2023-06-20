@@ -41,6 +41,7 @@ export default function Column({
     localCollection: collection,
     updateCollection,
     colorMapping,
+    authorization,
   } = useLocalCollection();
   const { getMemberDetails } = useModalOptions();
   const [columnName, setColumnName] = useState(column.label);
@@ -69,33 +70,46 @@ export default function Column({
               if (res.id) updateCollection(res);
               else logError("Error renaming column");
             }}
+            disabled={
+              column.value === "__unassigned__" || authorization === "readonly"
+            }
           />
-          <Button
-            shape="circle"
-            variant="transparent"
-            size="small"
-            onClick={() => {
-              setDefaultValue({
-                [groupByPropertyId]:
-                  column.value === "__unassigned__" ? null : column,
-              });
-              void router.push({
-                pathname: router.pathname,
-                query: {
-                  circle: router.query.circle,
-                  collection: router.query.collection,
-                  newCard: true,
-                },
-              });
-            }}
-          >
-            <IconPlusSmall />
-          </Button>
+          {authorization !== "readonly" && (
+            <Button
+              shape="circle"
+              variant="transparent"
+              size="small"
+              onClick={() => {
+                setDefaultValue({
+                  [groupByPropertyId]:
+                    column.value === "__unassigned__" ? null : column,
+                });
+                void router.push({
+                  pathname: router.pathname,
+                  query: {
+                    circle: router.query.circle,
+                    collection: router.query.collection,
+                    newCard: true,
+                  },
+                });
+              }}
+            >
+              <IconPlusSmall />
+            </Button>
+          )}
         </Stack>
         <ScrollContainer>
           <Stack space="2">
             {cardIds?.map((slug, index) => (
-              <Draggable key={slug} draggableId={slug} index={index}>
+              <Draggable
+                key={slug}
+                draggableId={slug}
+                index={index}
+                isDragDisabled={
+                  collection.data?.[slug]?.__cardStatus__ === "closed" ||
+                  authorization === "readonly"
+                }
+              >
                 {(provided, snapshot) => (
                   <Box
                     key={slug}
@@ -104,13 +118,23 @@ export default function Column({
                     borderColor={snapshot.isDragging ? "accent" : undefined}
                     borderRadius="medium"
                     onClick={() => {
+                      const query = {
+                        cardSlug: slug,
+                      } as any;
+                      if (router.query.formId) {
+                        query["formId"] = router.query.formId;
+                      } else {
+                        if (router.query.circle) {
+                          query["circle"] = router.query.circle;
+                        }
+                        if (router.query.collection) {
+                          query["collection"] = router.query.collection;
+                        }
+                      }
+
                       void router.push({
                         pathname: router.pathname,
-                        query: {
-                          circle: router.query.circle,
-                          collection: router.query.collection,
-                          cardSlug: slug,
-                        },
+                        query,
                       });
                     }}
                     cursor="pointer"

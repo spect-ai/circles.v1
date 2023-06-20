@@ -39,6 +39,7 @@ export default function Column({
     localCollection: collection,
     updateCollection,
     colorMapping,
+    authorization,
   } = useLocalCollection();
   const { getMemberDetails } = useModalOptions();
 
@@ -71,29 +72,33 @@ export default function Column({
               if (res.id) updateCollection(res);
               else logError("Error renaming column");
             }}
-            disabled={column.value === "__unassigned__"}
+            disabled={
+              column.value === "__unassigned__" || authorization === "readonly"
+            }
           />
-          <Button
-            shape="circle"
-            variant="transparent"
-            size="small"
-            onClick={() => {
-              setDefaultValue({
-                [groupByPropertyId]:
-                  column.value === "__unassigned__" ? null : column,
-              });
-              void router.push({
-                pathname: router.pathname,
-                query: {
-                  circle: router.query.circle,
-                  collection: router.query.collection,
-                  newCard: true,
-                },
-              });
-            }}
-          >
-            <IconPlusSmall size="5" />
-          </Button>
+          {authorization !== "readonly" && (
+            <Button
+              shape="circle"
+              variant="transparent"
+              size="small"
+              onClick={() => {
+                setDefaultValue({
+                  [groupByPropertyId]:
+                    column.value === "__unassigned__" ? null : column,
+                });
+                void router.push({
+                  pathname: router.pathname,
+                  query: {
+                    circle: router.query.circle,
+                    collection: router.query.collection,
+                    newCard: true,
+                  },
+                });
+              }}
+            >
+              <IconPlusSmall size="5" />
+            </Button>
+          )}
         </Stack>
         <ScrollContainer>
           <Stack space="2">
@@ -103,7 +108,8 @@ export default function Column({
                 draggableId={slug}
                 index={index}
                 isDragDisabled={
-                  collection.data?.[slug]?.__cardStatus__ === "closed"
+                  collection.data?.[slug]?.__cardStatus__ === "closed" ||
+                  authorization === "readonly"
                 }
               >
                 {(provided, snapshot) => (
@@ -115,13 +121,22 @@ export default function Column({
                     borderColor={snapshot.isDragging ? "accent" : undefined}
                     borderRadius="medium"
                     onClick={() => {
+                      const query = {
+                        cardSlug: slug,
+                      } as any;
+                      if (router.query.formId) {
+                        query["formId"] = router.query.formId;
+                      } else {
+                        if (router.query.circle) {
+                          query["circle"] = router.query.circle;
+                        }
+                        if (router.query.collection) {
+                          query["collection"] = router.query.collection;
+                        }
+                      }
                       void router.push({
                         pathname: router.pathname,
-                        query: {
-                          circle: router.query.circle,
-                          collection: router.query.collection,
-                          cardSlug: slug,
-                        },
+                        query,
                       });
                     }}
                     cursor="pointer"

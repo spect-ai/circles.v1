@@ -797,6 +797,26 @@ export interface FormType {
   updatedAt: string;
   id: string;
   formMetadata: FormMetadata;
+  collectionType: 0 | 1;
+}
+
+export interface PublicProjectType {
+  name: string;
+  slug: string;
+  private: boolean;
+  description: string;
+  editorVersion: 1 | 2;
+  properties: {
+    [key: string]: Property;
+  };
+  propertyOrder: string[];
+  creator: string;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+  projectMetadata: ProjectMetadata;
+  data: MappedItem<any>;
+  collectionType: 0 | 1;
 }
 
 export type KudosType = {

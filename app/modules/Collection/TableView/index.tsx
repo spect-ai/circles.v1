@@ -356,24 +356,7 @@ export default function TableView() {
       .filter((prop) => collection.properties[prop].type !== "readonly")
       .map((propertyId: string) => {
         const property = collection.properties[propertyId];
-        if (property.id === "__ceramic__") {
-          return {
-            ...keyColumn(property.id, {
-              component: CeramicComponent,
-            }),
-            disabled: true,
-            title: (
-              <HeaderComponent
-                propertyId={property.id}
-                columnName={property.name}
-                setIsEditFieldOpen={setIsEditFieldOpen}
-                setPropertyId={setPropertyId}
-                propertyType={property.type}
-              />
-            ),
-            minWidth: 200,
-          };
-        } else if (
+        if (
           [
             "singleSelect",
             "multiSelect",
@@ -461,26 +444,6 @@ export default function TableView() {
             ),
             minWidth: 200,
           };
-        } else if (["multiURL"].includes(property.type)) {
-          return {
-            component: getCellComponent(property.type) as any,
-            columnData: {
-              property,
-              setIsURLFieldOpen,
-              setPropertyId,
-              setDataId,
-            },
-            title: (
-              <HeaderComponent
-                propertyId={property.id}
-                columnName={property.name}
-                setIsEditFieldOpen={setIsEditFieldOpen}
-                setPropertyId={setPropertyId}
-                propertyType={property.type}
-              />
-            ),
-            minWidth: 200,
-          };
         } else {
           return {
             ...keyColumn(property.id, getCellComponent(property.type) as any),
@@ -501,27 +464,6 @@ export default function TableView() {
           };
         }
       });
-
-  const columnsWithCredentials = collection.formMetadata
-    ?.credentialCurationEnabled
-    ? [
-        {
-          component: CredentialComponent,
-          columnData: {},
-          title: (
-            <HeaderComponent
-              propertyId={"__credentials__"}
-              columnName={"Responder"}
-              setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyId={setPropertyId}
-              propertyType={"user"}
-            />
-          ),
-          minWidth: 150,
-        },
-        ...columns,
-      ]
-    : columns;
 
   return (
     <Box>
@@ -803,7 +745,7 @@ export default function TableView() {
                   : 500
               }
               onChange={debouncedOnChange}
-              columns={columnsWithCredentials}
+              columns={columns}
               gutterColumn={{
                 component: GutterColumnComponent,
                 minWidth: 50,

@@ -1,4 +1,6 @@
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
+import { useCircle } from "@/app/modules/Circle/CircleContext";
+import PublicProject from "@/app/modules/PublicProject";
 import { FormType } from "@/app/types";
 import { GetServerSidePropsContext, NextPage } from "next";
 import dynamic from "next/dynamic";
@@ -16,7 +18,7 @@ interface Props {
 }
 
 const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
-  console.log({ slug: `slug received: ${slug}` });
+  const { circle } = useCircle();
   if (!form) {
     return (
       <>
@@ -38,24 +40,43 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
     );
   }
 
-  return (
-    <>
-      <MetaHead
-        title={form.name}
-        description={
-          form.description ||
-          "Incentivized forms for communities to collect feedback, run surveys, onboarding, and more."
-        }
-        image={
-          form.formMetadata.cover ||
-          form.formMetadata.logo ||
-          "https://ik.imagekit.io/spectcdn/spect_landscape.pngcz0kiyzu43m_fb9pRIjVW?updatedAt=1681837726214"
-        }
-      />
+  if (form.collectionType === 0)
+    return (
+      <>
+        <MetaHead
+          title={form.name}
+          description={
+            form.description ||
+            "Incentivized forms for communities to collect feedback, run surveys, onboarding, and more."
+          }
+          image={
+            form.formMetadata.cover ||
+            form.formMetadata.logo ||
+            "https://ik.imagekit.io/spectcdn/spect_landscape.pngcz0kiyzu43m_fb9pRIjVW?updatedAt=1681837726214"
+          }
+        />
 
-      <PublicForm form={form} />
-    </>
-  );
+        <PublicForm form={form} />
+      </>
+    );
+  else
+    return (
+      <>
+        <MetaHead
+          title={form.name}
+          description={
+            form.description ||
+            "Projects for communities to share contect about tasks, contacts, content and more."
+          }
+          image={
+            circle?.avatar ||
+            "https://ik.imagekit.io/spectcdn/spect_landscape.pngcz0kiyzu43m_fb9pRIjVW?updatedAt=1681837726214"
+          }
+        />
+
+        <PublicProject />
+      </>
+    );
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {

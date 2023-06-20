@@ -74,7 +74,7 @@ function EditProperty({ propertyId, disabled }: Props) {
               <PropertyButton
                 onClick={() => {
                   if (disabled) {
-                    toast.error("You can't edit a closed card");
+                    toast.error("You can't edit a card in read-only mode");
                     return;
                   }
                   setIsMenuOpen(true);

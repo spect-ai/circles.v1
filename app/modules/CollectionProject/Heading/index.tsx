@@ -44,6 +44,7 @@ export default function ProjectHeading() {
     projectViewId,
     setProjectViewId,
     updateCollection,
+    authorization,
   } = useLocalCollection();
   const [isAddViewPopupOpen, setIsAddViewPopupOpen] = useState(false);
   const [isAddViewModalOpen, setIsAddViewModalOpen] = useState(false);
@@ -131,9 +132,9 @@ export default function ProjectHeading() {
             <Text size="headingThree" weight="semiBold" ellipsis>
               {collection.name}
             </Text>
-            <Settings />
+            {authorization !== "readonly" && <Settings />}
           </Stack>
-          {/* <Hidden xs sm>
+          <Hidden xs sm>
             <Box width="32">
               <PrimaryButton
                 icon={
@@ -146,15 +147,17 @@ export default function ProjectHeading() {
                   void navigator.clipboard.writeText(
                     `https://circles.spect.network/r/${collection?.slug}`
                   );
-                  toast.success("Copied to clipboard");
+                  toast.success(
+                    "Paste link to share this project in read-only mode"
+                  );
                 }}
               >
                 Share
               </PrimaryButton>
             </Box>
-          </Hidden> */}
+          </Hidden>
         </Stack>
-        <Box marginBottom="1" />
+        <Box marginBottom="4" />
         <Hidden xs sm>
           <DragDropContext onDragEnd={handleDragEnd}>
             <Box
@@ -218,23 +221,24 @@ export default function ProjectHeading() {
                                       ?.name
                                   }
                                 </Text>
-                                {viewId === projectViewId && (
-                                  <Box
-                                    cursor="pointer"
-                                    marginLeft="2"
-                                    onClick={() => {
-                                      if (!formActions("manageSettings"))
-                                        toast.error(
-                                          "Your role(s) doen't have permission to manage settings"
-                                        );
-                                      else setIsViewSettingsOpen(true);
-                                    }}
-                                  >
-                                    <Text variant="label">
-                                      <IconCog size="5" />
-                                    </Text>
-                                  </Box>
-                                )}
+                                {viewId === projectViewId &&
+                                  authorization !== "readonly" && (
+                                    <Box
+                                      cursor="pointer"
+                                      marginLeft="2"
+                                      onClick={() => {
+                                        if (!formActions("manageSettings"))
+                                          toast.error(
+                                            "Your role(s) doen't have permission to manage settings"
+                                          );
+                                        else setIsViewSettingsOpen(true);
+                                      }}
+                                    >
+                                      <Text variant="label">
+                                        <IconCog size="5" />
+                                      </Text>
+                                    </Box>
+                                  )}
                               </ViewTab>
                             </div>
                           )}
@@ -246,95 +250,97 @@ export default function ProjectHeading() {
                 )}
               </Droppable>
 
-              <Popover
-                width="48"
-                isOpen={isAddViewPopupOpen}
-                setIsOpen={setIsAddViewPopupOpen}
-                butttonComponent={
-                  <AddViewButton
-                    display="flex"
-                    flexDirection="row"
-                    alignItems="center"
-                    gap="2"
-                    paddingX="8"
-                    onClick={() => {
-                      if (!formActions("manageSettings"))
-                        toast.error(
-                          "Your role(s) doen't have permission to manage this collection's settings"
-                        );
-                      else setIsAddViewPopupOpen(true);
+              {authorization !== "readonly" && (
+                <Popover
+                  width="48"
+                  isOpen={isAddViewPopupOpen}
+                  setIsOpen={setIsAddViewPopupOpen}
+                  butttonComponent={
+                    <AddViewButton
+                      display="flex"
+                      flexDirection="row"
+                      alignItems="center"
+                      gap="2"
+                      paddingX="8"
+                      onClick={() => {
+                        if (!formActions("manageSettings"))
+                          toast.error(
+                            "Your role(s) doen't have permission to manage this collection's settings"
+                          );
+                        else setIsAddViewPopupOpen(true);
+                      }}
+                    >
+                      <Text>
+                        <IconPlusSmall size="5" />
+                      </Text>
+                      <Text>Add View</Text>
+                    </AddViewButton>
+                  }
+                >
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: "auto", transition: { duration: 0.2 } }}
+                    exit={{ height: 0 }}
+                    style={{
+                      overflow: "hidden",
+                      borderRadius: "0.25rem",
                     }}
                   >
-                    <Text>
-                      <IconPlusSmall size="5" />
-                    </Text>
-                    <Text>Add View</Text>
-                  </AddViewButton>
-                }
-              >
-                <motion.div
-                  initial={{ height: 0 }}
-                  animate={{ height: "auto", transition: { duration: 0.2 } }}
-                  exit={{ height: 0 }}
-                  style={{
-                    overflow: "hidden",
-                    borderRadius: "0.25rem",
-                  }}
-                >
-                  <Box
-                    backgroundColor="background"
-                    borderWidth="0.375"
-                    borderRadius="2xLarge"
-                  >
-                    <MenuItem
-                      padding="2"
-                      borderTopRadius="2xLarge"
-                      onClick={() => {
-                        setIsAddViewPopupOpen(false);
-                        setViewType("grid");
-                        setIsAddViewModalOpen(true);
-                      }}
+                    <Box
+                      backgroundColor="background"
+                      borderWidth="0.375"
+                      borderRadius="2xLarge"
                     >
-                      <Text color="accent">
-                        <Grid
-                          size={22}
-                          style={{
-                            marginTop: 4,
-                            marginLeft: 0.5,
-                          }}
-                        />
-                      </Text>
-                      <Text weight="semiBold">Grid View</Text>
-                    </MenuItem>
-                    <MenuItem
-                      padding="2"
-                      onClick={() => {
-                        setIsAddViewPopupOpen(false);
-                        setViewType("kanban");
-                        setIsAddViewModalOpen(true);
-                      }}
-                    >
-                      <Text color="accent">
-                        <Trello />
-                      </Text>
-                      <Text weight="semiBold">Kanban View</Text>
-                    </MenuItem>
-                    <MenuItem
-                      padding="2"
-                      onClick={() => {
-                        setIsAddViewPopupOpen(false);
-                        setViewType("list");
-                        setIsAddViewModalOpen(true);
-                      }}
-                    >
-                      <Text color="accent">
-                        <List />
-                      </Text>
-                      <Text weight="semiBold">List View</Text>
-                    </MenuItem>
-                  </Box>
-                </motion.div>
-              </Popover>
+                      <MenuItem
+                        padding="2"
+                        borderTopRadius="2xLarge"
+                        onClick={() => {
+                          setIsAddViewPopupOpen(false);
+                          setViewType("grid");
+                          setIsAddViewModalOpen(true);
+                        }}
+                      >
+                        <Text color="accent">
+                          <Grid
+                            size={22}
+                            style={{
+                              marginTop: 4,
+                              marginLeft: 0.5,
+                            }}
+                          />
+                        </Text>
+                        <Text weight="semiBold">Grid View</Text>
+                      </MenuItem>
+                      <MenuItem
+                        padding="2"
+                        onClick={() => {
+                          setIsAddViewPopupOpen(false);
+                          setViewType("kanban");
+                          setIsAddViewModalOpen(true);
+                        }}
+                      >
+                        <Text color="accent">
+                          <Trello />
+                        </Text>
+                        <Text weight="semiBold">Kanban View</Text>
+                      </MenuItem>
+                      <MenuItem
+                        padding="2"
+                        onClick={() => {
+                          setIsAddViewPopupOpen(false);
+                          setViewType("list");
+                          setIsAddViewModalOpen(true);
+                        }}
+                      >
+                        <Text color="accent">
+                          <List />
+                        </Text>
+                        <Text weight="semiBold">List View</Text>
+                      </MenuItem>
+                    </Box>
+                  </motion.div>
+                </Popover>
+              )}
             </Box>
           </DragDropContext>
           <Filtering />

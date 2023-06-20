@@ -12,13 +12,23 @@ export default function GutterColumnComponent({ rowData }: CellProps) {
         size="small"
         variant="transparent"
         onClick={() => {
+          const query = {
+            cardSlug: rowData.id,
+          } as any;
+          if (router.query.formId) {
+            query["formId"] = router.query.formId;
+          } else {
+            if (router.query.circle) {
+              query["circle"] = router.query.circle;
+            }
+            if (router.query.collection) {
+              query["collection"] = router.query.collection;
+            }
+          }
+
           void router.push({
             pathname: router.pathname,
-            query: {
-              circle: router.query.circle,
-              collection: router.query.collection,
-              cardSlug: rowData.id,
-            },
+            query,
           });
         }}
       >

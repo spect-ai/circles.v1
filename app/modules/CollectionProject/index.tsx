@@ -8,12 +8,16 @@ import ListView from "./ListView";
 import ProjectTableView from "./TableView";
 
 export default function CollectionProject() {
-  const { projectViewId, localCollection: collection } = useLocalCollection();
+  const {
+    projectViewId,
+    localCollection: collection,
+    authorization,
+  } = useLocalCollection();
   const { formActions } = useRoleGate();
   return (
     <Box>
       <ProjectHeading />
-      {formActions("viewResponses") && (
+      {(formActions("viewResponses") || authorization === "readonly") && (
         <Box>
           {collection.projectMetadata.views[projectViewId]?.type === "grid" && (
             <ProjectTableView />
@@ -25,7 +29,7 @@ export default function CollectionProject() {
           )}
         </Box>
       )}
-      {!formActions("viewResponses") && (
+      {!formActions("viewResponses") && authorization !== "readonly" && (
         <Box width="full" marginTop="32">
           <Stack align="center" justify="center">
             <Text color="text" weight="semiBold" size="headingTwo">
