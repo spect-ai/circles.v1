@@ -1,6 +1,11 @@
 // import { storeImage } from "@/app/common/utils/ipfs";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import { CircleType, UserType } from "@/app/types";
+import {
+  CircleType,
+  DiscordFieldFromOauthData,
+  GithubFieldFromOauthData,
+  UserType,
+} from "@/app/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 
@@ -26,19 +31,11 @@ type ProfileSettingsType = {
   apiKeys: string[];
   setApiKeys: React.Dispatch<React.SetStateAction<string[]>>;
   verifiedSocials: {
-    [key: string]: {
-      id: string;
-      username: string;
-      avatar?: string;
-    };
+    [key: string]: GithubFieldFromOauthData | DiscordFieldFromOauthData;
   };
   setVerifiedSocials: React.Dispatch<
     React.SetStateAction<{
-      [key: string]: {
-        id: string;
-        username: string;
-        avatar?: string;
-      };
+      [key: string]: GithubFieldFromOauthData | DiscordFieldFromOauthData;
     }>
   >;
 };
@@ -74,11 +71,7 @@ export function useProviderLocalProfile() {
   const [email, setEmail] = useState("");
   const [verifiedSocials, setVerifiedSocials] = useState(
     {} as {
-      [key: string]: {
-        id: string;
-        username: string;
-        avatar?: string;
-      };
+      [key: string]: GithubFieldFromOauthData | DiscordFieldFromOauthData;
     }
   );
   const [apiKeys, setApiKeys] = useState([] as string[]);
@@ -127,11 +120,7 @@ export function useProviderLocalProfile() {
     setApiKeys(currentUser?.apiKeys || []);
 
     let verifiedSocials = {} as {
-      [key: string]: {
-        id: string;
-        username: string;
-        avatar?: string;
-      };
+      [key: string]: GithubFieldFromOauthData | DiscordFieldFromOauthData;
     };
     console.log({ currentUser });
     if (currentUser?.discordId && currentUser?.discordUsername) {
@@ -141,7 +130,7 @@ export function useProviderLocalProfile() {
           id: currentUser?.discordId,
           username: currentUser?.discordUsername,
           avatar: currentUser?.discordAvatar || "",
-        },
+        } as DiscordFieldFromOauthData,
       };
     }
     if (currentUser?.githubId && currentUser?.githubUsername) {
@@ -149,9 +138,9 @@ export function useProviderLocalProfile() {
         ...verifiedSocials,
         github: {
           id: currentUser?.githubId,
-          username: currentUser?.githubUsername,
-          avatar: currentUser?.githubAvatar || "",
-        },
+          login: currentUser?.githubUsername,
+          avatar_url: currentUser?.githubAvatar || "",
+        } as GithubFieldFromOauthData,
       };
     }
     setVerifiedSocials(verifiedSocials);

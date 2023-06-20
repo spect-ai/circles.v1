@@ -78,12 +78,12 @@ export default function GithubField({
     <Box marginTop="4" width="64">
       {data[propertyId] && data[propertyId].id ? (
         <Box borderWidth="0.375" borderRadius="2xLarge" padding="2">
-          <Stack direction="horizontal" align="center">
+          <Stack direction="horizontal" align="center" justify="center">
             {showAvatar && (
               <Avatar label="Github Avatar" src={data[propertyId].avatar_url} />
             )}
-            <Box>
-              <Text size="extraSmall" font="mono" weight="bold">
+            <Box overflow={"hidden"}>
+              <Text size="extraSmall" font="mono" weight="bold" ellipsis>
                 {data[propertyId].login}
               </Text>
             </Box>
