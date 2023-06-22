@@ -16,7 +16,7 @@
     "@ant-design/icons": "^4.7.0",
     "@apollo/client": "^3.7.3",
     "@arcana/auth-wagmi": "^0.0.4",
-    "@avp1598/react-beautiful-editor": "^0.1.1",
+    "@avp1598/react-beautiful-editor": "^0.2.1",
     "@ceramicnetwork/http-client": "^2.15.0",
     "@composedb/client": "^0.3.1",
     "@didtools/pkh-ethereum": "^0.0.3",
