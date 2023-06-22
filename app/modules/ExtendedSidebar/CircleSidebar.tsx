@@ -212,7 +212,7 @@ function CircleSidebar() {
                     });
                 }}
               >
-                AI Workflows
+                Community AI
               </PrimaryButton>
             </Link>
             {circle?.sidebarConfig?.showPayment && (

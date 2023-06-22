@@ -83,7 +83,7 @@ const Workflows = (props: Props) => {
             )}
           </AnimatePresence>
           <Stack space="4">
-            <Heading>Workflows</Heading>
+            <Heading>Community AI</Heading>
             <Box width="1/3">
               <PrimaryButton
                 icon={<IconPlusSmall size="5" />}
