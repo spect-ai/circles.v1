@@ -179,7 +179,6 @@ export interface CircleType {
   };
   guildxyzId: number;
   guildxyzToCircleRoles: GuildxyzToCircleRoles;
-  paymentAddress: string;
   automations: AutomationType;
   automationsIndexedByCollection: AutomationsIndexedByCollectionSlugType;
   rootAutomations: RootAutomationsType;
@@ -1214,6 +1213,7 @@ export interface SpectTemplate {
   image: string;
   url: string;
   tags: string[];
+  circleSlug: string;
 }
 export type GithubFieldFromOauthData = {
   id: string;

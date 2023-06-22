@@ -174,6 +174,8 @@ export function useProviderLocalProfile() {
     verifiedSocials,
     setVerifiedSocials,
     myCircles,
+    fetchCircles,
+    loadingMyCircles,
   };
 }
 export const useProfile = () => useContext(LocalProfileContext);

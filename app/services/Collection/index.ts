@@ -566,12 +566,13 @@ export const duplicateCollection = async (
 
 export const moveCollection = async (
   collectionSlug: string,
-  circleId: string
+  sourceCircleSlug: string,
+  destinationCircleId: string
 ) => {
   const res = await fetch(
-    `${process.env.API_HOST}/collection/v2/slug/${collectionSlug}/move?circleId=${circleId}`,
+    `${process.env.API_HOST}/circle/v2/slug/${sourceCircleSlug}/moveCollection?destinationCircleId=${destinationCircleId}&collectionSlug=${collectionSlug}`,
     {
-      method: "PATCH",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -581,13 +582,15 @@ export const moveCollection = async (
 
   if (!res.ok) {
     let err;
+    console.log({ res: res.status });
     if (res.status === 404) err = "Not Found";
+    else if (res.status === 401) err = "Forbidden";
     else {
       const e = await res.json();
       err = e.message || e;
     }
     logError(`Moving Collection failed: ${err}`, false);
-    toast.error("Moving failed, please contact support");
+    toast.error(err);
     return;
   }
   return await res.json();

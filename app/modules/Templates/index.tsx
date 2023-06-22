@@ -7,8 +7,13 @@ import Template from "./Template";
 import Logo from "@/app/common/components/Logo";
 import { getAllTemplates } from "@/app/services/Templates";
 import { matchSorter } from "match-sorter";
+import {
+  LocalProfileContext,
+  useProviderLocalProfile,
+} from "../Profile/ProfileSettings/LocalProfileContext";
 
 export default function Templates() {
+  const profileContext = useProviderLocalProfile();
   const [template, setTemplate] = useState<SpectTemplate | null>(null);
   const [templates, setTemplates] = useState<SpectTemplate[]>([]);
   const [templateGroups, setTemplateGroups] = useState<{
@@ -17,36 +22,25 @@ export default function Templates() {
   const [filteredTemplates, setFilteredTemplates] = useState<SpectTemplate[]>(
     []
   );
-  const sidebarItems = [
-    "Popular",
-    "New",
-    "Onboarding",
-    "Education",
-    "Community Management",
-    "Grant Program",
-    "Project Management",
-    "Event Management",
-    "Governance",
-    "Social",
-    "Marketing",
-  ];
-  const [selectedSidebarItem, setSelectedSidebarItem] = useState(
-    sidebarItems[0]
-  );
+  const [sidebarItems, setSidebarItems] = useState<string[]>([]);
+  const [selectedSidebarItem, setSelectedSidebarItem] = useState("");
 
   const onClick = (template: SpectTemplate) => {
     setTemplate(template);
   };
 
   const updateFilteredTemplates = (
-    selectedSidebarItem?: string,
+    sidebarItem?: string,
     filteredBy?: string
   ) => {
-    if (selectedSidebarItem) {
-      const fiteredTemplateIds = templateGroups[selectedSidebarItem];
+    console.log({ sidebarItem, templateGroups });
+
+    if (sidebarItem) {
+      const fiteredTemplateIds = templateGroups[sidebarItem];
       const filteredTemplates = templates.filter((item) =>
         fiteredTemplateIds.includes(item.id)
       );
+      console.log({ filteredTemplates });
       setFilteredTemplates(filteredTemplates);
     } else if (filteredBy) {
       const filteredTemplates = matchSorter(templates, filteredBy, {
@@ -64,12 +58,18 @@ export default function Templates() {
       console.log({ templateData, templatesByGroup });
       setTemplates(templateData);
       setTemplateGroups(templatesByGroup);
-      updateFilteredTemplates(selectedSidebarItem);
     })();
   }, []);
 
+  useEffect(() => {
+    const sidebarItems = Object.keys(templateGroups);
+    setSidebarItems(sidebarItems);
+    setSelectedSidebarItem(sidebarItems[0]);
+    updateFilteredTemplates(sidebarItems[0]);
+  }, [templateGroups]);
+
   return (
-    <>
+    <LocalProfileContext.Provider value={profileContext}>
       <Box
         display="flex"
         flexDirection="column"
@@ -184,7 +184,7 @@ export default function Templates() {
           </ScrollContainer>
         </Box>
       </Box>
-    </>
+    </LocalProfileContext.Provider>
   );
 }
 

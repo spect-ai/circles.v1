@@ -1,17 +1,35 @@
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { duplicateCircle } from "@/app/services/Circle";
+import { useTemplate } from "@/app/services/Templates";
 import { SpectTemplate } from "@/app/types";
 import { Box, Button, IconChevronLeft, Stack, Tag, Text } from "degen";
+import { useState } from "react";
 import styled from "styled-components";
+import CreateFromTemplateModal from "./CreateFromTemplateModal";
+import { AnimatePresence } from "framer-motion";
 
 type Props = {
   template: SpectTemplate;
   handleBack: () => void;
 };
 
-export default function Templates({ template, handleBack }: Props) {
+export default function Template({ template, handleBack }: Props) {
+  const [createFromTemplateModalOpen, setCreateFromTemplateModalOpen] =
+    useState(false);
   return (
     <Stack space="4">
+      <AnimatePresence>
+        {createFromTemplateModalOpen && (
+          <CreateFromTemplateModal
+            template={template}
+            handleClose={() => {
+              setCreateFromTemplateModalOpen(false);
+              // window.open(`http://localhost:3000/${template.id}`, "_blank");
+            }}
+          />
+        )}
+      </AnimatePresence>
       <Button size="extraSmall" variant="transparent" onClick={handleBack}>
         <Box display="flex" alignItems="center">
           <IconChevronLeft size="4" />
@@ -28,7 +46,13 @@ export default function Templates({ template, handleBack }: Props) {
           <Text variant="extraLarge" weight="bold">
             {template.name}
           </Text>
-          <PrimaryButton size="large" variant="secondary">
+          <PrimaryButton
+            size="large"
+            variant="secondary"
+            onClick={async () => {
+              setCreateFromTemplateModalOpen(true);
+            }}
+          >
             Use Template
           </PrimaryButton>
         </Stack>
@@ -36,30 +60,9 @@ export default function Templates({ template, handleBack }: Props) {
           {template.tags &&
             template.tags.map((item) => <Tag key={item}>{item}</Tag>)}{" "}
         </Stack>
-        <Box marginTop="8">
-          <StyledIframe
-            src={`http://localhost:3000/erer-3`}
-            title={template.name}
-            allowFullScreen
-          />
-        </Box>
+
         <Editor version={2} value={template.description} disabled />
       </Stack>
     </Stack>
   );
 }
-
-const StyledIframe = styled.iframe`
-  @media (max-width: 768px) {
-    width: 100%;
-    height: 100%px;
-  }
-  @media (max-width: 1280px) and (min-width: 768px) {
-    width: 100%;
-    height: 250px;
-  }
-  width: 100%;
-  height: 500px;
-  border: 0.5px solid #b6b6b6;
-  border-radius: 8px;
-`;
