@@ -1,5 +1,5 @@
 import { ConditionGroup, Property } from "@/app/types";
-import { satisfiesCondition, satisfiesConditions } from "./SatisfiesFilter";
+import { satisfiesCondition } from "./SatisfiesFilter";
 
 export function satisfiesAdvancedConditions(
   data: any,

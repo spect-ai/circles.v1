@@ -19,9 +19,10 @@ import PublicFormLayout from "@/app/common/layout/PublicLayout/PublicFormLayout"
 
 type Props = {
   form?: FormType;
+  embed?: boolean;
 };
 
-function PublicForm({ form: fetchedForm }: Props) {
+function PublicForm({ form: fetchedForm, embed }: Props) {
   const [form, setForm] = useState<FormType | undefined>(fetchedForm);
   const { mode } = useTheme();
   const { pathname } = useLocation();
@@ -29,6 +30,28 @@ function PublicForm({ form: fetchedForm }: Props) {
 
   const context = useProviderCircleContext();
   const profileContext = useProviderLocalProfile();
+
+  if (embed) {
+    return (
+      <ScrollContainer>
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: `${
+              mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+            }`,
+            color: `${
+              mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+            }`,
+          }}
+        />
+        <Container embed={true} id="container">
+          <FormContainer>
+            <FormFields form={form} setForm={setForm} />
+          </FormContainer>
+        </Container>
+      </ScrollContainer>
+    );
+  }
 
   return (
     <LocalProfileContext.Provider value={profileContext}>
@@ -124,7 +147,7 @@ const ScrollContainer = styled(Box)`
   &::-webkit-scrollbar {
     width: 0.2rem;
   }
-  max-height: calc(100vh);
+  height: 100vh;
   overflow-y: auto;
 `;
 

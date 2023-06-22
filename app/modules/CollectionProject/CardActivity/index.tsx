@@ -64,13 +64,7 @@ export default function CardActivity({
                     profile={actor}
                   />
                   <Text color="text" weight="semiBold">
-                    <a
-                      href={`/profile/${actor?.username}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {actor?.username}
-                    </a>
+                    {actor?.username}
                   </Text>
                   {!activity.comment && (
                     <Box>

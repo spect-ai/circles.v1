@@ -197,14 +197,7 @@ function Dashboard() {
                     >
                       Settings
                     </PopoverOption>
-                    <PopoverOption
-                      onClick={() => {
-                        setIsPopoverOpen(false);
-                        void router.push(`/profile/${currentUser?.username}`);
-                      }}
-                    >
-                      View Profile
-                    </PopoverOption>
+
                     <PopoverOption
                       onClick={() => {
                         setIsPopoverOpen(false);
@@ -233,16 +226,6 @@ function Dashboard() {
                     }}
                   />
                 </Button>
-                <Link href={`/profile/${currentUser?.username}`}>
-                  <PrimaryButton
-                    variant="secondary"
-                    onClick={() => {
-                      setIsProfilePanelExpanded(false);
-                    }}
-                  >
-                    View Profile
-                  </PrimaryButton>
-                </Link>
                 <Logout />
               </Stack>
             </Hidden>

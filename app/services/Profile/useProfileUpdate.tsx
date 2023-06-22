@@ -1,9 +1,6 @@
 import queryClient from "@/app/common/utils/queryClient";
-import { LensDate, LensSkills, NFT } from "@/app/types";
-import { Credential } from "@/app/types";
-import { useAtom } from "jotai";
 import { userDataAtom } from "@/app/state/global";
-import { logError } from "@/app/common/utils/utils";
+import { useAtom } from "jotai";
 
 interface UpdateProfileDTO {
   username?: string;
@@ -12,66 +9,8 @@ interface UpdateProfileDTO {
   email?: string;
   skills?: string[];
   discordId?: string;
-  githubId?: string;
-  lensHandle?: string;
-  skillsV2?: LensSkills[];
-  twitter?: string;
-  github?: string;
-  behance?: string;
-  website?: string;
   discordUsername?: string;
-}
-
-interface AddExperienceDTO {
-  jobTitle: string;
-  company: string;
-  companyLogo?: string;
-  description?: string;
-  start_date?: LensDate | object;
-  end_date?: LensDate | object;
-  linkedCredentials?: Credential[];
-  currentlyWorking?: boolean;
-  nfts?: NFT[];
-  poaps?: string[];
-}
-
-interface UpdateExperienceDto {
-  jobTitle?: string;
-  company?: string;
-  companyLogo?: string;
-  description?: string;
-  start_date?: LensDate | object;
-  end_date?: LensDate | object;
-  linkedCredentials?: Credential[];
-  currentlyWorking?: boolean;
-  nfts?: NFT[];
-  poaps?: string[];
-}
-
-interface AddEducationDTO {
-  courseDegree: string;
-  school: string;
-  schoolLogo?: string;
-  description?: string;
-  start_date?: LensDate | object;
-  end_date?: LensDate | object;
-  currentlyStudying?: boolean;
-  nfts?: NFT[];
-  poaps?: string[];
-  linkedCredentials?: Credential[];
-}
-
-interface UpdateEducationDTO {
-  courseDegree?: string;
-  school?: string;
-  schoolLogo?: string;
-  description?: string;
-  start_date?: LensDate | object;
-  end_date?: LensDate | object;
-  currentlyStudying?: boolean;
-  nfts?: NFT[];
-  poaps?: string[];
-  linkedCredentials?: Credential[];
+  githubId?: string;
 }
 
 export default function useProfileUpdate() {
@@ -89,7 +28,7 @@ export default function useProfileUpdate() {
 
   const updateProfile = async (body: UpdateProfileDTO) => {
     try {
-      const res = await fetch(`${process.env.API_HOST}/user/me`, {
+      const res = await fetch(`${process.env.API_HOST}/user/v1/me`, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -116,170 +55,46 @@ export default function useProfileUpdate() {
     }
   };
 
-  const addExperience = async (body: AddExperienceDTO) => {
-    console.log(body);
-    const res = await fetch(`${process.env.API_HOST}/user/me/addExperience`, {
+  const createAPIKey = async () => {
+    const res = await fetch(`${process.env.API_HOST}/user/v1/apiKey`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      method: "PATCH",
-      body: JSON.stringify(body),
+      method: "POST",
       credentials: "include",
     });
-
+    console.log({ res });
     if (res.ok) {
       const data = await res.json();
-      queryClient.setQueryData("getMyUser", data);
-      setUserData(data);
-
-      return true;
+      return data;
     } else {
-      logError("Error updating profile");
       return false;
     }
   };
 
-  const updateExperience = async (
-    experienceId: string,
-    body: UpdateExperienceDto
-  ) => {
-    const res = await fetch(
-      `${process.env.API_HOST}/user/me/updateExperience?experienceId=${experienceId}`,
-      {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        method: "PATCH",
-        body: JSON.stringify(body),
-        credentials: "include",
-      }
-    );
-
-    if (res.ok) {
-      const data = await res.json();
-      queryClient.setQueryData("getMyUser", data);
-      setUserData(data);
-      return true;
-    } else {
-      logError("Error updating profile");
-
-      return false;
-    }
-  };
-
-  const removeExperience = async (experienceId: string) => {
-    const res = await fetch(
-      `${process.env.API_HOST}/user/me/removeExperience?experienceId=${experienceId}`,
-      {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        method: "PATCH",
-        credentials: "include",
-      }
-    );
-
-    if (res.ok) {
-      const data = await res.json();
-      queryClient.setQueryData("getMyUser", data);
-      setUserData(data);
-
-      return true;
-    } else {
-      logError("Error updating profile");
-
-      return false;
-    }
-  };
-
-  const addEducation = async (body: AddEducationDTO) => {
-    const res = await fetch(`${process.env.API_HOST}/user/me/addEducation`, {
+  const deleteApiKey = async (apiKey: string) => {
+    const res = await fetch(`${process.env.API_HOST}/user/v1/apiKey`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      method: "PATCH",
-      body: JSON.stringify(body),
+      method: "DELETE",
+      body: JSON.stringify({ apiKey }),
       credentials: "include",
     });
-
     if (res.ok) {
       const data = await res.json();
-      queryClient.setQueryData("getMyUser", data);
-      setUserData(data);
-
-      return true;
+      return data;
     } else {
-      logError("Error updating profile");
-      return false;
-    }
-  };
-
-  const updateEducation = async (
-    educationId: string,
-    body: UpdateEducationDTO
-  ) => {
-    const res = await fetch(
-      `${process.env.API_HOST}/user/me/updateEducation?educationId=${educationId}`,
-      {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        method: "PATCH",
-        body: JSON.stringify(body),
-        credentials: "include",
-      }
-    );
-
-    if (res.ok) {
-      const data = await res.json();
-      queryClient.setQueryData("getMyUser", data);
-      setUserData(data);
-
-      return true;
-    } else {
-      logError("Error updating profile");
-      return false;
-    }
-  };
-
-  const removeEducation = async (educationId: string) => {
-    const res = await fetch(
-      `${process.env.API_HOST}/user/me/removeEducation?educationId=${educationId}`,
-      {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        method: "PATCH",
-        credentials: "include",
-      }
-    );
-
-    if (res.ok) {
-      const data = await res.json();
-      queryClient.setQueryData("getMyUser", data);
-      setUserData(data);
-
-      return true;
-    } else {
-      logError("Error updating profile");
       return false;
     }
   };
 
   return {
     updateProfile,
-    addExperience,
-    updateExperience,
-    removeExperience,
-    addEducation,
-    updateEducation,
-    removeEducation,
     preprocessDate,
+    createAPIKey,
+    deleteApiKey,
   };
 }

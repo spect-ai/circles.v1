@@ -20,7 +20,6 @@ import {
 import Poap from "./poap";
 import GoogleCaptcha from "./captcha";
 import { matchSorter } from "match-sorter";
-import ResponderProfile from "./responderProfile";
 import mixpanel from "mixpanel-browser";
 import { useQuery } from "react-query";
 import { CollectionType, UserType } from "@/app/types";
@@ -28,6 +27,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
 import DiscordRoleGate from "./DiscordRole";
 import Zealy from "./zealy";
+import AddLookup from "./responderProfile/AddLookup";
 
 type Props = {
   handleClose: () => void;
@@ -58,7 +58,11 @@ export const isPluginAdded = (
     case "googleCaptcha":
       return collection.formMetadata.captchaEnabled === true;
     case "responderProfile":
-      return collection.formMetadata.allowAnonymousResponses === false;
+      return (
+        collection.formMetadata.lookup?.verifiedAddress === true ||
+        !!collection.formMetadata.lookup?.tokens?.length ||
+        collection.formMetadata.lookup?.communities === true
+      );
     case "discordRole":
       return !!collection.formMetadata.discordRoleGating?.length;
     case "zealy":
@@ -299,7 +303,7 @@ export default function ViewPlugins({ handleClose }: Props) {
           />
         )}
         {isPluginOpen && pluginOpen === "responderProfile" && (
-          <ResponderProfile
+          <AddLookup
             handleClose={() => setIsPluginOpen(false)}
             key="responderProfile"
           />

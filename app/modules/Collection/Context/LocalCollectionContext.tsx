@@ -231,7 +231,6 @@ export function useProviderLocalCollection() {
         .then((res) => {
           if (res.data?.unauthorized) {
             setLoading(false);
-            console.log("failed");
             setTimeout(() => {
               toast.error(
                 "You are not authorized to view this collection, either you are not part of the circle or you dont have the required role",
@@ -253,9 +252,6 @@ export function useProviderLocalCollection() {
             if (res.data.collectionType === 1) {
               setProjectViewId(res.data.projectMetadata.viewOrder[0]);
             }
-            if (res.data.collectionType === 0 && cardSlug) {
-              setView(1);
-            }
           }
 
           setLoading(false);
@@ -267,6 +263,12 @@ export function useProviderLocalCollection() {
         });
     }
   }, [colId, fetchCollection]);
+
+  useEffect(() => {
+    if (localCollection.slug && cardSlug) {
+      setView(1);
+    }
+  }, [cardSlug, localCollection.slug]);
 
   useEffect(() => {
     if (socket && socket.on && localCollection.slug) {

@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import ClickableAvatar from "@/app/common/components/Avatar";
 import { logError, smartTrim } from "@/app/common/utils/utils";
 import { updateField } from "@/app/services/Collection";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { Option, UserType } from "@/app/types";
+import { Option } from "@/app/types";
 import {
   Avatar,
   AvatarGroup,
@@ -16,10 +15,9 @@ import {
   useTheme,
 } from "degen";
 import { useRouter } from "next/router";
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { Draggable, Droppable, DroppableProvided } from "react-beautiful-dnd";
-import { Calendar, DollarSign } from "react-feather";
-import { toast } from "react-toastify";
+import { Calendar } from "react-feather";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { CustomTag } from "../EditValue";

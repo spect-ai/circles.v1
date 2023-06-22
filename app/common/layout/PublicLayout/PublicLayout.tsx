@@ -28,17 +28,14 @@ type PublicLayoutProps = {
 
 const Container = styled(Box)<{ issidebarexpanded: string }>`
   @media (max-width: 992px) {
-    max-width: ${(props) =>
-      props.issidebarexpanded === "true"
-        ? "calc(100vw - 22rem)"
-        : "calc(100vw - 0rem)"};
+    max-width: "calc(100vw - 0rem)"
   }
 
-  max-width: ${(props) =>
-    props.issidebarexpanded === "true"
-      ? "calc(100vw - 22rem)"
-      : "calc(100vw - 2rem)"};
+  max-width:  "calc(100vw - 2rem)"
   flex-grow: 1;
+
+  height: 100%;
+  width: 100%;
 `;
 
 // show this only desktop screens
@@ -131,9 +128,7 @@ function PublicLayout(props: PublicLayoutProps) {
   const { inviteCode, circle } = router.query;
 
   const onboard =
-    (currentUser?.skillsV2?.length == 0 || currentUser?.email?.length == 0) &&
-    myCircles?.length == 0 &&
-    !inviteCode;
+    currentUser?.email?.length == 0 && myCircles?.length == 0 && !inviteCode;
 
   useEffect(() => {
     void fetchCircles();
@@ -226,7 +221,7 @@ function PublicLayout(props: PublicLayoutProps) {
               <Sidebar />
             </Hidden>
             <AnimatePresence initial={false}>
-              {isSidebarExpanded && <ExtendedSidebar />}
+              {isSidebarExpanded && circle && <ExtendedSidebar />}
               {showChangelog && changelogData && (
                 <Changelog
                   handleClose={() => setShowChangelog(false)}
@@ -261,7 +256,10 @@ function PublicLayout(props: PublicLayoutProps) {
                   </Button>
                 </Box>
               </Visible>
-              <Container issidebarexpanded={isSidebarExpanded.toString()}>
+              <Container
+                issidebarexpanded={isSidebarExpanded.toString()}
+                id="layoutContainer"
+              >
                 {children}
               </Container>
             </Box>

@@ -11,6 +11,7 @@ type Props = {
   updateRequiredFieldNotSet: (key: string, value: any) => void;
   showAvatar?: boolean;
   verify?: boolean;
+  showDisconnect?: boolean;
 };
 
 export default function DiscordField({
@@ -20,6 +21,7 @@ export default function DiscordField({
   updateRequiredFieldNotSet,
   showAvatar,
   verify = false,
+  showDisconnect = false,
 }: Props) {
   const { hostname } = useLocation();
   const [code, setCode] = useState("");
@@ -27,8 +29,6 @@ export default function DiscordField({
     window.addEventListener(
       "message",
       (event) => {
-        // if (event.origin !== "http://example.org:8080")
-        //   return;
         if (event.data.code) {
           setCode(event.data.code);
         }
@@ -49,7 +49,6 @@ export default function DiscordField({
         );
         if (res.ok) {
           const { userData } = await res.json();
-          console.log({ userData });
           if (userData.id) {
             setData((d: any) => ({
               ...d,
@@ -87,12 +86,52 @@ export default function DiscordField({
                 src={`https://cdn.discordapp.com/avatars/${data[propertyId].id}/${data[propertyId].avatar}.png`}
               />
             )}
-            <Box>
+            <Box overflow={"hidden"}>
               <Text size="extraSmall" font="mono" weight="bold">
                 {data[propertyId].username}
               </Text>
             </Box>
           </Stack>
+          {showDisconnect && (
+            <Box marginTop="2" paddingRight="4">
+              <Box
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                justifyContent="flex-end"
+              >
+                <Box
+                  cursor="pointer"
+                  onClick={async () => {
+                    console.log("disconnecting discord");
+                    const res = await fetch(
+                      `${process.env.API_HOST}/user/v1/disconnectDiscord`,
+                      {
+                        credentials: "include",
+                        method: "PATCH",
+                      }
+                    );
+                    if (res.ok) {
+                      setData((d: any) => ({
+                        ...d,
+                        [propertyId]: null,
+                      }));
+                      updateRequiredFieldNotSet(propertyId, null);
+                    }
+                  }}
+                >
+                  <Text
+                    size="extraSmall"
+                    font="mono"
+                    weight="bold"
+                    color="accent"
+                  >
+                    Disconnect
+                  </Text>
+                </Box>
+              </Box>
+            </Box>
+          )}
         </Box>
       ) : (
         <PrimaryButton

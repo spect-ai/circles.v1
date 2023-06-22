@@ -11,7 +11,6 @@ import {
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { satisfiesConditions } from "../../Collection/Common/SatisfiesFilter";
 import DiscordField from "./DiscordField";
 import GithubField from "./GithubField";
 import MultiSelect from "./MultiSelect";

@@ -1,6 +1,5 @@
 import { logError } from "@/app/common/utils/utils";
 import { ProjectType } from "@/app/types";
-import { toast } from "react-toastify";
 
 type CreateProjectDto = {
   name: string;

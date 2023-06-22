@@ -7,7 +7,9 @@ const DiscordComponent = ({ rowData }: CellProps) => {
     <Box padding="2">
       <Text variant="small">
         {rowData?.username
-          ? `${rowData.username}#${rowData.discriminator}`
+          ? rowData.discriminator === "0"
+            ? rowData.username
+            : `${rowData.username}#${rowData.discriminator}`
           : rowData}
       </Text>
     </Box>

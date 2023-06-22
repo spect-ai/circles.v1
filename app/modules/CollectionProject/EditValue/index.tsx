@@ -178,17 +178,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                   {["multiSelect", "user[]"].includes(property.type) ? (
                     value?.length ? (
                       value?.map((val: any) => (
-                        <Box
-                          cursor="pointer"
-                          key={val.value}
-                          onClick={(e) => {
-                            if (property.type === "user[]") {
-                              e.stopPropagation();
-                              // open new tab and direct to profile
-                              window.open(`/profile/${val.label}`, "_blank");
-                            }
-                          }}
-                        >
+                        <Box key={val.value}>
                           <CustomTag
                             mode={mode}
                             key={val.value}
@@ -231,16 +221,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                       "Empty"
                     )
                   ) : value ? (
-                    <Box
-                      cursor="pointer"
-                      onClick={(e) => {
-                        if (property.type === "user") {
-                          e.stopPropagation();
-                          // open new tab and direct to profile
-                          window.open(`/profile/${value.label}`, "_blank");
-                        }
-                      }}
-                    >
+                    <Box>
                       <CustomTag
                         mode={mode}
                         borderCol={colorMapping[value.value]}
@@ -435,7 +416,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
               }}
               mode={mode}
             >
-              {value ? (
+              {value || value === 0 ? (
                 <Text>
                   {property.type === "date"
                     ? new Date(value).toDateString()
@@ -464,6 +445,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                   setValue(tempValue);
                   setIsEditing(false);
                 }}
+                type={"text"}
               />
             </FieldInputContainer>
           ) : (
@@ -473,17 +455,13 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                   toast.error("You can't edit a closed card");
                   return;
                 }
-                if (Object.keys(value || {}).length === 0) {
-                  setIsEditing(true);
-                }
+                setIsEditing(true);
               }}
               mode={mode}
             >
               {value ? (
                 <Text>
-                  {value.username
-                    ? `${value.username}#${value.discriminator}`
-                    : value.login || value}
+                  {value.username ? `${value.username}` : value.login || value}
                 </Text>
               ) : (
                 "Empty"

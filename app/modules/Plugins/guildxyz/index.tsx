@@ -223,7 +223,6 @@ export default function RoleGate({ handleClose }: Props) {
                         formMetadata: {
                           ...collection.formMetadata,
                           formRoleGating: selectedRoleIds,
-                          walletConnectionRequired: true,
                         },
                       },
                       collection.id

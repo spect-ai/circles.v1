@@ -8,8 +8,7 @@ import styled from "styled-components";
 import { BasicInfo } from "./Basic";
 import { About } from "./About";
 import { useProfile } from "./LocalProfileContext";
-import { Notification } from "./Notificaton";
-import { Socials } from "./Socials";
+import APIAccess from "./APIAccess";
 
 const ScrollContainer = styled(Box)`
   @media (max-width: 768px) {
@@ -70,8 +69,12 @@ export default function ProfileSettings({ setIsOpen, openTab }: Props) {
           <Tabs
             selectedTab={tab}
             onTabClick={onTabClick}
-            tabs={["Basic", "About", "Notification", "Socials"]}
-            tabTourIds={["profile-settings-basic", "profile-settings-about"]}
+            tabs={["Basic", "About", "API Access"]}
+            tabTourIds={[
+              "profile-settings-basic",
+              "profile-settings-about",
+              "profile-settings-api",
+            ]}
             orientation="vertical"
             unselectedColor="transparent"
           />
@@ -90,8 +93,7 @@ export default function ProfileSettings({ setIsOpen, openTab }: Props) {
         >
           {tab == 0 && <BasicInfo />}
           {tab == 1 && <About />}
-          {tab == 2 && <Notification />}
-          {tab == 3 && <Socials />}
+          {tab == 2 && <APIAccess />}
         </ScrollContainer>
       </Box>
       <Box padding="3">

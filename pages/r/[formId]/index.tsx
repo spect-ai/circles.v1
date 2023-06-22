@@ -16,6 +16,7 @@ interface Props {
 }
 
 const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
+  console.log({ slug: `slug received: ${slug}` });
   if (!form) {
     return (
       <>
@@ -70,6 +71,7 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  console.time("getServerSideProps");
   const { params, req } = context;
   const slug = params?.formId;
 
@@ -79,6 +81,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   );
 
   if (!slug) return { props: { form: null } };
+  console.timeEnd("getServerSideProps");
+
+  console.time("fetch");
 
   const form = await (
     await fetch(
@@ -95,6 +100,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   )?.json();
 
   console.log({ form: form.parents[0] });
+  console.log({ form: form.slug });
+
+  console.timeEnd("fetch");
 
   if (!form?.id) {
     return {

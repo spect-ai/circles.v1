@@ -130,7 +130,7 @@ const Folder = ({
     >
       {content?.map((card, i) => {
         if (projects?.[card] && card) {
-          return <Card card={card} index={i} projects={projects} />;
+          return <Card card={card} index={i} />;
         }
         if (workstreams?.[card] && card) {
           return (

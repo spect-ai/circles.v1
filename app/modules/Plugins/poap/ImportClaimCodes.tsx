@@ -169,7 +169,6 @@ export default function ImportClaimCodes({
                     minimumNumberOfAnswersThatNeedToMatchForPoap:
                       minimumNumberOfAnswersThatNeedToMatch,
                     responseDataForPoap: responseData,
-                    walletConnectionRequired: true,
                   },
                 });
                 if (!res?.formMetadata?.poapEventId) {

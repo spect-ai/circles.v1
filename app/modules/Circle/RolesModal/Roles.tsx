@@ -67,9 +67,7 @@ export default function Roles() {
               <Box key={role}>
                 <Stack direction="horizontal" align="center">
                   <Box width="1/3">
-                    <Text variant="label">
-                      {index + 1}. {circle.roles[role].name}
-                    </Text>
+                    <Text variant="label">{circle.roles[role].name}</Text>
                   </Box>
                   <Box width="1/4">
                     <Text>

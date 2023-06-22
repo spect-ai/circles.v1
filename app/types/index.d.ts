@@ -11,32 +11,16 @@ export interface UserType {
   email: string;
   discordId?: string;
   discordUsername?: string;
+  discordAvatar?: string;
   githubId?: string;
   githubUsername?: string;
-  twitterId?: string;
-  twitterUsername?: string;
+  githubAvatar?: string;
   telegramId?: string;
   telegramUsername?: string;
   _id: string;
   circles: string[];
-  projects: string[];
-  assignedCards: string[];
-  reviewingCards: string[];
-  assignedClosedCards: string[];
-  reviewingClosedCards: string[];
-  activeApplications: {
-    cardId: string;
-    applicationTitle: string;
-  }[];
-  cardDetails: any;
   activities: string[];
   notifications: Notification[];
-  retro: string[];
-  retroDetails: any;
-  bookmarks: string[];
-  followedCircles: string[];
-  followedUsers: string[];
-  followedByUsers: string[];
   userDetails: any;
   circleDetails: {
     [key: string]: {
@@ -44,16 +28,9 @@ export interface UserType {
       avatar: string;
     };
   };
-  experiences: LensExperience[];
-  education: LensEducation[];
-  skillsV2: LensSkills[];
-  lensHandle: string;
   collections: CollectionType;
   collectionsSubmittedTo: CollectionType[];
-  github: string;
-  twitter: string;
-  behance: string;
-  website: string;
+  apiKeys: string[];
 }
 
 export interface Payment {
@@ -332,19 +309,6 @@ export type SidebarConfig = {
   showDiscussion?: boolean;
 };
 
-// interface ProjectType {
-//   archived: boolean;
-//   columnOrder: string[];
-//   createdAt: string;
-//   id: string;
-//   name: string;
-//   parents: Circle[];
-//   private: boolean;
-//   slug: string;
-//   templates: any[];
-//   updatedAt: string;
-// }
-
 export interface CardType {
   id: string;
   title: string;
@@ -450,7 +414,7 @@ export interface ProjectType {
   unauthorized?: boolean;
 }
 
-export type ViewType = "List" | "Board" | "Gantt" | "Table";
+export type ViewType = "List" | "Board" | "Table";
 
 interface ActionValidation {
   valid: boolean;
@@ -543,14 +507,6 @@ export interface CollectionActivity {
   owner?: string;
   imageRef?: string;
 }
-
-// export interface Ref {
-//   actor: {
-//     id: string;
-//     type?: string;
-//     refType?: string;
-//   };
-// }
 
 export interface Activity {
   content: string;
@@ -707,6 +663,7 @@ export type POAPEventType = {
   virtual_event: boolean;
   event_template_id: number;
   private_event: boolean;
+  claimed?: boolean;
 };
 
 export type KudosForType = {
@@ -778,12 +735,6 @@ export type DiscordChannel = {
   id: string;
   name: string;
 };
-export type OpportunityInfoType = {
-  type: string;
-  experience: string;
-  skills: string[];
-  tags: string[];
-};
 
 export interface CollectionType {
   id: string;
@@ -851,7 +802,6 @@ export type PaymentConfig = {
 export type FormMetadata = {
   cover?: string;
   logo: string;
-  purpose?: string;
   formRoleGating?: GuildRole[];
   sybilProtectionEnabled?: boolean;
   sybilProtectionScores?: MappedItem<number>;
@@ -861,18 +811,13 @@ export type FormMetadata = {
   updatingResponseAllowed: boolean;
   numOfKudos?: number;
   credentialCurationEnabled?: boolean;
-  isAnOpportunity?: boolean;
-  opportunityInfo?: OpportunityInfoType;
   active: boolean;
-  canFillForm: boolean;
   hasPassedSybilCheck: boolean;
   previousResponses: any[];
   hasClaimedKudos: boolean;
   hasRole: boolean;
-  discordConnectionRequired: boolean;
   canClaimKudos: boolean;
   allowAnonymousResponses: boolean;
-  walletConnectionRequired: boolean;
   paymentConfig?: PaymentConfig;
   surveyTokenId?: number;
   surveyTokenClaimedByUser: boolean;
@@ -885,8 +830,6 @@ export type FormMetadata = {
   surveyDistributionType?: number;
   ceramicEnabled?: boolean;
   captchaEnabled?: boolean;
-  claimCodes?: string[];
-  claimCode?: string;
   poapEventId?: string;
   poapEditCode?: string;
   transactionHashes?: {
@@ -916,6 +859,8 @@ export type FormMetadata = {
   lookup?: {
     tokens: LookupToken[];
     snapshot: number;
+    verifiedAddress: boolean;
+    communities: boolean;
   };
   discordRoleGating?: {
     id: string;
@@ -949,10 +894,16 @@ export type LookupToken = {
   contractAddress: string;
   metadata: {
     name: string;
-    image: string;
+    image?: string;
+    symbol: string;
   };
   chainId: number;
+  chainName?: string;
   tokenId?: string;
+  tokenAttributes?: {
+    key: string;
+    value: string;
+  }[];
 };
 
 export type ProjectMetadata = {
@@ -1025,7 +976,7 @@ export type Property = {
   onUpdateNotifyUserTypes?: FormUserType[];
   required?: boolean;
   description?: string;
-  viewConditions?: Condition[];
+  // viewConditions?: Condition[];
   advancedConditions?: ConditionGroup;
   payWallOptions?: PayWallOptions;
   internal?: boolean;
@@ -1182,7 +1133,18 @@ export type Stamp = {
   defaultScore: number;
   stampName: string;
   stampDescription: string;
-  score?: number;
+};
+
+export type StampWithScore = Stamp & {
+  score: number;
+};
+
+export type StampWithVerification = Stamp & {
+  verified: boolean;
+};
+
+export type StampWithScoreAndVerification = StampWithScore & {
+  verified: boolean;
 };
 
 export interface MappedItem<T> {
@@ -1234,70 +1196,6 @@ export type Voting = {
   periodsOnCollection?: MappedItem<VotingPeriod>;
 };
 
-export type Experience = {
-  id: string;
-  role: string;
-  description: string;
-  organization: string;
-  startDate: string;
-  endDate: string;
-  isCurrent: boolean;
-  linkedCredentials?: string[];
-  lensExperienceId?: string;
-};
-
-export type Education = {
-  id: string;
-  title: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  linkedCredentials?: string[];
-  lensEducationId?: string;
-};
-
-export type Skill = {
-  id: string;
-  name: string;
-  linkedCredentials?: string[];
-  lensSkillId?: string;
-};
-
-export type LensSkills = {
-  title: string;
-  category: string;
-  icon: string;
-  nfts: NFT[];
-  poaps: string[];
-  linkedCredentials: Credential[];
-};
-
-export type LensExperience = {
-  jobTitle: string;
-  company: string;
-  companyLogo: string;
-  description: string;
-  start_date: LensDate;
-  end_date: LensDate;
-  linkedCredentials: Credential[];
-  currentlyWorking: boolean;
-  nfts: NFT[];
-  poaps: string[];
-};
-
-export type LensEducation = {
-  courseDegree: string;
-  school: string;
-  schoolLogo: string;
-  description: string;
-  start_date: LensDate;
-  end_date: LensDate;
-  currentlyStudying: boolean;
-  nfts: NFT[];
-  poaps: string[];
-  linkedCredentials: Credential[];
-};
-
 export type NFT = {
   contractName: string;
   contractAddress: string;
@@ -1344,10 +1242,10 @@ export type Credential = {
 };
 
 export type PoapCredential = {
-  tokenId: string;
-  owner: string;
+  tokenId?: string;
+  owner?: string;
   chain: string;
-  created: string;
+  created?: string;
   event: POAPEventType;
 };
 
@@ -1463,4 +1361,119 @@ export type PaymentDetails = {
   labels?: Option[];
   collection?: Option;
   data?: Option;
+};
+
+export type NFTFromAlchemy = {
+  balance?: number;
+  contract: {
+    address: string;
+    name: string;
+    symbol: string;
+    totalSupply?: number;
+  };
+  description?: string;
+  media?: {
+    bytes: number;
+    format: string;
+    gateway: string;
+    raw: string;
+    thumbnail: string;
+  }[];
+  rawMetadata: {
+    name: string;
+    image?: string;
+    description?: string;
+    attributes?: {
+      trait_type: string;
+      display_type: string;
+      value: string;
+    }[];
+  };
+  timeLastUpdated?: string;
+  title?: string;
+  tokenId?: string;
+  tokenType: string;
+  tokenUri?: {
+    gateway: string;
+    raw: string;
+  };
+  chainId: number;
+};
+
+export type NFTFromAnkr = {
+  contractAddress: string;
+  blockchain: string;
+  collectionName?: string;
+  symbol: string;
+  tokenId?: string;
+  contractType: string;
+  tokenUrl?: string;
+  name: string;
+  imageUrl?: string;
+  quantity?: string;
+};
+
+export declare enum NftTokenType {
+  ERC721 = "ERC721",
+  ERC1155 = "ERC1155",
+  UNKNOWN = "UNKNOWN",
+}
+
+export declare enum OpenSeaSafelistRequestStatus {
+  /** Verified collection. */
+  VERIFIED = "verified",
+  /** Collections that are approved on open sea and can be found in search results. */
+  APPROVED = "approved",
+  /** Collections that requested safelisting on OpenSea. */
+  REQUESTED = "requested",
+  /** Brand new collections. */
+  NOT_REQUESTED = "not_requested",
+}
+
+export type AlchemyNftContract = {
+  /** The type of the token in the contract. */
+  tokenType: NftTokenType;
+  /** The name of the contract. */
+  name?: string;
+  /** The symbol of the contract. */
+  symbol?: string;
+  /** The number of NFTs in the contract as an integer string. */
+  totalSupply?: string;
+  /** OpenSea's metadata for the contract. */
+  openSea?: {
+    floorPrice?: number;
+    /** The name of the collection on OpenSea. */
+    collectionName?: string;
+    /** The approval status of the collection on OpenSea. */
+    safelistRequestStatus?: OpenSeaSafelistRequestStatus;
+    /** The image URL determined by OpenSea. */
+    imageUrl?: string;
+    /** The description of the collection on OpenSea. */
+    description?: string;
+    /** The homepage of the collection as determined by OpenSea. */
+    externalUrl?: string;
+    /** The Twitter handle of the collection. */
+    twitterUsername?: string;
+    /** The Discord URL of the collection. */
+    discordUrl?: string;
+    /** Timestamp of when the OpenSea metadata was last ingested by Alchemy. */
+    lastIngestedAt?: string;
+  };
+  address: string;
+};
+
+export interface LookupTokenWithBalance extends LookupToken {
+  balance: string;
+}
+
+export type GithubFieldFromOauthData = {
+  id: string;
+  login?: string;
+  avatar_url?: string;
+};
+
+export type DiscordFieldFromOauthData = {
+  id: string;
+  username?: string;
+  avatar?: string;
 };

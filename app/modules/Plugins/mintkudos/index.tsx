@@ -323,7 +323,7 @@ export default function SendKudos({ handleClose }: Props) {
               flexDirection="row"
               justifyContent="flex-end"
             >
-              {kudos.imageUrl && (
+              {collection.formMetadata.mintkudosTokenId && (
                 <PrimaryButton
                   onClick={async () => {
                     setLoading(true);
@@ -360,7 +360,7 @@ export default function SendKudos({ handleClose }: Props) {
                   Remove kudos
                 </PrimaryButton>
               )}
-              {!kudos.imageUrl && (
+              {!collection.formMetadata.mintkudosTokenId && (
                 <Button
                   loading={loading}
                   width="full"

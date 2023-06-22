@@ -1,16 +1,13 @@
 import { Heading, Stack, Text, Box, Input, Tag } from "degen";
 import { useState } from "react";
 import { RocketOutlined } from "@ant-design/icons";
-import { useRouter } from "next/router";
 import { useQuery } from "react-query";
-import { LensSkills, UserType } from "@/app/types";
+import { UserType } from "@/app/types";
 import { isEmail } from "@/app/common/utils/utils";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { skills as skillsArray } from "@/app/common/utils/constants";
 
 export function SetUpProfile() {
-  const router = useRouter();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -20,21 +17,10 @@ export function SetUpProfile() {
   const [email, setEmail] = useState(currentUser?.email);
   const { updateProfile } = useProfileUpdate();
 
-  const skills = currentUser?.skillsV2;
-
   const onSaveProfile = async () => {
     setIsLoading(true);
-    const newSkills = skill.map((s) => ({
-      title: s,
-      category: s,
-      linkedCredentials: [],
-      nfts: [],
-      poaps: [],
-      icon: "",
-    }));
     const res = await updateProfile({
       email,
-      skillsV2: [...(skills as LensSkills[]), ...newSkills],
     });
     console.log(res);
     setIsLoading(false);
@@ -99,70 +85,11 @@ export function SetUpProfile() {
               setEmail(e.target.value);
             }}
             onBlur={() => {
-              if (currentUser?.skillsV2.length != 0) void onSaveProfile();
+              void onSaveProfile();
             }}
           />
         </Box>
       )}
-
-      {currentUser?.skillsV2?.length == 0 && (
-        <>
-          <Text>Select your Skills</Text>
-          <Box
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: "0.5rem",
-              justifyContent: "center",
-            }}
-            width={{
-              lg: "1/2",
-            }}
-          >
-            {skillsArray?.map((s) => {
-              return (
-                <Box
-                  key={s}
-                  onClick={() => {
-                    if (skill.includes(s)) {
-                      setSkill(skill.filter((item) => item !== s));
-                    } else {
-                      setSkill([...skill, s]);
-                    }
-                  }}
-                  style={{
-                    cursor: "pointer",
-                  }}
-                >
-                  <Tag
-                    as="span"
-                    tone={skill.includes(s) ? "accent" : "secondary"}
-                    hover
-                    size="medium"
-                  >
-                    {s}
-                  </Tag>
-                </Box>
-              );
-            })}
-          </Box>
-        </>
-      )}
-
-      <PrimaryButton
-        onClick={() => {
-          void onSaveProfile();
-          void router.push(`/profile/${currentUser?.username}`);
-        }}
-        disabled={
-          (skill.length == 0 && skills?.length == 0) ||
-          email?.length == 0 ||
-          !isEmail(email || "")
-        }
-      >
-        View Profile
-      </PrimaryButton>
     </Box>
   );
 }

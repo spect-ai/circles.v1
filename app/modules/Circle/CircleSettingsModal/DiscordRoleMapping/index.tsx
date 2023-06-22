@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useCircle } from "../../CircleContext";
 import RolePopover from "./RolePopover";
+import { reservedRoles } from "../../ContributorsModal/InviteMembersModal/constants";
 
 export default function DiscordRoleMapping() {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +41,7 @@ export default function DiscordRoleMapping() {
   }
   const RoleSection = ({ roleName }: { roleName: string }) => (
     <Box>
-      <Text size="headingTwo" weight="semiBold">
+      <Text size="large" weight="semiBold">
         {roleName}
       </Text>
       <Stack direction="horizontal" wrap align="center">
@@ -113,25 +114,35 @@ export default function DiscordRoleMapping() {
           <Modal title="Discord Roles" handleClose={() => setIsOpen(false)}>
             <Box paddingX="8" paddingY="4">
               <Stack>
-                {Object.keys(circle.roles).map((role) => (
-                  <RoleSection key={role} roleName={circle.roles[role].name} />
-                ))}
-                <PrimaryButton
-                  loading={loading}
-                  onClick={async () => {
-                    setLoading(true);
-                    await updateCircle(
-                      {
-                        discordToCircleRoles: roleMap,
-                      },
-                      circle.id
-                    );
-                    setLoading(false);
-                    setIsOpen(false);
-                  }}
-                >
-                  Save
-                </PrimaryButton>
+                {Object.keys(circle.roles).map((role) => {
+                  if (reservedRoles.includes(role)) return null;
+                  return (
+                    <RoleSection
+                      key={role}
+                      roleName={circle.roles[role].name}
+                    />
+                  );
+                })}
+                <Box display="flex" justifyContent="flex-end" paddingY="4">
+                  <Box width="48">
+                    <PrimaryButton
+                      loading={loading}
+                      onClick={async () => {
+                        setLoading(true);
+                        await updateCircle(
+                          {
+                            discordToCircleRoles: roleMap,
+                          },
+                          circle.id
+                        );
+                        setLoading(false);
+                        setIsOpen(false);
+                      }}
+                    >
+                      Save
+                    </PrimaryButton>
+                  </Box>
+                </Box>
               </Stack>
             </Box>
           </Modal>

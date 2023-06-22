@@ -29,42 +29,6 @@ const ConnectPage: NextPage = () => {
     {} as CollectionType
   );
 
-  const [connectedUser] = useAtom(connectedUserAtom);
-
-  useEffect(() => {
-    if (query.discord && profileContext.discordId?.length) {
-      setData((d: any) => ({
-        ...d,
-        discord: {
-          id: profileContext.discordId,
-          username: profileContext.discordUsername,
-        },
-      }));
-    }
-    if (query.telegram && profileContext.telegramId?.length) {
-      setData((d: any) => ({
-        ...d,
-        telegram: {
-          id: profileContext.telegramId,
-          username: profileContext.telegramUsername,
-        },
-      }));
-    }
-    if (query.github && profileContext.githubId?.length) {
-      setData((d: any) => ({
-        ...d,
-        github: {
-          id: profileContext.githubId,
-          username: profileContext.githubUsername,
-        },
-      }));
-    }
-  }, [
-    profileContext.discordId,
-    profileContext.telegramId,
-    profileContext.githubId,
-  ]);
-
   useEffect(() => {
     const hasAllConnections =
       Object.keys(query).length > 0 &&
@@ -261,7 +225,6 @@ const ConnectPage: NextPage = () => {
               )}
               {query.wallet === "true" ? (
                 <>
-                  query.discord === "true" && connectedUser && (
                   <DiscordField
                     data={data}
                     setData={setData}

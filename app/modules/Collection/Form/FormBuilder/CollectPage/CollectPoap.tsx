@@ -40,7 +40,7 @@ export default function CollectPoap({
         );
         setLoading(false);
         setPoap(res);
-        setPoapClaimed(res.claimed);
+        setPoapClaimed(res.claimed || false);
       })();
     }
   }, [form]);

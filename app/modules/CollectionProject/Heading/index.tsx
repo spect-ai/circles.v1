@@ -332,19 +332,6 @@ export default function ProjectHeading() {
                       </Text>
                       <Text weight="semiBold">List View</Text>
                     </MenuItem>
-                    <MenuItem
-                      padding="2"
-                      borderBottomRadius="2xLarge"
-                      onClick={() => {
-                        toast.warning("Coming soon!");
-                        setIsAddViewPopupOpen(false);
-                      }}
-                    >
-                      <Text color="accent">
-                        <Clock />
-                      </Text>
-                      <Text weight="semiBold">Gantt View</Text>
-                    </MenuItem>
                   </Box>
                 </motion.div>
               </Popover>
@@ -508,19 +495,6 @@ export default function ProjectHeading() {
                         <List />
                       </Text>
                       <Text weight="semiBold">List View</Text>
-                    </MenuItem>
-                    <MenuItem
-                      padding="2"
-                      borderBottomRadius="2xLarge"
-                      onClick={() => {
-                        toast.warning("Coming soon!");
-                        setIsAddViewPopupOpen(false);
-                      }}
-                    >
-                      <Text color="accent">
-                        <Clock />
-                      </Text>
-                      <Text weight="semiBold">Gantt View</Text>
                     </MenuItem>
                   </Box>
                 </motion.div>

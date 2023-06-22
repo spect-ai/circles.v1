@@ -27,11 +27,7 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
   const [logo, setLogo] = useState(collection.formMetadata?.logo || "");
   const [name, setName] = useState(collection.name);
   const [description, setDescription] = useState(collection.description);
-
   const [captchaVerified, setCaptchaVerified] = useState(false);
-  const [verifyingCaptcha, setVerifyingCaptcha] = useState(false);
-
-  const { mode } = useTheme();
 
   return (
     <Box

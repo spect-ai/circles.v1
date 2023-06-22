@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { logError } from "@/app/common/utils/utils";
 import { Property, CollectionType, Option } from "@/app/types";
+import { toast } from "react-toastify";
 
 export const addField = async (
   collectionId: string,
@@ -528,4 +530,65 @@ export const postFormPayment = async (
       }
     )
   ).json();
+};
+
+export const duplicateCollection = async (
+  collectionSlug: string,
+  type: 0 | 1,
+  circleSlug: string
+) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/v2/slug/${circleSlug}/${
+      type === 0 ? "duplicateForm" : "duplicateProject"
+    }?collectionSlug=${collectionSlug}&type=${type}}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+
+  if (!res.ok) {
+    let err;
+    if (res.status === 404) err = "Not Found";
+    else {
+      const e = await res.json();
+      err = e.message || e;
+    }
+    logError(`Duplication failed: ${err}`, false);
+    toast.error("Duplication failed, please contact support");
+    return;
+  }
+  return await res.json();
+};
+
+export const moveCollection = async (
+  collectionSlug: string,
+  circleId: string
+) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/collection/v2/slug/${collectionSlug}/move?circleId=${circleId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+
+  if (!res.ok) {
+    let err;
+    if (res.status === 404) err = "Not Found";
+    else {
+      const e = await res.json();
+      err = e.message || e;
+    }
+    logError(`Moving Collection failed: ${err}`, false);
+    toast.error("Moving failed, please contact support");
+    return;
+  }
+  return await res.json();
 };
