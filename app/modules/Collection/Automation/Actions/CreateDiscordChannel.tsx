@@ -165,7 +165,7 @@ export default function CreateDiscordChannel({
       <CreatableDropdown
         placeholder="Select a field to map from or enter any custom value..."
         options={
-          Object.entries(collection.properties)
+          Object.entries(collection.properties || {})
             .filter(([propertyId, property]) => property.type === "shortText")
             .map(([propertyId, property]) => ({
               label: `Map from value in "${property.name}"`,
@@ -174,7 +174,7 @@ export default function CreateDiscordChannel({
         }
         selected={channelName}
         onChange={(value) => {
-          if (collection.properties[value?.value])
+          if (collection.properties?.[value?.value])
             setChannelNameType("mapping");
           else setChannelNameType("value");
           setChannelName(value);
