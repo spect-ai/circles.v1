@@ -1,22 +1,40 @@
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { duplicateCircle } from "@/app/services/Circle";
-import { useTemplate } from "@/app/services/Templates";
-import { SpectTemplate } from "@/app/types";
-import { Box, Button, IconChevronLeft, Stack, Tag, Text } from "degen";
-import { useState } from "react";
+import { getATemplate, useTemplate } from "@/app/services/Templates";
+import { Box, Button, IconChevronLeft, Spinner, Stack, Tag, Text } from "degen";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import CreateFromTemplateModal from "./CreateFromTemplateModal";
 import { AnimatePresence } from "framer-motion";
+import { Template as TemplateType, TemplateMinimal } from "@/app/types";
 
 type Props = {
-  template: SpectTemplate;
+  template: TemplateMinimal;
   handleBack: () => void;
 };
 
 export default function Template({ template, handleBack }: Props) {
   const [createFromTemplateModalOpen, setCreateFromTemplateModalOpen] =
     useState(false);
+  const [detailedTemplate, setDetailedTemplate] = useState<TemplateType>(
+    {} as TemplateType
+  );
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    void (async () => {
+      setLoading(true);
+      if (template) {
+        const res = await getATemplate(template.id);
+        console.log({
+          detailedTemplate: res,
+        });
+        setDetailedTemplate(res);
+      }
+      setLoading(false);
+    })();
+  }, [template]);
+
   return (
     <Stack space="4">
       <AnimatePresence>
@@ -60,8 +78,10 @@ export default function Template({ template, handleBack }: Props) {
           {template.tags &&
             template.tags.map((item) => <Tag key={item}>{item}</Tag>)}{" "}
         </Stack>
-
-        <Editor version={2} value={template.description} disabled />
+        {loading && <Spinner />}
+        {!loading && (
+          <Editor version={2} value={detailedTemplate.description} disabled />
+        )}
       </Stack>
     </Stack>
   );

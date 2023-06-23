@@ -10,7 +10,7 @@ const TemplatesPage: NextPage = () => {
   return (
     <>
       <MetaHead
-        title={"Spect Templates"}
+        title={"Template Gallery"}
         description={
           "Connect Discord, Telegram, Github & wallet to your profile & use web3 from web2 platforms."
         }

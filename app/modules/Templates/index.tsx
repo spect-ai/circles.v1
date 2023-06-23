@@ -1,4 +1,4 @@
-import { CollectionType, SpectTemplate } from "@/app/types";
+import { CollectionType, TemplateMinimal } from "@/app/types";
 import { Box, Button, IconSearch, Input, Stack, Text } from "degen";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -14,18 +14,18 @@ import {
 
 export default function Templates() {
   const profileContext = useProviderLocalProfile();
-  const [template, setTemplate] = useState<SpectTemplate | null>(null);
-  const [templates, setTemplates] = useState<SpectTemplate[]>([]);
+  const [template, setTemplate] = useState<TemplateMinimal | null>(null);
+  const [templates, setTemplates] = useState<TemplateMinimal[]>([]);
   const [templateGroups, setTemplateGroups] = useState<{
     [key: string]: string[];
   }>({});
-  const [filteredTemplates, setFilteredTemplates] = useState<SpectTemplate[]>(
+  const [filteredTemplates, setFilteredTemplates] = useState<TemplateMinimal[]>(
     []
   );
   const [sidebarItems, setSidebarItems] = useState<string[]>([]);
   const [selectedSidebarItem, setSelectedSidebarItem] = useState("");
 
-  const onClick = (template: SpectTemplate) => {
+  const onClick = (template: TemplateMinimal) => {
     setTemplate(template);
   };
 
@@ -98,7 +98,7 @@ export default function Templates() {
               src="https://ipfs.moralis.io:2053/ipfs/QmVYsa4KQyRwBSJxQCmD1rDjyqYd1HJKrDfqLk3KMKLEhn"
               gradient=""
             />
-            <Text variant="extraLarge">Spect Templates</Text>
+            <Text variant="extraLarge">Template Gallery</Text>
           </Box>
           <Button
             size="small"
@@ -192,7 +192,7 @@ const TemplateCard = ({
   template,
   onClick,
 }: {
-  template: SpectTemplate;
+  template: TemplateMinimal;
   onClick: () => void;
 }) => {
   return (

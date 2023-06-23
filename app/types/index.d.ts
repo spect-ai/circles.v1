@@ -1205,16 +1205,6 @@ export interface LookupTokenWithBalance extends LookupToken {
   balance: string;
 }
 
-export interface SpectTemplate {
-  id: string;
-  name: string;
-  shortDescription: string;
-  description: string;
-  image: string;
-  url: string;
-  tags: string[];
-  circleSlug: string;
-}
 export type GithubFieldFromOauthData = {
   id: string;
   login?: string;
@@ -1226,3 +1216,26 @@ export type DiscordFieldFromOauthData = {
   username?: string;
   avatar?: string;
 };
+
+export type TemplateRequirement = "discordRole" | "discordChannel";
+
+export type TemplateAutomation = {
+  id: string;
+  name: string;
+  description: string;
+  requirements: TemplateRequirement[];
+};
+
+export interface Template extends TemplateMinimal {
+  url: string;
+  description: string;
+  automations: TemplateAutomation[];
+}
+
+export interface TemplateMinimal {
+  id: string;
+  name: string;
+  shortDescription: string;
+  image: string;
+  tags: string[];
+}

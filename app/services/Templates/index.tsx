@@ -6,6 +6,14 @@ export async function getAllTemplates() {
   return await res.json();
 }
 
+export async function getATemplate(templateId: string) {
+  const res = await fetch(`${process.env.API_HOST}/templates/v1/${templateId}`);
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+  return await res.json();
+}
+
 export async function useTemplate(
   templateId: string,
   destinationCircleId: string
