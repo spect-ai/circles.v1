@@ -11,8 +11,7 @@ import {
   Text,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useState } from "react";
-import { Grid } from "react-feather";
+import React, { useState } from "react";
 import { Col, Row } from "react-grid-system";
 import { Tooltip } from "react-tippy";
 

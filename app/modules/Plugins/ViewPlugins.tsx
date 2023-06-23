@@ -415,9 +415,6 @@ const PluginCard = ({
           <Text size="extraSmall" align="center">
             {plugin.description}
           </Text>
-          {/* <a href={plugin.docs} target="_blank">
-            <Text color="accent">View Docs</Text>
-          </a> */}
         </Stack>
       </Box>
     </PluginContainer>

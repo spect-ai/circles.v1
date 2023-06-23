@@ -8,10 +8,6 @@ import {
   addEdge,
   ReactFlowProvider,
 } from "reactflow";
-import MirrorNode from "../Nodes/mirror";
-import RedditNode from "../Nodes/reddit";
-import YoutubeNode from "../Nodes/youtube";
-import SummarizerNode from "../Nodes/summarizer";
 import Modal from "@/app/common/components/Modal";
 import {
   Box,
@@ -28,7 +24,12 @@ import {
   useTheme,
 } from "degen";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Flow, FlowConfig, FlowData } from "@avp1598/spect-shared-types";
+import {
+  Flow,
+  FlowConfig,
+  FlowData,
+  flowConfigSchema,
+} from "@avp1598/spect-shared-types";
 import { getFlow, runFlow, updateFlow } from "@/app/services/Workflows";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -37,19 +38,29 @@ import { Tooltip } from "react-tippy";
 import { ToastContainer, toast } from "react-toastify";
 import { AnimatePresence } from "framer-motion";
 import ViewRuns from "./ViewRuns";
-import validateFlow from "./ValidateFlow";
 import { v4 as uuid } from "uuid";
+import { Sources } from "../Nodes/Sources";
+import { Outputs } from "../Nodes/Outputs";
+import { validateNode } from "../Common/Utils";
 
 type Props = {
   flow: Flow;
   setEditingFlow: (flow: Flow | undefined) => void;
 };
 
+const sourceNodeTypes = Sources.reduce((acc, source) => {
+  acc[source.type] = source.NodeComponent;
+  return acc;
+}, {} as Record<string, any>);
+
+const outputNodeTypes = Outputs.reduce((acc, output) => {
+  acc[output.type] = output.NodeComponent;
+  return acc;
+}, {} as Record<string, any>);
+
 const nodeTypes = {
-  mirror: MirrorNode,
-  reddit: RedditNode,
-  youtube: YoutubeNode,
-  summarizer: SummarizerNode,
+  ...sourceNodeTypes,
+  ...outputNodeTypes,
 };
 
 const FlowEditor = ({ flow, setEditingFlow }: Props) => {
@@ -112,15 +123,15 @@ const FlowEditor = ({ flow, setEditingFlow }: Props) => {
   );
 
   const onNodeDataUpdate = useCallback(
-    (data) => {
+    (nodeId, data) => {
       setNodes((nds) =>
         nds.map((nd) =>
-          nd.id === data.id
+          nd.id === nodeId
             ? {
                 ...nd,
                 data: {
                   ...nd.data,
-                  ...data,
+                  data,
                 },
               }
             : nd
@@ -137,18 +148,21 @@ const FlowEditor = ({ flow, setEditingFlow }: Props) => {
 
   const onSave = useCallback(async () => {
     const flowConfig = {
-      nodes,
+      nodes: nodes.map((node) => ({
+        ...node,
+        data: node.data.data,
+      })),
       edges,
     };
 
-    if (!validateFlow(flowConfig as any)) {
-      return;
+    for (const node of nodes) {
+      validateNode(node);
     }
-
+    console.log({ flowConfig });
     setSaving(true);
     const res = await updateFlow(
       {
-        flowConfig: flowConfig as any,
+        flowConfig: flowConfigSchema.parse(flowConfig),
       },
       flow.id
     );
@@ -163,7 +177,7 @@ const FlowEditor = ({ flow, setEditingFlow }: Props) => {
           return {
             ...node,
             data: {
-              ...node.data,
+              data: node.data,
               onChange: onNodeDataUpdate,
               runData: flowData[node.id],
               setShowLogs,

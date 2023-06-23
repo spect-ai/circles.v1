@@ -2,13 +2,12 @@ import Popover from "@/app/common/components/Popover";
 import styled from "@emotion/styled";
 import { Box, Button, IconPlus, Text, useTheme } from "degen";
 import React, { useState } from "react";
-import { toast } from "react-toastify";
-import { Node } from "reactflow";
-import { v4 as uuid } from "uuid";
+import { Sources } from "../Nodes/Sources";
+import { Outputs } from "../Nodes/Outputs";
 
 type Props = {
   setNodes: (nodes: any) => void;
-  onNodeDataUpdate: (node: any) => void;
+  onNodeDataUpdate: (nodeId: string, data: any) => void;
   setShowLogs: (nodeId: string) => void;
   onDeleteNode: (nodeId: string) => void;
 };
@@ -52,94 +51,38 @@ const AddNodePopover = ({
               : "0px 0px 10px rgba(255, 255, 255, 0.5)",
         }}
       >
-        <PopoverOption
-          onClick={() => {
-            setIsPopoverOpen(false);
-            setNodes((nds: any) =>
-              nds.concat({
-                id: uuid(),
-                type: "mirror",
-                position: { x: 250, y: 250 },
-                data: {
-                  url: "",
-                  onChange: onNodeDataUpdate,
-                  setShowLogs,
-                  onDelete: onDeleteNode,
-                },
-              })
+        <Box borderBottomWidth="0.375">
+          <Box paddingX="4" paddingTop="4" paddingBottom="2">
+            <Text variant="label">Sources</Text>
+          </Box>
+          {Sources.map((Source) => {
+            return (
+              <Source.PopoverComponent
+                setIsPopoverOpen={setIsPopoverOpen}
+                setNodes={setNodes}
+                onChange={onNodeDataUpdate}
+                onDelete={onDeleteNode}
+                setShowLogs={setShowLogs}
+              />
             );
-          }}
-          text="Mirror"
-          description="Blog posts from your mirror page"
-        />
-        <PopoverOption
-          onClick={() => {
-            setIsPopoverOpen(false);
-            setNodes((nds: any) =>
-              nds.concat({
-                id: uuid(),
-                type: "youtube",
-                position: { x: 250, y: 250 },
-                data: {
-                  channelId: "",
-                  filter: "",
-                  onChange: onNodeDataUpdate,
-                  setShowLogs,
-                  onDelete: onDeleteNode,
-                },
-              })
+          })}
+        </Box>
+        <Box>
+          <Box paddingX="4" paddingTop="4" paddingBottom="2">
+            <Text variant="label">Outputs</Text>
+          </Box>
+          {Outputs.map((Output) => {
+            return (
+              <Output.PopoverComponent
+                setIsPopoverOpen={setIsPopoverOpen}
+                setNodes={setNodes}
+                onChange={onNodeDataUpdate}
+                onDelete={onDeleteNode}
+                setShowLogs={setShowLogs}
+              />
             );
-          }}
-          text="Youtube"
-          description="Youtube transcripts from your channel"
-        />
-        <PopoverOption
-          onClick={() => {
-            setIsPopoverOpen(false);
-            setNodes((nds: any) =>
-              nds.concat({
-                id: uuid(),
-                type: "reddit",
-                position: { x: 250, y: 250 },
-                data: {
-                  channelId: "",
-                  filter: "",
-                  onChange: onNodeDataUpdate,
-                  setShowLogs,
-                  onDelete: onDeleteNode,
-                },
-              })
-            );
-          }}
-          text="Reddit"
-          description="Reddit posts from your subreddit"
-        />
-        <PopoverOption
-          onClick={() => {
-            setIsPopoverOpen(false);
-            setNodes((nds: Node[]) => {
-              if (nds.filter((n) => n.type === "summarizer").length > 0) {
-                toast.warn("Only one summarizer node can be added");
-                return nds;
-              } else {
-                return nds.concat({
-                  id: uuid(),
-                  type: "summarizer",
-                  position: { x: 350, y: 250 },
-                  data: {
-                    channelId: "",
-                    filter: "",
-                    onChange: onNodeDataUpdate,
-                    setShowLogs,
-                    onDelete: onDeleteNode,
-                  },
-                });
-              }
-            });
-          }}
-          text="Summarizer Form"
-          description="Interactive form giving you a summary of your sources"
-        />
+          })}
+        </Box>
       </Box>
     </Popover>
   );

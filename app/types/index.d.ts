@@ -364,6 +364,11 @@ export type KudosType = {
   createdAtTimestamp?: boolean;
   imageUrl: string;
   claimabilityAttributes: ClaimabilityAttributes;
+  customAttributes: {
+    fieldName: string;
+    type: string;
+    value: string;
+  }[];
 };
 
 export type POAPEventType = {
@@ -526,6 +531,7 @@ export type FormMetadata = {
   sybilProtectionEnabled?: boolean;
   sybilProtectionScores?: MappedItem<number>;
   mintkudosTokenId?: number;
+  mintkudosAssetUrl?: string;
   messageOnSubmission: string;
   multipleResponsesAllowed: boolean;
   updatingResponseAllowed: boolean;

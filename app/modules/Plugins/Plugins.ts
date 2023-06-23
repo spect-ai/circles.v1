@@ -64,7 +64,7 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
   },
   erc20: {
     id: "erc20",
-    name: "Distribute ERC20 Tokens to Responders (Limited Beta)",
+    name: "Distribute ERC20 Tokens to Responders (Limited Access)",
     version: "1.0.0",
     description:
       "Want to incentivize responders for filling out your form? Use this plugin to distribute ERC20 tokens to responders!",

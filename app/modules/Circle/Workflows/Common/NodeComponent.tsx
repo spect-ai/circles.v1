@@ -9,7 +9,8 @@ import {
   Tag,
   Text,
 } from "degen";
-import React from "react";
+import { motion } from "framer-motion";
+import React, { useState } from "react";
 import { Handle, Position } from "reactflow";
 
 type props = {
@@ -45,6 +46,7 @@ export const NodeComponent = ({
   onDelete,
   runData,
 }: props) => {
+  const [hover, setHover] = useState(false);
   return (
     <Box
       backgroundColor="background"
@@ -52,19 +54,27 @@ export const NodeComponent = ({
       width="96"
       borderWidth="0.375"
       borderColor={runData?.status === "error" ? "red" : undefined}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
     >
       <Stack>
         <Box borderBottomWidth="0.375" padding="4">
           <Stack direction="horizontal" justify="space-between">
             <Heading>{nodeName}</Heading>
-            <Button
-              size="small"
-              variant="transparent"
-              shape="circle"
-              onClick={onDelete}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: hover ? 1 : 0 }}
+              transition={{ duration: 0.2 }}
             >
-              <IconTrash color="red" />
-            </Button>
+              <Button
+                size="small"
+                variant="transparent"
+                shape="circle"
+                onClick={onDelete}
+              >
+                <IconTrash color="red" />
+              </Button>
+            </motion.div>
           </Stack>
           <Stack direction="horizontal" space="2">
             {runData?.status === "error" && (

@@ -15,9 +15,6 @@ export const getWorkflows = async (circleId: string) => {
       query: {
         circle: z.string().parse(circleId) as any,
       },
-      headers: {
-        cookie: document.cookie,
-      },
     });
     if (res.status === 200) {
       return res.body;
@@ -34,9 +31,6 @@ export const getFlow = async (flowId: string) => {
     const res = await client.getFlow({
       params: {
         id: z.string().parse(flowId) as any,
-      },
-      headers: {
-        cookie: document.cookie,
       },
     });
     if (res.status === 200) {
@@ -58,10 +52,6 @@ export const createFlow = async (createFlowDto: {
       body: {
         name: createFlowDto.name as any,
         circle: createFlowDto.circle as any,
-      },
-      headers: {
-        "content-type": "application/json",
-        cookie: document.cookie,
       },
     });
     console.log({ res });
@@ -85,10 +75,6 @@ export const updateFlow = async (
         id: flowId as any,
       },
       body: updateFlowDto,
-      headers: {
-        "content-type": "application/json",
-        cookie: document.cookie,
-      },
     });
     if (res.status === 200) {
       return res.body;
@@ -105,9 +91,6 @@ export const runFlow = async (flowId: string) => {
     const res = await client.runFlow({
       params: {
         id: flowId as any,
-      },
-      headers: {
-        cookie: "abcx",
       },
     });
     console.log({ res });
