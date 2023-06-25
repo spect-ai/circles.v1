@@ -72,6 +72,7 @@ export default function TableView() {
     projectViewId,
     showMyTasks,
     paymentFilter,
+    authorization,
   } = useLocalCollection();
 
   const { data: currentUser, refetch } = useQuery<UserType>("getMyUser", {
@@ -334,8 +335,6 @@ export default function TableView() {
         return ExpandableCell;
       case "multiSelect":
         return ExpandableCell;
-      case "multiURL":
-        return MultiURLComponent;
       case "milestone":
         return MilestoneComponent;
       case "discord":
@@ -384,6 +383,7 @@ export default function TableView() {
               />
             ),
             minWidth: 200,
+            disabled: authorization === "readonly",
           };
         } else if (["reward"].includes(property.type)) {
           return {
@@ -404,6 +404,7 @@ export default function TableView() {
               />
             ),
             minWidth: 200,
+            disabled: authorization === "readonly",
           };
         } else if (["milestone"].includes(property.type)) {
           return {
@@ -450,7 +451,7 @@ export default function TableView() {
             disabled:
               collection.collectionType === 0
                 ? property.isPartOfFormView
-                : false,
+                : authorization === "readonly",
             title: (
               <HeaderComponent
                 propertyId={property.id}

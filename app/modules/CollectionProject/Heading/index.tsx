@@ -1,7 +1,10 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { updateFormCollection } from "@/app/services/Collection";
+import {
+  shareCollection,
+  updateFormCollection,
+} from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { SendOutlined, TableOutlined } from "@ant-design/icons";
 import {
@@ -51,6 +54,7 @@ export default function ProjectHeading() {
   const [viewType, setViewType] = useState<"kanban" | "list" | "grid">("grid");
   const [isViewSettingsOpen, setIsViewSettingsOpen] = useState(false);
   const [isViewPopoverOpen, setIsViewPopoverOpen] = useState(false);
+  const [shareLoading, setShareLoading] = useState(false);
 
   const { formActions } = useRoleGate();
 
@@ -143,14 +147,19 @@ export default function ProjectHeading() {
                     style={{ marginBottom: "0.3rem" }}
                   />
                 }
-                onClick={() => {
+                onClick={async () => {
+                  setShareLoading(true);
+                  const shareLink = await shareCollection(collection?.slug);
                   void navigator.clipboard.writeText(
-                    `https://circles.spect.network/r/${collection?.slug}`
+                    `https://circles.spect.network/r/${shareLink}`
                   );
+                  setShareLoading(false);
+
                   toast.success(
-                    "Paste link to share this project in read-only mode"
+                    "Copied! Paste link to share this project in read-only mode"
                   );
                 }}
+                loading={shareLoading}
               >
                 Share
               </PrimaryButton>

@@ -595,3 +595,29 @@ export const moveCollection = async (
   }
   return await res.json();
 };
+
+export const shareCollection = async (
+  collectionSlug: string
+): Promise<string> => {
+  const res = await fetch(
+    `${process.env.API_HOST}/collection/v2/slug/${collectionSlug}/share`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+  console.log({ res });
+  if (!res.ok) {
+    let err;
+    if (res.status === 404) err = "Not Found";
+    else if (res.status === 401)
+      err = "You do not have permission to share this collection";
+
+    logError(`Sharing Collection failed: ${err}`, false);
+    toast.error(err);
+  }
+  return await res.text();
+};
