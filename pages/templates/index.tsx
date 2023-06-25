@@ -2,11 +2,14 @@ import Loader from "@/app/common/components/Loader";
 import { PublicLayout } from "@/app/common/layout";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import Templates from "@/app/modules/Templates";
+import { useConnectDiscordServerFromTemplate } from "@/app/services/Discord/useConnectDiscordServer";
 import { Box, Text } from "degen";
 import { NextPage } from "next";
 import styled from "styled-components";
 
 const TemplatesPage: NextPage = () => {
+  useConnectDiscordServerFromTemplate();
+
   return (
     <>
       <MetaHead

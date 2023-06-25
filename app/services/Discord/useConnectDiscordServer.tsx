@@ -43,3 +43,25 @@ export default function useConnectDiscordServer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cId, circle?.id, guild_id]);
 }
+
+export function useConnectDiscordServerFromTemplate() {
+  const router = useRouter();
+  const { guild_id } = router.query;
+  useEffect(() => {
+    console.log({
+      guild_id,
+    });
+    const connectServer = async () => {
+      if (!guild_id || guild_id === "undefined") return;
+
+      console.log("connected server");
+      if (window.opener) {
+        window.opener.postMessage({ discordGuildId: guild_id }, "*");
+        window.close();
+        return;
+      }
+    };
+    if (guild_id) void connectServer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guild_id]);
+}

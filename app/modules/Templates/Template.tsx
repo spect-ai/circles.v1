@@ -40,7 +40,7 @@ export default function Template({ template, handleBack }: Props) {
       <AnimatePresence>
         {createFromTemplateModalOpen && (
           <CreateFromTemplateModal
-            template={template}
+            template={detailedTemplate}
             handleClose={() => {
               setCreateFromTemplateModalOpen(false);
               // window.open(`http://localhost:3000/${template.id}`, "_blank");

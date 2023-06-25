@@ -28,7 +28,9 @@ export async function getUserSafes(chainId: string) {
     return safes;
   } catch (e) {
     console.log(e);
-    logError("Failed to fetch safes on the provided chain");
+    logError(
+      "Failed to fetch safes on the provided chain, please verify your current ethereum address is a gnosis safe owner"
+    );
   }
 }
 

@@ -14,6 +14,7 @@ import {
 
 export default function Templates() {
   const profileContext = useProviderLocalProfile();
+  const { fetchCircles } = useProviderLocalProfile();
   const [template, setTemplate] = useState<TemplateMinimal | null>(null);
   const [templates, setTemplates] = useState<TemplateMinimal[]>([]);
   const [templateGroups, setTemplateGroups] = useState<{
@@ -67,6 +68,12 @@ export default function Templates() {
     setSelectedSidebarItem(sidebarItems[0]);
     updateFilteredTemplates(sidebarItems[0]);
   }, [templateGroups]);
+
+  useEffect(() => {
+    void (async () => {
+      await fetchCircles();
+    })();
+  }, []);
 
   return (
     <LocalProfileContext.Provider value={profileContext}>
