@@ -30,6 +30,7 @@ import { useProviderLocalProfile } from "@/app/modules/Profile/ProfileSettings/L
 import { MdOutlineDriveFileMove } from "react-icons/md";
 import Logo from "@/app/common/components/Logo";
 import { duplicateCircle, moveCircle } from "@/app/services/Circle";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 interface Props {
   card: string;
@@ -74,7 +75,7 @@ const Card = ({ card, index, workstreams, collections }: Props) => {
   const { circle: cId } = router.query;
   const { myCircles } = useProviderLocalProfile();
   const { circle, fetchCircle } = useCircle();
-
+  const { canDo, formActions } = useRoleGate();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -85,7 +86,10 @@ const Card = ({ card, index, workstreams, collections }: Props) => {
   ) => {
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [isMovePopoverOpen, setIsMovePopoverOpen] = useState(false);
-
+    const canMove = canDo("manageCircleSettings") && collections?.[card]?.slug;
+    const canDuplicate =
+      (collections?.[card] && canDo("createNewForm")) ||
+      (workstreams?.[card] && canDo("manageCircleSettings"));
     return (
       <Container
         {...provided.draggableProps}
@@ -156,171 +160,177 @@ const Card = ({ card, index, workstreams, collections }: Props) => {
               </Text>
             </Box>
           )}
-          <Box
-            display={"flex"}
-            flexDirection={"row"}
-            alignItems={"flex-start"}
-            justifyContent={"flex-end"}
-            gap="4"
-          >
-            <Popover
-              butttonComponent={
-                <Box
-                  className="collection-duplicate-button"
-                  cursor="pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsPopoverOpen(true);
-                  }}
-                >
-                  <Button
-                    shape="circle"
-                    variant="transparent"
-                    size="extraSmall"
-                  >
-                    <Text size="base">
-                      <BiDotsVerticalRounded size="20" />
-                    </Text>
-                  </Button>
-                </Box>
-              }
-              isOpen={isPopoverOpen}
-              setIsOpen={(isOpen) => {
-                setIsPopoverOpen(isOpen);
-                setIsMovePopoverOpen(false);
-              }}
+          {(canMove || canDuplicate) && (
+            <Box
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"flex-start"}
+              justifyContent={"flex-end"}
+              gap="4"
             >
-              <motion.div
-                initial={{ height: 0 }}
-                animate={{ height: "auto", transition: { duration: 0.2 } }}
-                exit={{ height: 0 }}
-                style={{
-                  overflow: "hidden",
-                  borderRadius: "0.25rem",
+              <Popover
+                butttonComponent={
+                  <Box
+                    className="collection-duplicate-button"
+                    cursor="pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsPopoverOpen(true);
+                    }}
+                  >
+                    <Button
+                      shape="circle"
+                      variant="transparent"
+                      size="extraSmall"
+                    >
+                      <Text size="base">
+                        <BiDotsVerticalRounded size="20" />
+                      </Text>
+                    </Button>
+                  </Box>
+                }
+                isOpen={isPopoverOpen}
+                setIsOpen={(isOpen) => {
+                  setIsPopoverOpen(isOpen);
+                  setIsMovePopoverOpen(false);
                 }}
               >
-                {!isMovePopoverOpen && (
-                  <Box backgroundColor="background">
-                    <MenuContainer>
-                      <Stack space="0">
-                        <MenuItem
-                          padding="2"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setIsPopoverOpen(false);
-                            if (workstreams?.[card]?.slug) {
-                              duplicateCircle(
-                                cId as string,
-                                workstreams?.[card]?.slug
-                              )
-                                .then((res) => {
-                                  fetchCircle();
-                                })
-                                .catch((err) => {
-                                  console.log(err);
-                                });
-                            } else if (collections?.[card]?.slug) {
-                              duplicateCollection(
-                                collections?.[card]?.slug,
-                                collections?.[card]?.collectionType,
-                                cId as string
-                              )
-                                .then((res) => {
-                                  fetchCircle();
-                                })
-                                .catch((err) => {
-                                  console.log(err);
-                                });
-                            }
-                          }}
-                        >
-                          <Stack direction="horizontal" align="center">
-                            <Text align="center">
-                              <IconCopy size="5" />
-                            </Text>
-                            <Text align="center">Duplicate</Text>
-                          </Stack>
-                        </MenuItem>
-                        <MenuItem
-                          padding="2"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setIsMovePopoverOpen(true);
-                          }}
-                        >
-                          <Stack direction="horizontal" align="center">
-                            <Text align="center" color="textSecondary">
-                              <MdOutlineDriveFileMove size={22} />
-                            </Text>
-                            <Text align="center">Move</Text>
-                          </Stack>
-                        </MenuItem>
-                      </Stack>
-                    </MenuContainer>
-                  </Box>
-                )}
-                {isMovePopoverOpen && (
-                  <Box backgroundColor="background">
-                    <MenuContainer>
-                      <Stack space="0">
-                        {myCircles
-                          ?.filter((circle) => circle.slug !== cId)
-                          ?.map((circle) => {
-                            return (
-                              <MenuItem
-                                padding="2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setIsPopoverOpen(false);
-                                  setIsMovePopoverOpen(false);
-                                  if (workstreams?.[card]?.slug) {
-                                    moveCircle(circle.id, cId as string)
-                                      .then((res) => {
-                                        fetchCircle();
-                                      })
-                                      .catch((err) => {
-                                        console.log(err);
-                                      });
-                                  } else if (collections?.[card]?.slug) {
-                                    moveCollection(
-                                      collections?.[card]?.slug,
-                                      cId as string,
-                                      circle.id
-                                    )
-                                      .then((res) => {
-                                        fetchCircle();
-                                      })
-                                      .catch((err) => {
-                                        console.log(err);
-                                      });
-                                  }
-                                }}
-                              >
-                                <Stack
-                                  direction="horizontal"
-                                  align="center"
-                                  justify={"flex-start"}
-                                  space="2"
+                <motion.div
+                  initial={{ height: 0 }}
+                  animate={{ height: "auto", transition: { duration: 0.2 } }}
+                  exit={{ height: 0 }}
+                  style={{
+                    overflow: "hidden",
+                    borderRadius: "0.25rem",
+                  }}
+                >
+                  {!isMovePopoverOpen && (
+                    <Box backgroundColor="background">
+                      <MenuContainer>
+                        <Stack space="0">
+                          {canDuplicate && (
+                            <MenuItem
+                              padding="2"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsPopoverOpen(false);
+                                if (workstreams?.[card]?.slug) {
+                                  duplicateCircle(
+                                    cId as string,
+                                    workstreams?.[card]?.slug
+                                  )
+                                    .then((res) => {
+                                      fetchCircle();
+                                    })
+                                    .catch((err) => {
+                                      console.log(err);
+                                    });
+                                } else if (collections?.[card]?.slug) {
+                                  duplicateCollection(
+                                    collections?.[card]?.slug,
+                                    collections?.[card]?.collectionType,
+                                    cId as string
+                                  )
+                                    .then((res) => {
+                                      fetchCircle();
+                                    })
+                                    .catch((err) => {
+                                      console.log(err);
+                                    });
+                                }
+                              }}
+                            >
+                              <Stack direction="horizontal" align="center">
+                                <Text align="center">
+                                  <IconCopy size="5" />
+                                </Text>
+                                <Text align="center">Duplicate</Text>
+                              </Stack>
+                            </MenuItem>
+                          )}
+                          {canMove && (
+                            <MenuItem
+                              padding="2"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsMovePopoverOpen(true);
+                              }}
+                            >
+                              <Stack direction="horizontal" align="center">
+                                <Text align="center" color="textSecondary">
+                                  <MdOutlineDriveFileMove size={22} />
+                                </Text>
+                                <Text align="center">Move</Text>
+                              </Stack>
+                            </MenuItem>
+                          )}
+                        </Stack>
+                      </MenuContainer>
+                    </Box>
+                  )}
+                  {isMovePopoverOpen && (
+                    <Box backgroundColor="background">
+                      <MenuContainer>
+                        <Stack space="0">
+                          {myCircles
+                            ?.filter((circle) => circle.slug !== cId)
+                            ?.map((circle) => {
+                              return (
+                                <MenuItem
+                                  padding="2"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsPopoverOpen(false);
+                                    setIsMovePopoverOpen(false);
+                                    if (workstreams?.[card]?.slug) {
+                                      moveCircle(circle.id, cId as string)
+                                        .then((res) => {
+                                          fetchCircle();
+                                        })
+                                        .catch((err) => {
+                                          console.log(err);
+                                        });
+                                    } else if (collections?.[card]?.slug) {
+                                      moveCollection(
+                                        collections?.[card]?.slug,
+                                        cId as string,
+                                        circle.id
+                                      )
+                                        .then((res) => {
+                                          fetchCircle();
+                                        })
+                                        .catch((err) => {
+                                          console.log(err);
+                                        });
+                                    }
+                                  }}
                                 >
-                                  <Logo
-                                    href={``}
-                                    src={circle.avatar}
-                                    gradient={circle.gradient}
-                                    name={circle.name}
-                                    size={"7"}
-                                  />
-                                  <Text>{circle.name}</Text>
-                                </Stack>
-                              </MenuItem>
-                            );
-                          })}
-                      </Stack>
-                    </MenuContainer>
-                  </Box>
-                )}
-              </motion.div>
-            </Popover>
-          </Box>
+                                  <Stack
+                                    direction="horizontal"
+                                    align="center"
+                                    justify={"flex-start"}
+                                    space="2"
+                                  >
+                                    <Logo
+                                      href={``}
+                                      src={circle.avatar}
+                                      gradient={circle.gradient}
+                                      name={circle.name}
+                                      size={"7"}
+                                    />
+                                    <Text>{circle.name}</Text>
+                                  </Stack>
+                                </MenuItem>
+                              );
+                            })}
+                        </Stack>
+                      </MenuContainer>
+                    </Box>
+                  )}
+                </motion.div>
+              </Popover>
+            </Box>
+          )}
         </Stack>
       </Container>
     );
@@ -341,7 +351,7 @@ const Card = ({ card, index, workstreams, collections }: Props) => {
 
 export default memo(Card);
 
-const MenuContainer = styled(Box)`
+export const MenuContainer = styled(Box)`
   overflow-y: auto;
   ::-webkit-scrollbar {
     width: 2px;
@@ -354,7 +364,7 @@ const MenuContainer = styled(Box)`
   transition: all 0.15s ease-out;
 `;
 
-const MenuItem = styled(Box)`
+export const MenuItem = styled(Box)`
   width: 100%;
   &:hover {
     cursor: pointer;
