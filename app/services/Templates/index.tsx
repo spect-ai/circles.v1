@@ -36,10 +36,6 @@ export async function useTemplate(
   destinationCircleId: string,
   useTemplateCircleSpecificInfoDtos?: UseTemplateCircleSpecificInfoDto[]
 ) {
-  console.log({
-    templateId,
-    destinationCircleId,
-  });
   const res = await fetch(
     `${process.env.API_HOST}/templates/v1/${templateId}/use?destinationCircleId=${destinationCircleId}`,
     {

@@ -7,7 +7,13 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import CreateFromTemplateModal from "./CreateFromTemplateModal";
 import { AnimatePresence } from "framer-motion";
-import { Template as TemplateType, TemplateMinimal } from "@/app/types";
+import {
+  Template as TemplateType,
+  TemplateMinimal,
+  CircleType,
+} from "@/app/types";
+import { updateCircle } from "@/app/services/UpdateCircle";
+import { useProviderLocalProfile } from "../Profile/ProfileSettings/LocalProfileContext";
 
 type Props = {
   template: TemplateMinimal;
@@ -20,20 +26,46 @@ export default function Template({ template, handleBack }: Props) {
   const [detailedTemplate, setDetailedTemplate] = useState<TemplateType>(
     {} as TemplateType
   );
+  const [destinationCircle, setDestinationCircle] = useState<CircleType>(
+    {} as CircleType
+  );
+  const { fetchCircles } = useProviderLocalProfile();
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     void (async () => {
       setLoading(true);
       if (template) {
         const res = await getATemplate(template.id);
-        console.log({
-          detailedTemplate: res,
-        });
         setDetailedTemplate(res);
       }
       setLoading(false);
     })();
   }, [template]);
+
+  useEffect(() => {
+    window.addEventListener(
+      "message",
+      (event) => {
+        if (event.data.discordGuildId) {
+          const connectDiscord = async () => {
+            const res = await updateCircle(
+              {
+                discordGuildId: event.data.discordGuildId,
+              },
+              destinationCircle.id
+            );
+            await fetchCircles();
+            setDestinationCircle({
+              ...destinationCircle,
+              discordGuildId: event.data.discordGuildId,
+            });
+          };
+          void connectDiscord();
+        }
+      },
+      false
+    );
+  }, []);
 
   return (
     <Stack space="4">
@@ -43,8 +75,9 @@ export default function Template({ template, handleBack }: Props) {
             template={detailedTemplate}
             handleClose={() => {
               setCreateFromTemplateModalOpen(false);
-              // window.open(`http://localhost:3000/${template.id}`, "_blank");
             }}
+            destinationCircle={destinationCircle}
+            setDestinationCircle={setDestinationCircle}
           />
         )}
       </AnimatePresence>

@@ -11,6 +11,7 @@ import {
   LocalProfileContext,
   useProviderLocalProfile,
 } from "../Profile/ProfileSettings/LocalProfileContext";
+import { updateCircle } from "@/app/services/UpdateCircle";
 
 export default function Templates() {
   const profileContext = useProviderLocalProfile();
@@ -34,14 +35,11 @@ export default function Templates() {
     sidebarItem?: string,
     filteredBy?: string
   ) => {
-    console.log({ sidebarItem, templateGroups });
-
     if (sidebarItem) {
       const fiteredTemplateIds = templateGroups[sidebarItem];
       const filteredTemplates = templates.filter((item) =>
         fiteredTemplateIds.includes(item.id)
       );
-      console.log({ filteredTemplates });
       setFilteredTemplates(filteredTemplates);
     } else if (filteredBy) {
       const filteredTemplates = matchSorter(templates, filteredBy, {
@@ -51,12 +49,10 @@ export default function Templates() {
     }
   };
 
-  console.log({ filteredTemplates });
   useEffect(() => {
     void (async () => {
       const { templateData, templatesByGroup } =
         (await getAllTemplates()) as any;
-      console.log({ templateData, templatesByGroup });
       setTemplates(templateData);
       setTemplateGroups(templatesByGroup);
     })();

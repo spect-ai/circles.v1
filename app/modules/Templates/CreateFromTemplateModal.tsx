@@ -41,19 +41,19 @@ import { useRouter } from "next/router";
 type Props = {
   template: Template;
   handleClose: () => void;
+  destinationCircle: CircleType;
+  setDestinationCircle: (circle: CircleType) => void;
 };
 
 export default function CreateFromTemplateModal({
   template,
   handleClose,
+  destinationCircle,
+  setDestinationCircle,
 }: Props) {
   const { mode } = useTheme();
-  const [destinationCircle, setDestinationCircle] = useState<CircleType>(
-    {} as CircleType
-  );
   const [newCircleName, setNewCircleName] = useState<string>("");
-  const { myCircles, loadingMyCircles, fetchCircles } =
-    useProviderLocalProfile();
+  const { myCircles, loadingMyCircles } = useProviderLocalProfile();
   const [circleSpecificInfoDto, setCircleSpecificInfoDto] = useState<
     UseTemplateCircleSpecificInfoDto[]
   >([]);
@@ -73,34 +73,36 @@ export default function CreateFromTemplateModal({
       | undefined
     >();
 
-  const handleNext = async (skip?: boolean) => {
+  const handleNext = async (skip?: boolean, destCircle?: CircleType) => {
     try {
+      const nextIndex = currentIndex + 1;
       const newCircleSpecificInfoDto = [...circleSpecificInfoDto];
       if (currentIndex === -1 && template.automations?.length) {
         setCurrentIndex(0);
         return;
-      } else {
-        if (
-          template.automations?.length &&
-          template.automations?.length !== circleSpecificInfoDto?.length
-        ) {
-          newCircleSpecificInfoDto.push({
-            type: "automation",
-            id: template.automations[currentIndex].id,
-            actions: circleSpecificInfoDto?.[currentIndex]?.actions || [],
-          });
-          setCurrentIndex(currentIndex + 1);
-          return;
+      } else if (skip) {
+        newCircleSpecificInfoDto[currentIndex] = {
+          type: "automation",
+          id: template.automations[currentIndex].id,
+          actions: [],
+        };
+        setCircleSpecificInfoDto(newCircleSpecificInfoDto);
+      }
+
+      console.log({ newCircleSpecificInfoDto });
+      if (nextIndex === template.automations?.length) {
+        const res = await useTemplate(
+          template.id,
+          destCircle?.id || destinationCircle.id,
+          newCircleSpecificInfoDto
+        );
+        if (res.redirectUrl) {
+          handleClose();
+          window.open(`http://localhost:3000${res.redirectUrl}`, "_blank");
+        } else {
+          toast.error("Something went wrong while using this template");
         }
-      }
-      const res = await useTemplate(
-        template.id,
-        destinationCircle.id,
-        newCircleSpecificInfoDto
-      );
-      if (res.ok) {
-        const data = await res.json();
-      }
+      } else setCurrentIndex(nextIndex);
     } catch (e) {
       console.log({ e });
       toast.error("Something went wrong while using this template");
@@ -233,35 +235,6 @@ export default function CreateFromTemplateModal({
     });
   };
 
-  useEffect(() => {
-    window.addEventListener(
-      "message",
-      (event) => {
-        if (event.data.discordGuildId) {
-          const connectDiscord = async () => {
-            const res = await updateCircle(
-              {
-                discordGuildId: event.data.discordGuildId,
-              },
-              destinationCircle.id
-            );
-            if (res?.discordGuildId) {
-              setDestinationCircle((prev) => ({
-                ...prev,
-                discordGuildId: event.data.discordGuildId,
-              }));
-              setDiscordIsConnected(true);
-              setRequiresDiscordConnection(false);
-              fetchCircles();
-            }
-          };
-          void connectDiscord();
-        }
-      },
-      false
-    );
-  }, []);
-
   return (
     <Modal size="small" title="Use Template" handleClose={handleClose}>
       {currentIndex === -1 && (
@@ -287,7 +260,7 @@ export default function CreateFromTemplateModal({
                         onClick={async () => {
                           setDestinationCircle(circle);
 
-                          await handleNext(false);
+                          await handleNext(false, circle);
                         }}
                       >
                         <Logo
@@ -330,10 +303,7 @@ export default function CreateFromTemplateModal({
                     }
                   );
                   const circleData = await circleRes.json();
-                  const res = await useTemplate(template.id, circleData.id);
-                  if (res.ok) {
-                    const data = await res.json();
-                  }
+                  await useTemplate(template.id, circleData.id);
                 }}
               >
                 Use Template
@@ -523,7 +493,7 @@ export default function CreateFromTemplateModal({
                   }}
                 >
                   {currentIndex === template.automations?.length - 1
-                    ? `Skip this and use template`
+                    ? `Skip this and use template >`
                     : `Skip this automation >`}
                 </Button>
               )}{" "}
