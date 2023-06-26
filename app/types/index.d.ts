@@ -292,6 +292,7 @@ export interface CircleType {
   pricingPlan: number;
   topUpMembers: number;
   subscriptionId: string;
+  pendingBonus: number;
 }
 
 export type CirclePrivate = {

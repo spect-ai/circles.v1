@@ -68,8 +68,6 @@ function ResponsesTab() {
       </Box>
     );
   }
-
-  return <div>ResponsesTab</div>;
 }
 
 const Card = styled(Box)<{ mode: string }>`

@@ -4,7 +4,7 @@ import styled from "styled-components";
 import SocialMedia from "@/app/common/components/SocialMedia";
 
 export const VioletBlur = styled.div`
-  filter: blur(150px);
+  filter: blur(160px);
   height: 200px;
   width: 200px;
   border-radius: 100px;
@@ -16,7 +16,7 @@ export const VioletBlur = styled.div`
 export default function ConnectPage() {
   return (
     <Box position={"relative"} display="flex" width={"full"} gap="11">
-      {/* <VioletBlur style={{ bottom: "0px", left: "80rem" }} /> */}
+      <VioletBlur style={{ bottom: "0px", left: "80rem" }} />
       <Box
         style={{
           margin: "0vh auto",
@@ -45,11 +45,11 @@ export default function ConnectPage() {
             Explore the world of Spect
           </Heading>
         </Stack>
-
-        <Connect />
+        <Box width="1/2">
+          <Connect />
+        </Box>
         <SocialMedia />
       </Box>
-
       <VioletBlur style={{ top: "0px", left: "0rem" }} />
     </Box>
   );

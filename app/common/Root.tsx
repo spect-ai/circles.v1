@@ -210,6 +210,8 @@ function Root({ children, pageProps }: Props) {
   const router = useRouter();
   const url = `https:/circles.spect.network/${router.route}`;
 
+  const { ref } = router.query;
+
   const [isScribeOpen, setIsScribeOpen] = useAtom(scribeOpenAtom);
   const [scribeUrl, setScribeUrl] = useAtom(scribeUrlAtom);
   const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
@@ -244,7 +246,7 @@ function Root({ children, pageProps }: Props) {
     },
     verify: async ({ message, signature }) => {
       const verifyRes: any = await fetch(
-        `${process.env.API_HOST}/auth/connect`,
+        `${process.env.API_HOST}/auth/connect?ref=${ref}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
