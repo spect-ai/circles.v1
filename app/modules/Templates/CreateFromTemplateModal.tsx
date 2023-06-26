@@ -73,10 +73,7 @@ export default function CreateFromTemplateModal({
       | undefined
     >();
 
-  const handleNext = async (
-    skip?: boolean,
-    circleSpecificInfo?: CircleSpecificInfo
-  ) => {
+  const handleNext = async (skip?: boolean) => {
     try {
       const newCircleSpecificInfoDto = [...circleSpecificInfoDto];
       if (currentIndex === -1 && template.automations?.length) {
@@ -90,8 +87,7 @@ export default function CreateFromTemplateModal({
           newCircleSpecificInfoDto.push({
             type: "automation",
             id: template.automations[currentIndex].id,
-            info: circleSpecificInfo,
-            skip: skip,
+            actions: circleSpecificInfoDto?.[currentIndex]?.actions || [],
           });
           setCurrentIndex(currentIndex + 1);
           return;
@@ -104,9 +100,6 @@ export default function CreateFromTemplateModal({
       );
       if (res.ok) {
         const data = await res.json();
-
-        console.log({ data });
-        // window.open(`http://localhost:3000/${data.id}`, "_blank");
       }
     } catch (e) {
       console.log({ e });
@@ -117,9 +110,16 @@ export default function CreateFromTemplateModal({
   useEffect(() => {
     if (template.automations?.length && destinationCircle?.id) {
       const requiresDiscordConnection = template.automations?.some(
-        (automation) =>
-          automation.requirements.includes("discordRole") ||
-          automation.requirements.includes("discordChannel")
+        (automation) => {
+          const actionRequirements = automation.actions
+            .map((a) => a.requirements)
+            .flat();
+          return (
+            actionRequirements.includes("discordRole") ||
+            actionRequirements.includes("discordChannel") ||
+            actionRequirements.includes("discordCategory")
+          );
+        }
       );
       setRequiresDiscordConnection(
         !destinationCircle.discordGuildId && requiresDiscordConnection
@@ -131,7 +131,6 @@ export default function CreateFromTemplateModal({
     if (destinationCircle?.discordGuildId) {
       const discordIsConnected = async () => {
         const res = await guildIsConnected(destinationCircle?.discordGuildId);
-        console.log({ res });
         setDiscordIsConnected(res);
       };
       void discordIsConnected();
@@ -178,52 +177,57 @@ export default function CreateFromTemplateModal({
     }
   }, [discordIsConnected]);
 
-  const toggleSelectedRole = (index: number, roleId: string) => {
+  const toggleSelectedRole = (
+    index: number,
+    actionIndex: number,
+    roleId: string
+  ) => {
     setCircleSpecificInfoDto((prev) => {
       let newCircleSpecificInfoDto = [...prev];
-      console.log({ newCircleSpecificInfoDto });
-      let info =
-        newCircleSpecificInfoDto[index]?.info || ({} as CircleSpecificInfo);
-      const roleIds = info.roleIds || [];
-      console.log({ roleIds, roleId });
-      if (roleIds.includes(roleId)) {
-        info = {
-          ...info,
-          roleIds: roleIds.filter((id: string) => id !== roleId),
-        };
-      } else {
-        console.log("soso");
-        info = { ...info, roleIds: [...roleIds, roleId] };
-      }
-      console.log({ info });
+      const actions = newCircleSpecificInfoDto[index]?.actions || [];
+      let info = actions[actionIndex]?.info || ({} as CircleSpecificInfo);
+      info = {
+        ...info,
+        roleIds: info?.roleIds?.includes(roleId)
+          ? info?.roleIds?.filter((r) => r !== roleId)
+          : [...(info?.roleIds || []), roleId],
+      };
+      const newActions = [...actions];
+      newActions[actionIndex] = {
+        ...newActions[actionIndex],
+        info: info,
+      };
       newCircleSpecificInfoDto[index] = {
         type: "automation",
         id: template.automations[index].id,
-        info: info,
+        actions: newActions,
       };
-
-      console.log({ newCircleSpecificInfoDto });
       return newCircleSpecificInfoDto;
     });
   };
 
   const updateSelectedChannel = (
     index: number,
+    actionIndex: number,
     channel: OptionType,
     channelType: "channel" | "category" = "channel"
   ) => {
     setCircleSpecificInfoDto((prev) => {
       let newCircleSpecificInfoDto = [...prev];
-      console.log({ newCircleSpecificInfoDto });
-      let info = newCircleSpecificInfoDto[index]?.info || {};
+      const actions = newCircleSpecificInfoDto[index]?.actions || [];
+      let info = actions[actionIndex]?.info || ({} as CircleSpecificInfo);
       info = {
         ...info,
         [channelType]: channel,
       };
+      actions[actionIndex] = {
+        ...actions[actionIndex],
+        info: info,
+      };
       newCircleSpecificInfoDto[index] = {
         type: "automation",
         id: template.automations[index].id,
-        info: info,
+        actions: actions,
       };
       return newCircleSpecificInfoDto;
     });
@@ -326,9 +330,7 @@ export default function CreateFromTemplateModal({
                     }
                   );
                   const circleData = await circleRes.json();
-                  console.log({ circleData });
                   const res = await useTemplate(template.id, circleData.id);
-                  console.log(res);
                   if (res.ok) {
                     const data = await res.json();
                   }
@@ -358,102 +360,119 @@ export default function CreateFromTemplateModal({
               To add this automation to your space, please perform the
               following.
             </Text>
-            <Stack>
-              {!requiresDiscordConnection &&
-                template.automations?.[currentIndex]?.requirements.includes(
-                  "discordRole"
-                ) && (
-                  <Stack space="1">
-                    <Box marginLeft="2">
-                      <Text variant="small" color="textSecondary">
-                        Pick Discord roles
-                      </Text>
-                    </Box>
-                    <Stack direction="horizontal" wrap>
-                      {discordRoles?.map((role) => {
-                        return (
-                          <Box
-                            key={role.id}
-                            cursor="pointer"
-                            onClick={() =>
-                              toggleSelectedRole(currentIndex, role.id)
-                            }
-                          >
-                            {circleSpecificInfoDto?.[currentIndex]?.info
-                              ?.roleIds?.length &&
-                            (
-                              circleSpecificInfoDto?.[currentIndex]
-                                .info as CircleSpecificInfo
-                            ).roleIds?.includes(role.id) ? (
-                              <Tag tone={"accent"} hover>
-                                <Box paddingX="2">{role.name}</Box>
-                              </Tag>
-                            ) : (
-                              <Tag hover>
-                                <Box paddingX="2">{role.name}</Box>
-                              </Tag>
-                            )}
+            {!requiresDiscordConnection &&
+              template.automations?.[currentIndex]?.actions?.map(
+                (ta, actionIndex) => {
+                  return (
+                    <Stack>
+                      {ta.requirements.includes("discordRole") && (
+                        <Stack space="1">
+                          <Box marginLeft="2">
+                            <Text variant="small" color="textSecondary">
+                              Pick Discord roles
+                            </Text>
                           </Box>
-                        );
-                      })}{" "}
+                          <Stack direction="horizontal" wrap>
+                            {discordRoles?.map((role) => {
+                              return (
+                                <Box
+                                  key={role.id}
+                                  cursor="pointer"
+                                  onClick={() =>
+                                    toggleSelectedRole(
+                                      currentIndex,
+                                      actionIndex,
+                                      role.id
+                                    )
+                                  }
+                                >
+                                  {(
+                                    circleSpecificInfoDto?.[currentIndex]
+                                      ?.actions?.[actionIndex]
+                                      ?.info as CircleSpecificInfo
+                                  )?.roleIds?.length &&
+                                  (
+                                    circleSpecificInfoDto?.[currentIndex]
+                                      ?.actions?.[actionIndex]
+                                      ?.info as CircleSpecificInfo
+                                  ).roleIds?.includes(role.id) ? (
+                                    <Tag tone={"accent"} hover>
+                                      <Box paddingX="2">{role.name}</Box>
+                                    </Tag>
+                                  ) : (
+                                    <Tag hover>
+                                      <Box paddingX="2">{role.name}</Box>
+                                    </Tag>
+                                  )}
+                                </Box>
+                              );
+                            })}{" "}
+                          </Stack>
+                        </Stack>
+                      )}
+                      {ta.requirements.includes("discordChannel") &&
+                        currentIndex > -1 && (
+                          <Stack>
+                            <Dropdown
+                              label="Pick a Discord channel"
+                              options={guildChannels}
+                              selected={
+                                (
+                                  circleSpecificInfoDto?.[currentIndex]
+                                    ?.actions?.[actionIndex]
+                                    ?.info as CircleSpecificInfo
+                                )?.channel || {
+                                  label: "Select a channel",
+                                  value: "",
+                                }
+                              }
+                              onChange={(value) => {
+                                updateSelectedChannel(
+                                  currentIndex,
+                                  actionIndex,
+                                  value
+                                );
+                              }}
+                              multiple={false}
+                              portal={true}
+                              isClearable={false}
+                            />
+                          </Stack>
+                        )}
+                      {ta.requirements.includes("discordCategory") &&
+                        currentIndex > -1 && (
+                          <Stack>
+                            <Dropdown
+                              label="Pick a Discord category"
+                              options={guildCategories}
+                              selected={
+                                (
+                                  circleSpecificInfoDto?.[currentIndex]
+                                    ?.actions?.[actionIndex]
+                                    ?.info as CircleSpecificInfo
+                                )?.category || {
+                                  label: "Select a category",
+                                  value: "",
+                                }
+                              }
+                              onChange={(value) => {
+                                updateSelectedChannel(
+                                  currentIndex,
+                                  actionIndex,
+                                  value,
+                                  "category"
+                                );
+                              }}
+                              multiple={false}
+                              portal={false}
+                              isClearable={false}
+                            />
+                          </Stack>
+                        )}
                     </Stack>
-                  </Stack>
-                )}
-              {!requiresDiscordConnection &&
-                template.automations?.[currentIndex]?.requirements.includes(
-                  "discordChannel"
-                ) &&
-                currentIndex > -1 && (
-                  <Stack>
-                    <Dropdown
-                      label="Pick a Discord channel"
-                      options={guildChannels}
-                      selected={
-                        (
-                          circleSpecificInfoDto?.[currentIndex]
-                            ?.info as CircleSpecificInfo
-                        )?.channel || {
-                          label: "Select a channel",
-                          value: "",
-                        }
-                      }
-                      onChange={(value) => {
-                        updateSelectedChannel(currentIndex, value);
-                      }}
-                      multiple={false}
-                      portal={true}
-                      isClearable={false}
-                    />
-                  </Stack>
-                )}
-              {!requiresDiscordConnection &&
-                template.automations?.[currentIndex]?.requirements.includes(
-                  "discordCategory"
-                ) &&
-                currentIndex > -1 && (
-                  <Stack>
-                    <Dropdown
-                      label="Pick a Discord category"
-                      options={guildCategories}
-                      selected={
-                        (
-                          circleSpecificInfoDto?.[currentIndex]
-                            ?.info as CircleSpecificInfo
-                        )?.category || {
-                          label: "Select a category",
-                          value: "",
-                        }
-                      }
-                      onChange={(value) => {
-                        updateSelectedChannel(currentIndex, value, "category");
-                      }}
-                      multiple={false}
-                      portal={false}
-                      isClearable={false}
-                    />
-                  </Stack>
-                )}
-            </Stack>
+                  );
+                }
+              )}
             <Stack direction="horizontal" justify={"space-between"}>
               {requiresDiscordConnection && (
                 <Box
@@ -486,15 +505,7 @@ export default function CreateFromTemplateModal({
                       await handleNext(false);
                     }}
                     disabled={
-                      !(
-                        circleSpecificInfoDto?.[currentIndex]?.info &&
-                        (circleSpecificInfoDto?.[currentIndex]?.info?.roleIds
-                          ?.length ||
-                          circleSpecificInfoDto?.[currentIndex]?.info?.channel
-                            ?.value ||
-                          circleSpecificInfoDto?.[currentIndex]?.info?.category
-                            ?.value)
-                      )
+                      !circleSpecificInfoDto?.[currentIndex]?.actions?.length
                     }
                   >
                     {currentIndex === template.automations?.length - 1

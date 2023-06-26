@@ -1228,11 +1228,17 @@ export type TemplateRequirement =
   | "discordChannel"
   | "discordCategory";
 
+export type TemplateAction = {
+  name: string;
+  description?: string;
+  requirements: TemplateRequirement[];
+};
+
 export type TemplateAutomation = {
   id: string;
   name: string;
   description: string;
-  requirements: TemplateRequirement[];
+  actions: TemplateAction[];
 };
 
 export interface Template extends TemplateMinimal {

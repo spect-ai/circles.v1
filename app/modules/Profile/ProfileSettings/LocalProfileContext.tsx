@@ -124,7 +124,6 @@ export function useProviderLocalProfile() {
     let verifiedSocials = {} as {
       [key: string]: GithubFieldFromOauthData | DiscordFieldFromOauthData;
     };
-    console.log({ currentUser });
     if (currentUser?.discordId && currentUser?.discordUsername) {
       verifiedSocials = {
         ...verifiedSocials,

@@ -25,8 +25,10 @@ export type CircleSpecificInfo = {
 export type UseTemplateCircleSpecificInfoDto = {
   type: "automation";
   id: string;
-  info?: CircleSpecificInfo;
-  skip?: boolean;
+  actions: {
+    info?: CircleSpecificInfo;
+    skip?: boolean;
+  }[];
 };
 
 export async function useTemplate(
