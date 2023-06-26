@@ -6,8 +6,6 @@ import { useMutation, useQuery } from "react-query";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "./CircleContext";
 import { updateFolder } from "@/app/services/Folders";
-import { AnimatePresence } from "framer-motion";
-import TemplateModal from "./CircleOverview/FolderView/TemplateModal";
 import mixpanel from "mixpanel-browser";
 import { UserType } from "@/app/types";
 

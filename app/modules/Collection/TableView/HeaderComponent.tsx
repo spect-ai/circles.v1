@@ -49,17 +49,19 @@ export default function HeaderComponent({
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
-  const { localCollection: collection } = useLocalCollection();
+  const { localCollection: collection, authorization } = useLocalCollection();
   return (
     <Popover
       butttonComponent={
         <Box
-          onMouseEnter={() => setShowEdit(true)}
-          onMouseLeave={() => setShowEdit(false)}
+          onMouseEnter={() => authorization !== "readonly" && setShowEdit(true)}
+          onMouseLeave={() =>
+            authorization !== "readonly" && setShowEdit(false)
+          }
         >
           <Stack direction="horizontal" justify="space-between">
             <Stack direction="horizontal" align="center" space="2">
-              <Text variant="label">{getPropertyIcon(propertyType)}</Text>
+              <Text variant="label">{getPropertyIcon(propertyType, 15)}</Text>
               <Text variant="label">{smartTrim(columnName, 17)}</Text>
             </Stack>
             <AnimatePresence>
@@ -126,43 +128,6 @@ export default function HeaderComponent({
             </Text>
           </Stack>
         </PopoverOption>
-
-        {/* <PopoverOption
-          onClick={() => {
-            sortData(columnName, true);
-            setIsOpen(false);
-          }}
-        >
-          <Stack direction="horizontal" space="2" align="center">
-            <Text>▲</Text>
-            <Text
-              variant="small"
-              weight="semiBold"
-              ellipsis
-              color="textSecondary"
-            >
-              Sort Ascending
-            </Text>
-          </Stack>
-        </PopoverOption>
-        <PopoverOption
-          onClick={() => {
-            sortData(columnName, false);
-            setIsOpen(false);
-          }}
-        >
-          <Stack direction="horizontal" space="2" align="center">
-            <Text>▼</Text>
-            <Text
-              variant="small"
-              weight="semiBold"
-              ellipsis
-              color="textSecondary"
-            >
-              Sort Descending
-            </Text>
-          </Stack>
-        </PopoverOption> */}
       </ScrollContainer>
     </Popover>
   );

@@ -52,6 +52,12 @@ type LocalCollectionContextType = {
     [key: string]: string;
   };
   scrollContainerRef: React.RefObject<HTMLDivElement>;
+  authorization:
+    | "none"
+    | "public"
+    | "readonly"
+    | "readcomment"
+    | "readwritecomment";
 };
 
 export const LocalCollectionContext = createContext<LocalCollectionContextType>(
@@ -60,14 +66,19 @@ export const LocalCollectionContext = createContext<LocalCollectionContextType>(
 
 export function useProviderLocalCollection() {
   const router = useRouter();
-  const { collection: colId, cardSlug } = router.query;
+  const { collection: colId, cardSlug, formId } = router.query;
+  const id = colId || formId;
   const { refetch: fetchCollection, data } = useQuery<CollectionType>(
-    ["collection", colId],
+    ["collection", id],
     () =>
       fetch(
         process.env.NEXT_PUBLIC_USE_WORKER === "true"
           ? `https://worker.spect.network/collection/${colId}`
-          : `${process.env.API_HOST}/collection/v1/slug/${colId as string}`,
+          : colId
+          ? `${process.env.API_HOST}/collection/v1/slug/${colId as string}`
+          : `${process.env.API_HOST}/collection/v1/public/slug/${
+              formId as string
+            }`,
         {
           credentials: "include",
         }
@@ -82,7 +93,10 @@ export function useProviderLocalCollection() {
 
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
-
+  const [authorization, setAuthorization] =
+    useState<
+      "public" | "readonly" | "readcomment" | "readwritecomment" | "none"
+    >("none");
   const [localCollection, setLocalCollection] = useState({} as CollectionType);
   const [error, setError] = useState(false);
   const [view, setView] = useState(0);
@@ -111,7 +125,7 @@ export function useProviderLocalCollection() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const updateCollection = (collection: CollectionType) => {
-    queryClient.setQueryData(["collection", colId], collection);
+    queryClient.setQueryData(["collection", id], collection);
     setLocalCollection(collection);
   };
 
@@ -181,6 +195,16 @@ export function useProviderLocalCollection() {
   };
 
   useEffect(() => {
+    if (formId && !colId) {
+      setAuthorization("readonly");
+    } else if (colId) {
+      setAuthorization("readwritecomment");
+    } else {
+      setAuthorization("none");
+    }
+  }, [formId, colId]);
+
+  useEffect(() => {
     let fieldsThatNeedAttention = {} as {
       [key: string]: boolean;
     };
@@ -225,7 +249,7 @@ export function useProviderLocalCollection() {
         setProjectViewId(data.projectMetadata.viewOrder[0]);
       }
     } else setLocalCollection({} as CollectionType);
-    if (colId) {
+    if (id) {
       setLoading(true);
       fetchCollection()
         .then((res) => {
@@ -262,7 +286,7 @@ export function useProviderLocalCollection() {
           setLoading(false);
         });
     }
-  }, [colId, fetchCollection]);
+  }, [id, fetchCollection]);
 
   useEffect(() => {
     if (localCollection.slug && cardSlug) {
@@ -324,6 +348,7 @@ export function useProviderLocalCollection() {
     setCurrentPage,
     colorMapping,
     scrollContainerRef,
+    authorization,
   };
 }
 

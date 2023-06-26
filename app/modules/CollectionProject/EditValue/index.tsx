@@ -164,7 +164,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                 <FieldButton
                   onClick={() => {
                     if (disabled) {
-                      toast.error("You can't edit a closed card");
+                      toast.error("You can't edit a card in read-only mode");
                       return;
                     }
                     if (!formActions("updateResponsesManually"))
@@ -409,7 +409,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
             <FieldButton
               onClick={() => {
                 if (disabled) {
-                  toast.error("You can't edit a closed card");
+                  toast.error("You can't edit a card in read-only mode");
                   return;
                 }
                 setIsEditing(true);
@@ -452,7 +452,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
             <FieldButton
               onClick={() => {
                 if (disabled) {
-                  toast.error("You can't edit a closed card");
+                  toast.error("You can't edit a card in read-only mode");
                   return;
                 }
                 setIsEditing(true);
@@ -498,7 +498,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
           <FieldButton
             onClick={() => {
               if (disabled) {
-                toast.error("You can't edit a closed card");
+                toast.error("You can't edit a card in read-only mode");
                 return;
               }
               setIsEditing(true);
@@ -532,7 +532,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
           <FieldButton
             onClick={() => {
               if (disabled) {
-                toast.error("You can't edit a closed card");
+                toast.error("You can't edit a card in read-only mode");
                 return;
               }
               setIsEditing(true);
@@ -560,7 +560,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
           <FieldButton
             onClick={() => {
               if (disabled) {
-                toast.error("You can't edit a closed card");
+                toast.error("You can't edit a card in read-only mode");
                 return;
               }
               setIsEditing(true);

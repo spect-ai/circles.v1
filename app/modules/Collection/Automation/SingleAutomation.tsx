@@ -167,7 +167,7 @@ export default function SingleAutomation({
   useEffect(() => {
     if (collection?.id) {
       const whenOptions = Object.entries(
-        (collection as CollectionType)?.properties
+        (collection as CollectionType)?.properties || {}
       )
         .filter((p) => p[1].type === "singleSelect")
         .map((p) => ({

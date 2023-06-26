@@ -13,6 +13,7 @@ import CardDrawer from "../CardDrawer";
 import useViewCommon from "../Common/useViewCommon";
 import Column from "./Column";
 import { logError } from "@/app/common/utils/utils";
+import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
 export default function ListView() {
   const {
@@ -29,6 +30,7 @@ export default function ListView() {
     updateCollection,
     cardOrders,
   } = useViewCommon();
+  const { authorization } = useLocalCollection();
 
   return (
     <Container
@@ -66,47 +68,49 @@ export default function ListView() {
               />
             );
           })}
-          <Box marginLeft="4" width="48" marginBottom="4">
-            {property.type === "singleSelect" && (
-              <PrimaryButton
-                variant="transparent"
-                center
-                onClick={async () => {
-                  setLoading(true);
-                  await updateField(collection.id, {
-                    id: view.groupByColumn,
-                    options: [
-                      ...(property.options as Option[]),
-                      {
-                        label: "New_Column",
-                        value: `option-${uuid()}`,
-                      },
-                    ],
-                  });
-                  const res = await updateFormCollection(collection.id, {
-                    projectMetadata: {
-                      ...collection.projectMetadata,
-                      cardOrders: {
-                        ...collection.projectMetadata.cardOrders,
-                        [view.groupByColumn]: [
-                          ...collection.projectMetadata.cardOrders[
-                            view.groupByColumn
+          {authorization !== "readonly" && (
+            <Box marginLeft="4" width="48" marginBottom="4">
+              {property.type === "singleSelect" && (
+                <PrimaryButton
+                  variant="transparent"
+                  center
+                  onClick={async () => {
+                    setLoading(true);
+                    await updateField(collection.id, {
+                      id: view.groupByColumn,
+                      options: [
+                        ...(property.options as Option[]),
+                        {
+                          label: "New_Column",
+                          value: `option-${uuid()}`,
+                        },
+                      ],
+                    });
+                    const res = await updateFormCollection(collection.id, {
+                      projectMetadata: {
+                        ...collection.projectMetadata,
+                        cardOrders: {
+                          ...collection.projectMetadata.cardOrders,
+                          [view.groupByColumn]: [
+                            ...collection.projectMetadata.cardOrders[
+                              view.groupByColumn
+                            ],
+                            [],
                           ],
-                          [],
-                        ],
+                        },
                       },
-                    },
-                  });
-                  setLoading(false);
-                  if (res.id) updateCollection(res);
-                  else logError("Error adding column");
-                }}
-              >
-                {`Add ${property.name}`}
-              </PrimaryButton>
-            )}
-            {property.type === "user" && <InviteMemberModal />}
-          </Box>
+                    });
+                    setLoading(false);
+                    if (res.id) updateCollection(res);
+                    else logError("Error adding column");
+                  }}
+                >
+                  {`Add ${property.name}`}
+                </PrimaryButton>
+              )}
+              {property.type === "user" && <InviteMemberModal />}
+            </Box>
+          )}
         </Stack>
       </DragDropContext>
     </Container>

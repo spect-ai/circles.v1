@@ -37,40 +37,6 @@ export default function DefaultPayment() {
   const [isAddTokenModalOpen, setIsAddTokenModalOpen] = useState(false);
   const [isAddAddressOpen, setIsAddAddressOpen] = useState(false);
 
-  const [circleAddress, setCircleAddress] = useState(
-    circle?.paymentAddress || ""
-  );
-
-  const onSubmit = async () => {
-    // validate if circle address is a valid ethereum address
-    if (circleAddress && !circleAddress.match(/^0x[a-fA-F0-9]{40}$/)) {
-      toast.error("Invalid Payment Address");
-      return;
-    }
-
-    setIsLoading(true);
-    if (!chain || !token) {
-      toast.error("Please select a chain and token");
-      setIsLoading(false);
-      return;
-    }
-    const res = await updateCircle(
-      {
-        defaultPayment: {
-          chain: chain,
-          token: token,
-        },
-        paymentAddress: circleAddress,
-      },
-      circle?.id || ""
-    );
-    setIsDirty(false);
-    setIsLoading(false);
-    if (res) {
-      setCircleData(res);
-    }
-  };
-
   const { canDo } = useRoleGate();
 
   return (
@@ -209,41 +175,6 @@ export default function DefaultPayment() {
           </Stack>
         </Stack>
         <Box marginTop="4" />
-        {/* <Box>
-          <Heading>Circle Address</Heading>
-          <Text>
-            Set ethereum address where circle should receieve the payments.
-            Please ensure that the ethereum address added is NOT a gnosis safe
-            address.
-          </Text>
-        </Box>
-        <Stack>
-          <Input
-            label=""
-            placeholder="Address"
-            width={{
-              xs: "full",
-              md: "1/2",
-            }}
-            value={circleAddress}
-            onChange={(e) => {
-              setIsDirty(true);
-              setCircleAddress(e.target.value);
-            }}
-          />
-        </Stack> */}
-        {/* <Box width="1/3" marginTop="2" paddingLeft="1">
-          {isDirty && (
-            <PrimaryButton
-              icon={<SaveOutlined />}
-              onClick={onSubmit}
-              loading={isLoading}
-              animation="fade"
-            >
-              Save
-            </PrimaryButton>
-          )}
-        </Box> */}
       </Stack>
     </Container>
   );

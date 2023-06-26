@@ -7,7 +7,7 @@ const RewardComponent = ({ rowData, columnData }: CellProps) => {
   const reward = rowData[columnData.property.id];
   const id = rowData.id;
 
-  const { localCollection: collection } = useLocalCollection();
+  const { localCollection: collection, authorization } = useLocalCollection();
   return (
     <Box
       marginLeft="1"
@@ -25,7 +25,7 @@ const RewardComponent = ({ rowData, columnData }: CellProps) => {
           if (
             collection.collectionType === 0
               ? columnData.isPartOfFormView
-              : false
+              : authorization === "readonly"
           )
             return;
           columnData.setPropertyId(columnData.property.id);

@@ -38,7 +38,6 @@ import InviteMemberModal, {
   CustomButton,
 } from "../Circle/ContributorsModal/InviteMembersModal";
 import { BiBot, BiCheck } from "react-icons/bi";
-import TemplateModal from "../Circle/CircleOverview/FolderView/TemplateModal";
 import { MdPriceCheck } from "react-icons/md";
 import UpgradePlan from "../Sidebar/UpgradePlan";
 import { RiFlowChart } from "react-icons/ri";
@@ -116,13 +115,6 @@ function CircleSidebar() {
   return (
     <Box paddingY="2" paddingLeft="3" paddingRight="3">
       <AnimatePresence>
-        {templateModalOpen && (
-          <TemplateModal
-            handleClose={() => {
-              setTemplateModalOpen(false);
-            }}
-          />
-        )}
         {isSettingsModalOpen && (
           <SettingsModal
             handleClose={() => {
@@ -245,7 +237,7 @@ function CircleSidebar() {
                     });
                 }}
               >
-                AI Workflows
+                Community AI
               </PrimaryButton>
             </Link>
             {circle?.sidebarConfig?.showPayment && (

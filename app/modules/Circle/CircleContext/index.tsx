@@ -6,7 +6,6 @@ import {
   CircleType,
   MemberDetails,
   Registry,
-  RetroType,
   UserType,
 } from "@/app/types";
 import { useAtom } from "jotai";

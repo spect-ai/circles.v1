@@ -25,7 +25,7 @@ export default function ProjectTableView() {
 
   const { mode } = useTheme();
 
-  const { localCollection: collection } = useLocalCollection();
+  const { localCollection: collection, authorization } = useLocalCollection();
   const { formActions } = useRoleGate();
 
   const [refreshTable, setRefreshTable] = useState(false);
@@ -60,7 +60,7 @@ export default function ProjectTableView() {
       >
         <Stack direction="horizontal" space="0">
           <TableView />
-          {!refreshTable && (
+          {authorization !== "readonly" && !refreshTable && (
             <Box>
               <AddFieldButton
                 mode={mode}
@@ -85,7 +85,7 @@ export default function ProjectTableView() {
             </Box>
           )}
         </Stack>
-        {!refreshTable && (
+        {authorization !== "readonly" && !refreshTable && (
           <AddRowButton
             mode={mode}
             onClick={() => {
@@ -110,7 +110,7 @@ export default function ProjectTableView() {
                 });
             }}
           >
-            <Stack direction="horizontal">
+            <Stack direction="horizontal" align="center" space="2">
               <Text color="accent">
                 <IconPlusSmall />
               </Text>

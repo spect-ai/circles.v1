@@ -25,7 +25,7 @@ type ProfileSettingsType = {
   bio: string;
   isDirty: boolean;
   uploadFile: (file: File) => void;
-  onSaveProfile: () => void;
+  onSaveProfile: () => Promise<boolean>;
   usernameError: string;
   setUsernameError: React.Dispatch<React.SetStateAction<string>>;
   apiKeys: string[];
@@ -98,7 +98,7 @@ export function useProviderLocalProfile() {
     }
   };
 
-  const onSaveProfile = async () => {
+  const onSaveProfile = async (): Promise<boolean> => {
     setLoading(true);
     const res = await updateProfile({
       username,
@@ -106,9 +106,11 @@ export function useProviderLocalProfile() {
       bio,
       email,
     });
-    console.log(res);
+
     setLoading(false);
     setIsDirty(false);
+    if (!res) return false;
+    return true;
   };
 
   useEffect(() => {
@@ -172,6 +174,8 @@ export function useProviderLocalProfile() {
     verifiedSocials,
     setVerifiedSocials,
     myCircles,
+    fetchCircles,
+    loadingMyCircles,
   };
 }
 export const useProfile = () => useContext(LocalProfileContext);

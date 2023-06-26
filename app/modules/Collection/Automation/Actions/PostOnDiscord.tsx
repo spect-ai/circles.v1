@@ -136,7 +136,7 @@ export default function PostCardOnDiscord({
       </Box>
       <Dropdown
         options={
-          Object.entries(collection.properties)
+          Object.entries(collection.properties || {})
             .filter(
               ([propertyId, property]) =>
                 property.type === "shortText" ||

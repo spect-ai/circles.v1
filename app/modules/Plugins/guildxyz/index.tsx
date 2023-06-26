@@ -103,7 +103,25 @@ export default function RoleGate({ handleClose }: Props) {
               flexDirection="row"
               justifyContent="space-between"
               alignItems="center"
+              paddingTop="4"
             >
+              <Box
+                display="flex"
+                flexDirection="row"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Box
+                  margin="2"
+                  cursor="pointer"
+                  width="full"
+                  onClick={() => {
+                    window.open("https://guild.xyz/explorer", "_blank");
+                  }}
+                >
+                  <Text color="accent">{`I haven't setup my guild yet`}</Text>
+                </Box>
+              </Box>
               <PrimaryButton
                 loading={loading}
                 onClick={async () => {
@@ -131,23 +149,6 @@ export default function RoleGate({ handleClose }: Props) {
               >
                 Add Guild
               </PrimaryButton>
-              <Box
-                display="flex"
-                flexDirection="row"
-                justifyContent="center"
-                alignItems="center"
-              >
-                <Box
-                  margin="2"
-                  cursor="pointer"
-                  width="full"
-                  onClick={() => {
-                    window.open("https://guild.xyz/explorer", "_blank");
-                  }}
-                >
-                  <Text color="accent">{`I haven't setup my guild yet`}</Text>
-                </Box>
-              </Box>
             </Box>
           </Stack>
         ) : (

@@ -187,7 +187,7 @@ export default function CreateDiscordThread({
         <CreatableDropdown
           placeholder="Select a field to map from or enter any custom value..."
           options={
-            Object.entries(collection.properties)
+            Object.entries(collection.properties || {})
               .filter(([propertyId, property]) => property.type === "shortText")
               .map(([propertyId, property]) => ({
                 label: `Map from value in "${property.name}"`,
@@ -196,7 +196,7 @@ export default function CreateDiscordThread({
           }
           selected={threadName}
           onChange={(value) => {
-            if (collection.properties[value?.value])
+            if (collection.properties?.[value?.value])
               setThreadNameType("mapping");
             else setThreadNameType("value");
             setThreadName(value);
@@ -349,7 +349,7 @@ export default function CreateDiscordThread({
         )}
         {addStakeholder &&
           isPrivate &&
-          !Object.values(collection.properties)?.some((p) =>
+          !Object.values(collection.properties || {})?.some((p) =>
             ["user", "user[]"].includes(p.type)
           ) && (
             <Box marginTop="4" marginBottom="2">
@@ -360,7 +360,7 @@ export default function CreateDiscordThread({
           )}
         {addStakeholder &&
           isPrivate &&
-          Object.values(collection.properties)?.some((p) =>
+          Object.values(collection.properties || {})?.some((p) =>
             ["user", "user[]"].includes(p.type)
           ) && (
             <>
@@ -371,7 +371,7 @@ export default function CreateDiscordThread({
                 </Text>
               </Box>
               <Stack direction="horizontal" wrap>
-                {Object.values(collection.properties)
+                {Object.values(collection.properties || {})
                   ?.filter((p) => ["user", "user[]"].includes(p.type))
                   ?.map((p) => {
                     return (

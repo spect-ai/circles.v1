@@ -9,7 +9,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, IconTrash, Stack, useTheme, Button, Text } from "degen";
 import styled from "styled-components";
 import Card from "./card";
-import { CircleType, ProjectType, RetroType } from "@/app/types";
+import { CircleType } from "@/app/types";
 import { deleteFolder, updateFolder } from "@/app/services/Folders";
 import { useCircle } from "../../CircleContext";
 import { toast } from "react-toastify";
@@ -20,11 +20,7 @@ interface Props {
   name: string;
   id: string;
   index: number;
-  projects?: { [key: string]: ProjectType };
   workstreams?: { [key: string]: CircleType };
-  retros?: {
-    [key: string]: RetroType;
-  };
   collections?: {
     [key: string]: {
       id: string;
@@ -75,7 +71,6 @@ const Folder = ({
   id,
   name,
   index,
-  projects,
   workstreams,
   collections,
 }: Props) => {
@@ -87,7 +82,6 @@ const Folder = ({
   const ondeleteFolder = async () => {
     const unarchivedContent = content.filter(
       (card) =>
-        (projects?.[card] && projects?.[card].archived !== true) ||
         (workstreams?.[card] && workstreams?.[card].archived !== true) ||
         (collections?.[card] && collections?.[card].archived !== true)
     );
@@ -129,9 +123,6 @@ const Folder = ({
       id="scroll-container"
     >
       {content?.map((card, i) => {
-        if (projects?.[card] && card) {
-          return <Card card={card} index={i} />;
-        }
         if (workstreams?.[card] && card) {
           return (
             <Card card={card} index={i} key={card} workstreams={workstreams} />

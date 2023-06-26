@@ -1,4 +1,4 @@
-import { CircleType, ProjectType, UserType } from "@/app/types";
+import { CircleType, UserType } from "@/app/types";
 import { SettingOutlined } from "@ant-design/icons";
 import { Box, Button, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -15,9 +15,6 @@ function CircleOptions() {
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
     notifyOnChangeProps: ["data"],
-  });
-  const { data: project } = useQuery<ProjectType>(["project", pId], {
-    enabled: false,
   });
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -39,7 +36,7 @@ function CircleOptions() {
           }}
         >
           <Text size="headingThree" weight="bold" ellipsis>
-            {circle?.name || project?.parents[0].name}
+            {circle?.name}
           </Text>
         </Box>
         <Box

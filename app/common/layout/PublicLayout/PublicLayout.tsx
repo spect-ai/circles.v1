@@ -128,12 +128,16 @@ function PublicLayout(props: PublicLayoutProps) {
   const { inviteCode, circle } = router.query;
 
   const onboard =
-    currentUser?.email?.length == 0 && myCircles?.length == 0 && !inviteCode;
+    !inviteCode && !currentUser?.circles?.length
+      ? "self"
+      : inviteCode && currentUser?.firstLogin
+      ? "invite"
+      : connectedUser
+      ? "none"
+      : null;
 
   useEffect(() => {
     void fetchCircles();
-    // void fetchNotifications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, connectedUser, circle]);
 
   useEffect(() => {
@@ -215,7 +219,7 @@ function PublicLayout(props: PublicLayoutProps) {
   return (
     <DesktopContainer backgroundColor="backgroundSecondary">
       {connectedUser && currentUser?.id ? (
-        !onboard ? (
+        onboard === "none" ? (
           <>
             <Hidden xs sm>
               <Sidebar />
@@ -265,7 +269,12 @@ function PublicLayout(props: PublicLayoutProps) {
             </Box>
           </>
         ) : (
-          <Onboard />
+          <Onboard
+            type={onboard}
+            setType={() => {
+              refetch();
+            }}
+          />
         )
       ) : (
         <ConnectPage />

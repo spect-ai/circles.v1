@@ -169,12 +169,12 @@ export default function CreateCard({
     void fetchCollectionOptions();
     void fetchCollection();
 
-    const milestoneFields = Object.entries(collection.properties).filter(
+    const milestoneFields = Object.entries(collection.properties || {}).filter(
       ([propertyId, property]) => property.type === "milestone"
     );
-    const notMilestoneFields = Object.entries(collection.properties).filter(
-      ([propertyId, property]) => property.type !== "milestone"
-    );
+    const notMilestoneFields = Object.entries(
+      collection.properties || {}
+    ).filter(([propertyId, property]) => property.type !== "milestone");
     let propOptions = notMilestoneFields.map(([propertyId, property]) => ({
       label: property.name,
       value: propertyId,

@@ -64,8 +64,11 @@ type Props = {
 
 export default function CardDrawer({ handleClose, defaultValue }: Props) {
   const { mode } = useTheme();
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+  const {
+    localCollection: collection,
+    updateCollection,
+    authorization,
+  } = useLocalCollection();
 
   const [value, setValue] = useState<any>(defaultValue || {});
   const [snapshotModal, setSnapshotModal] = useState(false);
@@ -144,12 +147,20 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
   };
 
   const closeCard = () => {
+    const q = {} as any;
+    if (query.formId) {
+      q["formId"] = query.formId;
+    } else {
+      if (query.circle) {
+        q["circle"] = query.circle;
+      }
+      if (query.collection) {
+        q["collection"] = query.collection;
+      }
+    }
     void push({
       pathname,
-      query: {
-        circle: query.circle,
-        collection: query.collection,
-      },
+      query: q,
     });
     handleClose();
   };
@@ -213,19 +224,11 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
               <IconDotsVertical size="4" />
             </Text>
           </Box>
-          {/* <Box
-            display="flex"
-            flexDirection={{
-              xs: "row",
-              md: "column",
-              lg: "row",
-            }}
-            width="full"
-          > */}
           <EditProperty
             propertyId={propertyId}
             disabled={
-              collection.data?.[cardSlug as string]?.__cardStatus__ === "closed"
+              collection.data?.[cardSlug as string]?.__cardStatus__ ===
+                "closed" || authorization === "readonly"
             }
           />
           <EditValue
@@ -237,7 +240,8 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
             }}
             dataId={value.slug}
             disabled={
-              collection.data?.[cardSlug as string]?.__cardStatus__ === "closed"
+              collection.data?.[cardSlug as string]?.__cardStatus__ ===
+                "closed" || authorization === "readonly"
             }
           />
           {/* </Box> */}
@@ -372,11 +376,11 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     }}
                     disabled={
                       collection.data?.[cardSlug as string]?.__cardStatus__ ===
-                      "closed"
+                        "closed" || authorization === "readonly"
                     }
                   />
 
-                  {value.slug && (
+                  {value.slug && authorization !== "readonly" && (
                     <CardOptions
                       handleDrawerClose={closeCard}
                       cardSlug={value.slug}
@@ -446,7 +450,10 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                         cursor="pointer"
                         onClick={() => {
                           if (
-                            collection.projectMetadata?.paymentIds?.[value.slug]
+                            collection.projectMetadata?.paymentIds?.[
+                              value.slug
+                            ] &&
+                            authorization !== "readonly"
                           )
                             push({
                               pathname: "/[circle]",
@@ -478,7 +485,8 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     )}
 
                   {collection.discordThreadRef &&
-                    collection.discordThreadRef[value.slug] && (
+                    collection.discordThreadRef[value.slug] &&
+                    authorization !== "readonly" && (
                       <Box
                         display="flex"
                         flexDirection="row"
@@ -533,31 +541,33 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     type="PROPERTY"
                     isDropDisabled={
                       collection.data?.[cardSlug as string]?.__cardStatus__ ===
-                      "closed"
+                        "closed" || authorization === "readonly"
                     }
                   >
                     {ProperyListCallback}
                   </Droppable>
                 </DragDropContext>
-                <Box
-                  width={{
-                    xs: "full",
-                    md: "1/4",
-                  }}
-                >
-                  <PrimaryButton
-                    variant="tertiary"
-                    icon={<IconPlusSmall size={"5"} />}
-                    onClick={() => setIsAddFieldOpen(true)}
-                    disabled={
-                      collection.data?.[cardSlug as string]?.__cardStatus__ ===
-                      "closed"
-                    }
-                    size="extraSmall"
+                {authorization !== "readonly" && (
+                  <Box
+                    width={{
+                      xs: "full",
+                      md: "1/4",
+                    }}
                   >
-                    Add Field
-                  </PrimaryButton>
-                </Box>
+                    <PrimaryButton
+                      variant="tertiary"
+                      icon={<IconPlusSmall size={"5"} />}
+                      onClick={() => setIsAddFieldOpen(true)}
+                      disabled={
+                        collection.data?.[cardSlug as string]
+                          ?.__cardStatus__ === "closed"
+                      }
+                      size="extraSmall"
+                    >
+                      Add Field
+                    </PrimaryButton>
+                  </Box>
+                )}
                 <Box padding="2" borderBottomWidth="0.375" marginTop="4">
                   <Editor
                     placeholder="Describe your card here...."
@@ -573,14 +583,12 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     setIsDirty={setIsDirty}
                     disabled={
                       collection.data?.[cardSlug as string]?.__cardStatus__ ===
-                      "closed"
+                        "closed" || authorization === "readonly"
                     }
                     version={collection.editorVersion}
                   />
                 </Box>
                 <Box marginY={"3"}>
-                  {/* {!collection.voting?.periods?.[cardSlug as string]?.snapshot
-                    ?.onSnapshot && <SpectVoting dataId={cardSlug as string} />} */}
                   {collection.voting?.snapshot?.[cardSlug as string]
                     ?.proposalId && (
                     <SnapshotVoting dataId={cardSlug as string} />
@@ -599,6 +607,11 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                         collection.profiles[collection.dataOwner[value.slug]]
                       }
                       getMemberDetails={getMemberDetails}
+                      disabled={
+                        authorization === "readonly" ||
+                        collection.data?.[cardSlug as string]
+                          ?.__cardStatus__ === "closed"
+                      }
                     />
                   )}
               </Stack>
