@@ -15,6 +15,7 @@ import {
   optimism,
   arbitrum,
   avalancheFuji,
+  Chain,
 } from "@wagmi/core/chains";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
@@ -52,7 +53,6 @@ import {
   scribeUrlAtom,
 } from "@/app/state/global";
 
-import { ArcanaConnector } from "@arcana/auth-wagmi";
 import {
   coinbaseWallet,
   metaMaskWallet,
@@ -63,6 +63,11 @@ import {
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { H } from "highlight.run";
 import { ErrorBoundary } from "@highlight-run/react";
+
+import { AuthProvider } from "@arcana/auth";
+import { ArcanaConnector } from "@arcana/auth-wagmi";
+
+const auth = new AuthProvider(`${process.env.NEXT_PUBLIC_ARCANA_CLIENT_ID}`); // Singleton
 
 const ArcanaRainbowConnector = ({ chains }: any) => {
   return {
@@ -75,8 +80,7 @@ const ArcanaRainbowConnector = ({ chains }: any) => {
       const connector = new ArcanaConnector({
         chains,
         options: {
-          //clientId : Arcana Unique App Identifier via Dashboard
-          clientId: process.env.NEXT_PUBLIC_ARCANA_CLIENT_ID,
+          auth,
         },
       });
       return {
@@ -154,11 +158,11 @@ const { chains, provider } = configureChains(
 //   chains,
 // });
 
-const connectors = (chains: any) =>
+const connectors = (chains: Chain[]) =>
   connectorsForWallets([
     {
       groupName: "Social Auth",
-      wallets: [ArcanaRainbowConnector({ chains }) as any],
+      wallets: [ArcanaRainbowConnector(chains) as any],
     },
     {
       groupName: "Wallets",
