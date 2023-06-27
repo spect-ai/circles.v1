@@ -1,4 +1,4 @@
-import { CollectionType, TemplateMinimal } from "@/app/types";
+import { CircleType, CollectionType, TemplateMinimal } from "@/app/types";
 import { Box, Button, IconSearch, Input, Stack, Text, useTheme } from "degen";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -19,7 +19,6 @@ import { TbMoodEmpty } from "react-icons/tb";
 export default function Templates() {
   const { mode } = useTheme();
   const profileContext = useProviderLocalProfile();
-  const { fetchCircles } = useProviderLocalProfile();
   const [template, setTemplate] = useState<TemplateMinimal | null>(null);
   const [templates, setTemplates] = useState<TemplateMinimal[]>([]);
   const [templateGroups, setTemplateGroups] = useState<{
@@ -32,7 +31,10 @@ export default function Templates() {
   const { templateId } = router.query;
   const [sidebarItems, setSidebarItems] = useState<string[]>([]);
   const [selectedSidebarItem, setSelectedSidebarItem] = useState("");
-
+  const [destinationCircle, setDestinationCircle] = useState<CircleType>(
+    {} as CircleType
+  );
+  const [discordGuildId, setDiscordGuildId] = useState("");
   const updateFilteredTemplates = (
     sidebarItem?: string,
     filteredBy?: string
@@ -59,6 +61,7 @@ export default function Templates() {
         (await getAllTemplates()) as any;
       setTemplates(templateData);
       setTemplateGroups(templatesByGroup);
+      profileContext.fetchCircles();
     })();
   }, []);
 
@@ -80,9 +83,15 @@ export default function Templates() {
   }, [templateId, templates]);
 
   useEffect(() => {
-    void (async () => {
-      await fetchCircles();
-    })();
+    window.addEventListener(
+      "message",
+      (event) => {
+        if (event.data.discordGuildId) {
+          setDiscordGuildId(event.data.discordGuildId);
+        }
+      },
+      false
+    );
   }, []);
 
   return (
@@ -205,6 +214,9 @@ export default function Templates() {
                 <Template
                   template={template}
                   handleBack={() => router.push("/templates")}
+                  destinationCircle={destinationCircle}
+                  setDestinationCircle={setDestinationCircle}
+                  discordGuildId={discordGuildId}
                 />
               )}
               {!template && filteredTemplates.length === 0 && (

@@ -1,40 +1,40 @@
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { duplicateCircle } from "@/app/services/Circle";
-import { getATemplate, useTemplate } from "@/app/services/Templates";
-import { Box, Button, IconChevronLeft, Spinner, Stack, Tag, Text } from "degen";
-import { useEffect, useState } from "react";
-import styled from "styled-components";
-import CreateFromTemplateModal from "./CreateFromTemplateModal";
-import { AnimatePresence } from "framer-motion";
+import { getATemplate } from "@/app/services/Templates";
 import {
-  Template as TemplateType,
-  TemplateMinimal,
   CircleType,
+  TemplateMinimal,
+  Template as TemplateType,
 } from "@/app/types";
-import { updateCircle } from "@/app/services/UpdateCircle";
-import { useProviderLocalProfile } from "../Profile/ProfileSettings/LocalProfileContext";
-import { useRouter } from "next/router";
+import { Box, Button, IconChevronLeft, Spinner, Stack, Tag, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 import { SlShareAlt } from "react-icons/sl";
 import { toast } from "react-toastify";
+import styled from "styled-components";
+import CreateFromTemplateModal from "./CreateFromTemplateModal";
 
 type Props = {
   template: TemplateMinimal;
   handleBack: () => void;
+  destinationCircle: CircleType;
+  setDestinationCircle: (circle: CircleType) => void;
+  discordGuildId: string;
 };
 
-export default function Template({ template, handleBack }: Props) {
+export default function Template({
+  template,
+  handleBack,
+  destinationCircle,
+  setDestinationCircle,
+  discordGuildId,
+}: Props) {
   const [createFromTemplateModalOpen, setCreateFromTemplateModalOpen] =
     useState(false);
   const [detailedTemplate, setDetailedTemplate] = useState<TemplateType>(
     {} as TemplateType
   );
-  const [destinationCircle, setDestinationCircle] = useState<CircleType>(
-    {} as CircleType
-  );
-  const { fetchCircles } = useProviderLocalProfile();
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   useEffect(() => {
     void (async () => {
       setLoading(true);
@@ -45,31 +45,6 @@ export default function Template({ template, handleBack }: Props) {
       setLoading(false);
     })();
   }, [template]);
-
-  useEffect(() => {
-    window.addEventListener(
-      "message",
-      (event) => {
-        if (event.data.discordGuildId) {
-          const connectDiscord = async () => {
-            const res = await updateCircle(
-              {
-                discordGuildId: event.data.discordGuildId,
-              },
-              destinationCircle.id
-            );
-            await fetchCircles();
-            setDestinationCircle({
-              ...destinationCircle,
-              discordGuildId: event.data.discordGuildId,
-            });
-          };
-          void connectDiscord();
-        }
-      },
-      false
-    );
-  }, []);
 
   return (
     <Stack space="4">
@@ -82,6 +57,7 @@ export default function Template({ template, handleBack }: Props) {
             }}
             destinationCircle={destinationCircle}
             setDestinationCircle={setDestinationCircle}
+            discordGuildId={discordGuildId}
           />
         )}
       </AnimatePresence>

@@ -1,48 +1,33 @@
-import Editor from "@/app/common/components/Editor";
+import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import { OptionType } from "@/app/common/components/CreatableDropdown";
+import Dropdown from "@/app/common/components/Dropdown";
+import Logo from "@/app/common/components/Logo";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { duplicateCircle } from "@/app/services/Circle";
-import {
-  CircleSpecificInfo,
-  UseTemplateCircleSpecificInfoDto,
-  useTemplate,
-} from "@/app/services/Templates";
-import { CircleType, DiscordChannel, Template, UserType } from "@/app/types";
-import {
-  Box,
-  Button,
-  IconChevronLeft,
-  Input,
-  Spinner,
-  Stack,
-  Tag,
-  Text,
-  useTheme,
-} from "degen";
-import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
-import styled from "styled-components";
-import { useProviderLocalProfile } from "../Profile/ProfileSettings/LocalProfileContext";
-import Logo from "@/app/common/components/Logo";
-import { toast } from "react-toastify";
-import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import {
   fetchGuildChannels,
   getGuildRoles,
   guildIsConnected,
 } from "@/app/services/Discord";
+import {
+  CircleSpecificInfo,
+  UseTemplateCircleSpecificInfoDto,
+  useTemplate,
+} from "@/app/services/Templates";
+import { CircleType, DiscordChannel, Template } from "@/app/types";
+import { Box, Button, Input, Spinner, Stack, Tag, Text, useTheme } from "degen";
 import { ChannelType, PermissionFlagsBits } from "discord-api-types/v10";
-import Dropdown from "@/app/common/components/Dropdown";
-import { OptionType } from "@/app/common/components/CreatableDropdown";
-import { updateCircle } from "@/app/services/UpdateCircle";
-import { useConnectDiscordServerFromTemplate } from "@/app/services/Discord/useConnectDiscordServer";
-import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import styled from "styled-components";
+import { useProviderLocalProfile } from "../Profile/ProfileSettings/LocalProfileContext";
 
 type Props = {
   template: Template;
   handleClose: () => void;
   destinationCircle: CircleType;
   setDestinationCircle: (circle: CircleType) => void;
+  discordGuildId: string;
 };
 
 export default function CreateFromTemplateModal({
@@ -50,6 +35,7 @@ export default function CreateFromTemplateModal({
   handleClose,
   destinationCircle,
   setDestinationCircle,
+  discordGuildId,
 }: Props) {
   const { mode } = useTheme();
   const [newCircleName, setNewCircleName] = useState<string>("");
@@ -58,9 +44,24 @@ export default function CreateFromTemplateModal({
     UseTemplateCircleSpecificInfoDto[]
   >([]);
   const [currentIndex, setCurrentIndex] = useState<number>(-1);
+
+  const requiredDiscordConn = () => {
+    const requiresDiscordConnection = template.automations?.some(
+      (automation) => {
+        const actionRequirements = automation.actions
+          .map((a) => a.requirements)
+          .flat();
+        return (
+          actionRequirements.includes("discordRole") ||
+          actionRequirements.includes("discordChannel") ||
+          actionRequirements.includes("discordCategory")
+        );
+      }
+    );
+    return requiresDiscordConnection && !discordGuildId;
+  };
   const [requiresDiscordConnection, setRequiresDiscordConnection] =
-    useState<boolean>(false);
-  const [discordIsConnected, setDiscordIsConnected] = useState(false);
+    useState<boolean>(requiredDiscordConn());
   const [guildChannels, setGuildChannels] = useState<DiscordChannel[]>([]);
   const [guildCategories, setGuildCategories] = useState<DiscordChannel[]>([]);
 
@@ -89,12 +90,12 @@ export default function CreateFromTemplateModal({
         setCircleSpecificInfoDto(newCircleSpecificInfoDto);
       }
 
-      console.log({ newCircleSpecificInfoDto });
       if (nextIndex === template.automations?.length) {
         const res = await useTemplate(
           template.id,
           destCircle?.id || destinationCircle.id,
-          newCircleSpecificInfoDto
+          newCircleSpecificInfoDto,
+          discordGuildId
         );
         if (res.redirectUrl) {
           handleClose();
@@ -114,46 +115,19 @@ export default function CreateFromTemplateModal({
 
   useEffect(() => {
     if (template.automations?.length && destinationCircle?.id) {
-      const requiresDiscordConnection = template.automations?.some(
-        (automation) => {
-          const actionRequirements = automation.actions
-            .map((a) => a.requirements)
-            .flat();
-          return (
-            actionRequirements.includes("discordRole") ||
-            actionRequirements.includes("discordChannel") ||
-            actionRequirements.includes("discordCategory")
-          );
-        }
-      );
-      setRequiresDiscordConnection(
-        !destinationCircle.discordGuildId && requiresDiscordConnection
-      );
+      setRequiresDiscordConnection(requiredDiscordConn());
     }
-  }, [destinationCircle]);
+  }, [discordGuildId]);
 
   useEffect(() => {
-    if (destinationCircle?.discordGuildId) {
-      const discordIsConnected = async () => {
-        const res = await guildIsConnected(destinationCircle?.discordGuildId);
-        setDiscordIsConnected(res);
-      };
-      void discordIsConnected();
-    }
-  }, [destinationCircle?.discordGuildId]);
-
-  useEffect(() => {
-    if (!discordIsConnected || !destinationCircle?.discordGuildId) return;
+    if (!discordGuildId) return;
     const fetchGuildRoles = async () => {
-      const roles = await getGuildRoles(
-        destinationCircle?.discordGuildId,
-        true
-      );
+      const roles = await getGuildRoles(discordGuildId, true);
       roles && setDiscordRoles(roles);
     };
     const getGuildChannels = async () => {
       const channels = await fetchGuildChannels(
-        destinationCircle?.discordGuildId,
+        discordGuildId,
         ChannelType.GuildText,
         false,
         [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages]
@@ -166,7 +140,7 @@ export default function CreateFromTemplateModal({
     };
     const getGuildCategories = async () => {
       const channels = await fetchGuildChannels(
-        destinationCircle?.discordGuildId,
+        discordGuildId,
         ChannelType.GuildCategory
       );
       const categoryOptions = channels?.map((channel: any) => ({
@@ -175,12 +149,12 @@ export default function CreateFromTemplateModal({
       }));
       setGuildCategories(categoryOptions);
     };
-    if (destinationCircle?.discordGuildId) {
+    if (discordGuildId) {
       void fetchGuildRoles();
       void getGuildChannels();
       void getGuildCategories();
     }
-  }, [discordIsConnected]);
+  }, [discordGuildId]);
 
   const toggleSelectedRole = (
     index: number,
@@ -260,10 +234,9 @@ export default function CreateFromTemplateModal({
                         mode={mode}
                         key={circle.id}
                         cursor="pointer"
-                        onClick={async () => {
+                        onClick={() => {
                           setDestinationCircle(circle);
-
-                          await handleNext(false, circle);
+                          handleNext(false, circle);
                         }}
                       >
                         <Logo
@@ -337,7 +310,7 @@ export default function CreateFromTemplateModal({
               template.automations?.[currentIndex]?.actions?.map(
                 (ta, actionIndex) => {
                   return (
-                    <Stack>
+                    <Stack key={actionIndex}>
                       {ta.requirements.includes("discordRole") && (
                         <Stack space="1">
                           <Box marginLeft="2">

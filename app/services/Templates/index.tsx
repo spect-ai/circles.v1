@@ -34,7 +34,8 @@ export type UseTemplateCircleSpecificInfoDto = {
 export async function useTemplate(
   templateId: string,
   destinationCircleId: string,
-  useTemplateCircleSpecificInfoDtos?: UseTemplateCircleSpecificInfoDto[]
+  useTemplateCircleSpecificInfoDtos?: UseTemplateCircleSpecificInfoDto[],
+  discordGuildId?: string
 ) {
   const res = await fetch(
     `${process.env.API_HOST}/templates/v1/${templateId}/use?destinationCircleId=${destinationCircleId}`,
@@ -44,7 +45,10 @@ export async function useTemplate(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ useTemplateCircleSpecificInfoDtos }),
+      body: JSON.stringify({
+        useTemplateCircleSpecificInfoDtos,
+        discordGuildId,
+      }),
     }
   );
   if (!res.ok) {
