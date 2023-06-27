@@ -19,7 +19,6 @@ import { useAccount, useConnect } from "wagmi";
 import { H } from "highlight.run";
 import { Hidden, Visible } from "react-grid-system";
 import mixpanel from "mixpanel-browser";
-import Changelog from "../../changelog";
 import { socketAtom } from "@/app/state/socket";
 
 type PublicLayoutProps = {
@@ -194,21 +193,6 @@ function PublicLayout(props: PublicLayoutProps) {
     }
   }, [currentUser]);
 
-  useEffect(() => {
-    (async () => {
-      const res = await fetch(
-        `${process.env.API_HOST}/collection/v1/changelog`
-      );
-      const data = await res.json();
-      if (!data) return;
-      setChangelogData(data);
-      if (!localStorage.getItem(data.Title)) {
-        setShowChangelog(true);
-        localStorage.setItem(data.Title, "true");
-      }
-    })();
-  }, [circle]);
-
   if (isLoading || loading)
     return (
       <DesktopContainer backgroundColor="backgroundSecondary" id="Load screen">
@@ -226,12 +210,6 @@ function PublicLayout(props: PublicLayoutProps) {
             </Hidden>
             <AnimatePresence initial={false}>
               {isSidebarExpanded && circle && <ExtendedSidebar />}
-              {showChangelog && changelogData && (
-                <Changelog
-                  handleClose={() => setShowChangelog(false)}
-                  data={changelogData}
-                />
-              )}
             </AnimatePresence>
             <Box
               display="flex"

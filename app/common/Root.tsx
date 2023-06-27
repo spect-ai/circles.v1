@@ -349,14 +349,6 @@ function Root({ children, pageProps }: Props) {
                     <ErrorBoundary fallback={ErrorFallBack}>
                       {children}
                     </ErrorBoundary>
-                    <AnimatePresence>
-                      {isScribeOpen && (
-                        <ScribeEmbed
-                          handleClose={() => setIsScribeOpen(false)}
-                          src={scribeUrl}
-                        />
-                      )}
-                    </AnimatePresence>
                   </ApolloProvider>
                 </Hydrate>
               </QueryClientProvider>
