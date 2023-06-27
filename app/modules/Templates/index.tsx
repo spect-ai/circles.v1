@@ -1,5 +1,5 @@
 import { CollectionType, TemplateMinimal } from "@/app/types";
-import { Box, Button, IconSearch, Input, Stack, Text } from "degen";
+import { Box, Button, IconSearch, Input, Stack, Text, useTheme } from "degen";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -12,8 +12,12 @@ import {
   useProviderLocalProfile,
 } from "../Profile/ProfileSettings/LocalProfileContext";
 import { updateCircle } from "@/app/services/UpdateCircle";
+import { useRouter } from "next/router";
+import { ToastContainer } from "react-toastify";
+import { TbMoodEmpty } from "react-icons/tb";
 
 export default function Templates() {
+  const { mode } = useTheme();
   const profileContext = useProviderLocalProfile();
   const { fetchCircles } = useProviderLocalProfile();
   const [template, setTemplate] = useState<TemplateMinimal | null>(null);
@@ -24,12 +28,10 @@ export default function Templates() {
   const [filteredTemplates, setFilteredTemplates] = useState<TemplateMinimal[]>(
     []
   );
+  const router = useRouter();
+  const { templateId } = router.query;
   const [sidebarItems, setSidebarItems] = useState<string[]>([]);
   const [selectedSidebarItem, setSelectedSidebarItem] = useState("");
-
-  const onClick = (template: TemplateMinimal) => {
-    setTemplate(template);
-  };
 
   const updateFilteredTemplates = (
     sidebarItem?: string,
@@ -46,6 +48,8 @@ export default function Templates() {
         keys: ["name"],
       });
       setFilteredTemplates(filteredTemplates);
+    } else if (filteredBy === "") {
+      setFilteredTemplates(templates);
     }
   };
 
@@ -66,6 +70,16 @@ export default function Templates() {
   }, [templateGroups]);
 
   useEffect(() => {
+    if (templateId && templates) {
+      setTemplate(
+        templates.find((item) => item.id === templateId) as TemplateMinimal
+      );
+    } else {
+      setTemplate(null);
+    }
+  }, [templateId, templates]);
+
+  useEffect(() => {
     void (async () => {
       await fetchCircles();
     })();
@@ -73,6 +87,16 @@ export default function Templates() {
 
   return (
     <LocalProfileContext.Provider value={profileContext}>
+      <ToastContainer
+        toastStyle={{
+          backgroundColor: `${
+            mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+          }`,
+          color: `${
+            mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+          }`,
+        }}
+      />
       <Box
         display="flex"
         flexDirection="column"
@@ -171,7 +195,7 @@ export default function Templates() {
                       key={item.id}
                       template={item}
                       onClick={async () => {
-                        onClick(item);
+                        router.push(`/templates?templateId=${item.id}`);
                       }}
                     />
                   ))}
@@ -180,8 +204,32 @@ export default function Templates() {
               {template && (
                 <Template
                   template={template}
-                  handleBack={() => setTemplate(null)}
+                  handleBack={() => router.push("/templates")}
                 />
+              )}
+              {!template && filteredTemplates.length === 0 && (
+                <Box
+                  style={{
+                    margin: "12% 20%",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "1rem",
+                    alignItems: "center",
+                  }}
+                >
+                  <TbMoodEmpty
+                    style={{
+                      fontSize: "5rem",
+                      color: "rgb(191, 90, 242, 0.7)",
+                    }}
+                  />
+                  <Text variant="large" color={"textTertiary"} align="center">
+                    No templates found.
+                  </Text>
+                  <Text>
+                    Search for something else or select a different category.
+                  </Text>
+                </Box>
               )}
             </Box>
           </ScrollContainer>

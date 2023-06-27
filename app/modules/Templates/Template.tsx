@@ -14,6 +14,9 @@ import {
 } from "@/app/types";
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { useProviderLocalProfile } from "../Profile/ProfileSettings/LocalProfileContext";
+import { useRouter } from "next/router";
+import { SlShareAlt } from "react-icons/sl";
+import { toast } from "react-toastify";
 
 type Props = {
   template: TemplateMinimal;
@@ -31,6 +34,7 @@ export default function Template({ template, handleBack }: Props) {
   );
   const { fetchCircles } = useProviderLocalProfile();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   useEffect(() => {
     void (async () => {
       setLoading(true);
@@ -81,13 +85,37 @@ export default function Template({ template, handleBack }: Props) {
           />
         )}
       </AnimatePresence>
-      <Button size="extraSmall" variant="transparent" onClick={handleBack}>
-        <Box display="flex" alignItems="center">
-          <IconChevronLeft size="4" />
-          Go Back
-        </Box>
-      </Button>
+      <Stack
+        direction="horizontal"
+        space="4"
+        align="center"
+        justify={"space-between"}
+      >
+        <Button size="extraSmall" variant="transparent" onClick={handleBack}>
+          <Box display="flex" alignItems="center">
+            <IconChevronLeft size="4" />
+            <Text color="textSecondary"> Go Back</Text>
+          </Box>
+        </Button>
+        <Button
+          size="extraSmall"
+          variant="transparent"
+          onClick={() => {
+            void navigator.clipboard.writeText(
+              `http://localhost:3000/templates?templateId=${template.id}`
+            );
+            toast.success("Copied to clipboard");
+          }}
+        >
+          <Box display="flex" alignItems="center" gap="2">
+            <Text color="textSecondary">Share</Text>
+            <SlShareAlt size={14} />
+          </Box>
+        </Button>
+      </Stack>
       <Stack direction="vertical" space="4">
+        <TemplateImage src={template.image} />
+
         <Stack
           direction="horizontal"
           space="4"
@@ -119,3 +147,14 @@ export default function Template({ template, handleBack }: Props) {
     </Stack>
   );
 }
+
+const TemplateImage = styled.img`
+  width: 100%;
+  height: 24rem;
+  object-fit: cover;
+  border-radius: 1rem 1rem;
+
+  @media (max-width: 768px) {
+    height: 7rem;
+  }
+`;
