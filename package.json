@@ -30,7 +30,7 @@
     "@guildxyz/sdk": "^1.1.1",
     "@highlight-run/react": "^2.0.1",
     "@popperjs/core": "^2.11.5",
-    "@rainbow-me/rainbowkit": "0.12.15",
+    "@rainbow-me/rainbowkit": "0.12.9",
     "@snapshot-labs/snapshot.js": "^0.4.56",
     "@svgr/webpack": "^6.2.1",
     "@ts-rest/core": "^3.26.2",
