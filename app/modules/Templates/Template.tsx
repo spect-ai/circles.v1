@@ -102,7 +102,7 @@ export default function Template({ template, handleBack }: Props) {
           variant="transparent"
           onClick={() => {
             void navigator.clipboard.writeText(
-              `http://localhost:3000/templates?templateId=${template.id}`
+              `https://circles.spect.network/templates?templateId=${template.id}`
             );
             toast.success("Copied to clipboard");
           }}

@@ -98,7 +98,10 @@ export default function CreateFromTemplateModal({
         );
         if (res.redirectUrl) {
           handleClose();
-          window.open(`http://localhost:3000${res.redirectUrl}`, "_blank");
+          window.open(
+            `https://circles.spect.network${res.redirectUrl}`,
+            "_blank"
+          );
         } else {
           toast.error("Something went wrong while using this template");
         }
