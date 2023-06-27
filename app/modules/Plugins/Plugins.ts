@@ -58,21 +58,9 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
       "https://ik.imagekit.io/spectcdn/payments.png?ik-sdk-version=javascript-1.4.3&updatedAt=1675753949461",
     premium: true,
   },
-  // ceramic: {
-  //   id: "ceramic",
-  //   name: "Data Ownership with Ceramic (Testnet)",
-  //   version: "1.0.0",
-  //   description:
-  //     "Care about data ownership & composability? Use Ceramic to allow your responders to own their data.",
-  //   tags: "data ownership, data, ownership, ceramic, decentralized, decentralized data, decentralized data ownership, decentralized data storage, decentralized",
-  //   docs: "https://docs.guild.xyz",
-  //   image:
-  //     "https://ik.imagekit.io/spectcdn/ceramic.png?ik-sdk-version=javascript-1.4.3&updatedAt=1675754081907",
-  //   premium: true,
-  // },
   erc20: {
     id: "erc20",
-    name: "Distribute ERC20 Tokens to Responders (Limited Beta)",
+    name: "Distribute ERC20 Tokens to Responders (Limited Access)",
     version: "1.0.0",
     description:
       "Want to incentivize responders for filling out your form? Use this plugin to distribute ERC20 tokens to responders!",

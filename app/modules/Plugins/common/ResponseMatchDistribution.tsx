@@ -98,7 +98,11 @@ export default function ResponseMatchDistribution({
           <PrimaryButton
             variant="tertiary"
             onClick={() => {
-              setModalModal("importClaimCodes");
+              if (responseMatchConditionForPlugin === "poap") {
+                setModalModal("importClaimCodes");
+              } else if (responseMatchConditionForPlugin === "mintkudos") {
+                setModalModal("createKudos");
+              }
             }}
           >
             {"Back"}
