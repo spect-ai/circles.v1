@@ -5,6 +5,7 @@ import { Box, Heading, IconClose, Input, Stack, Text } from "degen";
 import React, { useState } from "react";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { useCircle } from "../Circle/CircleContext";
+import { toast } from "react-toastify";
 
 type Props = {
   handleClose: () => void;
@@ -27,12 +28,17 @@ const UpgradePlan = ({ handleClose }: Props) => {
 
   const { circle, fetchCircle } = useCircle();
   const [members, setMembers] = useState(5 + (circle?.topUpMembers || 0));
+  const [refCode, setRefCode] = useState("");
 
   return (
     <Modal title="" handleClose={handleClose}>
       <Box padding="8">
         <Stack align="center">
-          <Heading>Premium Plan</Heading>
+          {!circle?.pricingPlan ? (
+            <Heading>Premium Plan</Heading>
+          ) : (
+            <Heading>You are on Premium Plan</Heading>
+          )}
           {paidPlan.map((item) => (
             <Stack key={item} direction="horizontal" align="center" space="2">
               <Box color="green" marginTop="1">
@@ -63,16 +69,26 @@ const UpgradePlan = ({ handleClose }: Props) => {
                 suffix="members"
                 disabled={circle?.pricingPlan === 1}
               />
+              {circle?.pricingPlan === 0 && !circle.refferedBy && (
+                <Input
+                  label="Optional referral code"
+                  value={refCode}
+                  onChange={(e) => {
+                    setRefCode(e.target.value);
+                  }}
+                  placeholder="Referral code"
+                />
+              )}
             </Stack>
           </Box>
           <Box width="1/2">
-            {circle?.pricingPlan === 0 ? (
+            {!circle?.pricingPlan ? (
               <PrimaryButton
                 loading={loading}
                 icon={<DollarOutlined />}
                 onClick={async () => {
                   setLoading(true);
-                  const { url } = await fetch(
+                  const { url, message } = await fetch(
                     `${process.env.API_HOST}/circle/v1/${circle?.id}/upgradePlan`,
                     {
                       method: "POST",
@@ -81,9 +97,17 @@ const UpgradePlan = ({ handleClose }: Props) => {
                       },
                       body: JSON.stringify({
                         memberTopUp: members - 5,
+                        refCode,
                       }),
+                      credentials: "include",
                     }
                   ).then((res) => res.json());
+
+                  if (!url) {
+                    toast.error(message);
+                    setLoading(false);
+                    return;
+                  }
                   setLoading(false);
                   console.log({ url });
                   window.open(url, "_self");
@@ -105,6 +129,7 @@ const UpgradePlan = ({ handleClose }: Props) => {
                       headers: {
                         "Content-Type": "application/json",
                       },
+                      credentials: "include",
                     }
                   ).then((res) => res.json());
                   setTimeout(async () => {

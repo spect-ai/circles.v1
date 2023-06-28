@@ -158,7 +158,7 @@ function CircleSidebar() {
                   });
               }}
             >
-              {circle?.pricingPlan === 0 ? "Upgrade Plan" : "Subscribed"}
+              {!circle?.pricingPlan ? "Upgrade Plan" : "Subscribed"}
             </PrimaryButton>
             <Stack direction="horizontal" space="2">
               <Box width="1/2">
