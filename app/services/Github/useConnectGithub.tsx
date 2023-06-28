@@ -17,15 +17,19 @@ export default function useConnectGithub() {
     if (res.ok) {
       const data = await res.json();
       console.log({ data });
-      const profileRes = await updateProfile({
-        githubId: data.userData.login,
-      });
-      console.log({ profileRes });
-      if (profileRes) {
-        void router.push("/");
-        toast("Successfully linked your Github account", {
-          theme: "dark",
+      try {
+        const profileRes = await updateProfile({
+          githubId: data.userData.login,
         });
+        console.log({ profileRes });
+        if (profileRes) {
+          void router.push("/");
+          toast("Successfully linked your Github account", {
+            theme: "dark",
+          });
+        }
+      } catch (e) {
+        logError("Something went wrong while updating your profile");
       }
     } else {
       logError("Something went wrong while getting data from the GitHub bot");

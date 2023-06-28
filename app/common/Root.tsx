@@ -208,10 +208,7 @@ type Props = {
 };
 function Root({ children, pageProps }: Props) {
   const router = useRouter();
-  const url = `https:/circles.spect.network/${router.route}`;
 
-  const [isScribeOpen, setIsScribeOpen] = useAtom(scribeOpenAtom);
-  const [scribeUrl, setScribeUrl] = useAtom(scribeUrlAtom);
   const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
   const { connector } = useAccount();
 
@@ -264,13 +261,17 @@ function Root({ children, pageProps }: Props) {
       console.log("connector", connector?.id);
       localStorage.setItem("connectorId", connector?.id || "");
 
-      if (res.username?.startsWith("fren") && connector?.id === "arcana-auth") {
+      if (res.firstLogin && connector?.id === "arcana-auth") {
         const user = await (connector as any).auth.getUser();
         setTimeout(() => {
-          updateProfile({
-            email: user.email,
-            username: user.name || res.username || "",
-          });
+          try {
+            updateProfile({
+              email: user.email,
+              username: user.name || res.username || "",
+            });
+          } catch (e) {
+            console.log({ e });
+          }
         }, 1000);
       }
       process.env.NODE_ENV === "production" &&
