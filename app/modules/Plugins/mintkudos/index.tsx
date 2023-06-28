@@ -27,7 +27,7 @@ type Props = {
 };
 
 export default function SendKudos({ handleClose }: Props) {
-  const { circle, setMintkudosCommunityId, mintkudosCommunityId } = useCircle();
+  const { circle, mintkudosCommunityId } = useCircle();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);

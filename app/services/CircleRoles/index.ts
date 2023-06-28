@@ -23,7 +23,9 @@ export async function addRole(circleId: string, body: any) {
       toast("Role added successfully", { theme: "dark" });
       return response;
     } else {
-      logError("Error adding role");
+      const response = await res.json();
+      console.log({ response });
+      logError(response.message);
     }
   } catch (error) {
     logError("Error adding role");
@@ -48,7 +50,8 @@ export async function updateRole(circleId: string, role: string, body: any) {
       const response = await res.json();
       return response;
     } else {
-      logError("Error updating role");
+      const response = await res.json();
+      logError(response.message);
     }
   } catch (error) {
     logError("Error updating role");

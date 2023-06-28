@@ -37,7 +37,9 @@ import { Table } from "react-feather";
 import InviteMemberModal, {
   CustomButton,
 } from "../Circle/ContributorsModal/InviteMembersModal";
-import { BiBot } from "react-icons/bi";
+import { BiBot, BiCheck } from "react-icons/bi";
+import { MdPriceCheck } from "react-icons/md";
+import UpgradePlan from "../Sidebar/UpgradePlan";
 import { RiFlowChart } from "react-icons/ri";
 
 export const Container = styled(Box)<{ subH?: string }>`
@@ -57,16 +59,10 @@ export const Container = styled(Box)<{ subH?: string }>`
 
 function CircleSidebar() {
   const router = useRouter();
-  const {
-    circle: cId,
-    project: pId,
-    collection: cSlug,
-    payment,
-  } = router.query;
+  const { circle: cId, project: pId, collection: cSlug } = router.query;
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { setCircleData, setMemberDetailsData } = useCircle();
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [settingsModalInitialTab, setSettingsModalInitialTab] = useState(0);
   const { mode } = useTheme();
@@ -74,6 +70,7 @@ function CircleSidebar() {
     enabled: false,
   });
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
+  const [upgradePlanOpen, setUpgradePlanOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -127,6 +124,13 @@ function CircleSidebar() {
             initialTab={settingsModalInitialTab}
           />
         )}
+        {upgradePlanOpen && (
+          <UpgradePlan
+            handleClose={() => {
+              setUpgradePlanOpen(false);
+            }}
+          />
+        )}
       </AnimatePresence>
       <Stack space="3">
         <Stack direction="horizontal">
@@ -135,6 +139,27 @@ function CircleSidebar() {
 
         <Container subH="8.1rem">
           <Stack direction="vertical" space="2">
+            <PrimaryButton
+              center
+              variant="secondary"
+              icon={
+                circle?.pricingPlan === 0 ? (
+                  <DollarOutlined />
+                ) : (
+                  <MdPriceCheck />
+                )
+              }
+              onClick={() => {
+                setUpgradePlanOpen(true);
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track("Upgrade Plan", {
+                    user: currentUser?.username,
+                    url: window.location.href,
+                  });
+              }}
+            >
+              {!circle?.pricingPlan ? "Upgrade Plan" : "Subscribed"}
+            </PrimaryButton>
             <Stack direction="horizontal" space="2">
               <Box width="1/2">
                 <CustomButton

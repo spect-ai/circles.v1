@@ -581,7 +581,8 @@ export default function Payments({ handleClose }: Props) {
                     updateCollection(res);
                     handleClose();
                   } else {
-                    logError("Error updating payment config");
+                    setUpdateLoading(false);
+                    logError(res.message);
                   }
                 }}
               >

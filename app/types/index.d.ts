@@ -197,6 +197,11 @@ export interface CircleType {
   };
   sidebarConfig?: SidebarConfig;
   hasSetupZealy?: boolean;
+  pricingPlan: number;
+  topUpMembers: number;
+  subscriptionId: string;
+  pendingBonus?: number;
+  refferedBy?: string;
 }
 
 export type CirclePrivate = {
@@ -795,6 +800,7 @@ export interface FormType {
     id: string;
     name: string;
     slug: string;
+    pricingPlan: number;
   }[];
   defaultView: string;
   viewConditions: Condition[];

@@ -204,7 +204,7 @@ export default function Zealy({ handleClose, setupMode, setSetupMode }: Props) {
                           },
                         });
                         if (!res?.formMetadata?.zealyXP) {
-                          logError("Update collection failed");
+                          logError(res.message);
                           setLoading(false);
                           return;
                         }

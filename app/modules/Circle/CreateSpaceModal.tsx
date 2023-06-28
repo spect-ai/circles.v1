@@ -9,6 +9,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { useCircle } from "./CircleContext";
 import { updateFolder } from "@/app/services/Folders";
+import { logError } from "@/app/common/utils/utils";
 
 type CreateWorkspaceDto = {
   name: string;
@@ -65,9 +66,12 @@ function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
         .then(async (res) => {
           const resJson = await res.json();
           console.log({ resJson });
-          void router.push(`/${resJson.slug}`);
-          void close();
+          if (!resJson.id) {
+            logError(resJson.message);
+          }
           if (resJson.id && folderId) {
+            void router.push(`/${resJson.slug}`);
+            void close();
             const prev = Array.from(
               circle?.folderDetails[folderId]?.contentIds
             );

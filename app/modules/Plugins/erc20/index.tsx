@@ -413,7 +413,8 @@ export default function DistributeERC20({
                   updateCollection(res);
                   console.log({ res });
                   setIsLoading(false);
-                  if (res) handleClose();
+                  if (res.id) updateCollection(res);
+                  else logError(res.message);
                 } catch (e) {
                   console.log(e);
                   setIsLoading(false);

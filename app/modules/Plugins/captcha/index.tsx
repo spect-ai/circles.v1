@@ -35,7 +35,9 @@ export default function GoogleCaptcha({ handleClose }: Props) {
                 },
               });
               if (res.id) updateCollection(res);
-              else logError("Error updating collection");
+              else {
+                logError(res.message);
+              }
               handleClose();
               setLoading(false);
             }}

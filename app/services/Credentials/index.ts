@@ -173,7 +173,9 @@ export default function useCredentials() {
                       theme: mode,
                     });
                   } else {
-                    logError("Something went wron creating kudos");
+                    res.json().then((res2) => {
+                      logError(res2.message);
+                    });
                   }
                 })
                 .catch((err) => console.log(err));

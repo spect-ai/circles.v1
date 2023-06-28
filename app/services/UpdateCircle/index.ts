@@ -177,10 +177,10 @@ export const addAutomation = async (
   );
   if (res.ok) {
     const data = await res.json();
-
     return data;
   } else {
-    logError("Error adding automation");
+    const data = await res.json();
+    logError(data.message);
     return false;
   }
 };

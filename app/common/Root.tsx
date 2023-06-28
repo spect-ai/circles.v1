@@ -213,6 +213,8 @@ type Props = {
 function Root({ children, pageProps }: Props) {
   const router = useRouter();
 
+  const { ref } = router.query;
+
   const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
   const { connector } = useAccount();
 
@@ -245,7 +247,7 @@ function Root({ children, pageProps }: Props) {
     },
     verify: async ({ message, signature }) => {
       const verifyRes: any = await fetch(
-        `${process.env.API_HOST}/auth/connect`,
+        `${process.env.API_HOST}/auth/connect?ref=${ref}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

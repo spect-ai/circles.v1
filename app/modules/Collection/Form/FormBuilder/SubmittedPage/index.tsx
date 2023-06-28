@@ -40,8 +40,15 @@ const SubmittedPage = ({
           {form.formMetadata.messageOnSubmission}
         </Text>
         <Box marginBottom="8" />
-        {!preview && (
+        {!preview && form.parents[0].pricingPlan === 0 && (
           <Stack>
+            <img
+              src="https://bafybeicot4vgylc7gimu5bzo7megpeo5po3ybp6lov3wft24b666wxzfh4.ipfs.w3s.link/spectDemoCompressed.gif"
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+            />
             <Stack align={"center"}>
               <Text variant="label" align="center">
                 Powered By

@@ -10,6 +10,7 @@ import Editor from "@/app/common/components/Editor";
 import { useLocation } from "react-use";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { updateCollection } from "@/app/services/UpdateCollection";
+import { logError } from "@/app/common/utils/utils";
 
 type Props = {
   handleClose: () => void;
@@ -183,8 +184,8 @@ export default function DiscordRoleGate({ handleClose }: Props) {
                 },
                 collection.id
               );
-              setLocalCollection(res);
-
+              if (res.id) setLocalCollection(res);
+              else logError(res.message);
               setLoading(false);
               handleClose();
             }}
