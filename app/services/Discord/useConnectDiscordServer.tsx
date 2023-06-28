@@ -5,7 +5,7 @@ import {
 } from "@/app/modules/Circle/CircleContext";
 import { CircleType } from "@/app/types";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { updateCircle } from "../UpdateCircle";
 
@@ -20,6 +20,7 @@ export default function useConnectDiscordServer() {
   useEffect(() => {
     const connectServer = async () => {
       if (!guild_id || guild_id === "undefined") return;
+      console.log("connected server from circle context");
       const data = await updateCircle(
         {
           discordGuildId: guild_id as string,
@@ -48,13 +49,10 @@ export function useConnectDiscordServerFromTemplate() {
   const router = useRouter();
   const { guild_id } = router.query;
   useEffect(() => {
-    console.log({
-      guild_id,
-    });
     const connectServer = async () => {
       if (!guild_id || guild_id === "undefined") return;
+      console.log("connected server from template");
 
-      console.log("connected server");
       if (window.opener) {
         window.opener.postMessage({ discordGuildId: guild_id }, "*");
         window.close();

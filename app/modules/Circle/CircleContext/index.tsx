@@ -208,7 +208,7 @@ export function useProviderCircleContext() {
     window.addEventListener(
       "message",
       (event) => {
-        if (event.data.discordGuildId) {
+        if (event.data.discordGuildId && circle?.id) {
           if (circle?.discordGuildId !== event.data.discordGuildId) {
             void fetchCircle();
           } else {

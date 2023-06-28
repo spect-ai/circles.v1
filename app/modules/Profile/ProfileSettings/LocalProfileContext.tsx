@@ -8,6 +8,7 @@ import {
 } from "@/app/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 
 type ProfileSettingsType = {
   setIsDirty: React.Dispatch<React.SetStateAction<boolean>>;
@@ -100,16 +101,21 @@ export function useProviderLocalProfile() {
 
   const onSaveProfile = async (): Promise<boolean> => {
     setLoading(true);
-    const res = await updateProfile({
-      username,
-      avatar,
-      bio,
-      email,
-    });
+    try {
+      const res = await updateProfile({
+        username,
+        avatar,
+        bio,
+        email,
+      });
+    } catch (e) {
+      console.log({ e });
+      toast.error((e as any).message);
+      return false;
+    }
 
     setLoading(false);
     setIsDirty(false);
-    if (!res) return false;
     return true;
   };
 
@@ -124,7 +130,6 @@ export function useProviderLocalProfile() {
     let verifiedSocials = {} as {
       [key: string]: GithubFieldFromOauthData | DiscordFieldFromOauthData;
     };
-    console.log({ currentUser });
     if (currentUser?.discordId && currentUser?.discordUsername) {
       verifiedSocials = {
         ...verifiedSocials,

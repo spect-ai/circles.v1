@@ -25,7 +25,7 @@ export default function SendEmail({
 
   useEffect(() => {
     setPropertyOptions(
-      Object.entries(collection.properties)
+      Object.entries(collection.properties || {})
         .filter(([propertyId, prop]) => prop.type === "email")
         .map(([propertyId, prop]) => {
           return {
