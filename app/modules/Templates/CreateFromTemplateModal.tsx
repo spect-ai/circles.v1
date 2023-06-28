@@ -311,6 +311,65 @@ export default function CreateFromTemplateModal({
                 (ta, actionIndex) => {
                   return (
                     <Stack key={actionIndex}>
+                      {ta.requirements.includes("discordCategory") &&
+                        currentIndex > -1 && (
+                          <Stack>
+                            <Dropdown
+                              label="Pick a Discord category"
+                              options={guildCategories}
+                              selected={
+                                (
+                                  circleSpecificInfoDto?.[currentIndex]
+                                    ?.actions?.[actionIndex]
+                                    ?.info as CircleSpecificInfo
+                                )?.category || {
+                                  label: "Select a category",
+                                  value: "",
+                                }
+                              }
+                              onChange={(value) => {
+                                updateSelectedChannel(
+                                  currentIndex,
+                                  actionIndex,
+                                  value,
+                                  "category"
+                                );
+                              }}
+                              multiple={false}
+                              portal={false}
+                              isClearable={false}
+                            />
+                          </Stack>
+                        )}
+                      {ta.requirements.includes("discordChannel") &&
+                        currentIndex > -1 && (
+                          <Stack>
+                            <Dropdown
+                              label="Pick a Discord channel"
+                              options={guildChannels}
+                              selected={
+                                (
+                                  circleSpecificInfoDto?.[currentIndex]
+                                    ?.actions?.[actionIndex]
+                                    ?.info as CircleSpecificInfo
+                                )?.channel || {
+                                  label: "Select a channel",
+                                  value: "",
+                                }
+                              }
+                              onChange={(value) => {
+                                updateSelectedChannel(
+                                  currentIndex,
+                                  actionIndex,
+                                  value
+                                );
+                              }}
+                              multiple={false}
+                              portal={true}
+                              isClearable={false}
+                            />
+                          </Stack>
+                        )}
                       {ta.requirements.includes("discordRole") && (
                         <Stack space="1">
                           <Box marginLeft="2">
@@ -356,65 +415,6 @@ export default function CreateFromTemplateModal({
                           </Stack>
                         </Stack>
                       )}
-                      {ta.requirements.includes("discordChannel") &&
-                        currentIndex > -1 && (
-                          <Stack>
-                            <Dropdown
-                              label="Pick a Discord channel"
-                              options={guildChannels}
-                              selected={
-                                (
-                                  circleSpecificInfoDto?.[currentIndex]
-                                    ?.actions?.[actionIndex]
-                                    ?.info as CircleSpecificInfo
-                                )?.channel || {
-                                  label: "Select a channel",
-                                  value: "",
-                                }
-                              }
-                              onChange={(value) => {
-                                updateSelectedChannel(
-                                  currentIndex,
-                                  actionIndex,
-                                  value
-                                );
-                              }}
-                              multiple={false}
-                              portal={true}
-                              isClearable={false}
-                            />
-                          </Stack>
-                        )}
-                      {ta.requirements.includes("discordCategory") &&
-                        currentIndex > -1 && (
-                          <Stack>
-                            <Dropdown
-                              label="Pick a Discord category"
-                              options={guildCategories}
-                              selected={
-                                (
-                                  circleSpecificInfoDto?.[currentIndex]
-                                    ?.actions?.[actionIndex]
-                                    ?.info as CircleSpecificInfo
-                                )?.category || {
-                                  label: "Select a category",
-                                  value: "",
-                                }
-                              }
-                              onChange={(value) => {
-                                updateSelectedChannel(
-                                  currentIndex,
-                                  actionIndex,
-                                  value,
-                                  "category"
-                                );
-                              }}
-                              multiple={false}
-                              portal={false}
-                              isClearable={false}
-                            />
-                          </Stack>
-                        )}
                     </Stack>
                   );
                 }

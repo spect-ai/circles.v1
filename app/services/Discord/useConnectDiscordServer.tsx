@@ -47,7 +47,7 @@ export default function useConnectDiscordServer() {
 
 export function useConnectDiscordServerFromTemplate() {
   const router = useRouter();
-  const { guild_id, templateId, circleId } = router.query;
+  const { guild_id } = router.query;
   useEffect(() => {
     const connectServer = async () => {
       if (!guild_id || guild_id === "undefined") return;
