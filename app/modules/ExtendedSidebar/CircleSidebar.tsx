@@ -41,6 +41,7 @@ import { BiBot, BiCheck } from "react-icons/bi";
 import { MdPriceCheck } from "react-icons/md";
 import UpgradePlan from "../Sidebar/UpgradePlan";
 import { RiFlowChart } from "react-icons/ri";
+import { AiOutlineCrown } from "react-icons/ai";
 
 export const Container = styled(Box)<{ subH?: string }>`
   @media (max-width: 768px) {
@@ -139,27 +140,32 @@ function CircleSidebar() {
 
         <Container subH="8.1rem">
           <Stack direction="vertical" space="2">
-            <PrimaryButton
-              center
-              variant="secondary"
-              icon={
-                circle?.pricingPlan === 0 ? (
-                  <DollarOutlined />
-                ) : (
-                  <MdPriceCheck />
-                )
-              }
-              onClick={() => {
-                setUpgradePlanOpen(true);
-                process.env.NODE_ENV === "production" &&
-                  mixpanel.track("Upgrade Plan", {
-                    user: currentUser?.username,
-                    url: window.location.href,
-                  });
-              }}
-            >
-              {!circle?.pricingPlan ? "Upgrade Plan" : "Subscribed"}
-            </PrimaryButton>
+            <Box padding="1">
+              <PrimaryButton
+                variant="transparent"
+                icon={
+                  <Text color="accent">
+                    {!circle?.pricingPlan ? (
+                      <AiOutlineCrown size="20" />
+                    ) : (
+                      <MdPriceCheck />
+                    )}
+                  </Text>
+                }
+                onClick={() => {
+                  setUpgradePlanOpen(true);
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Upgrade Plan", {
+                      user: currentUser?.username,
+                      url: window.location.href,
+                    });
+                }}
+              >
+                <Text color="accent">
+                  {!circle?.pricingPlan ? "Upgrade Plan" : "Subscribed"}
+                </Text>
+              </PrimaryButton>
+            </Box>
             <Stack direction="horizontal" space="2">
               <Box width="1/2">
                 <CustomButton

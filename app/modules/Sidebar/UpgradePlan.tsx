@@ -40,12 +40,14 @@ const UpgradePlan = ({ handleClose }: Props) => {
             <Heading>You are on Premium Plan</Heading>
           )}
           {paidPlan.map((item) => (
-            <Stack key={item} direction="horizontal" align="center" space="2">
-              <Box color="green" marginTop="1">
-                <AiOutlineCheckCircle size={18} />
-              </Box>
-              <Text>{item}</Text>
-            </Stack>
+            <Box width="1/2">
+              <Stack key={item} direction="horizontal" align="center" space="2">
+                <Box color="green" marginTop="1">
+                  <AiOutlineCheckCircle size={18} />
+                </Box>
+                <Text align="left">{item}</Text>
+              </Stack>
+            </Box>
           ))}
           <Box width="1/2">
             <Stack align="center">
@@ -143,6 +145,13 @@ const UpgradePlan = ({ handleClose }: Props) => {
               </PrimaryButton>
             )}
           </Box>
+          <a
+            href="https://spect.network/pricing"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Text variant="label">See pricing</Text>
+          </a>
         </Stack>
       </Box>
     </Modal>

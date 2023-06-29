@@ -178,7 +178,7 @@ function Dashboard() {
                     setIsReferralModalOpen(true);
                   }}
                 >
-                  Earn from Spect
+                  Earn with Spect
                 </PrimaryButton>
               </Box>
               <Visible xs sm>

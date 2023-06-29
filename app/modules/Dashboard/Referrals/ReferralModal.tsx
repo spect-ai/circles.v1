@@ -89,7 +89,7 @@ const ReferralModal = ({ handleClose }: Props) => {
               </Text>
               <Box width="1/2">
                 <a
-                  href="http://localhost:3000/r/41de13a4-a76e-48e4-8e86-97569b1bbc83"
+                  href="https://dev.spect.network/r/41de13a4-a76e-48e4-8e86-97569b1bbc83"
                   target="_blank"
                 >
                   <PrimaryButton>Whitelist form</PrimaryButton>
