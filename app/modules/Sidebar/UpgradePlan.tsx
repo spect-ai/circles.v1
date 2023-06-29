@@ -124,7 +124,7 @@ const UpgradePlan = ({ handleClose }: Props) => {
                 icon={<IconClose size="5" />}
                 onClick={async () => {
                   setLoading(true);
-                  await fetch(
+                  const { message } = await fetch(
                     `${process.env.API_HOST}/circle/v1/${circle?.id}/cancelPlan`,
                     {
                       method: "POST",
@@ -134,6 +134,11 @@ const UpgradePlan = ({ handleClose }: Props) => {
                       credentials: "include",
                     }
                   ).then((res) => res.json());
+                  if (message) {
+                    toast.error(message);
+                    setLoading(false);
+                    return;
+                  }
                   setTimeout(async () => {
                     await fetchCircle();
                     handleClose();
