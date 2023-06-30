@@ -192,7 +192,7 @@ const Member = ({ member, roles }: MemberProps) => {
               <Stack align="center">
                 <Text weight="semiBold">{member.username}</Text>
                 <Stack direction="horizontal" space="1" wrap>
-                  {roles.map((role, index) => (
+                  {roles?.map((role, index) => (
                     <Stack direction="horizontal" space="1" align="center">
                       <Text key={role} variant="label">
                         {role}
