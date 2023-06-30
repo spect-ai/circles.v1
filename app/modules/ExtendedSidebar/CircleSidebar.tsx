@@ -23,11 +23,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { memo, useState } from "react";
 import { useQuery } from "react-query";
-import { toast } from "react-toastify";
 import styled from "styled-components";
-import { useCircle } from "../Circle/CircleContext";
 import SettingsModal from "../Circle/CircleSettingsModal";
-import ContributorsModal from "../Circle/ContributorsModal";
 import CircleOptions from "./CircleOptions";
 import { HeaderButton } from "./ExploreSidebar";
 import mixpanel from "@/app/common/utils/mixpanel";
@@ -37,9 +34,8 @@ import { Table } from "react-feather";
 import InviteMemberModal, {
   CustomButton,
 } from "../Circle/ContributorsModal/InviteMembersModal";
-import { BiBot, BiCheck } from "react-icons/bi";
-import { MdPriceCheck } from "react-icons/md";
-import UpgradePlan from "../Sidebar/UpgradePlan";
+import { BiBot } from "react-icons/bi";
+import UpgradePlan from "../Sidebar/UpgradePlanModal";
 import { RiFlowChart } from "react-icons/ri";
 import { AiOutlineCrown } from "react-icons/ai";
 
@@ -141,30 +137,26 @@ function CircleSidebar() {
         <Container subH="8.1rem">
           <Stack direction="vertical" space="2">
             <Box padding="1">
-              <PrimaryButton
-                variant="transparent"
-                icon={
-                  <Text color="accent">
-                    {!circle?.pricingPlan ? (
+              {circle?.pricingPlan === 0 && (
+                <PrimaryButton
+                  variant="transparent"
+                  icon={
+                    <Text color="accent">
                       <AiOutlineCrown size="20" />
-                    ) : (
-                      <MdPriceCheck />
-                    )}
-                  </Text>
-                }
-                onClick={() => {
-                  setUpgradePlanOpen(true);
-                  process.env.NODE_ENV === "production" &&
-                    mixpanel.track("Upgrade Plan", {
-                      user: currentUser?.username,
-                      url: window.location.href,
-                    });
-                }}
-              >
-                <Text color="accent">
-                  {!circle?.pricingPlan ? "Upgrade Plan" : "Subscribed"}
-                </Text>
-              </PrimaryButton>
+                    </Text>
+                  }
+                  onClick={() => {
+                    setUpgradePlanOpen(true);
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Upgrade Plan", {
+                        user: currentUser?.username,
+                        url: window.location.href,
+                      });
+                  }}
+                >
+                  <Text color="accent">Upgrade Plan</Text>
+                </PrimaryButton>
+              )}
             </Box>
             <Stack direction="horizontal" space="2">
               <Box width="1/2">

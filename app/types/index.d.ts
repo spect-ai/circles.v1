@@ -201,7 +201,7 @@ export interface CircleType {
   topUpMembers: number;
   subscriptionId: string;
   pendingBonus?: number;
-  refferedBy?: string;
+  referredBy?: string;
 }
 
 export type CirclePrivate = {

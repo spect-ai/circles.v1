@@ -15,6 +15,7 @@ import Roles from "../RolesModal/Roles";
 import SidebarConfig from "./SidebarConfig";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { toast } from "react-toastify";
+import Subscription from "../../Sidebar/Subscription";
 interface Props {
   handleClose: () => void;
   initialTab?: number;
@@ -137,6 +138,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
                 "Sidebar",
                 "Roles",
                 "Payments",
+                "Subscription",
                 "Archive",
               ]}
               tabTourIds={[
@@ -145,6 +147,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
                 "circle-settings-sidebar",
                 "circle-settings-roles",
                 "circle-settings-payments",
+                "circle-settings-subscription",
                 "circle-settings-delete",
               ]}
               orientation="vertical"
@@ -222,7 +225,8 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
             {/* {tab === 3 && <Credentials />} */}
             {tab === 3 && <Roles />}
             {tab === 4 && <DefaultPayment />}
-            {tab === 5 && (
+            {tab === 5 && <Subscription handleClose={() => {}} />}
+            {tab === 6 && (
               <Box width="1/2">
                 <Stack>
                   <Box>
