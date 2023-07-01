@@ -197,12 +197,12 @@ function CollectionHeading() {
                 <PrimaryButton
                   variant={view === 2 ? "tertiary" : "transparent"}
                   onClick={() => {
-                    if (collection.parents[0].pricingPlan === 0) {
-                      toast.error(
-                        "Analytics are only available for paid plans, please upgrade to view analytics"
-                      );
-                      return;
-                    }
+                    // if (collection.parents[0].pricingPlan === 0) {
+                    //   toast.error(
+                    //     "Analytics are only available for paid plans, please upgrade to view analytics"
+                    //   );
+                    //   return;
+                    // }
                     process.env.NODE_ENV === "production" &&
                       mixpanel.track("Form Analytics", {
                         collection: collection?.slug,

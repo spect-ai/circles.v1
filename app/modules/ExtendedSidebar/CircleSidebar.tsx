@@ -66,7 +66,6 @@ function CircleSidebar() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const [templateModalOpen, setTemplateModalOpen] = useState(false);
   const [upgradePlanOpen, setUpgradePlanOpen] = useState(false);
 
   if (isLoading) {

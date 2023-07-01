@@ -23,6 +23,8 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Hidden } from "react-grid-system";
 import { toast } from "react-toastify";
 import { reservedRoles } from "../InviteMembersModal/constants";
+import { AiOutlineCrown } from "react-icons/ai";
+import UpgradePlan from "@/app/modules/Sidebar/UpgradePlanModal";
 
 type props = {
   role?: string;
@@ -34,6 +36,7 @@ export default function AddRole({ role }: props) {
   const [permissions, setPermissions] = useState(defaultPermissions);
   const [loading, setLoading] = useState(false);
   const { circle, fetchCircle } = useCircle();
+  const [upgradePlanOpen, setUpgradePlanOpen] = useState(false);
   const { canDo } = useRoleGate();
 
   useEffect(() => {
@@ -49,13 +52,26 @@ export default function AddRole({ role }: props) {
       {!role ? (
         <PrimaryButton
           icon={<IconPlusSmall size="5" />}
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            if (circle.pricingPlan === 0) {
+              setUpgradePlanOpen(true);
+              return;
+            }
+            setIsOpen(true);
+          }}
           variant="transparent"
+          suffix={
+            circle.pricingPlan === 0 && (
+              <Text color="accent">
+                <AiOutlineCrown size="24" />
+              </Text>
+            )
+          }
         >
           Add Role
         </PrimaryButton>
       ) : (
-        <Box width="48">
+        <Box width="3/4">
           <Button
             prefix={
               circle.roles[role]?.mutable && canDo("manageRoles") ? (
@@ -64,10 +80,23 @@ export default function AddRole({ role }: props) {
                 <EyeOutlined />
               )
             }
-            onClick={() => setIsOpen(true)}
+            onClick={() => {
+              if (circle.pricingPlan === 0) {
+                setUpgradePlanOpen(true);
+                return;
+              }
+              setIsOpen(true);
+            }}
             variant="transparent"
             width={"full"}
             size="small"
+            suffix={
+              circle.pricingPlan === 0 && (
+                <Text color="accent">
+                  <AiOutlineCrown size="24" />
+                </Text>
+              )
+            }
           >
             {circle.roles[role]?.mutable && canDo("manageRoles")
               ? "Edit "
@@ -246,6 +275,13 @@ export default function AddRole({ role }: props) {
               </Stack>
             </Box>
           </Modal>
+        )}
+        {upgradePlanOpen && (
+          <UpgradePlan
+            handleClose={() => {
+              setUpgradePlanOpen(false);
+            }}
+          />
         )}
       </AnimatePresence>
     </Box>

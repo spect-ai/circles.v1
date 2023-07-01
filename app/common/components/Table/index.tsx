@@ -12,10 +12,16 @@ interface Props {
   };
   rows: React.ReactNode[][];
   onClick?: (checked: boolean[]) => void;
+  blurColumns?: boolean[];
 }
 
-const Table: FC<Props> = ({ columns, rows, columnWidths, onClick }) => {
-  const { mode } = useTheme();
+const Table: FC<Props> = ({
+  columns,
+  rows,
+  columnWidths,
+  onClick,
+  blurColumns,
+}) => {
   return (
     <Box
       borderColor="foregroundSecondary"
@@ -48,7 +54,12 @@ const Table: FC<Props> = ({ columns, rows, columnWidths, onClick }) => {
               md={columnWidths?.["md"]?.[index] || 6}
               lg={columnWidths?.["lg"]?.[index] || 6}
             >
-              <Box padding="2">
+              <Box
+                padding="2"
+                style={{
+                  filter: blurColumns?.[index] ? "blur(7px)" : "none",
+                }}
+              >
                 <Text> {cell}</Text>
               </Box>
             </Col>
