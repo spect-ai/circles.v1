@@ -21,7 +21,7 @@ import {
   FaTwitter,
 } from "react-icons/fa";
 import Dropdown from "@/app/common/components/Dropdown";
-import { fieldOptionsDropdown, fields } from "../../Constants";
+import { fieldOptionsDropdownInProjects, fields } from "../../Constants";
 import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 
@@ -250,6 +250,7 @@ const EditableField = ({
                     }
                   }}
                   isDirty={isDirty}
+                  version={1}
                 />
               </Stack>
               {collection.properties[id]?.type !== "readonly" && (
@@ -333,6 +334,7 @@ const EditableField = ({
                         <Editor
                           placeholder={`Enter long text, use / for commands`}
                           isDirty={true}
+                          version={1}
                         />
                       </Box>
                     )}
@@ -434,8 +436,7 @@ const EditableField = ({
                     <Box width="full" marginTop="4">
                       <Stack>
                         <Dropdown
-                          size="small"
-                          options={fieldOptionsDropdown}
+                          options={fieldOptionsDropdownInProjects}
                           selected={type}
                           onChange={(type) => {
                             onUpdateField(type);

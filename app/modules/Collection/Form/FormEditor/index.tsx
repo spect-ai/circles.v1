@@ -170,6 +170,7 @@ const FormEditor = ({
                     logError("Failed to update collection description");
                   }
                 }}
+                version={1}
               />
               <DragDropContext onDragEnd={onDragEnd}>
                 {collection.formMetadata.pageOrder.map((pageId) => {
