@@ -12,6 +12,8 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 import FormBuilder from "./FormBuilder";
 import InactiveFieldsColumnComponent from "./InactiveFieldsColumn";
 import FormEditor from "./FormEditor";
+import EditorHeader from "./FormEditor/EditorHeader";
+import FormDesigner from "./FormDesigner";
 
 export function Form() {
   const {
@@ -22,7 +24,7 @@ export function Form() {
     currentPage,
   } = useLocalCollection();
 
-  const [editMode, setEditMode] = useState(true);
+  const [viewPage, setViewPage] = useState("editor");
 
   const handleDragCollectionProperty = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -66,39 +68,11 @@ export function Form() {
   }
 
   return (
-    <ScrollContainer ref={scrollContainerRef}>
-      <FormContainer>
-        {editMode ? (
-          <FormEditor setEditMode={setEditMode} />
-        ) : (
-          <FormBuilder setEditMode={setEditMode} />
-        )}
-      </FormContainer>
-      {/* <InactiveFieldsColumnComponent /> */}
-    </ScrollContainer>
+    <Box>
+      <EditorHeader setViewPage={setViewPage} viewPage={viewPage} />
+      {viewPage === "editor" && <FormEditor />}
+      {viewPage === "preview" && <FormBuilder />}
+      {viewPage === "design" && <FormDesigner />}
+    </Box>
   );
 }
-
-const ScrollContainer = styled(Box)`
-  overflow-y: auto;
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-  display: flex;
-
-  @media (max-width: 992px) {
-    flex-direction: column;
-    padding: 0.5rem;
-    margin-top: 0rem;
-    height: calc(100vh - 9rem);
-  }
-  flex-direction: row;
-  height: calc(100vh - 9rem);
-`;
-
-const FormContainer = styled(Box)`
-  @media (max-width: 992px) {
-    width: 100%;
-  }
-  width: 100%;
-`;

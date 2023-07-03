@@ -13,11 +13,7 @@ import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { CollectionType } from "@/app/types";
 import { AnimatePresence } from "framer-motion";
 
-const FormEditor = ({
-  setEditMode,
-}: {
-  setEditMode: (editMode: boolean) => void;
-}) => {
+const FormEditor = () => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [name, setName] = useState(collection.name);
@@ -129,7 +125,6 @@ const FormEditor = ({
         )}
       </AnimatePresence>
       <Container>
-        <EditorHeader setEditMode={setEditMode} />
         <Box width="full">
           <Stack>
             {collection.formMetadata.logo && (
@@ -170,7 +165,7 @@ const FormEditor = ({
                     logError("Failed to update collection description");
                   }
                 }}
-                version={1}
+                version={2}
               />
               <DragDropContext onDragEnd={onDragEnd}>
                 {collection.formMetadata.pageOrder.map((pageId) => {

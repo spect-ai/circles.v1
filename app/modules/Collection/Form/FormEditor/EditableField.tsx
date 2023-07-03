@@ -250,7 +250,7 @@ const EditableField = ({
                     }
                   }}
                   isDirty={isDirty}
-                  version={1}
+                  version={2}
                 />
               </Stack>
               {collection.properties[id]?.type !== "readonly" && (
@@ -334,7 +334,7 @@ const EditableField = ({
                         <Editor
                           placeholder={`Enter long text, use / for commands`}
                           isDirty={true}
-                          version={1}
+                          version={2}
                         />
                       </Box>
                     )}

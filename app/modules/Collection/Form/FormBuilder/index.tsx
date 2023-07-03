@@ -45,11 +45,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { FaDiscord } from "react-icons/fa";
 import styled from "@emotion/styled";
 
-function FormBuilder({
-  setEditMode,
-}: {
-  setEditMode: (editMode: boolean) => void;
-}) {
+function FormBuilder() {
   const {
     localCollection: collection,
     updateCollection,
@@ -219,17 +215,6 @@ function FormBuilder({
             )}
           </FileInput>
         </CoverImageButtonContainer> */}
-        <CoverImageButtonContainer>
-          <PrimaryButton
-            width="fit"
-            variant="tertiary"
-            onClick={() => {
-              setEditMode(true);
-            }}
-          >
-            Back to editor
-          </PrimaryButton>
-        </CoverImageButtonContainer>
         <CoverImage src={cover} backgroundColor="accentSecondary" />
         <Container>
           <Stack direction="horizontal">

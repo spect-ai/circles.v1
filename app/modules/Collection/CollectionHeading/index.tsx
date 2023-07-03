@@ -28,8 +28,6 @@ import { UserType } from "@/app/types";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Embed } from "../Embed";
 import { SendOutlined } from "@ant-design/icons";
-import { smartTrim } from "@/app/common/utils/utils";
-import FormSettings from "../Form/FormSettings";
 import { PopoverOption } from "../../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
 import ViewPlugins, { isPluginAdded } from "../../Plugins/ViewPlugins";
 import { ShareOnDiscord } from "../ShareOnDiscord";
@@ -111,7 +109,7 @@ function CollectionHeading() {
       }}
     >
       <Hidden xs sm>
-        <Box marginLeft="4" marginTop="2">
+        <Box marginLeft="6" marginTop="2">
           {navigationBreadcrumbs && (
             <Breadcrumbs crumbs={navigationBreadcrumbs} />
           )}
@@ -343,7 +341,7 @@ function CollectionHeading() {
               </Visible>
             </Stack>
             <Hidden xs sm>
-              <Stack
+              {/* <Stack
                 direction="horizontal"
                 space={{
                   xs: "2",
@@ -455,7 +453,7 @@ function CollectionHeading() {
                     </a>
                   </Box>
                 </Popover>
-              </Stack>
+              </Stack> */}
             </Hidden>
           </Stack>
         )}

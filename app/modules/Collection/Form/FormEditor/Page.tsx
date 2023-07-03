@@ -189,7 +189,7 @@ const Page = ({
           <Stack align="center" space="16">
             <Editor
               value={collection.formMetadata.messageOnSubmission}
-              version={1}
+              version={2}
             />
           </Stack>
         </Box>
