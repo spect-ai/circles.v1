@@ -11,6 +11,7 @@ import { useLocation } from "react-use";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { updateCollection } from "@/app/services/UpdateCollection";
 import { logError } from "@/app/common/utils/utils";
+import { updateFormCollection } from "@/app/services/Collection";
 
 type Props = {
   handleClose: () => void;
@@ -18,7 +19,7 @@ type Props = {
 
 export default function DiscordRoleGate({ handleClose }: Props) {
   const [loading, setLoading] = useState(false);
-  const { localCollection: collection, setLocalCollection } =
+  const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { origin } = useLocation();
   const { circle, justAddedDiscordServer } = useCircle();
@@ -150,16 +151,13 @@ export default function DiscordRoleGate({ handleClose }: Props) {
               onClick={async () => {
                 setLoading(true);
 
-                const res = await updateCollection(
-                  {
-                    formMetadata: {
-                      ...collection.formMetadata,
-                      discordRoleGating: [],
-                    },
+                const res = await updateFormCollection(collection.id, {
+                  formMetadata: {
+                    ...collection.formMetadata,
+                    discordRoleGating: [],
                   },
-                  collection.id
-                );
-                setLocalCollection(res);
+                });
+                updateCollection(res);
 
                 setLoading(false);
                 handleClose();
@@ -173,18 +171,15 @@ export default function DiscordRoleGate({ handleClose }: Props) {
             disabled={!discordRoles?.some((role) => role.selected)}
             onClick={async () => {
               setLoading(true);
-              const res = await updateCollection(
-                {
-                  formMetadata: {
-                    ...collection.formMetadata,
-                    discordRoleGating: discordRoles?.filter(
-                      (role) => role.selected
-                    ),
-                  },
+              const res = await updateFormCollection(collection.id, {
+                formMetadata: {
+                  ...collection.formMetadata,
+                  discordRoleGating: discordRoles?.filter(
+                    (role) => role.selected
+                  ),
                 },
-                collection.id
-              );
-              if (res.id) setLocalCollection(res);
+              });
+              if (res.id) updateCollection(res);
               else logError(res.message);
               setLoading(false);
               handleClose();
