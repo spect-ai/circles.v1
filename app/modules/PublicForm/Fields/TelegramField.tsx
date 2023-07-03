@@ -20,9 +20,11 @@ export default function TelegramField({
       {data[propertyId] && data[propertyId].id ? (
         <Box borderWidth="0.375" borderRadius="2xLarge" padding="2">
           <Stack direction="horizontal" align="center" justify="center">
-            <Text size="extraSmall" font="mono" weight="bold">
-              {data[propertyId].username}
-            </Text>
+            <Box overflow={"hidden"}>
+              <Text size="extraSmall" font="mono" weight="bold">
+                {data[propertyId].username}
+              </Text>{" "}
+            </Box>
           </Stack>
         </Box>
       ) : (

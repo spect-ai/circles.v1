@@ -30,7 +30,6 @@ export default function Ceramic({ handleClose }: Props) {
                 formMetadata: {
                   ...collection.formMetadata,
                   ceramicEnabled: !collection.formMetadata.ceramicEnabled,
-                  walletConnectionRequired: true,
                 },
               });
               if (res.id) updateCollection(res);

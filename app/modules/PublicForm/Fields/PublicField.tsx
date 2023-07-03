@@ -1,10 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { isEmail, isURL } from "@/app/common/utils/utils";
-import { FormType, Option, Property, Registry, Reward } from "@/app/types";
+import {
+  ConditionGroup,
+  FormType,
+  Option,
+  Property,
+  Registry,
+  Reward,
+} from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { satisfiesConditions } from "../../Collection/Common/SatisfiesFilter";
 import DiscordField from "./DiscordField";
 import GithubField from "./GithubField";
 import MultiSelect from "./MultiSelect";
@@ -13,6 +19,8 @@ import SingleSelect from "./SingleSelect";
 import TelegramField from "./TelegramField";
 import dynamic from "next/dynamic";
 import styled from "@emotion/styled";
+import Slider from "@/app/common/components/Slider";
+import { satisfiesAdvancedConditions } from "../../Collection/Common/SatisfiesAdvancedFilter";
 
 const Editor = dynamic(() => import("@/app/common/components/Editor"), {
   ssr: false,
@@ -57,10 +65,10 @@ export default function PublicField({
     {} as { [key: string]: boolean }
   );
   if (
-    !satisfiesConditions(
+    !satisfiesAdvancedConditions(
       data,
       form.properties as { [propertyId: string]: Property },
-      form.properties[propertyId].viewConditions || []
+      form.properties[propertyId].advancedConditions || ({} as ConditionGroup)
     )
   ) {
     return null;
@@ -99,7 +107,11 @@ export default function PublicField({
           </Text>
         )}
         {form.properties[propertyId]?.description && !hideDescription && (
-          <Editor value={form.properties[propertyId].description} disabled />
+          <Editor
+            value={form.properties[propertyId].description}
+            disabled
+            version={form.editorVersion}
+          />
         )}
       </Stack>
       {form.properties[propertyId]?.type === "shortText" && (
@@ -252,6 +264,7 @@ export default function PublicField({
             placeholder={`Enter text, use / for commands`}
             isDirty={true}
             disabled={disabled}
+            version={form.editorVersion}
           />
         </Box>
       )}
@@ -346,6 +359,21 @@ export default function PublicField({
           />
         </Box>
       )}
+      {form.properties[propertyId]?.type === "slider" && (
+        <Slider
+          label=""
+          min={form.properties[propertyId]?.sliderOptions?.min || 1}
+          max={form.properties[propertyId]?.sliderOptions?.max || 10}
+          step={form.properties[propertyId]?.sliderOptions?.step || 1}
+          value={data && data[propertyId]}
+          minLabel={form.properties[propertyId]?.sliderOptions?.minLabel}
+          maxLabel={form.properties[propertyId]?.sliderOptions?.maxLabel}
+          onChange={(value: number | number[]) => {
+            setData({ ...data, [propertyId]: value });
+          }}
+          disabled={disabled}
+        />
+      )}
       {form.properties[propertyId]?.type === "reward" && (
         <Box marginTop="0">
           <RewardField
@@ -379,7 +407,7 @@ export default function PublicField({
       )}
       {form.properties[propertyId]?.type === "milestone" && (
         <MilestoneField
-          form={form}
+          form={form as any}
           data={data}
           setData={setData}
           propertyId={propertyId}

@@ -23,7 +23,13 @@ import FieldComponent from "../FieldComponent";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 import Stepper from "@/app/common/components/Stepper";
-import { CollectionType, FormType, GuildRole, Stamp } from "@/app/types";
+import {
+  CollectionType,
+  FormType,
+  GuildRole,
+  Stamp,
+  StampWithScore,
+} from "@/app/types";
 import { toast } from "react-toastify";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
@@ -66,7 +72,7 @@ function FormBuilder({
 
   const [hasStamps, setHasStamps] = useState({} as any);
   const [currentScore, setCurrentScore] = useState(0);
-  const [stamps, setStamps] = useState([] as Stamp[]);
+  const [stamps, setStamps] = useState([] as StampWithScore[]);
 
   const addStamps = async (form: FormType) => {
     const stamps = await getAllCredentials();
@@ -422,54 +428,58 @@ function FormBuilder({
                             Your current score: {currentScore}%
                           </Text>
                           <StampScrollContainer>
-                            {stamps?.map((stamp: Stamp, index: number) => {
-                              return (
-                                <StampCard mode={mode} key={index}>
-                                  <Box
-                                    display="flex"
-                                    flexDirection="row"
-                                    width="full"
-                                    alignItems="center"
-                                    gap="4"
-                                  >
+                            {stamps?.map(
+                              (stamp: StampWithScore, index: number) => {
+                                return (
+                                  <StampCard mode={mode} key={index}>
                                     <Box
                                       display="flex"
                                       flexDirection="row"
-                                      alignItems="center"
                                       width="full"
-                                      paddingRight="4"
+                                      alignItems="center"
+                                      gap="4"
                                     >
                                       <Box
-                                        width="8"
-                                        height="8"
+                                        display="flex"
                                         flexDirection="row"
-                                        justifyContent="flex-start"
                                         alignItems="center"
-                                        marginRight="4"
+                                        width="full"
+                                        paddingRight="4"
                                       >
-                                        {mode === "dark"
-                                          ? PassportStampIcons[
-                                              stamp.providerName
-                                            ]
-                                          : PassportStampIconsLightMode[
-                                              stamp.providerName
-                                            ]}
-                                      </Box>
-                                      <Box>
-                                        <Text as="h1">{stamp.stampName}</Text>
-                                        <Text variant="small">
-                                          {stamp.stampDescription}
-                                        </Text>
-                                      </Box>
-                                    </Box>{" "}
-                                    {hasStamps[stamp.id] && (
-                                      <Tag tone="green">Verified</Tag>
-                                    )}
-                                    <Text variant="large">{stamp.score}%</Text>
-                                  </Box>
-                                </StampCard>
-                              );
-                            })}
+                                        <Box
+                                          width="8"
+                                          height="8"
+                                          flexDirection="row"
+                                          justifyContent="flex-start"
+                                          alignItems="center"
+                                          marginRight="4"
+                                        >
+                                          {mode === "dark"
+                                            ? PassportStampIcons[
+                                                stamp.providerName
+                                              ]
+                                            : PassportStampIconsLightMode[
+                                                stamp.providerName
+                                              ]}
+                                        </Box>
+                                        <Box>
+                                          <Text as="h1">{stamp.stampName}</Text>
+                                          <Text variant="small">
+                                            {stamp.stampDescription}
+                                          </Text>
+                                        </Box>
+                                      </Box>{" "}
+                                      {hasStamps[stamp.id] && (
+                                        <Tag tone="green">Verified</Tag>
+                                      )}
+                                      <Text variant="large">
+                                        {stamp.score}%
+                                      </Text>
+                                    </Box>
+                                  </StampCard>
+                                );
+                              }
+                            )}
                           </StampScrollContainer>
                           <Box display="flex" flexDirection="row" gap="4">
                             <Button

@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import mixpanel from "mixpanel-browser";
 import { useCallback, useState } from "react";
 import { Trello } from "react-feather";
-import { AiFillFolderAdd } from "react-icons/ai";
+import { AiFillFolderAdd, AiOutlineCrown } from "react-icons/ai";
 import { FaWpforms } from "react-icons/fa";
 import { MdGroupWork } from "react-icons/md";
 import { useQuery } from "react-query";
@@ -17,6 +17,7 @@ import CreateCollectionModal from "../../CreateCollectionModal";
 import CreateSpaceModal from "../../CreateSpaceModal";
 import { logError } from "@/app/common/utils/utils";
 import { Hidden } from "react-grid-system";
+import UpgradePlan from "@/app/modules/Sidebar/UpgradePlanModal";
 
 type Props = {};
 
@@ -28,6 +29,7 @@ export default function CreateItems({}: Props) {
   const [collectionType, setCollectionType] = useState<0 | 1>(0);
   const { canDo } = useRoleGate();
   const { circle, setCircleData } = useCircle();
+  const [upgradePlanOpen, setUpgradePlanOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -75,6 +77,13 @@ export default function CreateItems({}: Props) {
             folderId={circle?.folderOrder[0]}
           />
         )}
+        {upgradePlanOpen && (
+          <UpgradePlan
+            handleClose={() => {
+              setUpgradePlanOpen(false);
+            }}
+          />
+        )}
       </AnimatePresence>
       {canDo("createNewForm") && (
         <Grid>
@@ -95,6 +104,10 @@ export default function CreateItems({}: Props) {
                   setCollectionType(1);
                   setCreateCollectionModalOpen(true);
                 } else if (item.component === "workstream") {
+                  if (circle?.pricingPlan === 0) {
+                    setUpgradePlanOpen(true);
+                    return;
+                  }
                   modalName = "Create Workstream";
                   setCreateWorkstreamModalOpen(true);
                 } else if (item.component === "folder") {
@@ -169,7 +182,7 @@ const Items = [
   {
     component: "workstream",
     name: "Create a Workstream",
-    icon: MdGroupWork,
+    icon: AiOutlineCrown,
     description: "Create a workstream to scale your organization",
   },
   {

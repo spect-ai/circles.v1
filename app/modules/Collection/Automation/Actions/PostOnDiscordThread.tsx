@@ -99,6 +99,14 @@ export default function PostCardOnDiscordThread({
       }}
       width="full"
     >
+      {collection.collectionType === 0 && (
+        <Box marginY="2">
+          <Text variant="small">
+            Please make sure there is a "Create Discord Thread" automation
+            before this automation.
+          </Text>
+        </Box>
+      )}
       <Box marginY="2">
         <Text variant="label">Message</Text>
       </Box>
@@ -127,14 +135,18 @@ export default function PostCardOnDiscordThread({
       </Box>
       <Dropdown
         options={
-          Object.entries(collection.properties)
+          Object.entries(collection.properties || {})
             .filter(
               ([propertyId, property]) =>
                 property.type === "shortText" ||
                 property.type === "singleSelect" ||
                 property.type === "email" ||
                 property.type === "date" ||
-                property.type === "ethAddress"
+                property.type === "ethAddress" ||
+                property.type === "number" ||
+                property.type === "longText" ||
+                property.type === "multiSelect" ||
+                property.type === "singleURL"
             )
             .map(([propertyId, property]) => ({
               label: property.name,

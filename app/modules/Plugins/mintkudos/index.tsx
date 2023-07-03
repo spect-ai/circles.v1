@@ -3,16 +3,12 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import mixpanel from "@/app/common/utils/mixpanel";
+import { logError } from "@/app/common/utils/utils";
 import useCredentials from "@/app/services/Credentials";
-import {
-  getPrivateCircleCredentials,
-  GetPrivateCirclePropertiesDto,
-} from "@/app/services/PrivateCircle";
 import {
   CommunityKudosType,
   KudosRequestType,
   KudosType,
-  Permissions,
   UserType,
 } from "@/app/types";
 import { CheckCircleOutlined, InfoCircleOutlined } from "@ant-design/icons";
@@ -21,26 +17,17 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
-import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
-import ResponseMatchDistribution, {
-  quizValidFieldTypes,
-} from "../common/ResponseMatchDistribution";
-import { logError } from "@/app/common/utils/utils";
-
-const ScrollContainer = styled(Box)`
-  overflow-x: auto;
-  max-width: 24rem;
-`;
+import ResponseMatchDistribution from "../common/ResponseMatchDistribution";
 
 type Props = {
   handleClose: () => void;
 };
 
 export default function SendKudos({ handleClose }: Props) {
-  const { circle, setMintkudosCommunityId, mintkudosCommunityId } = useCircle();
+  const { circle, mintkudosCommunityId } = useCircle();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);
@@ -48,38 +35,29 @@ export default function SendKudos({ handleClose }: Props) {
   const [headlineContent, setHeadlineContent] = useState(
     "Thanks for filling up the form!"
   );
-  const {
-    mintKudos,
-    recordCollectionKudos,
-    getKudos,
-    addCustomKudosDesign,
-    getCommunityKudosDesigns,
-  } = useCredentials();
+  const { mintKudos, recordCollectionKudos, addCustomKudosDesign, getKudos } =
+    useCredentials();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
   const [kudos, setKudos] = useState({} as KudosType);
   const [uploading, setUploading] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState(kudos?.imageUrl || "");
+  const [uploadedImage, setUploadedImage] = useState("");
   const [asset, setAsset] = useState({} as File);
   const [assetToUse, setAssetToUse] = useState("defaultOrangeRed");
   const [numberOfKudosToMint, setNumberOfKudosToMint] = useState(
     collection.formMetadata.numOfKudos || 1000
   );
   const [assetUrl, setAssetUrl] = useState(
-    "https://spect.infura-ipfs.io/ipfs/QmU2pYbqiVnNc7WKQ9yBkEmUvxWg6Ha1LAzpHdCSABwct7"
+    collection.formMetadata?.mintkudosAssetUrl ||
+      "https://spect.infura-ipfs.io/ipfs/QmU2pYbqiVnNc7WKQ9yBkEmUvxWg6Ha1LAzpHdCSABwct7"
   );
   const [filenameExceedsLimit, setFilenameExceedsLimit] = useState(false);
 
-  const [communityKudosDesigns, setCommunityKudosDesigns] = useState(
-    [] as CommunityKudosType[]
-  );
   const [modalMode, setModalMode] =
-    useState<
-      | "createKudos"
-      | "distributeKudosWhenResponsesMatch"
-      | "distributeKudosOnDiscordCallAttendance"
-    >("createKudos");
+    useState<"createKudos" | "distributeKudosWhenResponsesMatch">(
+      "createKudos"
+    );
   const [
     minimumNumberOfAnswersThatNeedToMatch,
     setMinimumNumberOfAnswersThatNeedToMatch,
@@ -92,9 +70,6 @@ export default function SendKudos({ handleClose }: Props) {
     collection.formMetadata?.responseDataForMintkudos || {}
   );
 
-  const validFieldsCount = Object.keys(
-    collection.formMetadata.responseDataForMintkudos || {}
-  ).length;
   const uploadFile = async (file: File) => {
     if (file) {
       setUploading(true);
@@ -104,6 +79,28 @@ export default function SendKudos({ handleClose }: Props) {
       setAssetUrl(imageGatewayURL);
     }
   };
+
+  useEffect(() => {
+    if (collection.formMetadata.mintkudosTokenId) {
+      setLoading(true);
+      getKudos(collection.formMetadata.mintkudosTokenId)
+        .then((res: KudosType) => {
+          console.log({ res });
+          setKudos(res);
+          setIssuingCommunity(res.customAttributes[0]?.value);
+          setHeadlineContent(res.headline);
+          setAssetUrl(res.imageUrl);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+        });
+    } else {
+      setKudos({} as KudosType);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collection]);
 
   return (
     <Modal
@@ -154,30 +151,6 @@ export default function SendKudos({ handleClose }: Props) {
                   objectFit="contain"
                   alt="Kudos img"
                 />
-                {!kudos.imageUrl && communityKudosDesigns.length > 0 && (
-                  <ScrollContainer
-                    display="flex"
-                    flexDirection="row"
-                    alignItems="center"
-                    marginY="4"
-                  >
-                    {communityKudosDesigns.map((k: CommunityKudosType) => (
-                      <Box key={k.nftTypeId}>
-                        <Image
-                          src={k.previewAssetUrl}
-                          width="100%"
-                          height="100%"
-                          objectFit="contain"
-                          alt="Kudos img"
-                          onClick={() => {
-                            setAssetToUse(k.nftTypeId);
-                            setAssetUrl(k.previewAssetUrl);
-                          }}
-                        />
-                      </Box>
-                    ))}
-                  </ScrollContainer>
-                )}
               </Box>
             </Box>
             <Box
@@ -271,7 +244,7 @@ export default function SendKudos({ handleClose }: Props) {
                 </Stack>
               </Box>
               <Accordian
-                name="Set Conditions"
+                name="DISTRIBUTE WHEN RESPONSES MATCH (IDEAL FOR QUIZZES)"
                 defaultOpen={
                   minimumNumberOfAnswersThatNeedToMatch > 0 ? true : false
                 }
@@ -339,7 +312,7 @@ export default function SendKudos({ handleClose }: Props) {
               flexDirection="row"
               justifyContent="flex-end"
             >
-              {kudos.imageUrl && (
+              {collection.formMetadata.mintkudosTokenId && (
                 <PrimaryButton
                   onClick={async () => {
                     setLoading(true);
@@ -376,7 +349,7 @@ export default function SendKudos({ handleClose }: Props) {
                   Remove kudos
                 </PrimaryButton>
               )}
-              {!kudos.imageUrl && (
+              {!collection.formMetadata.mintkudosTokenId && (
                 <Button
                   loading={loading}
                   width="full"
@@ -414,7 +387,7 @@ export default function SendKudos({ handleClose }: Props) {
                       );
                       if (!res?.operationId) {
                         setLoading(false);
-                        logError("Error minting kudos");
+                        logError("Error creating kudos");
                         return;
                       }
                       if (res) {

@@ -22,7 +22,7 @@ const EmbedPage: NextPage = () => {
       />
       <CircleContext.Provider value={context}>
         <EmbedFormLayout>
-          <PublicForm />
+          <PublicForm embed />
         </EmbedFormLayout>
       </CircleContext.Provider>
     </>

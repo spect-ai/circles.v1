@@ -30,7 +30,6 @@ import { Embed } from "../Embed";
 import { SendOutlined } from "@ant-design/icons";
 import { smartTrim } from "@/app/common/utils/utils";
 import FormSettings from "../Form/FormSettings";
-import WarnConnectWallet from "./WarnConnectWallet";
 import { PopoverOption } from "../../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
 import ViewPlugins, { isPluginAdded } from "../../Plugins/ViewPlugins";
 import { ShareOnDiscord } from "../ShareOnDiscord";
@@ -59,7 +58,6 @@ function CollectionHeading() {
   const { formActions } = useRoleGate();
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
-  const [isWarningOpened, setIsWarningOpened] = useState(false);
   const [shareOnDiscordOpen, setShareOnDiscordOpen] = useState(false);
   const [isViewPluginsOpen, setIsViewPluginsOpen] = useState(false);
   const [numPluginsAdded, setNumPlugnsAdded] = useState(0);
@@ -199,6 +197,12 @@ function CollectionHeading() {
                 <PrimaryButton
                   variant={view === 2 ? "tertiary" : "transparent"}
                   onClick={() => {
+                    // if (collection.parents[0].pricingPlan === 0) {
+                    //   toast.error(
+                    //     "Analytics are only available for paid plans, please upgrade to view analytics"
+                    //   );
+                    //   return;
+                    // }
                     process.env.NODE_ENV === "production" &&
                       mixpanel.track("Form Analytics", {
                         collection: collection?.slug,
@@ -303,7 +307,7 @@ function CollectionHeading() {
                           Preview
                         </PopoverOption>
                       </a>
-                      {view === 0 && (
+                      {view !== 1 && (
                         <PopoverOption
                           onClick={() => {
                             setView(1);
@@ -313,7 +317,7 @@ function CollectionHeading() {
                           Responses
                         </PopoverOption>
                       )}
-                      {view === 1 && (
+                      {view !== 0 && (
                         <PopoverOption
                           onClick={() => {
                             setView(0);
@@ -321,6 +325,16 @@ function CollectionHeading() {
                           }}
                         >
                           Edit Form
+                        </PopoverOption>
+                      )}
+                      {view !== 2 && (
+                        <PopoverOption
+                          onClick={() => {
+                            setView(2);
+                            setIsOpen(false);
+                          }}
+                        >
+                          Analytics
                         </PopoverOption>
                       )}
                     </Box>
@@ -467,20 +481,10 @@ function CollectionHeading() {
         {isEmbedModalOpen && (
           <Embed
             setIsOpen={setIsEmbedModalOpen}
-            embedRoute={`https://circles-v1-production.vercel.app/r/${collection.slug}/embed?`}
+            embedRoute={`https://circles.spect.network/r/${collection.slug}/embed?`}
           />
         )}
-        {isWarningOpened && (
-          <WarnConnectWallet
-            onYes={() => {
-              setIsWarningOpened(false);
-              setIsShareOpen(!isShareOpen);
-            }}
-            onNo={() => {
-              setIsWarningOpened(false);
-            }}
-          />
-        )}
+
         {shareOnDiscordOpen && (
           <ShareOnDiscord
             isOpen={shareOnDiscordOpen}

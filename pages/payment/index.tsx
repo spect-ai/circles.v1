@@ -1,19 +1,12 @@
 import Editor from "@/app/common/components/Editor";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import {
   LocalProfileContext,
   useProviderLocalProfile,
 } from "@/app/modules/Profile/ProfileSettings/LocalProfileContext";
 import CollectPayment from "@/app/modules/PublicForm/Fields/CollectPayment";
-import DiscordField from "@/app/modules/PublicForm/Fields/DiscordField";
-import GithubField from "@/app/modules/PublicForm/Fields/GithubField";
-import TelegramField from "@/app/modules/PublicForm/Fields/TelegramField";
-import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import {
   postFormPayment,
-  postSocials,
-  PostSocialsPayload,
 } from "@/app/services/Collection";
 import { CollectionType, PaymentConfig } from "@/app/types";
 import { Avatar, Box, Stack, Text } from "degen";
@@ -91,6 +84,7 @@ const PaymentPage: NextPage = () => {
                         value={collection.description}
                         isDirty={true}
                         disabled
+                        version={collection.editorVersion}
                       />
                     )}
                   </Stack>

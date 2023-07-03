@@ -31,6 +31,7 @@ function MultiMilestoneModal({
           : handleClose([], dataId, propertyId);
       }}
       title="Edit Milestones"
+      size={form.collectionType === 0 ? "medium" : "small"}
     >
       <Box
         padding="8"

@@ -52,7 +52,7 @@ function ExtendedSidebar(): ReactElement {
         borderRightWidth="0.375"
         height="full"
       >
-        {!cId && <ExploreSidebar />}
+        {/* {!cId && <ExploreSidebar />} */}
         {cId && <CircleSidebar />}
 
         {connectedUser && <ProfileButton />}

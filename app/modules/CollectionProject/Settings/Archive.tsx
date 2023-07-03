@@ -27,22 +27,37 @@ export default function Archive({}: Props) {
                 : "Are you sure you want to archive this project?"
             }
             onConfirm={() => {
-              void updateFormCollection(collection.id, {
-                archived: true,
-                formMetadata: {
-                  ...collection.formMetadata,
-                  active: false,
-                },
-              }).then((res) => {
-                console.log({ res });
-                if (res.id) {
-                  toast.success("Archived successfully");
-                  setIsConfirmOpen(false);
-                  void router.push(`/${router.query.circle}`);
-                } else {
-                  logError("Error archiving collection");
-                }
-              });
+              if (collection.collectionType === 0) {
+                void updateFormCollection(collection.id, {
+                  archived: true,
+                  formMetadata: {
+                    ...collection.formMetadata,
+                    active: false,
+                  },
+                }).then((res) => {
+                  console.log({ res });
+                  if (res.id) {
+                    toast.success("Archived successfully");
+                    setIsConfirmOpen(false);
+                    void router.push(`/${router.query.circle}`);
+                  } else {
+                    logError("Error archiving form");
+                  }
+                });
+              } else {
+                void updateFormCollection(collection.id, {
+                  archived: true,
+                }).then((res) => {
+                  console.log({ res });
+                  if (res.id) {
+                    toast.success("Archived successfully");
+                    setIsConfirmOpen(false);
+                    void router.push(`/${router.query.circle}`);
+                  } else {
+                    logError("Error archiving project");
+                  }
+                });
+              }
             }}
             handleClose={() => setIsConfirmOpen(false)}
             onCancel={() => setIsConfirmOpen(false)}

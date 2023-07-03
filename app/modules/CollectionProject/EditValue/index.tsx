@@ -126,6 +126,25 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                           </Stack>
                         </CustomTag>
                       ))}
+                    {["singleSelect", "user"].includes(property.type) && value && (
+                      <CustomTag
+                        mode={mode}
+                        key={value.value}
+                        borderCol={colorMapping[value.value]}
+                      >
+                        <Stack direction="horizontal" space="1" align="center">
+                          <Text>{value.label}</Text>
+                          <Box
+                            cursor="pointer"
+                            onClick={() => {
+                              setValue(null);
+                            }}
+                          >
+                            <IconClose size="4" color="red" />
+                          </Box>
+                        </Stack>
+                      </CustomTag>
+                    )}
                     <FieldInput
                       mode={mode}
                       autoFocus
@@ -145,7 +164,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                 <FieldButton
                   onClick={() => {
                     if (disabled) {
-                      toast.error("You can't edit a closed card");
+                      toast.error("You can't edit a card in read-only mode");
                       return;
                     }
                     if (!formActions("updateResponsesManually"))
@@ -159,17 +178,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                   {["multiSelect", "user[]"].includes(property.type) ? (
                     value?.length ? (
                       value?.map((val: any) => (
-                        <Box
-                          cursor="pointer"
-                          key={val.value}
-                          onClick={(e) => {
-                            if (property.type === "user[]") {
-                              e.stopPropagation();
-                              // open new tab and direct to profile
-                              window.open(`/profile/${val.label}`, "_blank");
-                            }
-                          }}
-                        >
+                        <Box key={val.value}>
                           <CustomTag
                             mode={mode}
                             key={val.value}
@@ -212,16 +221,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                       "Empty"
                     )
                   ) : value ? (
-                    <Box
-                      cursor="pointer"
-                      onClick={(e) => {
-                        if (property.type === "user") {
-                          e.stopPropagation();
-                          // open new tab and direct to profile
-                          window.open(`/profile/${value.label}`, "_blank");
-                        }
-                      }}
-                    >
+                    <Box>
                       <CustomTag
                         mode={mode}
                         borderCol={colorMapping[value.value]}
@@ -363,6 +363,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
       {[
         "shortText",
         "number",
+        "slider",
         "ethAddress",
         "email",
         "date",
@@ -408,14 +409,14 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
             <FieldButton
               onClick={() => {
                 if (disabled) {
-                  toast.error("You can't edit a closed card");
+                  toast.error("You can't edit a card in read-only mode");
                   return;
                 }
                 setIsEditing(true);
               }}
               mode={mode}
             >
-              {value ? (
+              {value || value === 0 ? (
                 <Text>
                   {property.type === "date"
                     ? new Date(value).toDateString()
@@ -444,26 +445,23 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
                   setValue(tempValue);
                   setIsEditing(false);
                 }}
+                type={"text"}
               />
             </FieldInputContainer>
           ) : (
             <FieldButton
               onClick={() => {
                 if (disabled) {
-                  toast.error("You can't edit a closed card");
+                  toast.error("You can't edit a card in read-only mode");
                   return;
                 }
-                if (Object.keys(value || {}).length === 0) {
-                  setIsEditing(true);
-                }
+                setIsEditing(true);
               }}
               mode={mode}
             >
               {value ? (
                 <Text>
-                  {value.username
-                    ? `${value.username}#${value.discriminator}`
-                    : value.login || value}
+                  {value.username ? `${value.username}` : value.login || value}
                 </Text>
               ) : (
                 "Empty"
@@ -500,7 +498,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
           <FieldButton
             onClick={() => {
               if (disabled) {
-                toast.error("You can't edit a closed card");
+                toast.error("You can't edit a card in read-only mode");
                 return;
               }
               setIsEditing(true);
@@ -534,7 +532,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
           <FieldButton
             onClick={() => {
               if (disabled) {
-                toast.error("You can't edit a closed card");
+                toast.error("You can't edit a card in read-only mode");
                 return;
               }
               setIsEditing(true);
@@ -562,7 +560,7 @@ function EditValue({ value, setValue, propertyId, dataId, disabled }: Props) {
           <FieldButton
             onClick={() => {
               if (disabled) {
-                toast.error("You can't edit a closed card");
+                toast.error("You can't edit a card in read-only mode");
                 return;
               }
               setIsEditing(true);

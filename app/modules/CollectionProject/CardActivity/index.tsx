@@ -20,6 +20,7 @@ type Props = {
   dataId: string;
   collectionId: string;
   dataOwner: UserType;
+  disabled?: boolean;
 };
 
 export default function CardActivity({
@@ -29,6 +30,7 @@ export default function CardActivity({
   dataId,
   collectionId,
   dataOwner,
+  disabled,
 }: Props) {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -64,13 +66,7 @@ export default function CardActivity({
                     profile={actor}
                   />
                   <Text color="text" weight="semiBold">
-                    <a
-                      href={`/profile/${actor?.username}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {actor?.username}
-                    </a>
+                    {actor?.username}
                   </Text>
                   {!activity.comment && (
                     <Box>
@@ -88,91 +84,94 @@ export default function CardActivity({
                   space="2"
                 >
                   {activity.comment && (
-                    <Editor value={activity.content} disabled />
+                    <Editor value={activity.content} disabled version={2} />
                   )}
                 </Stack>
               </Stack>
             </Box>
           );
         })}
-        <Stack direction="horizontal" space="2">
-          <Avatar
-            label=""
-            placeholder={!currentUser?.avatar}
-            src={
-              currentUser?.avatar ||
-              `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser?.id}`
-            }
-            address={currentUser?.ethAddress}
-            size="8"
-            username={currentUser?.username as string}
-            userId={currentUser?.id as string}
-            profile={currentUser as UserType}
-          />
-          <Box
-            width="full"
-            gap="2"
-            marginBottom="4"
-            display="flex"
-            flexDirection="row"
-          >
-            {!sendingComment && (
-              <Box height="40" overflow="auto" width="full">
-                <Editor
-                  placeholder="Write a reply..."
-                  value={comment}
-                  onSave={(value) => {
-                    setComment(value);
-                  }}
-                  isDirty={isDirty}
-                  setIsDirty={setIsDirty}
-                />
-              </Box>
-            )}
-            {isDirty && currentUser && (
-              <Button
-                variant="secondary"
-                size="small"
-                shape="circle"
-                loading={sendingComment}
-                onClick={async () => {
-                  if (
-                    !(
-                      formActions("addComments") ||
-                      currentUser.id == dataOwner.id
-                    )
-                  ) {
-                    toast.error(
-                      "Your role(s) doesn't have permission to add comments on this"
-                    );
-                    return;
-                  }
-                  setSendingComment(true);
-                  const res = await sendFormComment(
-                    collectionId,
-                    dataId,
-                    comment,
-                    {
-                      actor: {
-                        id: currentUser.id,
-                        refType: "user",
+        {!disabled && (
+          <Stack direction="horizontal" space="2">
+            <Avatar
+              label=""
+              placeholder={!currentUser?.avatar}
+              src={
+                currentUser?.avatar ||
+                `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser?.id}`
+              }
+              address={currentUser?.ethAddress}
+              size="8"
+              username={currentUser?.username as string}
+              userId={currentUser?.id as string}
+              profile={currentUser as UserType}
+            />
+            <Box
+              width="full"
+              gap="2"
+              marginBottom="4"
+              display="flex"
+              flexDirection="row"
+            >
+              {!sendingComment && (
+                <Box height="40" overflow="auto" width="full">
+                  <Editor
+                    placeholder="Write a reply..."
+                    value={comment}
+                    onSave={(value) => {
+                      setComment(value);
+                    }}
+                    isDirty={isDirty}
+                    setIsDirty={setIsDirty}
+                    version={2}
+                  />
+                </Box>
+              )}
+              {isDirty && currentUser && (
+                <Button
+                  variant="secondary"
+                  size="small"
+                  shape="circle"
+                  loading={sendingComment}
+                  onClick={async () => {
+                    if (
+                      !(
+                        formActions("addComments") ||
+                        currentUser.id == dataOwner.id
+                      )
+                    ) {
+                      toast.error(
+                        "Your role(s) doesn't have permission to add comments on this"
+                      );
+                      return;
+                    }
+                    setSendingComment(true);
+                    const res = await sendFormComment(
+                      collectionId,
+                      dataId,
+                      comment,
+                      {
+                        actor: {
+                          id: currentUser.id,
+                          refType: "user",
+                        },
                       },
-                    },
-                    false
-                  );
-                  if (res.id) {
-                    updateCollection(res);
-                    setComment("");
-                    setIsDirty(false);
-                  } else logError("Sending comment failed");
-                  setSendingComment(false);
-                }}
-              >
-                <SendOutlined style={{ fontSize: "1.3rem", padding: 2 }} />
-              </Button>
-            )}
-          </Box>
-        </Stack>
+                      false
+                    );
+                    if (res.id) {
+                      updateCollection(res);
+                      setComment("");
+                      setIsDirty(false);
+                    } else logError("Sending comment failed");
+                    setSendingComment(false);
+                  }}
+                >
+                  <SendOutlined style={{ fontSize: "1.3rem", padding: 2 }} />
+                </Button>
+              )}
+            </Box>
+          </Stack>
+        )}
       </Stack>
     </Box>
   );

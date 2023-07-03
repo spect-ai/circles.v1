@@ -23,11 +23,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { memo, useState } from "react";
 import { useQuery } from "react-query";
-import { toast } from "react-toastify";
 import styled from "styled-components";
-import { useCircle } from "../Circle/CircleContext";
 import SettingsModal from "../Circle/CircleSettingsModal";
-import ContributorsModal from "../Circle/ContributorsModal";
 import CircleOptions from "./CircleOptions";
 import { HeaderButton } from "./ExploreSidebar";
 import mixpanel from "@/app/common/utils/mixpanel";
@@ -38,7 +35,9 @@ import InviteMemberModal, {
   CustomButton,
 } from "../Circle/ContributorsModal/InviteMembersModal";
 import { BiBot } from "react-icons/bi";
-import TemplateModal from "../Circle/CircleOverview/FolderView/TemplateModal";
+import UpgradePlan from "../Sidebar/UpgradePlanModal";
+import { RiFlowChart } from "react-icons/ri";
+import { AiOutlineCrown } from "react-icons/ai";
 
 export const Container = styled(Box)<{ subH?: string }>`
   @media (max-width: 768px) {
@@ -57,23 +56,17 @@ export const Container = styled(Box)<{ subH?: string }>`
 
 function CircleSidebar() {
   const router = useRouter();
-  const {
-    circle: cId,
-    project: pId,
-    collection: cSlug,
-    payment,
-  } = router.query;
+  const { circle: cId, project: pId, collection: cSlug } = router.query;
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { setCircleData, setMemberDetailsData } = useCircle();
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [settingsModalInitialTab, setSettingsModalInitialTab] = useState(0);
   const { mode } = useTheme();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const [templateModalOpen, setTemplateModalOpen] = useState(false);
+  const [upgradePlanOpen, setUpgradePlanOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -118,13 +111,6 @@ function CircleSidebar() {
   return (
     <Box paddingY="2" paddingLeft="3" paddingRight="3">
       <AnimatePresence>
-        {templateModalOpen && (
-          <TemplateModal
-            handleClose={() => {
-              setTemplateModalOpen(false);
-            }}
-          />
-        )}
         {isSettingsModalOpen && (
           <SettingsModal
             handleClose={() => {
@@ -134,14 +120,43 @@ function CircleSidebar() {
             initialTab={settingsModalInitialTab}
           />
         )}
+        {upgradePlanOpen && (
+          <UpgradePlan
+            handleClose={() => {
+              setUpgradePlanOpen(false);
+            }}
+          />
+        )}
       </AnimatePresence>
       <Stack space="3">
         <Stack direction="horizontal">
           <CircleOptions />
         </Stack>
 
-        <Container subH="10.6rem">
+        <Container subH="8.1rem">
           <Stack direction="vertical" space="2">
+            <Box padding="1">
+              {circle?.pricingPlan === 0 && (
+                <PrimaryButton
+                  variant="transparent"
+                  icon={
+                    <Text color="accent">
+                      <AiOutlineCrown size="20" />
+                    </Text>
+                  }
+                  onClick={() => {
+                    setUpgradePlanOpen(true);
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Upgrade Plan", {
+                        user: currentUser?.username,
+                        url: window.location.href,
+                      });
+                  }}
+                >
+                  <Text color="accent">Upgrade Plan</Text>
+                </PrimaryButton>
+              )}
+            </Box>
             <Stack direction="horizontal" space="2">
               <Box width="1/2">
                 <CustomButton
@@ -182,6 +197,7 @@ function CircleSidebar() {
                     "automation",
                     "governance",
                     "membership",
+                    "workflows",
                   ].includes(router.query?.tab as string) &&
                   !cSlug &&
                   !pId
@@ -198,6 +214,27 @@ function CircleSidebar() {
                 }}
               >
                 Dashboard
+              </PrimaryButton>
+            </Link>
+            <Link href={`/${cId}?tab=workflows`}>
+              <PrimaryButton
+                center
+                variant={
+                  cId && router.query?.tab === "workflows" && !cSlug && !pId
+                    ? "tertiary"
+                    : "transparent"
+                }
+                icon={<RiFlowChart size="16" />}
+                suffix={<Text color="accent">Beta</Text>}
+                onClick={() => {
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Workflows", {
+                      user: currentUser?.username,
+                      url: window.location.href,
+                    });
+                }}
+              >
+                Community AI
               </PrimaryButton>
             </Link>
             {circle?.sidebarConfig?.showPayment && (
@@ -298,6 +335,7 @@ function CircleSidebar() {
                 </Link>
               </Box>
             )}
+
             {/* <Link href={`/${cId}?tab=credential`}>
             <PrimaryButton
               variant={
@@ -447,7 +485,7 @@ function CircleSidebar() {
           </Stack>
         </Container>
       </Stack>
-      <PrimaryButton
+      {/* <PrimaryButton
         variant="tertiary"
         onClick={() => {
           process.env.NODE_ENV === "production" &&
@@ -459,7 +497,7 @@ function CircleSidebar() {
         }}
       >
         Use a Template
-      </PrimaryButton>
+      </PrimaryButton> */}
     </Box>
   );
 }

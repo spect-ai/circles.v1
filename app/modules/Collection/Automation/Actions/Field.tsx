@@ -134,6 +134,7 @@ export function Field({
             isDirty={true}
             onChange={(v) => setData(v)}
             value={data}
+            version={2}
           />
         </Box>
       )}

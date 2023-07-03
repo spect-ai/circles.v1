@@ -18,6 +18,7 @@ import Governance from "./Governance";
 import Membership from "./Membership";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
+import Workflows from "./Workflows";
 
 const BoxContainer = styled(Box)`
   @media (max-width: 992px) {
@@ -69,6 +70,10 @@ export default function Circle() {
     return <Membership />;
   }
 
+  if (router.query.tab === "workflows") {
+    return <Workflows />;
+  }
+
   if (circle?.unauthorized && !isLoading && circle?.id)
     return (
       <Box marginX="6">
@@ -112,7 +117,7 @@ export default function Circle() {
               onClick={async () => {
                 const data = await joinCircle(circle.id);
                 if (data) {
-                  toast("You have joined circle successfully", {
+                  toast("You have joined space!", {
                     theme: "dark",
                   });
                   fetchCircle();

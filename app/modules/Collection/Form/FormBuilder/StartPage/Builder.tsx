@@ -1,17 +1,18 @@
-import Editor from "@/app/common/components/Editor";
+// import Editor from "@/app/common/components/Editor";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { NameInput } from "@/app/modules/PublicForm/FormFields";
 import { updateFormCollection } from "@/app/services/Collection";
 import { connectedUserAtom } from "@/app/state/global";
-import { Avatar, Box, FileInput, Stack, Text } from "degen";
+import { Avatar, Box, FileInput, Stack, Text, useTheme } from "degen";
 import { useAtom } from "jotai";
 import { useState } from "react";
-import { toast } from "react-toastify";
 import { useLocalCollection } from "../../../Context/LocalCollectionContext";
 import Footer from "./Footer";
 import Messages from "./Messages";
 import { logError } from "@/app/common/utils/utils";
+import { useCircle } from "@/app/modules/Circle/CircleContext";
+import Editor from "@/app/common/components/Editor";
 
 type Props = {
   setCurrentPage: (page: string) => void;
@@ -19,18 +20,18 @@ type Props = {
 
 const BuilderStartPage = ({ setCurrentPage }: Props) => {
   const [connectedUser] = useAtom(connectedUserAtom);
+  const { circle, setCircleData } = useCircle();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
 
   const [logo, setLogo] = useState(collection.formMetadata?.logo || "");
   const [name, setName] = useState(collection.name);
   const [description, setDescription] = useState(collection.description);
-
   const [captchaVerified, setCaptchaVerified] = useState(false);
-  const [verifyingCaptcha, setVerifyingCaptcha] = useState(false);
 
   return (
     <Box
+      className="bounds"
       style={{
         minHeight: "calc(100vh - 20rem)",
       }}
@@ -76,12 +77,26 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
               const res = await updateFormCollection(collection.id, {
                 name,
               });
-              res.id && updateCollection(res);
+              if (res.id) {
+                updateCollection(res);
+                if (circle)
+                  setCircleData({
+                    ...circle,
+                    collections: {
+                      ...(circle.collections || {}),
+                      [res.id]: {
+                        ...circle.collections[res.id],
+                        name: res.name,
+                      },
+                    },
+                  });
+              }
             }
           }}
           disabled
         />
         <Editor
+          bounds=".bounds"
           value={description}
           onSave={async (value) => {
             setDescription(value);
@@ -94,6 +109,7 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
           }}
           placeholder={`Edit description`}
           isDirty={true}
+          version={collection.editorVersion}
         />
         <Messages form={collection} />
       </Stack>

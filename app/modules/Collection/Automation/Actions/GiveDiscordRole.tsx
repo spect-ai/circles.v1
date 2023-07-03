@@ -133,12 +133,24 @@ export default function GiveDiscordRole({
         })}{" "}
       </Stack>
       <Box marginTop="4" marginBottom="-4">
-        <Editor
-          value={
-            ":::tip\nEnsure you have a discord field added to your form which the user will use to connect their discord account. Also, make sure the spect bot's role in your server is placed above the roles you are giving.\n:::"
-          }
-          disabled={true}
-        />
+        {collection.collectionType === 0 && (
+          <Editor
+            value={
+              ":::tip\nEnsure you have a discord field added to your form which the user will use to connect their discord account. Also, make sure the spect bot's role in your server is placed above the roles you are giving.\n:::"
+            }
+            disabled={true}
+            version={1}
+          />
+        )}
+        {collection.collectionType === 1 && (
+          <Editor
+            value={
+              ":::tip\nMake sure the spect bot's role in your server is placed above the roles you are giving.\n:::"
+            }
+            disabled={true}
+            version={1}
+          />
+        )}
       </Box>
     </Box>
   );

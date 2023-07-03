@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import ClickableAvatar from "@/app/common/components/Avatar";
 import { logError, smartTrim } from "@/app/common/utils/utils";
 import { updateField } from "@/app/services/Collection";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { Option, UserType } from "@/app/types";
+import { Option } from "@/app/types";
 import {
   Avatar,
   AvatarGroup,
@@ -16,10 +15,9 @@ import {
   useTheme,
 } from "degen";
 import { useRouter } from "next/router";
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { Draggable, Droppable, DroppableProvided } from "react-beautiful-dnd";
-import { Calendar, DollarSign } from "react-feather";
-import { toast } from "react-toastify";
+import { Calendar } from "react-feather";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { CustomTag } from "../EditValue";
@@ -41,6 +39,7 @@ export default function Column({
     localCollection: collection,
     updateCollection,
     colorMapping,
+    authorization,
   } = useLocalCollection();
   const { getMemberDetails } = useModalOptions();
 
@@ -73,29 +72,33 @@ export default function Column({
               if (res.id) updateCollection(res);
               else logError("Error renaming column");
             }}
-            disabled={column.value === "__unassigned__"}
+            disabled={
+              column.value === "__unassigned__" || authorization === "readonly"
+            }
           />
-          <Button
-            shape="circle"
-            variant="transparent"
-            size="small"
-            onClick={() => {
-              setDefaultValue({
-                [groupByPropertyId]:
-                  column.value === "__unassigned__" ? null : column,
-              });
-              void router.push({
-                pathname: router.pathname,
-                query: {
-                  circle: router.query.circle,
-                  collection: router.query.collection,
-                  newCard: true,
-                },
-              });
-            }}
-          >
-            <IconPlusSmall size="5" />
-          </Button>
+          {authorization !== "readonly" && (
+            <Button
+              shape="circle"
+              variant="transparent"
+              size="small"
+              onClick={() => {
+                setDefaultValue({
+                  [groupByPropertyId]:
+                    column.value === "__unassigned__" ? null : column,
+                });
+                void router.push({
+                  pathname: router.pathname,
+                  query: {
+                    circle: router.query.circle,
+                    collection: router.query.collection,
+                    newCard: true,
+                  },
+                });
+              }}
+            >
+              <IconPlusSmall size="5" />
+            </Button>
+          )}
         </Stack>
         <ScrollContainer>
           <Stack space="2">
@@ -105,7 +108,8 @@ export default function Column({
                 draggableId={slug}
                 index={index}
                 isDragDisabled={
-                  collection.data?.[slug]?.__cardStatus__ === "closed"
+                  collection.data?.[slug]?.__cardStatus__ === "closed" ||
+                  authorization === "readonly"
                 }
               >
                 {(provided, snapshot) => (
@@ -117,13 +121,22 @@ export default function Column({
                     borderColor={snapshot.isDragging ? "accent" : undefined}
                     borderRadius="medium"
                     onClick={() => {
+                      const query = {
+                        cardSlug: slug,
+                      } as any;
+                      if (router.query.formId) {
+                        query["formId"] = router.query.formId;
+                      } else {
+                        if (router.query.circle) {
+                          query["circle"] = router.query.circle;
+                        }
+                        if (router.query.collection) {
+                          query["collection"] = router.query.collection;
+                        }
+                      }
                       void router.push({
                         pathname: router.pathname,
-                        query: {
-                          circle: router.query.circle,
-                          collection: router.query.collection,
-                          cardSlug: slug,
-                        },
+                        query,
                       });
                     }}
                     cursor="pointer"
@@ -274,7 +287,11 @@ export default function Column({
                             </Box>
                           );
                         }
-                        if (property.type === "reward") {
+                        if (
+                          property.type === "reward" &&
+                          value?.value &&
+                          value?.token?.label
+                        ) {
                           return (
                             <Box key={propertyId}>
                               <Tag tone="green">
@@ -284,7 +301,7 @@ export default function Column({
                                   align="center"
                                 >
                                   <Text color="green" weight="semiBold">
-                                    {`${value.value} ${value.token.label} `}
+                                    {`${value.value} ${value.token?.label} `}
                                   </Text>
                                 </Stack>
                               </Tag>

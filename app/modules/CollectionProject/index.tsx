@@ -8,12 +8,16 @@ import ListView from "./ListView";
 import ProjectTableView from "./TableView";
 
 export default function CollectionProject() {
-  const { projectViewId, localCollection: collection } = useLocalCollection();
+  const {
+    projectViewId,
+    localCollection: collection,
+    authorization,
+  } = useLocalCollection();
   const { formActions } = useRoleGate();
   return (
     <Box>
       <ProjectHeading />
-      {formActions("viewResponses") && (
+      {(formActions("viewResponses") || authorization === "readonly") && (
         <Box>
           {collection.projectMetadata.views[projectViewId]?.type === "grid" && (
             <ProjectTableView />
@@ -25,14 +29,14 @@ export default function CollectionProject() {
           )}
         </Box>
       )}
-      {!formActions("viewResponses") && (
+      {!formActions("viewResponses") && authorization !== "readonly" && (
         <Box width="full" marginTop="32">
           <Stack align="center" justify="center">
             <Text color="text" weight="semiBold" size="headingTwo">
-              You do not have permission to view this collection.
+              You do not have permission to view this project.
             </Text>
             <Text color="text" size="large">
-              Ask the creator to update the access roles of this collection
+              Please reach out to the steward to update your role.
             </Text>
           </Stack>
         </Box>

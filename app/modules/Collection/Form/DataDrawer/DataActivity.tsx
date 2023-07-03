@@ -88,17 +88,9 @@ export default function DataActivity({
                 >
                   <Stack direction="horizontal">
                     <Text color="accentText" weight="semiBold">
-                      {actor?.id === "anon" ? (
-                        "Responder"
-                      ) : (
-                        <a
-                          href={`/profile/${actor?.username}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {actor?.username}
-                        </a>
-                      )}
+                      {actor?.id === "anon"
+                        ? "Responder"
+                        : `${actor?.username}`}
                     </Text>
                     <Box>
                       <Text variant="label">{activity.content}</Text>

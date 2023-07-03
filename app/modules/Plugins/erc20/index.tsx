@@ -408,13 +408,13 @@ export default function DistributeERC20({
                       surveyTotalValue: value,
                       surveyDistributionType:
                         paymentType?.value === "payPerResponse" ? 1 : 0,
-                      walletConnectionRequired: true,
                     },
                   });
                   updateCollection(res);
                   console.log({ res });
                   setIsLoading(false);
-                  if (res) handleClose();
+                  if (res.id) updateCollection(res);
+                  else logError(res.message);
                 } catch (e) {
                   console.log(e);
                   setIsLoading(false);

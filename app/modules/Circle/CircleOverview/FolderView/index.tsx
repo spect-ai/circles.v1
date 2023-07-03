@@ -1,5 +1,5 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { CircleType, ProjectType } from "@/app/types";
+import { CircleType } from "@/app/types";
 import {
   DragDropContext,
   Droppable,
@@ -14,9 +14,6 @@ import styled from "styled-components";
 import CreateItems from "./CreateItems";
 
 interface Props {
-  filteredProjects?: {
-    [key: string]: ProjectType;
-  };
   filteredWorkstreams?: {
     [key: string]: CircleType;
   };
@@ -46,7 +43,6 @@ const ScrollContainer = styled(Box)`
 `;
 
 export const FolderView = ({
-  filteredProjects,
   filteredWorkstreams,
   filteredCollections,
 }: Props) => {
@@ -64,12 +60,6 @@ export const FolderView = ({
     setAllContentIds(ids);
 
     let unclassifiedIds = [] as string[];
-    filteredProjects &&
-      Object.values(filteredProjects)?.map((project) => {
-        if (!ids.includes(project.id)) {
-          unclassifiedIds = unclassifiedIds.concat(project.id);
-        }
-      });
 
     filteredWorkstreams &&
       Object.values(filteredWorkstreams)?.map((child) => {
@@ -88,7 +78,6 @@ export const FolderView = ({
     allContentIds,
     circle?.folderDetails,
     filteredCollections,
-    filteredProjects,
     filteredWorkstreams,
   ]);
 
@@ -116,7 +105,6 @@ export const FolderView = ({
             id={folder}
             name={folderDetail?.name}
             index={i}
-            projects={filteredProjects}
             workstreams={filteredWorkstreams}
             collections={filteredCollections}
           />
@@ -129,7 +117,6 @@ export const FolderView = ({
   const DroppableContentCallback = useCallback(DroppableContent, [
     canDo,
     circle,
-    filteredProjects,
     filteredWorkstreams,
   ]);
   return (

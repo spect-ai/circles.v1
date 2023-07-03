@@ -10,12 +10,13 @@ import {
 import {
   CollectionType,
   Condition,
+  ConditionGroup,
   FormType,
   Property,
   UserType,
 } from "@/app/types";
 import { Box, Input, Stack, Text } from "degen";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import styled from "@emotion/styled";
 // import PublicField from "./Fields/PublicField";
@@ -30,27 +31,17 @@ import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 import Stepper from "@/app/common/components/Stepper";
-import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 
 import dynamic from "next/dynamic";
 import PublicField from "./Fields/PublicField";
+import { satisfiesAdvancedConditions } from "../Collection/Common/SatisfiesAdvancedFilter";
+import StartPage from "../Collection/Form/FormBuilder/StartPage";
+import ConnectPage from "../Collection/Form/FormBuilder/ConnectPage";
+import ConnectDiscordPage from "../Collection/Form/FormBuilder/ConnectDiscordPage";
+import SubmittedPage from "../Collection/Form/FormBuilder/SubmittedPage";
+import CollectPage from "../Collection/Form/FormBuilder/CollectPage";
+import CollectPayment from "./Fields/CollectPayment";
 
-const StartPage = dynamic(
-  () => import("../Collection/Form/FormBuilder/StartPage")
-);
-const ConnectPage = dynamic(
-  () => import("../Collection/Form/FormBuilder/ConnectPage")
-);
-const CollectPage = dynamic(
-  () => import("../Collection/Form/FormBuilder/CollectPage")
-);
-const CollectPayment = dynamic(() => import("./Fields/CollectPayment"));
-const SubmittedPage = dynamic(
-  () => import("../Collection/Form/FormBuilder/SubmittedPage")
-);
-const ConnectDiscordPage = dynamic(
-  () => import("../Collection/Form/FormBuilder/ConnectDiscordPage")
-);
 const Modal = dynamic(() => import("@/app/common/components/Modal"));
 
 // const PublicField = dynamic(() => import("./Fields/PublicField"), {
@@ -106,6 +97,11 @@ function FormFields({ form, setForm }: Props) {
     }
   );
   const [currentPage, setCurrentPage] = useState("start");
+  const [timeSpent, setTimeSpent] = useState({
+    start: { enter: Date.now(), time: 0 },
+  } as {
+    [key: string]: { enter: number; time: number };
+  });
 
   const checkRequired = (data: any) => {
     if (!form) return false;
@@ -119,10 +115,10 @@ function FormFields({ form, setForm }: Props) {
         property.required &&
         property.isPartOfFormView &&
         isEmpty(propertyId, data[propertyId]) &&
-        satisfiesConditions(
+        satisfiesAdvancedConditions(
           data,
           form.properties,
-          form.properties[propertyId].viewConditions as Condition[]
+          form.properties[propertyId].advancedConditions as ConditionGroup
         )
       ) {
         requiredFieldsNotSet[propertyId] = true;
@@ -235,49 +231,6 @@ function FormFields({ form, setForm }: Props) {
       setEmailModalOpen(true);
       return;
     }
-    if (form.formMetadata.ceramicEnabled) {
-      let session: any;
-      setSubmitting(true);
-      // try {
-      //   const loadedSession = await loadCeramicSession(address as string);
-      //   console.log({ loadedSession });
-      //   if (!loadedSession) {
-      //     const newSession = await createCeramicSession(
-      //       address as string,
-      //       connector
-      //     );
-      //     console.log({ newSession });
-      //     session = newSession;
-      //   } else {
-      //     session = loadedSession;
-      //   }
-      //   compose.setDID(session.did);
-      //   const result: any = await compose.executeQuery(
-      //     `
-      // mutation {
-      //   createSpectForm(input: {content: {
-      //     formId: "${form.slug}",
-      //     data: "${JSON.stringify(data).replace(/"/g, '\\"')}",
-      //     createdAt: "${new Date().toISOString()}",
-      //     link: "https://circles.spect.network/r/${form.id}",
-      //     origin: "https://circles.spect.network",
-      //   }}) {
-      //     document {
-      //       id
-      //     }
-      //   }
-      // }
-      // `
-      //   );
-      //   const streamId = result.data.createSpectForm.document.id;
-      //   data["__ceramic__"] = streamId;
-      // } catch (err) {
-      //   console.log(err);
-      //   logError("Could not upload data to Ceramic");
-      //   setSubmitting(false);
-      //   return;
-      // }
-    }
     let res;
     if (
       form.formMetadata.paymentConfig?.type === "paywall" &&
@@ -299,7 +252,6 @@ function FormFields({ form, setForm }: Props) {
     }
     if (!checkValue(data)) return;
     setSubmitting(true);
-
     if (updateResponse) {
       const lastResponse =
         form.formMetadata.previousResponses[
@@ -334,6 +286,29 @@ function FormFields({ form, setForm }: Props) {
           user: currentUser?.username,
           circle: form.parents[0].slug,
         });
+
+      // try {
+      //   let totalTimeSpent = {} as { [key: string]: number };
+      //   for (let key in timeSpent) {
+      //     totalTimeSpent[key] = timeSpent[key].time;
+      //   }
+      //   console.log({ totalTimeSpent });
+      //   await fetch(
+      //     `${process.env.API_HOST}/collection/v1/${form?.id}/updateTimeSpentMetrics`,
+      //     {
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //       },
+      //       method: "PATCH",
+      //       body: JSON.stringify({
+      //         timeSpent: totalTimeSpent,
+      //         type: "page",
+      //       }),
+      //     }
+      //   );
+      // } catch (e) {
+      //   console.log(e);
+      // }
     } else {
       logError("Error adding data");
       process.env.NODE_ENV === "production" &&
@@ -369,6 +344,7 @@ function FormFields({ form, setForm }: Props) {
       case "date":
       case "singleURL":
       case "email":
+      case "slider":
         return !value;
       case "singleSelect":
         return !value || !value.value || !value.label;
@@ -413,6 +389,29 @@ function FormFields({ form, setForm }: Props) {
       });
     }
   };
+
+  useEffect(() => {
+    if (currentPage) {
+      void (async () => {
+        try {
+          const res = await fetch(
+            `${process.env.API_HOST}/collection/v1/${form?.id}/updateMetrics`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+              method: "PATCH",
+              body: JSON.stringify({
+                pageId: currentPage,
+              }),
+            }
+          );
+        } catch (err) {
+          console.log({ err });
+        }
+      })();
+    }
+  }, [currentPage]);
 
   return (
     <Container borderRadius="2xLarge">
@@ -575,10 +574,11 @@ function FormFields({ form, setForm }: Props) {
                     }
                   })}
                   {fields.every((field: string) => {
-                    return !satisfiesConditions(
+                    return !satisfiesAdvancedConditions(
                       data,
                       form.properties as { [propertyId: string]: Property },
-                      form.properties[field].viewConditions || []
+                      form.properties[field].advancedConditions ||
+                        ({} as ConditionGroup)
                     );
                   }) && (
                     <Box>

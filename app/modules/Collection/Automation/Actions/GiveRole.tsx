@@ -1,5 +1,7 @@
+import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
+import { reservedRoles } from "@/app/modules/Circle/ContributorsModal/InviteMembersModal/constants";
 import { Action } from "@/app/types";
 import { Box, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
@@ -46,6 +48,7 @@ export default function GiveRole({ setAction, actionMode, action }: Props) {
       </Box>
       <Stack direction="horizontal" wrap>
         {Object.keys(circle?.roles || {})?.map((role) => {
+          if (reservedRoles.includes(role)) return null;
           return (
             <Box
               key={role}
@@ -65,6 +68,13 @@ export default function GiveRole({ setAction, actionMode, action }: Props) {
           );
         })}{" "}
       </Stack>
+      <Box marginTop="4" marginBottom="-4">
+        <Editor
+          value={`:::tip\nEnsure you have "Collect Responder Profile" plugin enabled.\n:::`}
+          disabled={true}
+          version={1}
+        />
+      </Box>
     </Box>
   );
 }

@@ -9,7 +9,7 @@ import { SearchCard } from "./Search";
 import Sort from "./Sort";
 
 export default function Filtering() {
-  const { localCollection: collection } = useLocalCollection();
+  const { localCollection: collection, authorization } = useLocalCollection();
 
   const { formActions } = useRoleGate();
   return (
@@ -18,31 +18,37 @@ export default function Filtering() {
       height="10"
       display="flex"
       flexDirection="row"
-      justifyContent="space-between"
+      justifyContent={{
+        xs: "flex-start",
+        lg: "space-between",
+      }}
       alignItems="center"
       backgroundColor="background"
       borderBottomRadius="large"
       borderTopRadius={collection?.collectionType === 1 ? "none" : "large"}
-      marginBottom={collection?.collectionType === 1 ? "none" : "2"}
+      marginBottom={"2"}
+      paddingLeft="2"
     >
       <SearchCard />
 
-      <Box
-        display="flex"
-        flexDirection="row"
-        gap="4"
-        alignItems="center"
-        width="1/2"
-      >
-        {formActions("manageSettings") && (
-          <>
-            <Filter />
-            <Sort />
-          </>
-        )}
-        {collection.collectionType === 1 && <PaymentFilter />}
-        <MyTasks />
-      </Box>
+      {authorization !== "readonly" && (
+        <Box
+          display="flex"
+          flexDirection="row"
+          gap="4"
+          alignItems="center"
+          width="1/2"
+        >
+          {formActions("manageSettings") && (
+            <>
+              <Filter />
+              <Sort />
+            </>
+          )}
+          {collection.collectionType === 1 && <PaymentFilter />}
+          <MyTasks />
+        </Box>
+      )}
     </Box>
   );
 }

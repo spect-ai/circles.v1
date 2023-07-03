@@ -139,7 +139,7 @@ export default function CollectZealyXp({
             <Stack direction="vertical">
               <TwitterShareButton
                 url={`https://circles.spect.network/`}
-                title={`Gm! I just filled out a web3 form and claimed some ${form.formMetadata.canClaimZealy} on @JoinSpect!`}
+                title={`Gm! I just filled out a web3 form and claimed ${form.formMetadata.canClaimZealy} XP on @JoinSpect!\n\nCheck it out 👉`}
               >
                 <Box
                   width={{
@@ -301,14 +301,28 @@ export default function CollectZealyXp({
           )}
         </Box>
       )}
+
+      {form.formMetadata.zealyXP &&
+        Object.values(form.formMetadata.zealyXpPerField || {}).some(
+          (a) => a > 0
+        ) &&
+        !form.formMetadata.canClaimZealy &&
+        !form.formMetadata.hasClaimedZealy &&
+        !userNotFound &&
+        !loading && (
+          <Stack direction="horizontal" align="flex-start">
+            <Box>
+              <Text variant="extraLarge" weight="bold">
+                👉
+              </Text>
+            </Box>
+            <Stack>
+              <Text weight="semiBold" variant="large">
+                Unfortunately, you didn't qualify to claim any XP 🙁
+              </Text>
+            </Stack>
+          </Stack>
+        )}
     </Box>
   );
 }
-
-const CircularStyledImage = styled.img`
-  @media (max-width: 768px) {
-    width: 18rem;
-  }
-  width: 24rem;
-  border-radius: 20rem;
-`;

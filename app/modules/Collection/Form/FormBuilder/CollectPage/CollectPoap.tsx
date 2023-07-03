@@ -40,7 +40,7 @@ export default function CollectPoap({
         );
         setLoading(false);
         setPoap(res);
-        setPoapClaimed(res.claimed);
+        setPoapClaimed(res.claimed || false);
       })();
     }
   }, [form]);
@@ -98,7 +98,7 @@ export default function CollectPoap({
               <TwitterShareButton
                 url={`https://circles.spect.network/`}
                 title={
-                  "I just filled out a web3 form and claimed my @poapxyz on @JoinSpect!"
+                  "Gm! I just filled out a web3 form and claimed a POAP on @JoinSpect!\n\nCheck it out 👉"
                 }
               >
                 <Box

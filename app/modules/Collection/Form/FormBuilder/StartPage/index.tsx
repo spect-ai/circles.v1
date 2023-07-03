@@ -52,7 +52,12 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
             )}
             <NameInput autoFocus value={form.name} disabled />
             {form.description && (
-              <Editor value={form.description} isDirty={true} disabled />
+              <Editor
+                value={form.description}
+                isDirty={true}
+                disabled
+                version={form.editorVersion}
+              />
             )}
             <Messages form={form} />
           </Stack>

@@ -90,7 +90,7 @@ const CollectKudos = ({ form, setClaimedJustNow, preview, setForm }: Props) => {
               <TwitterShareButton
                 url={`https://circles.spect.network/`}
                 title={
-                  "I just filled out a web3 enabled form and claimed my Kudos on @JoinSpect via @mintkudosXYZ 🎉"
+                  "Gm! I just filled out a web3 form and claimed my Mintkudos on @JoinSpect\n\nCheck it out 👉"
                 }
               >
                 <Box

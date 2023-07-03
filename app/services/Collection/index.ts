@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { logError } from "@/app/common/utils/utils";
 import { Property, CollectionType, Option } from "@/app/types";
+import { toast } from "react-toastify";
 
 export const addField = async (
   collectionId: string,
@@ -441,31 +443,6 @@ export const linkDiscord = async (
   ).json();
 };
 
-export const linkDiscordToCollection = async (
-  collectionId: string,
-  payload: {
-    threadName: string;
-    selectedChannel: Option;
-    isPrivate?: boolean;
-    rolesToAdd?: { [key: string]: boolean };
-    stakeholdersToAdd?: string[];
-  }
-) => {
-  return await (
-    await fetch(
-      `${process.env.API_HOST}/collection/v1/${collectionId}/linkDiscordThreadToCollection`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      }
-    )
-  ).json();
-};
-
 export const postFormMessage = async (
   collectionId: string,
   payload: {
@@ -553,4 +530,94 @@ export const postFormPayment = async (
       }
     )
   ).json();
+};
+
+export const duplicateCollection = async (
+  collectionSlug: string,
+  type: 0 | 1,
+  circleSlug: string
+) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/v2/slug/${circleSlug}/${
+      type === 0 ? "duplicateForm" : "duplicateProject"
+    }?collectionSlug=${collectionSlug}&type=${type}}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+
+  if (!res.ok) {
+    let err;
+    if (res.status === 404) err = "Not Found";
+    else {
+      const e = await res.json();
+      err = e.message || e;
+    }
+    logError(`Duplication failed: ${err}`, false);
+    toast.error("Duplication failed, please contact support");
+    return;
+  }
+  return await res.json();
+};
+
+export const moveCollection = async (
+  collectionSlug: string,
+  sourceCircleSlug: string,
+  destinationCircleId: string
+) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/v2/slug/${sourceCircleSlug}/moveCollection?destinationCircleId=${destinationCircleId}&collectionSlug=${collectionSlug}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+
+  if (!res.ok) {
+    let err;
+    console.log({ res: res.status });
+    if (res.status === 404) err = "Not Found";
+    else if (res.status === 401) err = "Forbidden";
+    else {
+      const e = await res.json();
+      err = e.message || e;
+    }
+    logError(`Moving Collection failed: ${err}`, false);
+    toast.error(err);
+    return;
+  }
+  return await res.json();
+};
+
+export const shareCollection = async (
+  collectionSlug: string
+): Promise<string> => {
+  const res = await fetch(
+    `${process.env.API_HOST}/collection/v2/slug/${collectionSlug}/share`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+  console.log({ res });
+  if (!res.ok) {
+    let err;
+    if (res.status === 404) err = "Not Found";
+    else if (res.status === 401)
+      err = "You do not have permission to share this collection";
+
+    logError(`Sharing Collection failed: ${err}`, false);
+    toast.error(err);
+  }
+  return await res.text();
 };

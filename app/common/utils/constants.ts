@@ -108,6 +108,7 @@ export const prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance = {
   date: ["date", "shortText", "longText"],
   singleSelect: ["singleSelect", "multiSelect"],
   multiSelect: ["multiSelect"],
+  slider: ["slider"],
   user: ["user", "user[]"],
   "user[]": ["user[]"],
   multiURL: ["multiURL"],

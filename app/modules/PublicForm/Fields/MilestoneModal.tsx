@@ -124,6 +124,7 @@ export default function MilestoneModal({
         handleClose();
       }}
       title={`Add Milestone`}
+      size="small"
     >
       <Box
         padding={{
@@ -180,6 +181,7 @@ export default function MilestoneModal({
               }}
               placeholder={`Enter Description, press / for commands`}
               isDirty={true}
+              version={form.editorVersion}
             />
           </Box>
         </Box>

@@ -18,9 +18,11 @@ export const getAutomationActionOptions = (
             "giveDiscordRole",
             "giveRole",
             "postOnDiscord",
+            "postOnDiscordThread",
             "sendEmail",
             "initiatePendingPayment",
             "createDiscordThread",
+            "removeDiscordRole",
           ].includes(option.type)
         ) {
           groupOptions.push(option);
@@ -35,6 +37,7 @@ export const getAutomationActionOptions = (
             "createDiscordThread",
             "createDiscordChannel",
             "postOnDiscordThread",
+            "removeDiscordRole",
           ].includes(option.type) ||
           (!["completedPayment", "cancelledPayment"].includes(trigger.value) &&
             option.type === "initiatePendingPayment")

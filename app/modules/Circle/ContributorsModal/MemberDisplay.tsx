@@ -18,6 +18,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { removeMember, updateMemberRole } from "@/app/services/CircleRoles";
 import queryClient from "@/app/common/utils/queryClient";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { reservedRoles } from "./InviteMembersModal/constants";
 
 type Props = {
   member: string;
@@ -169,46 +170,49 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
                   borderWidth="0.5"
                   ref={childRef}
                 >
-                  {Object.keys(circle.roles).map((role, index) => (
-                    <RoleOption
-                      key={role}
-                      borderBottomWidth={
-                        index === Object.keys(circle.roles).length - 1
-                          ? "0"
-                          : "0.375"
-                      }
-                      padding="4"
-                      borderTopRadius={index === 0 ? "2xLarge" : "none"}
-                      borderBottomRadius={
-                        index === Object.keys(circle.roles).length - 1
-                          ? "2xLarge"
-                          : "none"
-                      }
-                      mode={mode}
-                      onClick={async (e) => {
-                        console.log("click");
-                        if (userRoles && !userRoles.includes(role)) {
-                          console.log("add role");
-                          // add user role if not already present
-                          const newUserRoles = [...userRoles, role];
-                          setUserRoles(newUserRoles);
-                          const data = await updateMemberRole(
-                            circle.id,
-                            member,
-                            {
-                              roles: newUserRoles,
-                            }
-                          );
-                          if (data) {
-                            queryClient.setQueryData(["circle", cId], data);
-                          }
+                  {Object.keys(circle.roles).map((role, index) => {
+                    if (reservedRoles.includes(role)) return null;
+                    return (
+                      <RoleOption
+                        key={role}
+                        borderBottomWidth={
+                          index === Object.keys(circle.roles).length - 1
+                            ? "0"
+                            : "0.375"
                         }
-                        setIsRolePopoverOpen(false);
-                      }}
-                    >
-                      <Text variant="label">{role}</Text>
-                    </RoleOption>
-                  ))}
+                        padding="4"
+                        borderTopRadius={index === 0 ? "2xLarge" : "none"}
+                        borderBottomRadius={
+                          index === Object.keys(circle.roles).length - 1
+                            ? "2xLarge"
+                            : "none"
+                        }
+                        mode={mode}
+                        onClick={async (e) => {
+                          console.log("click");
+                          if (userRoles && !userRoles.includes(role)) {
+                            console.log("add role");
+                            // add user role if not already present
+                            const newUserRoles = [...userRoles, role];
+                            setUserRoles(newUserRoles);
+                            const data = await updateMemberRole(
+                              circle.id,
+                              member,
+                              {
+                                roles: newUserRoles,
+                              }
+                            );
+                            if (data) {
+                              queryClient.setQueryData(["circle", cId], data);
+                            }
+                          }
+                          setIsRolePopoverOpen(false);
+                        }}
+                      >
+                        <Text variant="label">{role}</Text>
+                      </RoleOption>
+                    );
+                  })}
                 </Box>
               </Popover>
             </Box>

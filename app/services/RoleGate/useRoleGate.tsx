@@ -1,10 +1,9 @@
 import { useLocalCollection } from "@/app/modules/Collection/Context/LocalCollectionContext";
 import {
-  CardPermissions,
-  CardType,
   CircleType,
-  NonCardPermissions,
   CollectionPermissions,
+  CollectionType,
+  PermissionString,
 } from "@/app/types";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
@@ -21,19 +20,18 @@ export default function useRoleGate() {
 
   const { localCollection: collection } = useLocalCollection();
 
-  const canDo = (roleAction: NonCardPermissions | CardPermissions) => {
+  const canDo = (roleAction: PermissionString, circleToCheck?: CircleType) => {
+    let localCircle = circle;
+    if (circleToCheck?.memberRoles && circleToCheck?.roles) {
+      localCircle = circleToCheck;
+    }
     if (!connectedUser || !circle?.memberRoles) {
       return false;
     }
-    const userRoles = circle?.memberRoles[connectedUser];
+    const userRoles = localCircle?.memberRoles[connectedUser];
     if (userRoles) {
       for (const role of userRoles) {
-        if (
-          circle.roles[role].permissions[roleAction as NonCardPermissions] ===
-            true ||
-          circle.roles[role].permissions[roleAction as CardPermissions]
-            ?.Task === true
-        ) {
+        if (localCircle?.roles[role].permissions[roleAction] === true) {
           return true;
         }
       }
@@ -41,49 +39,45 @@ export default function useRoleGate() {
     return false;
   };
 
-  const canMoveCard = (projectCard: CardType) => {
-    if (!connectedUser) {
+  const formActions = (
+    permission: CollectionPermissions,
+    collectionToCheck?: CollectionType,
+    circleContainingCollection?: CircleType
+  ) => {
+    let localCircle = circle;
+    let localCollection = collection;
+    if (
+      circleContainingCollection?.memberRoles &&
+      circleContainingCollection?.members &&
+      collectionToCheck?.permissions
+    ) {
+      localCircle = circleContainingCollection;
+      localCollection = collectionToCheck;
+    }
+    if (!connectedUser || !localCircle?.memberRoles) {
       return false;
     }
-    const userRoles = circle?.memberRoles[connectedUser];
-    if (userRoles) {
-      for (const role of userRoles) {
-        if (circle.roles[role].permissions.manageCardProperties) {
-          return true;
-        }
-      }
-    }
-
-    return (
-      projectCard?.creator === connectedUser ||
-      projectCard.reviewer.includes(connectedUser) ||
-      projectCard.assignee.includes(connectedUser)
-    );
-  };
-
-  const formActions = (permission: CollectionPermissions) => {
-    if (!connectedUser || !circle?.memberRoles) {
-      return false;
-    }
-    const userRoles = circle?.memberRoles[connectedUser];
+    const userRoles = localCircle?.memberRoles[connectedUser];
     if (!userRoles) return false;
     switch (permission) {
       case "manageSettings":
-        if (connectedUser == collection.creator) return true;
-        if (collection?.permissions?.manageSettings?.length > 0) {
+        if (connectedUser == localCollection.creator) return true;
+        if (localCollection?.permissions?.manageSettings?.length > 0) {
           for (const role of userRoles) {
-            if (collection?.permissions?.manageSettings?.includes(role))
+            if (localCollection?.permissions?.manageSettings?.includes(role))
               return true;
           }
         }
         return false;
 
       case "updateResponsesManually":
-        if (connectedUser == collection.creator) return true;
-        if (collection?.permissions?.updateResponsesManually?.length > 0) {
+        if (connectedUser == localCollection.creator) return true;
+        if (localCollection?.permissions?.updateResponsesManually?.length > 0) {
           for (const role of userRoles) {
             if (
-              collection?.permissions?.updateResponsesManually?.includes(role)
+              localCollection?.permissions?.updateResponsesManually?.includes(
+                role
+              )
             )
               return true;
           }
@@ -91,35 +85,35 @@ export default function useRoleGate() {
         return false;
 
       case "addComments":
-        if (connectedUser == collection.creator) return true;
-        if (collection?.permissions?.addComments?.length > 0) {
+        if (connectedUser == localCollection.creator) return true;
+        if (localCollection?.permissions?.addComments?.length > 0) {
           for (const role of userRoles) {
-            if (collection?.permissions?.addComments.includes(role))
+            if (localCollection?.permissions?.addComments.includes(role))
               return true;
           }
         } else if (
-          collection?.permissions?.addComments?.length == 0 &&
-          circle?.members?.includes(connectedUser)
+          localCollection?.permissions?.addComments?.length == 0 &&
+          localCircle?.members?.includes(connectedUser)
         ) {
           return true;
         }
         return false;
 
       case "viewResponses":
-        if (connectedUser == collection.creator) return true;
-        if (collection?.permissions?.viewResponses?.length > 0) {
+        if (connectedUser == localCollection.creator) return true;
+        if (localCollection?.permissions?.viewResponses?.length > 0) {
           for (const role of userRoles) {
-            if (collection?.permissions?.viewResponses?.includes(role))
+            if (localCollection?.permissions?.viewResponses?.includes(role))
               return true;
           }
         } else if (
-          collection?.permissions?.viewResponses?.length == 0 &&
-          circle?.members?.includes(connectedUser)
+          localCollection?.permissions?.viewResponses?.length == 0 &&
+          localCircle?.members?.includes(connectedUser)
         ) {
           return true;
         }
 
-        if (!collection.permissions) {
+        if (!localCollection.permissions) {
           if (userRoles.length > 0) {
             return true;
           }
@@ -132,7 +126,6 @@ export default function useRoleGate() {
 
   return {
     canDo,
-    canMoveCard,
     formActions,
   };
 }

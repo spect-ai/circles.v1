@@ -1,66 +1,12 @@
+import Breadcrumbs from "@/app/common/components/Breadcrumbs";
+import { isSidebarExpandedAtom } from "@/app/state/global";
 import { Box, Stack } from "degen";
+import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
+import { Hidden } from "react-grid-system";
 import { useCircle } from "../CircleContext";
 import InviteMemberModal from "../ContributorsModal/InviteMembersModal";
 import { FolderView } from "./FolderView";
-import Breadcrumbs from "@/app/common/components/Breadcrumbs";
-import { Hidden } from "react-grid-system";
-import styled from "styled-components";
-import { useAtom } from "jotai";
-import { isSidebarExpandedAtom } from "@/app/state/global";
-
-interface Props {
-  toggle: number;
-  setToggle: (toggle: number) => void;
-}
-
-const ToggleButton = styled.button<{ bgcolor: boolean }>`
-  border-radius: 2rem;
-  border: none;
-  padding: 0.4rem 1rem;
-  text-align: center;
-  cursor: pointer;
-  font-weight: 600;
-  font-family: Inter;
-  transition-duration: 0.4s;
-  color: ${(props) =>
-    props.bgcolor ? "rgb(191,90,242)" : "rgb(191,90,242,0.8)"};
-  background-color: ${(props) =>
-    props.bgcolor ? "rgb(191,90,242,0.1)" : "transparent"};
-`;
-
-export const Toggle = ({ toggle, setToggle }: Props) => {
-  return (
-    <Box
-      backgroundColor="backgroundSecondary"
-      style={{
-        borderRadius: "2rem",
-        boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
-        width: "fit-content",
-        margin: "0 auto",
-      }}
-    >
-      <ToggleButton
-        onClick={() => setToggle(0)}
-        bgcolor={toggle == 0 ? true : false}
-      >
-        Overview
-      </ToggleButton>
-      <ToggleButton
-        onClick={() => setToggle(1)}
-        bgcolor={toggle == 1 ? true : false}
-      >
-        Contributors
-      </ToggleButton>
-      <ToggleButton
-        onClick={() => setToggle(2)}
-        bgcolor={toggle == 2 ? true : false}
-      >
-        Roles
-      </ToggleButton>
-    </Box>
-  );
-};
 
 export default function CircleDashboard() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
@@ -107,7 +53,6 @@ export default function CircleDashboard() {
         <Stack space="1">
           <FolderView
             filteredCollections={filteredCollections}
-            filteredProjects={filteredProjects}
             filteredWorkstreams={filteredWorkstreams}
           />
         </Stack>

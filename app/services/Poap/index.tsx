@@ -1,3 +1,5 @@
+import { POAPEventType } from "@/app/types";
+
 type CreatePoapDto = {
   name: string;
   description: string;
@@ -41,7 +43,7 @@ export const createPoap = async (
   ).json();
 };
 
-export const getPoap = async (poapId: string) => {
+export const getPoap = async (poapId: string): Promise<POAPEventType> => {
   return await (
     await fetch(`${process.env.API_HOST}/credentials/v1/poap/${poapId}`, {
       method: "GET",

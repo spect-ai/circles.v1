@@ -44,6 +44,7 @@ import { useAtom } from "jotai";
 import { isSidebarExpandedAtom } from "@/app/state/global";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { useScroll } from "react-use";
+import Slider from "@/app/common/components/Slider";
 
 type Props = {
   id: string;
@@ -92,10 +93,6 @@ function FieldComponent({
     value: member,
   }));
 
-  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
-    isSidebarExpandedAtom
-  );
-
   const [forceRefresh, setForceRefresh] = useState(true);
   const { formActions } = useRoleGate();
   const { y } = useScroll(scrollContainerRef);
@@ -126,6 +123,7 @@ function FieldComponent({
       isDragging={snapshot.isDragging}
       mode={mode}
       draggable={false}
+      className="bounds"
     >
       <Stack direction="vertical" space="1">
         {fieldNeedsAttention[id] && (
@@ -169,7 +167,12 @@ function FieldComponent({
         </Stack>
         <Box>
           {collection.properties[id]?.description && forceRefresh && (
-            <Editor value={collection.properties[id]?.description} disabled />
+            <Editor
+              value={collection.properties[id]?.description}
+              disabled
+              bounds=".bounds"
+              version={collection.editorVersion}
+            />
           )}
         </Box>
       </Stack>
@@ -257,7 +260,12 @@ function FieldComponent({
           overflow="auto"
           id="editorContainer"
         >
-          <Editor placeholder={`Use / for commands`} isDirty={true} />
+          <Editor
+            placeholder={`Use / for commands`}
+            isDirty={true}
+            version={collection.editorVersion}
+            bounds=".bounds"
+          />
         </Box>
       )}
       {(collection.properties[id]?.type === "singleSelect" ||
@@ -306,6 +314,19 @@ function FieldComponent({
             propertyId={id}
           />
         </Box>
+      )}
+      {collection.properties[id]?.type === "slider" && (
+        <Slider
+          min={collection.properties[id]?.sliderOptions?.min || 1}
+          max={collection.properties[id]?.sliderOptions?.max || 10}
+          step={collection.properties[id]?.sliderOptions?.step || 1}
+          onChange={(value: number | number[]) => {
+            setFormData({ ...formData, [id]: value });
+          }}
+          minLabel={collection.properties[id]?.sliderOptions?.minLabel}
+          maxLabel={collection.properties[id]?.sliderOptions?.maxLabel}
+          value={formData[id]}
+        />
       )}
       {collection.properties[id]?.type === "reward" && (
         <Box marginTop="4">

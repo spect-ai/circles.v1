@@ -65,7 +65,7 @@ export default function Membership({}: Props) {
         {isEmebedOpen && (
           <Embed
             setIsOpen={setIsEmebedOpen}
-            embedRoute={`https://circles-v1-production.vercel.app/${circle?.slug}/embed?tab=membership`}
+            embedRoute={`https://circles.spect.network/${circle?.slug}/embed?tab=membership`}
           />
         )}
         {isContributorsModalOpen && (
@@ -124,13 +124,30 @@ export default function Membership({}: Props) {
       )}
       <ScrollContainer>
         <Stack align="baseline" space="2" direction="horizontal" wrap>
-          {circle?.members.map((member) => (
-            <Member
-              key={member}
-              member={memberDetails?.memberDetails[member] as UserType}
-              roles={circle.memberRoles[member]}
-            />
-          ))}
+          {circle?.members.map((member) => {
+            if (
+              circle.memberRoles[member]?.includes("__removed__") ||
+              circle.memberRoles[member]?.includes("__left__")
+            ) {
+              return null;
+            }
+            const indexOfApplicantRole =
+              circle.memberRoles[member]?.indexOf("applicant");
+            if (indexOfApplicantRole > -1)
+              circle.memberRoles[member]?.splice(indexOfApplicantRole, 1);
+            const indexOfVoterRole =
+              circle.memberRoles[member]?.indexOf("voter");
+            if (indexOfVoterRole > -1)
+              circle.memberRoles[member]?.splice(indexOfVoterRole, 1);
+            if (circle.memberRoles[member]?.length === 0) return null;
+            return (
+              <Member
+                key={member}
+                member={memberDetails?.memberDetails[member] as UserType}
+                roles={circle.memberRoles[member]}
+              />
+            );
+          })}
         </Stack>
       </ScrollContainer>
     </Box>
@@ -145,127 +162,72 @@ type MemberProps = {
 const Member = ({ member, roles }: MemberProps) => {
   return (
     <ResponsiveBox>
-      <a
-        href={`/profile/${member.username}`}
-        target="_blank"
-        rel="noreferrer"
-        style={{
-          width: "100%",
-        }}
-      >
-        <motion.div
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          style={{
-            cursor: "pointer",
-          }}
-        >
-          <Box padding="2" margin="0">
-            <Stack space="1" align="center">
-              <Box
-                style={{
-                  marginBottom: "-2rem",
-                  borderRadius: "50%",
-                }}
-              >
-                <Avatar
-                  src={
-                    member.avatar ||
-                    `https://api.dicebear.com/5.x/thumbs/svg?seed=${member.id}`
-                  }
-                  address={member.ethAddress as `0x${string}`}
-                  label={member.username}
-                  size="24"
-                />
-              </Box>
-              <Box
-                backgroundColor="background"
-                padding="4"
-                width="full"
-                borderRadius="2xLarge"
-                boxShadow="0.5"
-              >
-                <Box marginTop="4" />
-                <Stack align="center">
-                  <Text weight="semiBold">{member.username}</Text>
-                  <Stack direction="horizontal" space="1" wrap>
-                    {roles.map((role, index) => (
-                      <Stack direction="horizontal" space="1" align="center">
-                        <Text key={role} variant="label">
-                          {role}
-                        </Text>
-                        {index !== roles.length - 1 && (
-                          <Text variant="label">|</Text>
-                        )}
-                      </Stack>
-                    ))}
-                  </Stack>
-                  <Stack direction="horizontal" wrap space="1">
-                    {member.skillsV2?.map((skill) => (
-                      <Stack direction="horizontal" space="2" align="center">
-                        <Tag key={skill.title} tone="accent">
-                          {skill.title}
-                        </Tag>
-                        {/* <Text variant="label">|</Text> */}
-                      </Stack>
-                    ))}
-                  </Stack>
-                  <Stack direction="horizontal" wrap space="1">
-                    {member.twitter && (
-                      <a href={member.twitter} target="_blank" rel="noreferrer">
-                        <Button
-                          shape="circle"
-                          size="small"
-                          variant="transparent"
-                        >
-                          <TwitterOutlined style={{ fontSize: "1.3rem" }} />
-                        </Button>
-                      </a>
-                    )}
-                    {member.discordId && (
-                      <Tooltip title={member.discordUsername}>
-                        <Button
-                          shape="circle"
-                          size="small"
-                          variant="transparent"
-                        >
-                          <DiscordIcon />
-                        </Button>
-                      </Tooltip>
-                    )}
-                    {member.github && (
-                      <a
-                        href={"https://github.com/spect-ai"}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <Button
-                          shape="circle"
-                          size="small"
-                          variant="transparent"
-                        >
-                          <GithubOutlined style={{ fontSize: "1.3rem" }} />
-                        </Button>
-                      </a>
-                    )}
-                    {member.website && (
-                      <a href={member.website} target="_blank" rel="noreferrer">
-                        <Button
-                          shape="circle"
-                          size="small"
-                          variant="transparent"
-                        >
-                          <Globe />
-                        </Button>
-                      </a>
-                    )}
-                  </Stack>
+      <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+        <Box padding="2" margin="0">
+          <Stack space="1" align="center">
+            <Box
+              style={{
+                marginBottom: "-2rem",
+                borderRadius: "50%",
+              }}
+            >
+              <Avatar
+                src={
+                  member.avatar ||
+                  `https://api.dicebear.com/5.x/thumbs/svg?seed=${member.id}`
+                }
+                address={member.ethAddress as `0x${string}`}
+                label={member.username}
+                size="24"
+              />
+            </Box>
+            <Box
+              backgroundColor="background"
+              padding="4"
+              width="full"
+              borderRadius="2xLarge"
+              boxShadow="0.5"
+            >
+              <Box marginTop="4" />
+              <Stack align="center">
+                <Text weight="semiBold">{member.username}</Text>
+                <Stack direction="horizontal" space="1" wrap>
+                  {roles?.map((role, index) => (
+                    <Stack direction="horizontal" space="1" align="center">
+                      <Text key={role} variant="label">
+                        {role}
+                      </Text>
+                      {index !== roles.length - 1 && (
+                        <Text variant="label">|</Text>
+                      )}
+                    </Stack>
+                  ))}
                 </Stack>
-              </Box>
-            </Stack>
-          </Box>
-        </motion.div>
-      </a>
+                <Stack direction="horizontal" wrap space="1">
+                  {member.discordUsername && (
+                    <Tooltip title={member.discordUsername}>
+                      <Button shape="circle" size="small" variant="transparent">
+                        <DiscordIcon />
+                      </Button>
+                    </Tooltip>
+                  )}
+                  {member.githubUsername && (
+                    <a
+                      href={`https://github.com/${member.githubUsername}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Button shape="circle" size="small" variant="transparent">
+                        <GithubOutlined style={{ fontSize: "1.3rem" }} />
+                      </Button>
+                    </a>
+                  )}
+                </Stack>
+              </Stack>
+            </Box>
+          </Stack>
+        </Box>
+      </motion.div>
     </ResponsiveBox>
   );
 };

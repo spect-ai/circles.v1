@@ -9,7 +9,6 @@ import { useRouter } from "next/router";
 import { useAtom } from "jotai";
 import { connectedUserAtom, isSidebarExpandedAtom } from "@/app/state/global";
 import { io } from "socket.io-client";
-import { H } from "highlight.run";
 import { socketAtom } from "@/app/state/socket";
 
 type PublicLayoutProps = {
@@ -78,29 +77,27 @@ function EmbedLayout(props: PublicLayoutProps) {
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {
-      if (mode === "light") {
-        setMode("light");
-        document.documentElement.style.setProperty(
-          "--dsg-cell-background-color",
-          "rgb(255, 255, 255)"
-        );
-        document.documentElement.style.setProperty(
-          "--dsg-border-color",
-          "rgb(20,20,20,0.1)"
-        );
-        document.documentElement.style.setProperty(
-          "--dsg-cell-text-color",
-          "rgb(20,20,20,0.9)"
-        );
-      }
-    }, 100);
+    if (mode === "light") {
+      setMode("light");
+      document.documentElement.style.setProperty(
+        "--dsg-cell-background-color",
+        "rgb(255, 255, 255)"
+      );
+      document.documentElement.style.setProperty(
+        "--dsg-border-color",
+        "rgb(20,20,20,0.1)"
+      );
+      document.documentElement.style.setProperty(
+        "--dsg-cell-text-color",
+        "rgb(20,20,20,0.9)"
+      );
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode]);
 
-  useEffect(() => {
-    setIsSidebarExpanded(false);
-  }, [setIsSidebarExpanded]);
+  // useEffect(() => {
+  //   setIsSidebarExpanded(false);
+  // }, [setIsSidebarExpanded]);
 
   useEffect(() => {
     const socket = io(process.env.API_HOST || "");
@@ -123,20 +120,20 @@ function EmbedLayout(props: PublicLayoutProps) {
     }
   }, [connectedUser, socket]);
 
-  useEffect(() => {
-    if (currentUser) {
-      process.env.NODE_ENV === "production" &&
-        H.identify(currentUser.username || "", {
-          id: currentUser.id,
-          email: currentUser.email,
-          discord: currentUser.discordId || "",
-          ethAddress: currentUser.ethAddress || "",
-        });
-    }
-  }, [currentUser]);
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     process.env.NODE_ENV === "production" &&
+  //       H.identify(currentUser.username || "", {
+  //         id: currentUser.id,
+  //         email: currentUser.email,
+  //         discord: currentUser.discordId || "",
+  //         ethAddress: currentUser.ethAddress || "",
+  //       });
+  //   }
+  // }, [currentUser]);
 
   return (
-    <DesktopContainer backgroundColor="transparent" id="public-layout">
+    <DesktopContainer backgroundColor="transparent" id="embed-layout">
       <Box display="flex" flexDirection="column" width="full" overflow="hidden">
         <Container>{children}</Container>
       </Box>

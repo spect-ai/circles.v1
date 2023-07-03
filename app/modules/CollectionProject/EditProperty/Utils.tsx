@@ -22,6 +22,7 @@ import {
   FaUserFriends,
 } from "react-icons/fa";
 import { MdAddLink, MdOutlineAttachMoney } from "react-icons/md";
+import { CiSliderHorizontal } from "react-icons/ci";
 
 export const getPropertyIcon = (type: PropertyType, size?: number) => {
   switch (type) {
@@ -34,7 +35,9 @@ export const getPropertyIcon = (type: PropertyType, size?: number) => {
     case "singleSelect":
       return <BsUiRadiosGrid size={size || 16} />;
     case "multiSelect":
-      return <AiOutlineCheckSquare size={size || 16} />;
+      return <AiOutlineCheckSquare size={size || 20} />;
+    case "slider":
+      return <CiSliderHorizontal size={size || 20} />;
     case "singleURL":
       return <AiOutlineLink size={size || 16} />;
     case "multiURL":

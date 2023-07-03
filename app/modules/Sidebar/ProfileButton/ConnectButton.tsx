@@ -36,6 +36,7 @@ export const Connect = ({ variant = "secondary", text }: Props) => {
           (!authenticationStatus || authenticationStatus === "authenticated");
         return (
           <div
+            id="connect-button"
             {...(!ready && {
               "aria-hidden": true,
               style: {
@@ -51,7 +52,12 @@ export const Connect = ({ variant = "secondary", text }: Props) => {
                   <PrimaryButton
                     onClick={openConnectModal}
                     variant={variant}
-                    icon={<BiLogIn size="16" />}
+                    center
+                    icon={
+                      <Box marginTop="1">
+                        <BiLogIn size="18" />
+                      </Box>
+                    }
                   >
                     {text || "Sign In"}
                   </PrimaryButton>

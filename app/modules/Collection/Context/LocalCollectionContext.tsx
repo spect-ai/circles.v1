@@ -52,6 +52,12 @@ type LocalCollectionContextType = {
     [key: string]: string;
   };
   scrollContainerRef: React.RefObject<HTMLDivElement>;
+  authorization:
+    | "none"
+    | "public"
+    | "readonly"
+    | "readcomment"
+    | "readwritecomment";
 };
 
 export const LocalCollectionContext = createContext<LocalCollectionContextType>(
@@ -60,14 +66,19 @@ export const LocalCollectionContext = createContext<LocalCollectionContextType>(
 
 export function useProviderLocalCollection() {
   const router = useRouter();
-  const { collection: colId } = router.query;
+  const { collection: colId, cardSlug, formId } = router.query;
+  const id = colId || formId;
   const { refetch: fetchCollection, data } = useQuery<CollectionType>(
-    ["collection", colId],
+    ["collection", id],
     () =>
       fetch(
         process.env.NEXT_PUBLIC_USE_WORKER === "true"
           ? `https://worker.spect.network/collection/${colId}`
-          : `${process.env.API_HOST}/collection/v1/slug/${colId as string}`,
+          : colId
+          ? `${process.env.API_HOST}/collection/v1/slug/${colId as string}`
+          : `${process.env.API_HOST}/collection/v1/public/slug/${
+              formId as string
+            }`,
         {
           credentials: "include",
         }
@@ -82,7 +93,10 @@ export function useProviderLocalCollection() {
 
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
-
+  const [authorization, setAuthorization] =
+    useState<
+      "public" | "readonly" | "readcomment" | "readwritecomment" | "none"
+    >("none");
   const [localCollection, setLocalCollection] = useState({} as CollectionType);
   const [error, setError] = useState(false);
   const [view, setView] = useState(0);
@@ -111,15 +125,21 @@ export function useProviderLocalCollection() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const updateCollection = (collection: CollectionType) => {
-    queryClient.setQueryData(["collection", colId], collection);
+    queryClient.setQueryData(["collection", id], collection);
     setLocalCollection(collection);
   };
 
   const getIfFieldNeedsAttention = (value: Property) => {
     let res = { needsAttention: false, reason: "" };
-    if (value.viewConditions && value.viewConditions.length > 0) {
-      for (const condition of value.viewConditions) {
-        if (condition.type === "data") {
+    if (
+      value.advancedConditions &&
+      value.advancedConditions.order?.length > 0
+    ) {
+      const conditions = value.advancedConditions.conditions;
+      const conditionGroups = value.advancedConditions.conditionGroups;
+      for (const oid of value.advancedConditions.order) {
+        if (conditions?.[oid]) {
+          const condition = conditions[oid];
           if (
             condition.data?.field &&
             !localCollection.properties[condition.data?.field?.value]
@@ -141,11 +161,48 @@ export function useProviderLocalCollection() {
             };
             break;
           }
+        } else if (conditionGroups?.[oid]) {
+          const conditionGroup = conditionGroups[oid];
+          for (const cid of conditionGroup.order) {
+            const condition = conditions?.[cid];
+            if (!condition) continue;
+            if (
+              condition.data?.field &&
+              !localCollection.properties[condition.data?.field?.value]
+            ) {
+              res = {
+                needsAttention: true,
+                reason: `"${condition.data?.field?.label}" field has been added to visibility conditions but doesn't exist on the form`,
+              };
+              break;
+            }
+            if (
+              condition.data?.field &&
+              !localCollection.properties[condition.data?.field?.value]
+                ?.isPartOfFormView
+            ) {
+              res = {
+                needsAttention: true,
+                reason: `"${condition.data?.field?.label}" field has been added to visibility conditions but is an internal field`,
+              };
+              break;
+            }
+          }
         }
       }
     }
     return res;
   };
+
+  useEffect(() => {
+    if (formId && !colId) {
+      setAuthorization("readonly");
+    } else if (colId) {
+      setAuthorization("readwritecomment");
+    } else {
+      setAuthorization("none");
+    }
+  }, [formId, colId]);
 
   useEffect(() => {
     let fieldsThatNeedAttention = {} as {
@@ -192,13 +249,12 @@ export function useProviderLocalCollection() {
         setProjectViewId(data.projectMetadata.viewOrder[0]);
       }
     } else setLocalCollection({} as CollectionType);
-    if (colId) {
+    if (id) {
       setLoading(true);
       fetchCollection()
         .then((res) => {
           if (res.data?.unauthorized) {
             setLoading(false);
-            console.log("failed");
             setTimeout(() => {
               toast.error(
                 "You are not authorized to view this collection, either you are not part of the circle or you dont have the required role",
@@ -230,7 +286,13 @@ export function useProviderLocalCollection() {
           setLoading(false);
         });
     }
-  }, [colId, fetchCollection]);
+  }, [id, fetchCollection]);
+
+  useEffect(() => {
+    if (localCollection.slug && cardSlug) {
+      setView(1);
+    }
+  }, [cardSlug, localCollection.slug]);
 
   useEffect(() => {
     if (socket && socket.on && localCollection.slug) {
@@ -286,6 +348,7 @@ export function useProviderLocalCollection() {
     setCurrentPage,
     colorMapping,
     scrollContainerRef,
+    authorization,
   };
 }
 

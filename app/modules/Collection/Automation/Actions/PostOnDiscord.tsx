@@ -136,14 +136,18 @@ export default function PostCardOnDiscord({
       </Box>
       <Dropdown
         options={
-          Object.entries(collection.properties)
+          Object.entries(collection.properties || {})
             .filter(
               ([propertyId, property]) =>
                 property.type === "shortText" ||
                 property.type === "singleSelect" ||
                 property.type === "email" ||
                 property.type === "date" ||
-                property.type === "ethAddress"
+                property.type === "ethAddress" ||
+                property.type === "longText" ||
+                property.type === "number" ||
+                property.type === "singleURL" ||
+                property.type === "multiSelect"
             )
             .map(([propertyId, property]) => ({
               label: property.name,

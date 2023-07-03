@@ -17,7 +17,7 @@ a {
   box-sizing: border-box;
 }
 
-.ProseMirror-focused > * {
+/* .ProseMirror-focused > * {
   margin-bottom: 6px !important;
 }
 
@@ -40,7 +40,7 @@ a {
 
 .block-menu-trigger {
   display: none !important;
-}
+} */
 
 /* width */
 ::-webkit-scrollbar {

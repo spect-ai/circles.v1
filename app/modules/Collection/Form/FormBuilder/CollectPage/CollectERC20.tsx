@@ -215,7 +215,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
               <TwitterShareButton
                 url={`https://circles.spect.network/`}
                 title={
-                  "I just filled out a web3 form and claimed some tokens on @JoinSpect 💰"
+                  "Gm! I just filled out a web3 form and claimed some tokens on @JoinSpect 💰\n\nCheck it out 👉"
                 }
               >
                 <Box

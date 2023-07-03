@@ -113,7 +113,12 @@ const ConnectDiscordPage = ({
           )}
           <NameInput autoFocus value={form.name} disabled />
           {form.description && (
-            <Editor value={form.description} isDirty={true} disabled />
+            <Editor
+              value={form.description}
+              isDirty={true}
+              disabled
+              version={form.editorVersion}
+            />
           )}
         </Stack>
       )}

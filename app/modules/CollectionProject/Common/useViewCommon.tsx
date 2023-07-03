@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { reorder } from "@/app/common/utils/utils";
+import { logError, reorder } from "@/app/common/utils/utils";
 import {
   updateCollectionDataGuarded,
   updateFormCollection,
 } from "@/app/services/Collection";
-import { MemberDetails, Option, UserType } from "@/app/types";
+import { ConditionGroup, MemberDetails, Option, UserType } from "@/app/types";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -13,11 +13,14 @@ import { useQuery } from "react-query";
 import {
   isMyCard,
   paymentStatus,
-  satisfiesConditions,
 } from "../../Collection/Common/SatisfiesFilter";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import { satisfiesAdvancedConditions } from "../../Collection/Common/SatisfiesAdvancedFilter";
+import { sortFieldValues } from "../../Collection/Common/SortFieldValues";
+import { useCircle } from "../../Circle/CircleContext";
 
 export default function useViewCommon() {
+  const { registry } = useCircle();
   const {
     localCollection: collection,
     projectViewId,
@@ -38,7 +41,6 @@ export default function useViewCommon() {
   const [cardOrders, setCardOrders] = useState(
     collection.projectMetadata.cardOrders[view.groupByColumn]
   );
-  const [filteredOnGroupByColumn, setFilteredOnGroupByColumn] = useState(false);
 
   const { data: currentUser, refetch } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -86,21 +88,16 @@ export default function useViewCommon() {
         })
       );
     }
-    if (view.filters?.length) {
+    if (view.advancedFilters?.order?.length) {
       newCardOrder = newCardOrder.map((group) => {
         return group.filter((cardId) => {
-          return satisfiesConditions(
+          return satisfiesAdvancedConditions(
             collection.data?.[cardId],
             collection.properties,
-            view.filters || []
+            view.advancedFilters || ({} as ConditionGroup)
           );
         });
       });
-      // check if the filters are on the groupByColumn
-      const filteredOnGroupByColumn = view.filters.some(
-        (filter) => filter.data.field.value === view.groupByColumn
-      );
-      setFilteredOnGroupByColumn(filteredOnGroupByColumn);
     }
     if (showMyTasks) {
       newCardOrder = newCardOrder.map((group) => {
@@ -127,80 +124,48 @@ export default function useViewCommon() {
     }
 
     if (view.sort?.property) {
-      const { property, direction } = view.sort;
-      const propertyType = collection.properties[property].type;
-      const propertyOptions = collection.properties[property]
-        .options as Option[];
-      newCardOrder = newCardOrder.map((group) => {
-        return group?.sort((a, b) => {
-          if (propertyType === "singleSelect") {
-            const aIndex = propertyOptions.findIndex(
-              (option) => option.value === collection.data?.[a][property]?.value
-            );
-            const bIndex = propertyOptions.findIndex(
-              (option) => option.value === collection.data?.[b][property]?.value
-            );
-            if (direction === "asc") {
-              return aIndex - bIndex;
-            }
-            return bIndex - aIndex;
-          }
-          if (propertyType === "user") {
-            if (direction === "asc") {
-              return collection.data?.[a][property]?.label?.localeCompare(
-                collection.data[b][property]?.label
-              );
-            }
-            return collection.data?.[b][property]?.label?.localeCompare(
-              collection.data[a][property]?.label
-            );
-          }
-          if (propertyType === "date") {
-            const aDate = new Date(collection.data?.[a][property]);
-            const bDate = new Date(collection.data?.[b][property]);
-            if (direction === "asc") {
-              return aDate.getTime() - bDate.getTime();
-            }
-            return bDate.getTime() - aDate.getTime();
-          }
-          if (propertyType === "reward") {
-            // property has chain, token and value, need to sort it based on chain first, then token and then value
-            const aChain = collection.data?.[a][property]?.chain.label;
-            const bChain = collection.data?.[b][property]?.chain.label;
-            if (aChain !== bChain) {
-              if (direction === "asc") {
-                return aChain?.localeCompare(bChain);
-              }
-              return bChain?.localeCompare(aChain);
-            }
-            const aToken = collection.data?.[a][property]?.token.label;
-            const bToken = collection.data?.[b][property]?.token.label;
-            if (aToken !== bToken) {
-              if (direction === "asc") {
-                return aToken.localeCompare(bToken);
-              }
-              return bToken.localeCompare(aToken);
-            }
-            const aValue = collection.data?.[a][property]?.value;
-            const bValue = collection.data?.[b][property]?.value;
-            if (direction === "asc") {
-              return aValue - bValue;
-            }
-            return bValue - aValue;
-          }
-
-          if (direction === "asc") {
-            return collection.data?.[a][property]?.localeCompare(
-              collection.data[b][property]
-            );
-          }
-          return collection.data?.[b][property]?.localeCompare(
-            collection.data[a][property]
-          );
+      const property =
+        collection.properties[
+          collection.projectMetadata.views[
+            collection.collectionType === 0 ? "0x0" : projectViewId
+          ].sort?.property || ""
+        ];
+      if (!property) {
+        setCardOrders(newCardOrder);
+        return;
+      }
+      const direction =
+        collection.projectMetadata.views[
+          collection.collectionType === 0 ? "0x0" : projectViewId
+        ].sort?.direction || "asc";
+      const propertyId = property.id;
+      const cardToColumnIndex = newCardOrder.reduce((acc, group, index) => {
+        group.forEach((cardId) => {
+          acc[cardId] = index;
         });
+        return acc;
+      }, {} as any);
+      const flattenedCards = newCardOrder.flat().map((cardId) => {
+        return collection.data?.[cardId];
       });
-    }
-    setCardOrders(newCardOrder);
+
+      const sortedCardOutput = Array.from(
+        { length: newCardOrder.length },
+        () => []
+      ) as string[][];
+      sortFieldValues(
+        flattenedCards,
+        collection,
+        propertyId,
+        direction,
+        registry
+      ).then((sortedCards) => {
+        sortedCards.forEach((card: { slug: string }) => {
+          sortedCardOutput[cardToColumnIndex[card.slug]].push(card.slug);
+        });
+        setCardOrders(sortedCardOutput);
+      });
+    } else setCardOrders(newCardOrder);
   }, [
     searchFilter,
     view.groupByColumn,
@@ -216,19 +181,39 @@ export default function useViewCommon() {
   useEffect(() => {
     if (property.type === "singleSelect") {
       let options = Array.from(property.options as Option[]);
-      if (view.filters?.length) {
-        const columnFilters = view.filters.filter(
-          (f) => f.data?.field?.value === view.groupByColumn
-        );
+      if (view.advancedFilters?.order?.length) {
+        const validOids = view.advancedFilters?.order.filter((oid) => {
+          if (view.advancedFilters?.conditions?.[oid]) {
+            return (
+              view.advancedFilters?.conditions?.[oid]?.data?.field?.value ===
+              view.groupByColumn
+            );
+          } else if (view.advancedFilters?.conditionGroups?.[oid]) {
+            return Object.keys(
+              view.advancedFilters?.conditionGroups?.[oid]?.conditions
+            ).some((cid) => {
+              return (
+                view.advancedFilters?.conditionGroups?.[oid]?.conditions?.[cid]
+                  ?.data?.field?.value === view.groupByColumn
+              );
+            });
+          }
+          return false;
+        });
+        const conditionGroup = {
+          ...view.advancedFilters,
+          order: validOids,
+        };
+
         options = options.map((c) => {
           return {
             ...c,
-            satisfiesCondition: satisfiesConditions(
+            satisfiesCondition: satisfiesAdvancedConditions(
               {
                 [view.groupByColumn]: c,
               },
               collection.properties,
-              columnFilters
+              conditionGroup
             ),
           };
         });
@@ -401,6 +386,5 @@ export default function useViewCommon() {
     cardSlug,
     newCard,
     cardOrders,
-    filteredOnGroupByColumn,
   };
 }

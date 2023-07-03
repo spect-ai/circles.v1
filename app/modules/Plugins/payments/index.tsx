@@ -573,7 +573,6 @@ export default function Payments({ handleClose }: Props) {
                     formMetadata: {
                       ...collection.formMetadata,
                       paymentConfig: payload,
-                      walletConnectionRequired: true,
                     },
                   });
                   if (res.id) {
@@ -582,7 +581,8 @@ export default function Payments({ handleClose }: Props) {
                     updateCollection(res);
                     handleClose();
                   } else {
-                    logError("Error updating payment config");
+                    setUpdateLoading(false);
+                    logError(res.message);
                   }
                 }}
               >

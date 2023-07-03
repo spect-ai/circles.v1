@@ -1,5 +1,5 @@
 import Modal from "@/app/common/components/Modal";
-import { Box, IconSearch, Input, Stack, Tag, Text } from "degen";
+import { Box, IconSearch, Input, Stack, Tag, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -11,7 +11,12 @@ import SybilResistance from "./gtcpassport";
 import RoleGate from "./guildxyz";
 import SendKudos from "./mintkudos";
 import Payments from "./payments";
-import { PluginType, SpectPlugin, spectPlugins } from "./Plugins";
+import {
+  PluginType,
+  SpectPlugin,
+  getGroupedPlugins,
+  spectPlugins,
+} from "./Plugins";
 import { isWhitelisted } from "@/app/services/Whitelist";
 import {
   getSurveyConditionInfo,
@@ -20,7 +25,6 @@ import {
 import Poap from "./poap";
 import GoogleCaptcha from "./captcha";
 import { matchSorter } from "match-sorter";
-import ResponderProfile from "./responderProfile";
 import mixpanel from "mixpanel-browser";
 import { useQuery } from "react-query";
 import { CollectionType, UserType } from "@/app/types";
@@ -28,6 +32,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
 import DiscordRoleGate from "./DiscordRole";
 import Zealy from "./zealy";
+import AddLookup from "./responderProfile/AddLookup";
 
 type Props = {
   handleClose: () => void;
@@ -58,7 +63,11 @@ export const isPluginAdded = (
     case "googleCaptcha":
       return collection.formMetadata.captchaEnabled === true;
     case "responderProfile":
-      return collection.formMetadata.allowAnonymousResponses === false;
+      return (
+        collection.formMetadata.lookup?.verifiedAddress === true ||
+        !!collection.formMetadata.lookup?.tokens?.length ||
+        collection.formMetadata.lookup?.communities === true
+      );
     case "discordRole":
       return !!collection.formMetadata.discordRoleGating?.length;
     case "zealy":
@@ -69,6 +78,7 @@ export const isPluginAdded = (
 };
 
 export default function ViewPlugins({ handleClose }: Props) {
+  const { mode } = useTheme();
   const { registry, circle } = useCircle();
   const { canDo } = useRoleGate();
 
@@ -78,12 +88,12 @@ export default function ViewPlugins({ handleClose }: Props) {
   const [surveyDistributionInfo, setSurveyDistributionInfo] = useState<any>({});
   const { localCollection: collection } = useLocalCollection();
 
-  const [searchText, setSearchText] = useState("");
   const [filteredPlugins, setFilteredPlugins] = useState(
     Object.keys(spectPlugins)
   );
   const [showAdded, setShowAdded] = useState(false);
   const [zealySetupMode, setZealySetupMode] = useState(false);
+  const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
 
   const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
     "getMyUser",
@@ -91,11 +101,10 @@ export default function ViewPlugins({ handleClose }: Props) {
       enabled: false,
     }
   );
-
-  const { formActions } = useRoleGate();
-
+  const groupedPlugins = getGroupedPlugins();
+  const [searchTerm, setSearchTerm] = useState<string>("");
   useEffect(() => {
-    setFilteredPlugins(Object.keys(spectPlugins));
+    updateFilteredPlugins(searchTerm, showAdded, selectedGroups);
   }, []);
 
   useEffect(() => {
@@ -170,6 +179,31 @@ export default function ViewPlugins({ handleClose }: Props) {
     }
   };
 
+  const updateFilteredPlugins = (
+    searchTerm: string,
+    showAdded: boolean,
+    groups: string[]
+  ) => {
+    let filtered = matchSorter(Object.values(spectPlugins), searchTerm, {
+      keys: ["name"],
+    });
+    filtered = filtered.filter((plugin) => {
+      if (showAdded) {
+        return isPluginAdded(plugin.id as PluginType, collection);
+      } else {
+        return true;
+      }
+    });
+    filtered = filtered.filter((plugin) => {
+      if (groups.length) {
+        return plugin.groups.some((group) => groups.includes(group));
+      } else {
+        return true;
+      }
+    });
+    setFilteredPlugins(filtered.map((p) => p.id));
+  };
+
   return (
     <>
       <Modal
@@ -177,6 +211,7 @@ export default function ViewPlugins({ handleClose }: Props) {
         title="Plugins"
         size="large"
         key="plugins"
+        height="90vh"
       >
         <Box
           padding={{
@@ -184,77 +219,97 @@ export default function ViewPlugins({ handleClose }: Props) {
             md: "8",
           }}
         >
-          <Stack>
-            <Stack direction={"horizontal"} space="4" align="center">
+          <Stack direction="horizontal" wrap>
+            <Stack
+              direction={{
+                xs: "vertical",
+                md: "horizontal",
+              }}
+              space="4"
+              align="flex-start"
+            >
               <Input
                 placeholder="Search"
-                value={searchText}
                 onChange={(e) => {
-                  setSearchText(e.target.value);
-                  const filtered = matchSorter(
-                    Object.values(spectPlugins),
+                  setSearchTerm(e.target.value);
+                  updateFilteredPlugins(
                     e.target.value,
-                    {
-                      keys: ["name", "id", "tags"],
-                    }
+                    showAdded,
+                    selectedGroups
                   );
-                  console.log({ filtered });
-                  setFilteredPlugins(filtered.map((p) => p.id));
                 }}
                 label=""
                 width="1/2"
                 prefix={<IconSearch size="4" />}
               />
-              <Box
-                cursor="pointer"
-                onClick={() => {
-                  if (!showAdded) {
-                    setFilteredPlugins(
-                      Object.keys(spectPlugins).filter((pluginName) =>
-                        isPluginAdded(pluginName as PluginType, collection)
-                      )
+
+              <Stack direction="horizontal" space="2" wrap>
+                <GroupTag
+                  mode={mode}
+                  selected={showAdded}
+                  cursor="pointer"
+                  onClick={() => {
+                    setShowAdded(!showAdded);
+                    updateFilteredPlugins(
+                      searchTerm,
+                      !showAdded,
+                      selectedGroups
                     );
-                  } else {
-                    setFilteredPlugins(Object.keys(spectPlugins));
-                  }
-                  setShowAdded(!showAdded);
-                }}
-              >
-                <Tag tone={showAdded ? "accent" : "secondary"} hover>
-                  {showAdded ? `Show All` : `Show Added`}
-                </Tag>
-              </Box>
-            </Stack>
-            <Stack direction="horizontal" wrap space="4">
-              {filteredPlugins.map((pluginName) => (
-                <PluginCard
-                  key={pluginName}
-                  plugin={spectPlugins[pluginName]}
-                  onClick={async () => {
-                    process.env.NODE_ENV === "production" &&
-                      mixpanel.track(`${pluginName} plugin open`, {
-                        collection: collection.slug,
-                        circle: collection.parents[0].slug,
-                        user: currentUser?.username,
-                      });
-                    if (pluginName === "erc20") {
-                      const res = await isWhitelisted("Survey Protocol");
-                      if (!res) {
-                        window.open(
-                          "https://circles.spect.network/r/9991d6ed-f3c8-425a-8b9e-0f598514482c",
-                          "_blank"
-                        );
+                  }}
+                >
+                  <Text>Show Added</Text>
+                </GroupTag>
+                {Object.keys(groupedPlugins).map((group) => (
+                  <GroupTag
+                    mode={mode}
+                    selected={selectedGroups.includes(group)}
+                    onClick={() => {
+                      let groups = [...selectedGroups];
+                      if (groups.includes(group)) {
+                        groups = groups.filter((g) => g !== group);
                       } else {
-                        onClick(pluginName as PluginType);
+                        groups.push(group);
                       }
+                      setSelectedGroups(groups);
+                      updateFilteredPlugins(searchTerm, showAdded, groups);
+                    }}
+                    cursor="pointer"
+                  >
+                    <Text>{group}</Text>
+                  </GroupTag>
+                ))}
+              </Stack>
+            </Stack>
+            {/* <Stack direction="horizontal" wrap space="4"> */}
+            {filteredPlugins.map((pluginName) => (
+              <PluginCard
+                key={pluginName}
+                plugin={spectPlugins[pluginName]}
+                onClick={async () => {
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track(`${pluginName} plugin open`, {
+                      collection: collection.slug,
+                      circle: collection.parents[0].slug,
+                      user: currentUser?.username,
+                    });
+                  if (pluginName === "erc20") {
+                    const res = await isWhitelisted("Survey Protocol");
+                    if (!res) {
+                      window.open(
+                        "https://circles.spect.network/r/9991d6ed-f3c8-425a-8b9e-0f598514482c",
+                        "_blank"
+                      );
                     } else {
                       onClick(pluginName as PluginType);
                     }
-                  }}
-                  added={isPluginAdded(pluginName as PluginType, collection)}
-                />
-              ))}
-            </Stack>
+                  } else {
+                    onClick(pluginName as PluginType);
+                  }
+                }}
+                added={isPluginAdded(pluginName as PluginType, collection)}
+              />
+            ))}
+            {/* </Stack> */}
           </Stack>
         </Box>
       </Modal>
@@ -299,7 +354,7 @@ export default function ViewPlugins({ handleClose }: Props) {
           />
         )}
         {isPluginOpen && pluginOpen === "responderProfile" && (
-          <ResponderProfile
+          <AddLookup
             handleClose={() => setIsPluginOpen(false)}
             key="responderProfile"
           />
@@ -360,9 +415,6 @@ const PluginCard = ({
           <Text size="extraSmall" align="center">
             {plugin.description}
           </Text>
-          {/* <a href={plugin.docs} target="_blank">
-            <Text color="accent">View Docs</Text>
-          </a> */}
         </Stack>
       </Box>
     </PluginContainer>
@@ -397,4 +449,25 @@ const PluginAdded = styled.div`
   background: rgba(20, 20, 20, 0.8);
   padding: 0.5rem 1rem;
   border-radius: 0 1rem 0 1rem;
+`;
+
+export const GroupTag = styled(Box)<{ mode: string; selected: boolean }>`
+  border-radius: 1.5rem;
+  border: solid 2px
+    ${(props) =>
+      props.selected
+        ? "rgb(191, 90, 242)"
+        : props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.05)"
+        : "rgb(20, 20, 20, 0.05)"};
+  &:hover {
+    border: solid 2px rgb(191, 90, 242);
+    transition-duration: 0.7s;
+  }
+  transition: all 0.3s ease-in-out;
+  padding: 0.5rem 0.8rem;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  height: 2.5rem;
 `;

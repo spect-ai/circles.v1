@@ -43,3 +43,5 @@ export const usesOptions = [
     uses: 1000,
   },
 ];
+
+export const reservedRoles = ["applicant", "voter", "__removed__", "__left__"];

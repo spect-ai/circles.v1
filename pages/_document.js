@@ -1,5 +1,6 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
 import { ServerStyleSheet } from "styled-components";
+import Script from "next/script";
 import { GA_ANALYTICS_MEASUREMENT_ID } from "../lib/gtag";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -12,11 +13,14 @@ export default class MyDocument extends Document {
           {/* enable analytics script only for production */}
           {isProd && (
             <>
-              <script
+              <Script
+                strategy="lazyOnload"
                 async
                 src={`https://www.googletagmanager.com/gtag/js?id=${GA_ANALYTICS_MEASUREMENT_ID}`}
               />
-              <script
+              <Script
+                strategy="lazyOnload"
+                async
                 // eslint-disable-next-line react/no-danger
                 dangerouslySetInnerHTML={{
                   __html: `
@@ -35,15 +39,17 @@ export default class MyDocument extends Document {
               ></script>
             </>
           )}
-          <script
+          <Script
+            strategy="lazyOnload"
             async
             src="https://telegram.org/js/telegram-widget.js"
-          ></script>
-          <script
+          />
+          <Script
+            strategy="lazyOnload"
             async
             src="https://platform.twitter.com/widgets.js"
             charSet="utf-8"
-          ></script>
+          />
         </Head>
         <body>
           <Main />

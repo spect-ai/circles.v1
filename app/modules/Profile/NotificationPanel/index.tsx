@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 import { useScreenClass } from "react-grid-system";
 import InfiniteScroll from "react-infinite-scroll-component";
 import styled from "styled-components";
-import TaskWalletHeader from "../TaskWallet/TaskWalletHeader";
+import TaskWalletHeader from "./NotificationPanelHeader";
 
 export default function NotificationPanel() {
   const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
@@ -93,9 +93,12 @@ export default function NotificationPanel() {
                 </Stack>
               }
             >
-              {notifications?.reverse().map((notif) => (
-                <NotificationItem key={notif.timestamp} notif={notif} />
-              ))}
+              {notifications?.reverse &&
+                notifications
+                  .reverse()
+                  .map((notif) => (
+                    <NotificationItem key={notif.timestamp} notif={notif} />
+                  ))}
             </InfiniteScroll>
           </Stack>
         </ScrollContainer>

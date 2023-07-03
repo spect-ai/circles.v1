@@ -169,11 +169,10 @@ export default function ImportClaimCodes({
                     minimumNumberOfAnswersThatNeedToMatchForPoap:
                       minimumNumberOfAnswersThatNeedToMatch,
                     responseDataForPoap: responseData,
-                    walletConnectionRequired: true,
                   },
                 });
                 if (!res?.formMetadata?.poapEventId) {
-                  logError("Update collection failed");
+                  logError(res.message);
                   setLoading(false);
                   return;
                 }

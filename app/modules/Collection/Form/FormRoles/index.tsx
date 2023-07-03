@@ -7,6 +7,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { toast } from "react-toastify";
 import { AnimatePresence } from "framer-motion";
 import { logError } from "@/app/common/utils/utils";
+import { reservedRoles } from "@/app/modules/Circle/ContributorsModal/InviteMembersModal/constants";
 
 interface Props {
   permissions: string[];
@@ -32,6 +33,7 @@ function RoleChunks({
       <Text variant="large">{permissionText}</Text>
       <Box display={"flex"} flexDirection="row" gap={"2"}>
         {Object.keys(circleRoles)?.map((role) => {
+          if (reservedRoles.includes(role)) return null;
           return (
             <Box
               key={role}

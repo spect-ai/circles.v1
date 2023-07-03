@@ -6,8 +6,8 @@ import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import PublicField from "../../PublicForm/Fields/PublicField";
 import { logError } from "@/app/common/utils/utils";
-import CheckBox from "@/app/common/components/Table/Checkbox";
-import { satisfiesConditions } from "../../Collection/Common/SatisfiesFilter";
+import { satisfiesAdvancedConditions } from "../../Collection/Common/SatisfiesAdvancedFilter";
+import { ConditionGroup } from "@/app/types";
 
 export type Props = {
   setModalModal: (mode: string) => void;
@@ -52,10 +52,11 @@ export default function ResponseMatchXPDistribution({
           quizValidFieldTypes.includes(
             collection.properties[propertyId].type
           ) &&
-          satisfiesConditions(
+          satisfiesAdvancedConditions(
             localData,
             collection.properties,
-            collection.properties[propertyId].viewConditions || []
+            collection.properties[propertyId]
+              .advancedConditions as ConditionGroup
           )
       )
     );
@@ -133,6 +134,7 @@ export default function ResponseMatchXPDistribution({
                 <Box marginTop="4" width="24">
                   <Input
                     label
+                    placeholder="Set"
                     type="number"
                     value={xp?.[propertyId]}
                     disabled={false}
@@ -179,37 +181,57 @@ export default function ResponseMatchXPDistribution({
                 toast.error("Total XP must be a number greater than 0");
                 return;
               }
-              for (const propertyId of Object.keys(xp)) {
-                let valid = true;
-                if (xp[propertyId]) {
-                  if (localData[propertyId] === undefined) {
-                    valid = false;
-                  } else if (
-                    collection.properties[propertyId].type === "singleSelect" &&
-                    !localData[propertyId]?.value
-                  ) {
-                    valid = false;
-                  } else if (
-                    collection.properties[propertyId].type === "multiSelect" &&
-                    localData[propertyId]?.length === 0
-                  ) {
-                    valid = false;
-                  } else if (
-                    collection.properties[propertyId].type === "number" &&
-                    !localData[propertyId]
-                  ) {
-                    valid = false;
-                  } else if (
-                    collection.properties[propertyId].type === "date" &&
-                    !localData[propertyId]
-                  ) {
-                    valid = false;
-                  }
-                }
+              const fieldsWithValidLocalData = {} as { [key: string]: boolean };
+              for (const [propertyId, value] of Object.entries(
+                localData || {}
+              )) {
+                console.log({ value });
+                if (value === undefined) {
+                  fieldsWithValidLocalData[propertyId] = false;
+                } else if (
+                  collection.properties[propertyId].type === "singleSelect" &&
+                  !localData[propertyId]?.value
+                ) {
+                  fieldsWithValidLocalData[propertyId] = false;
+                } else if (
+                  collection.properties[propertyId].type === "multiSelect" &&
+                  !localData[propertyId]?.length
+                ) {
+                  fieldsWithValidLocalData[propertyId] = false;
+                } else if (
+                  collection.properties[propertyId].type === "number" &&
+                  !localData[propertyId] &&
+                  localData[propertyId] !== 0
+                ) {
+                  fieldsWithValidLocalData[propertyId] = false;
+                } else if (
+                  collection.properties[propertyId].type === "date" &&
+                  !localData[propertyId]
+                ) {
+                  fieldsWithValidLocalData[propertyId] = false;
+                } else fieldsWithValidLocalData[propertyId] = true;
+              }
 
-                if (valid === false) {
+              console.log({ fieldsWithValidLocalData });
+              for (const propertyId of Object.keys(xp)) {
+                if (xp[propertyId] && !fieldsWithValidLocalData[propertyId]) {
                   toast.error(
                     `Please set the correct answer for the field "${collection.properties[propertyId].name}"`
+                  );
+                  return;
+                }
+              }
+
+              for (const propertyId of Object.keys(
+                fieldsWithValidLocalData || {}
+              )) {
+                if (
+                  !xp[propertyId] &&
+                  xp[propertyId] !== 0 &&
+                  fieldsWithValidLocalData[propertyId]
+                ) {
+                  toast.error(
+                    `Please set the XP for the field "${collection.properties[propertyId].name}"`
                   );
                   return;
                 }

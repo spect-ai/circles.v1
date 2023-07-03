@@ -1,8 +1,14 @@
 // import { storeImage } from "@/app/common/utils/ipfs";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import { UserType } from "@/app/types";
+import {
+  CircleType,
+  DiscordFieldFromOauthData,
+  GithubFieldFromOauthData,
+  UserType,
+} from "@/app/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 
 type ProfileSettingsType = {
   setIsDirty: React.Dispatch<React.SetStateAction<boolean>>;
@@ -11,28 +17,28 @@ type ProfileSettingsType = {
   setAvatar: React.Dispatch<React.SetStateAction<string>>;
   setUsername: React.Dispatch<React.SetStateAction<string>>;
   setEmail: React.Dispatch<React.SetStateAction<string>>;
-  setTwitter: React.Dispatch<React.SetStateAction<string>>;
-  setGithub: React.Dispatch<React.SetStateAction<string>>;
-  setBehance: React.Dispatch<React.SetStateAction<string>>;
-  setWebsite: React.Dispatch<React.SetStateAction<string>>;
   setBio: React.Dispatch<React.SetStateAction<string>>;
-  setSkills: React.Dispatch<React.SetStateAction<string[]>>;
   email: string;
   avatar: string;
   uploading: boolean;
   loading: boolean;
   username: string;
   bio: string;
-  skills: string[];
   isDirty: boolean;
   uploadFile: (file: File) => void;
-  onSaveProfile: () => void;
-  twitter: string;
-  github: string;
-  behance: string;
-  website: string;
+  onSaveProfile: () => Promise<boolean>;
   usernameError: string;
   setUsernameError: React.Dispatch<React.SetStateAction<string>>;
+  apiKeys: string[];
+  setApiKeys: React.Dispatch<React.SetStateAction<string[]>>;
+  verifiedSocials: {
+    [key: string]: GithubFieldFromOauthData | DiscordFieldFromOauthData;
+  };
+  setVerifiedSocials: React.Dispatch<
+    React.SetStateAction<{
+      [key: string]: GithubFieldFromOauthData | DiscordFieldFromOauthData;
+    }>
+  >;
 };
 
 export const LocalProfileContext = createContext<ProfileSettingsType>(
@@ -44,23 +50,33 @@ export function useProviderLocalProfile() {
     enabled: false,
   });
 
+  const {
+    data: myCircles,
+    refetch: fetchCircles,
+    isLoading: loadingMyCircles,
+  } = useQuery<CircleType[]>(
+    "dashboardCircles",
+    () =>
+      fetch(`${process.env.API_HOST}/user/v1/circles`, {
+        credentials: "include",
+      }).then((res) => res.json()),
+    {
+      enabled: false,
+    }
+  );
+
   const [uploading, setUploading] = useState(false);
   const [avatar, setAvatar] = useState("");
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
   const [email, setEmail] = useState("");
-  const [skills, setSkills] = useState([] as string[]);
-  const [twitter, setTwitter] = useState("");
-  const [github, setGithub] = useState("");
-  const [githubId, setGithubId] = useState("");
-  const [githubUsername, setGithubUsername] = useState("");
-  const [discordId, setDiscordId] = useState("");
-  const [discordUsername, setDiscordUsername] = useState("");
-  const [telegramId, setTelegramId] = useState("");
-  const [telegramUsername, setTelegramUsername] = useState("");
+  const [verifiedSocials, setVerifiedSocials] = useState(
+    {} as {
+      [key: string]: GithubFieldFromOauthData | DiscordFieldFromOauthData;
+    }
+  );
+  const [apiKeys, setApiKeys] = useState([] as string[]);
 
-  const [behance, setBehance] = useState("");
-  const [website, setWebsite] = useState("");
   const [usernameError, setUsernameError] = useState("");
 
   const [isDirty, setIsDirty] = useState(false);
@@ -83,22 +99,24 @@ export function useProviderLocalProfile() {
     }
   };
 
-  const onSaveProfile = async () => {
+  const onSaveProfile = async (): Promise<boolean> => {
     setLoading(true);
-    const res = await updateProfile({
-      username,
-      avatar,
-      bio,
-      skills,
-      email,
-      twitter,
-      github,
-      behance,
-      website,
-    });
-    console.log(res);
+    try {
+      const res = await updateProfile({
+        username,
+        avatar,
+        bio,
+        email,
+      });
+    } catch (e) {
+      console.log({ e });
+      toast.error((e as any).message);
+      return false;
+    }
+
     setLoading(false);
     setIsDirty(false);
+    return true;
   };
 
   useEffect(() => {
@@ -107,16 +125,32 @@ export function useProviderLocalProfile() {
     setUsername(currentUser?.username || "");
     setBio(currentUser?.bio || "");
     setEmail(currentUser?.email || "");
-    setTwitter(currentUser?.twitter || "");
-    setGithub(currentUser?.github || "");
-    setBehance(currentUser?.behance || "");
-    setWebsite(currentUser?.website || "");
-    setDiscordId(currentUser?.discordId || "");
-    setDiscordUsername(currentUser?.discordUsername || "");
-    setTelegramUsername(currentUser?.telegramUsername || "");
-    setTelegramId(currentUser?.telegramId || "");
-    setGithubId(currentUser?.githubId || "");
-    setGithubUsername(currentUser?.githubUsername || "");
+    setApiKeys(currentUser?.apiKeys || []);
+
+    let verifiedSocials = {} as {
+      [key: string]: GithubFieldFromOauthData | DiscordFieldFromOauthData;
+    };
+    if (currentUser?.discordId && currentUser?.discordUsername) {
+      verifiedSocials = {
+        ...verifiedSocials,
+        discord: {
+          id: currentUser?.discordId,
+          username: currentUser?.discordUsername,
+          avatar: currentUser?.discordAvatar || "",
+        } as DiscordFieldFromOauthData,
+      };
+    }
+    if (currentUser?.githubId && currentUser?.githubUsername) {
+      verifiedSocials = {
+        ...verifiedSocials,
+        github: {
+          id: currentUser?.githubId,
+          login: currentUser?.githubUsername,
+          avatar_url: currentUser?.githubAvatar || "",
+        } as GithubFieldFromOauthData,
+      };
+    }
+    setVerifiedSocials(verifiedSocials);
     setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, isLoading]);
@@ -132,16 +166,6 @@ export function useProviderLocalProfile() {
     setEmail,
     bio,
     setBio,
-    skills,
-    setSkills,
-    twitter,
-    setTwitter,
-    github,
-    setGithub,
-    behance,
-    setBehance,
-    website,
-    setWebsite,
     loading,
     setLoading,
     isDirty,
@@ -150,18 +174,13 @@ export function useProviderLocalProfile() {
     onSaveProfile,
     usernameError,
     setUsernameError,
-    setDiscordId,
-    discordId,
-    setDiscordUsername,
-    discordUsername,
-    setTelegramId,
-    telegramId,
-    setTelegramUsername,
-    telegramUsername,
-    githubId,
-    setGithubId,
-    githubUsername,
-    setGithubUsername,
+    apiKeys,
+    setApiKeys,
+    verifiedSocials,
+    setVerifiedSocials,
+    myCircles,
+    fetchCircles,
+    loadingMyCircles,
   };
 }
 export const useProfile = () => useContext(LocalProfileContext);

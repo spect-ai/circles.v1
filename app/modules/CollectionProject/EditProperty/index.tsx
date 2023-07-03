@@ -74,15 +74,15 @@ function EditProperty({ propertyId, disabled }: Props) {
               <PropertyButton
                 onClick={() => {
                   if (disabled) {
-                    toast.error("You can't edit a closed card");
+                    toast.error("You can't edit a card in read-only mode");
                     return;
                   }
                   setIsMenuOpen(true);
                 }}
                 mode={mode}
               >
-                {getPropertyIcon(property.type)}
-                {property.name}
+                <Box width="4">{getPropertyIcon(property.type)}</Box>
+                <Text wordBreak="break-word">{property.name}</Text>
                 {property.required && <Box color="accent">*</Box>}
               </PropertyButton>
             </Box>

@@ -19,7 +19,6 @@ import { useAccount, useConnect } from "wagmi";
 import { H } from "highlight.run";
 import { Hidden, Visible } from "react-grid-system";
 import mixpanel from "mixpanel-browser";
-import Changelog from "../../changelog";
 import { socketAtom } from "@/app/state/socket";
 
 type PublicLayoutProps = {
@@ -28,17 +27,14 @@ type PublicLayoutProps = {
 
 const Container = styled(Box)<{ issidebarexpanded: string }>`
   @media (max-width: 992px) {
-    max-width: ${(props) =>
-      props.issidebarexpanded === "true"
-        ? "calc(100vw - 22rem)"
-        : "calc(100vw - 0rem)"};
+    max-width: "calc(100vw - 0rem)"
   }
 
-  max-width: ${(props) =>
-    props.issidebarexpanded === "true"
-      ? "calc(100vw - 22rem)"
-      : "calc(100vw - 2rem)"};
+  max-width:  "calc(100vw - 2rem)"
   flex-grow: 1;
+
+  height: 100%;
+  width: 100%;
 `;
 
 // show this only desktop screens
@@ -131,14 +127,16 @@ function PublicLayout(props: PublicLayoutProps) {
   const { inviteCode, circle } = router.query;
 
   const onboard =
-    (currentUser?.skillsV2?.length == 0 || currentUser?.email?.length == 0) &&
-    myCircles?.length == 0 &&
-    !inviteCode;
+    !inviteCode && !currentUser?.circles?.length
+      ? "self"
+      : inviteCode && currentUser?.firstLogin
+      ? "invite"
+      : connectedUser
+      ? "none"
+      : null;
 
   useEffect(() => {
     void fetchCircles();
-    // void fetchNotifications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, connectedUser, circle]);
 
   useEffect(() => {
@@ -195,21 +193,6 @@ function PublicLayout(props: PublicLayoutProps) {
     }
   }, [currentUser]);
 
-  useEffect(() => {
-    (async () => {
-      const res = await fetch(
-        `${process.env.API_HOST}/collection/v1/changelog`
-      );
-      const data = await res.json();
-      if (!data) return;
-      setChangelogData(data);
-      if (!localStorage.getItem(data.Title)) {
-        setShowChangelog(true);
-        localStorage.setItem(data.Title, "true");
-      }
-    })();
-  }, [circle]);
-
   if (isLoading || loading)
     return (
       <DesktopContainer backgroundColor="backgroundSecondary" id="Load screen">
@@ -220,19 +203,13 @@ function PublicLayout(props: PublicLayoutProps) {
   return (
     <DesktopContainer backgroundColor="backgroundSecondary">
       {connectedUser && currentUser?.id ? (
-        !onboard ? (
+        onboard === "none" ? (
           <>
             <Hidden xs sm>
               <Sidebar />
             </Hidden>
             <AnimatePresence initial={false}>
-              {isSidebarExpanded && <ExtendedSidebar />}
-              {showChangelog && changelogData && (
-                <Changelog
-                  handleClose={() => setShowChangelog(false)}
-                  data={changelogData}
-                />
-              )}
+              {isSidebarExpanded && circle && <ExtendedSidebar />}
             </AnimatePresence>
             <Box
               display="flex"
@@ -261,13 +238,21 @@ function PublicLayout(props: PublicLayoutProps) {
                   </Button>
                 </Box>
               </Visible>
-              <Container issidebarexpanded={isSidebarExpanded.toString()}>
+              <Container
+                issidebarexpanded={isSidebarExpanded.toString()}
+                id="layoutContainer"
+              >
                 {children}
               </Container>
             </Box>
           </>
         ) : (
-          <Onboard />
+          <Onboard
+            type={onboard}
+            setType={() => {
+              refetch();
+            }}
+          />
         )
       ) : (
         <ConnectPage />

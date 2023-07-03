@@ -11,6 +11,8 @@ import {
   IconSun,
   useTheme,
   IconDotsHorizontal,
+  IconLink,
+  IconUserGroup,
 } from "degen";
 import { UserType, CircleType } from "@/app/types";
 import Link from "next/link";
@@ -40,6 +42,8 @@ import { isProfilePanelExpandedAtom } from "@/app/state/global";
 import { useAtom } from "jotai";
 import { PopoverOption } from "../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import ReferralModal from "./Referrals/ReferralModal";
+import Referrals from "./Referrals";
 
 function Dashboard() {
   const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
@@ -62,6 +66,7 @@ function Dashboard() {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { mode, setMode } = useTheme();
   const router = useRouter();
+  const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
 
   if (isLoading || !currentUser?.id)
     return <Loader loading={isLoading} text="Fetching circles" />;
@@ -124,6 +129,11 @@ function Dashboard() {
   if (circles) {
     return (
       <>
+        <AnimatePresence>
+          {isReferralModalOpen && (
+            <ReferralModal handleClose={() => setIsReferralModalOpen(false)} />
+          )}
+        </AnimatePresence>
         <Box padding="4">
           <ToastContainer
             toastStyle={{
@@ -141,6 +151,7 @@ function Dashboard() {
               md: "horizontal",
             }}
             justify="space-between"
+            align="center"
           >
             <Stack direction="horizontal" align="center">
               <Avatar
@@ -160,6 +171,15 @@ function Dashboard() {
                 <Tag tone="purple" size="small">
                   {smartTrim(currentUser?.ethAddress, 12)}
                 </Tag>
+              </Box>
+              <Box>
+                <PrimaryButton
+                  onClick={() => {
+                    setIsReferralModalOpen(true);
+                  }}
+                >
+                  Earn with Spect
+                </PrimaryButton>
               </Box>
               <Visible xs sm>
                 <Popover
@@ -197,14 +217,7 @@ function Dashboard() {
                     >
                       Settings
                     </PopoverOption>
-                    <PopoverOption
-                      onClick={() => {
-                        setIsPopoverOpen(false);
-                        void router.push(`/profile/${currentUser?.username}`);
-                      }}
-                    >
-                      View Profile
-                    </PopoverOption>
+
                     <PopoverOption
                       onClick={() => {
                         setIsPopoverOpen(false);
@@ -233,21 +246,11 @@ function Dashboard() {
                     }}
                   />
                 </Button>
-                <Link href={`/profile/${currentUser?.username}`}>
-                  <PrimaryButton
-                    variant="secondary"
-                    onClick={() => {
-                      setIsProfilePanelExpanded(false);
-                    }}
-                  >
-                    View Profile
-                  </PrimaryButton>
-                </Link>
                 <Logout />
               </Stack>
             </Hidden>
           </Stack>
-          {(!currentUser.discordUsername ||
+          {/* {(!currentUser.discordUsername ||
             currentUser.discordUsername === "undefined#undefined") && (
             <Box
               display="flex"
@@ -269,7 +272,7 @@ function Dashboard() {
               </Text>
               <ConnectDiscordButton width="fit" />
             </Box>
-          )}
+          )} */}
           <Box
             marginTop={{
               xs: "2",
@@ -306,14 +309,14 @@ function Dashboard() {
             >
               Form Responses
             </Button>
-            {/* <Button
-              size="small"
-              prefix={<ProjectOutlined />}
-              variant={panelTab === "Project" ? "tertiary" : "transparent"}
-              onClick={() => setPanelTab("Project")}
+            <Button
+              size="extraSmall"
+              prefix={<IconUserGroup size="5" />}
+              variant={panelTab === "Referrals" ? "tertiary" : "transparent"}
+              onClick={() => setPanelTab("Referrals")}
             >
-              Projects
-            </Button> */}
+              Referrals
+            </Button>
             {/* <Button
             size="small"
             prefix={<IconCollection size={"5"} />}
@@ -323,7 +326,12 @@ function Dashboard() {
             Cards
           </Button> */}
           </Stack>
-          <Box>
+          <Box
+            overflow="auto"
+            style={{
+              height: "calc(100vh - 10rem)",
+            }}
+          >
             {panelTab === "circles" && (
               <YourCircles
                 circles={circles}
@@ -332,6 +340,7 @@ function Dashboard() {
               />
             )}
             {panelTab === "responses" && <ResponsesTab />}
+            {panelTab === "Referrals" && <Referrals />}
           </Box>
         </Box>
         <Help setFaqOpen={setFaqOpen} />

@@ -2,10 +2,7 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import {
-  linkDiscordToCollection,
-  postFormMessage,
-} from "@/app/services/Collection";
+import { postFormMessage } from "@/app/services/Collection";
 import {
   fetchGuildChannels,
   groupChannelsByCategory,

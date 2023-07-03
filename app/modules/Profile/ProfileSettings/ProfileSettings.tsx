@@ -8,8 +8,7 @@ import styled from "styled-components";
 import { BasicInfo } from "./Basic";
 import { About } from "./About";
 import { useProfile } from "./LocalProfileContext";
-import { Notification } from "./Notificaton";
-import { Socials } from "./Socials";
+import APIAccess from "./APIAccess";
 
 const ScrollContainer = styled(Box)`
   @media (max-width: 768px) {
@@ -30,6 +29,7 @@ interface Props {
 export default function ProfileSettings({ setIsOpen, openTab }: Props) {
   const [tab, setTab] = useState(openTab || 0);
   const onTabClick = (id: number) => setTab(id);
+  const [saving, setSaving] = useState(false);
 
   const {
     loading,
@@ -70,8 +70,12 @@ export default function ProfileSettings({ setIsOpen, openTab }: Props) {
           <Tabs
             selectedTab={tab}
             onTabClick={onTabClick}
-            tabs={["Basic", "About", "Notification", "Socials"]}
-            tabTourIds={["profile-settings-basic", "profile-settings-about"]}
+            tabs={["Basic", "About", "API Access"]}
+            tabTourIds={[
+              "profile-settings-basic",
+              "profile-settings-about",
+              "profile-settings-api",
+            ]}
             orientation="vertical"
             unselectedColor="transparent"
           />
@@ -90,8 +94,7 @@ export default function ProfileSettings({ setIsOpen, openTab }: Props) {
         >
           {tab == 0 && <BasicInfo />}
           {tab == 1 && <About />}
-          {tab == 2 && <Notification />}
-          {tab == 3 && <Socials />}
+          {tab == 2 && <APIAccess />}
         </ScrollContainer>
       </Box>
       <Box padding="3">
@@ -99,11 +102,17 @@ export default function ProfileSettings({ setIsOpen, openTab }: Props) {
           disabled={
             !isDirty || uploading || !username || usernameError.length > 0
           }
-          loading={loading}
+          loading={saving}
           icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
-          onClick={() => {
+          onClick={async () => {
+            setSaving(true);
+            const saved = await onSaveProfile();
+            if (!saved) {
+              setSaving(false);
+              return;
+            }
+            setSaving(false);
             handleClose();
-            onSaveProfile();
             setIsDirty(false);
           }}
         >

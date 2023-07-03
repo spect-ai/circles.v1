@@ -19,6 +19,7 @@ const nextConfig = {
       "images.mintkudos.xyz",
       "spect.infura-ipfs.io",
       "assets.poap.xyz",
+      "ik.imagekit.io",
     ],
   },
   env: {

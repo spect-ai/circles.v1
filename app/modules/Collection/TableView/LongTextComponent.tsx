@@ -20,7 +20,7 @@ export default function LongTextComponent({
   setRowData,
   stopEditing,
 }: Props) {
-  const { localCollection: collection } = useLocalCollection();
+  const { localCollection: collection, authorization } = useLocalCollection();
   const [dirty, setDirty] = useState(false);
 
   return (
@@ -35,8 +35,11 @@ export default function LongTextComponent({
         isDirty={dirty}
         setIsDirty={setDirty}
         disabled={
-          collection.collectionType === 0 ? columnData.isPartOfFormView : false
+          collection.collectionType === 0
+            ? columnData.isPartOfFormView
+            : authorization === "readonly"
         }
+        version={collection.editorVersion}
       />
     </Box>
   );

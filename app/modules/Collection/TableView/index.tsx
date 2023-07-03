@@ -2,7 +2,14 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateCollectionDataGuarded } from "@/app/services/Collection";
 import { exportToCsv } from "@/app/services/CsvExport";
-import { Milestone, Option, PropertyType, Reward, UserType } from "@/app/types";
+import {
+  ConditionGroup,
+  Milestone,
+  Option,
+  PropertyType,
+  Reward,
+  UserType,
+} from "@/app/types";
 import { Box, Spinner } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import _ from "lodash";
@@ -24,11 +31,7 @@ import CardDrawer from "../../CollectionProject/CardDrawer";
 import Filtering from "../../CollectionProject/Filtering";
 import IncentiveFilter from "../../CollectionProject/Filtering/IncentiveFilter";
 import AddField from "../AddField";
-import {
-  isMyCard,
-  paymentStatus,
-  satisfiesConditions,
-} from "../Common/SatisfiesFilter";
+import { isMyCard, paymentStatus } from "../Common/SatisfiesFilter";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataDrawer from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";
@@ -48,6 +51,9 @@ import RewardModal from "./RewardModal";
 import SelectComponent from "./SelectComponent";
 import TelegramComponent from "./TelegramComponent";
 import { logError } from "@/app/common/utils/utils";
+import { satisfiesAdvancedConditions } from "../Common/SatisfiesAdvancedFilter";
+import { sortFieldValues } from "../Common/SortFieldValues";
+import { useCircle } from "../../Circle/CircleContext";
 
 export default function TableView() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
@@ -58,6 +64,7 @@ export default function TableView() {
   const [multipleMilestoneModalOpen, setMultipleMilestoneModalOpen] =
     useState(false);
   const [data, setData] = useState<any[]>();
+  const { registry } = useCircle();
   const {
     localCollection: collection,
     updateCollection,
@@ -65,6 +72,7 @@ export default function TableView() {
     projectViewId,
     showMyTasks,
     paymentFilter,
+    authorization,
   } = useLocalCollection();
 
   const { data: currentUser, refetch } = useQuery<UserType>("getMyUser", {
@@ -91,19 +99,22 @@ export default function TableView() {
     }
   }, [dataSlug, setExpandedDataSlug, cardSlug, newCard]);
 
-  const updateData = useCallback(async ({ row }: { row: any }) => {
-    if (!row) return false;
-    const res = await updateCollectionDataGuarded(collection.id, row.id, row);
-    if (!res) return false;
-    if (res.id) {
-      console.log("update success!!");
-      updateCollection(res);
-      return true;
-    } else {
-      logError(res.message || "Error updating data");
-      return false;
-    }
-  }, []);
+  const updateData = useCallback(
+    async ({ row, collectionId }: { row: any; collectionId: string }) => {
+      if (!row) return false;
+      const res = await updateCollectionDataGuarded(collectionId, row.id, row);
+      if (!res) return false;
+      if (res.id) {
+        console.log("update success!!");
+        updateCollection(res);
+        return true;
+      } else {
+        logError(res.message || "Error updating data");
+        return false;
+      }
+    },
+    []
+  );
 
   const debouncedOnChange = _.debounce(async (newData, operations) => {
     // throttle the update to avoid spamming the server
@@ -114,7 +125,7 @@ export default function TableView() {
         operations[0].fromRowIndex,
         operations[0].toRowIndex
       )[0];
-      const res = await updateData({ row });
+      const res = await updateData({ row, collectionId: collection.id });
       !res && setData(tempData);
     }
   }, 300);
@@ -129,8 +140,18 @@ export default function TableView() {
       const data = Object.keys(collection.data).map((key) => {
         const row = collection.data?.[key];
         dateProperties.forEach((property) => {
-          if (row[property as string])
-            row[property as string] = new Date(row[property as string]);
+          if (row[property as string]) {
+            const dt = new Date(row[property as string]);
+            row[property as string] = dt.toLocaleDateString(undefined, {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: undefined,
+              minute: undefined,
+              second: undefined,
+            });
+          }
         });
         return {
           id: key,
@@ -144,10 +165,27 @@ export default function TableView() {
           return (item: any) => {
             if (key === "id") return item.id;
             if (collection.properties[key]?.type === "date") {
+              const dt = new Date(item[key]);
               if (typeof item[key] === "string") {
-                return new Date(item[key]).toLocaleDateString();
+                return dt.toLocaleDateString(undefined, {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: undefined,
+                  minute: undefined,
+                  second: undefined,
+                });
               }
-              return item[key]?.toLocaleDateString();
+              return dt?.toLocaleDateString(undefined, {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: undefined,
+                minute: undefined,
+                second: undefined,
+              });
             }
             if (collection.properties[key]?.type === "multiSelect") {
               return item[key]?.map((option: Option) => option.label);
@@ -156,7 +194,6 @@ export default function TableView() {
           };
         }),
       });
-
       if (
         (collection.collectionType === 0 &&
           collection.projectMetadata.views?.["0x0"]?.filters) ||
@@ -164,12 +201,12 @@ export default function TableView() {
           collection.projectMetadata.views[projectViewId].filters)
       ) {
         filteredData = filteredData.filter((row) => {
-          return satisfiesConditions(
+          return satisfiesAdvancedConditions(
             collection.data?.[row.id],
             collection.properties,
             collection.projectMetadata.views[
               collection.collectionType === 0 ? "0x0" : projectViewId
-            ].filters || []
+            ].advancedFilters || ({} as ConditionGroup)
           );
         });
       }
@@ -206,79 +243,29 @@ export default function TableView() {
               collection.collectionType === 0 ? "0x0" : projectViewId
             ].sort?.property || ""
           ];
-        const propertyType = property.type;
-        const propertyOptions = property.options as Option[];
+        if (!property) {
+          setData(filteredData);
+          return;
+        }
         const direction =
           collection.projectMetadata.views[
             collection.collectionType === 0 ? "0x0" : projectViewId
           ].sort?.direction || "asc";
         const propertyId = property.id;
-        filteredData = filteredData.sort((a: any, b: any) => {
-          if (propertyType === "singleSelect") {
-            const aIndex = propertyOptions.findIndex(
-              (option) => option.value === a[propertyId]?.value
-            );
-            const bIndex = propertyOptions.findIndex(
-              (option) => option.value === b[propertyId]?.value
-            );
-            if (direction === "asc") {
-              return aIndex - bIndex;
-            }
-            return bIndex - aIndex;
-          }
-          if (propertyType === "user") {
-            if (direction === "asc") {
-              return a[propertyId]?.label?.localeCompare(b[propertyId]?.label);
-            }
-            return b[propertyId]?.label?.localeCompare(a[propertyId]?.label);
-          }
-          if (propertyType === "date") {
-            const aDate = new Date(a[propertyId]);
-            const bDate = new Date(b[propertyId]);
-            if (direction === "asc") {
-              return aDate.getTime() - bDate.getTime();
-            }
-            return bDate.getTime() - aDate.getTime();
-          }
-          if (propertyType === "reward") {
-            // property has chain, token and value, need to sort it based on chain first, then token and then value
-            const aChain = a[propertyId]?.chain.label;
-            const bChain = b[propertyId]?.chain.label;
-            if (aChain !== bChain) {
-              if (direction === "asc") {
-                return aChain?.localeCompare(bChain);
-              }
-              return bChain?.localeCompare(aChain);
-            }
-            const aToken = a[propertyId]?.token.label;
-            const bToken = b[propertyId]?.token.label;
-            if (aToken !== bToken) {
-              if (direction === "asc") {
-                return aToken.localeCompare(bToken);
-              }
-              return bToken.localeCompare(aToken);
-            }
-            const aValue = a[propertyId]?.value;
-            const bValue = b[propertyId]?.value;
-            if (direction === "asc") {
-              return aValue - bValue;
-            }
-            return bValue - aValue;
-          }
 
-          if (
-            propertyType === "multiSelect" ||
-            propertyType === "user[]" ||
-            propertyType === "payWall" ||
-            propertyType === "multiURL"
-          )
-            return;
-
-          if (direction === "asc") {
-            return a[propertyId]?.localeCompare(b[propertyId]);
-          }
-          return b[propertyId]?.localeCompare(a[propertyId]);
-        });
+        sortFieldValues(
+          filteredData,
+          collection,
+          propertyId,
+          direction,
+          registry
+        )
+          .then((sortedData) => {
+            setData(sortedData);
+          })
+          .catch((err) => {
+            logError(`Error sorting data: ${err}`);
+          });
       } else {
         // sort the data based on the timestamp of their first activity
         filteredData = filteredData.sort((a: any, b: any) => {
@@ -296,9 +283,8 @@ export default function TableView() {
           );
           return aTime.getTime() - bTime.getTime();
         });
+        setData(filteredData);
       }
-      console.log({ filteredData });
-      setData(filteredData);
     }
   }, [
     collection.collectionType,
@@ -332,6 +318,8 @@ export default function TableView() {
         return ExpandableCell;
       case "number":
         return floatColumn;
+      case "slider":
+        return textColumn;
       case "date":
         return textColumn;
         return dateColumn;
@@ -347,8 +335,6 @@ export default function TableView() {
         return ExpandableCell;
       case "multiSelect":
         return ExpandableCell;
-      case "multiURL":
-        return MultiURLComponent;
       case "milestone":
         return MilestoneComponent;
       case "discord":
@@ -369,24 +355,7 @@ export default function TableView() {
       .filter((prop) => collection.properties[prop].type !== "readonly")
       .map((propertyId: string) => {
         const property = collection.properties[propertyId];
-        if (property.id === "__ceramic__") {
-          return {
-            ...keyColumn(property.id, {
-              component: CeramicComponent,
-            }),
-            disabled: true,
-            title: (
-              <HeaderComponent
-                propertyId={property.id}
-                columnName={property.name}
-                setIsEditFieldOpen={setIsEditFieldOpen}
-                setPropertyId={setPropertyId}
-                propertyType={property.type}
-              />
-            ),
-            minWidth: 200,
-          };
-        } else if (
+        if (
           [
             "singleSelect",
             "multiSelect",
@@ -414,6 +383,7 @@ export default function TableView() {
               />
             ),
             minWidth: 200,
+            disabled: authorization === "readonly",
           };
         } else if (["reward"].includes(property.type)) {
           return {
@@ -434,6 +404,7 @@ export default function TableView() {
               />
             ),
             minWidth: 200,
+            disabled: authorization === "readonly",
           };
         } else if (["milestone"].includes(property.type)) {
           return {
@@ -474,33 +445,13 @@ export default function TableView() {
             ),
             minWidth: 200,
           };
-        } else if (["multiURL"].includes(property.type)) {
-          return {
-            component: getCellComponent(property.type) as any,
-            columnData: {
-              property,
-              setIsURLFieldOpen,
-              setPropertyId,
-              setDataId,
-            },
-            title: (
-              <HeaderComponent
-                propertyId={property.id}
-                columnName={property.name}
-                setIsEditFieldOpen={setIsEditFieldOpen}
-                setPropertyId={setPropertyId}
-                propertyType={property.type}
-              />
-            ),
-            minWidth: 200,
-          };
         } else {
           return {
             ...keyColumn(property.id, getCellComponent(property.type) as any),
             disabled:
               collection.collectionType === 0
                 ? property.isPartOfFormView
-                : false,
+                : authorization === "readonly",
             title: (
               <HeaderComponent
                 propertyId={property.id}
@@ -514,27 +465,6 @@ export default function TableView() {
           };
         }
       });
-
-  const columnsWithCredentials = collection.formMetadata
-    ?.credentialCurationEnabled
-    ? [
-        {
-          component: CredentialComponent,
-          columnData: {},
-          title: (
-            <HeaderComponent
-              propertyId={"__credentials__"}
-              columnName={"Responder"}
-              setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyId={setPropertyId}
-              propertyType={"user"}
-            />
-          ),
-          minWidth: 150,
-        },
-        ...columns,
-      ]
-    : columns;
 
   return (
     <Box>
@@ -565,6 +495,7 @@ export default function TableView() {
                   setIsRewardFieldOpen(false);
                   await updateData({
                     row: tempData[row],
+                    collectionId: collection.id,
                   });
                   console.log({ updatedData: data[row][propertyId] });
                 }
@@ -592,6 +523,7 @@ export default function TableView() {
                   setIsURLFieldOpen(false);
                   await updateData({
                     row: tempData[row],
+                    collectionId: collection.id,
                   });
                 }
                 setIsURLFieldOpen(false);
@@ -638,6 +570,7 @@ export default function TableView() {
                   console.log({ tempData });
                   await updateData({
                     row: tempData[row],
+                    collectionId: collection.id,
                   });
                 }
                 setMultipleMilestoneModalOpen(false);
@@ -684,6 +617,7 @@ export default function TableView() {
                       csvData["Data Slug"] = value;
                       return;
                     }
+
                     if (key === "__lookup__") {
                       value = value.map((v: any) => ({
                         contractAddress: undefined,
@@ -696,6 +630,18 @@ export default function TableView() {
                       csvData["Tokens Lookup"] = JSON.stringify(value);
                       return;
                     }
+                    if (key === "__lookupCommunities__") {
+                      value = value.map((v: any) => ({
+                        guildName: v.guildName,
+                        guildId: v.guildId,
+                        guildRoles: v.roles.map((r: any) => ({
+                          name: r.name,
+                          id: r.id,
+                        })),
+                      }));
+                      csvData["Community Lookup"] = JSON.stringify(value);
+                      return;
+                    }
                     if (key === "anonymous") {
                       const value =
                         collection?.profiles?.[collection?.dataOwner[da.slug]];
@@ -706,7 +652,25 @@ export default function TableView() {
                       return;
                     }
                     if (!collection.properties[key]) return;
-                    if (collection.properties[key].type === "reward") {
+                    if (collection.properties[key].type === "discord") {
+                      csvData[propertyName] = JSON.stringify({
+                        username:
+                          value?.discriminator === "0"
+                            ? value?.username
+                            : `${value?.username}#${value?.discriminator}`,
+                        id: value?.id,
+                      });
+                    } else if (collection.properties[key].type === "github") {
+                      csvData[propertyName] = JSON.stringify({
+                        username: value?.login,
+                        id: value?.id,
+                      });
+                    } else if (collection.properties[key].type === "telegram") {
+                      csvData[propertyName] = JSON.stringify({
+                        username: value?.username,
+                        id: value?.id,
+                      });
+                    } else if (collection.properties[key].type === "reward") {
                       csvData[propertyName] = JSON.stringify({
                         chain: value?.chain.label,
                         token: value?.token.label,
@@ -782,7 +746,7 @@ export default function TableView() {
                   : 500
               }
               onChange={debouncedOnChange}
-              columns={columnsWithCredentials}
+              columns={columns}
               gutterColumn={{
                 component: GutterColumnComponent,
                 minWidth: 50,

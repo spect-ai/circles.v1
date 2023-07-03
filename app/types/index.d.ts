@@ -11,32 +11,16 @@ export interface UserType {
   email: string;
   discordId?: string;
   discordUsername?: string;
+  discordAvatar?: string;
   githubId?: string;
   githubUsername?: string;
-  twitterId?: string;
-  twitterUsername?: string;
+  githubAvatar?: string;
   telegramId?: string;
   telegramUsername?: string;
   _id: string;
   circles: string[];
-  projects: string[];
-  assignedCards: string[];
-  reviewingCards: string[];
-  assignedClosedCards: string[];
-  reviewingClosedCards: string[];
-  activeApplications: {
-    cardId: string;
-    applicationTitle: string;
-  }[];
-  cardDetails: any;
   activities: string[];
   notifications: Notification[];
-  retro: string[];
-  retroDetails: any;
-  bookmarks: string[];
-  followedCircles: string[];
-  followedUsers: string[];
-  followedByUsers: string[];
   userDetails: any;
   circleDetails: {
     [key: string]: {
@@ -44,16 +28,10 @@ export interface UserType {
       avatar: string;
     };
   };
-  experiences: LensExperience[];
-  education: LensEducation[];
-  skillsV2: LensSkills[];
-  lensHandle: string;
   collections: CollectionType;
   collectionsSubmittedTo: CollectionType[];
-  github: string;
-  twitter: string;
-  behance: string;
-  website: string;
+  apiKeys: string[];
+  firstLogin?: boolean;
 }
 
 export interface Payment {
@@ -91,63 +69,26 @@ export interface ColumnType {
   };
 }
 
-export interface Permissions {
-  createNewCircle: boolean;
-  createNewProject: boolean;
-  createNewRetro: boolean;
-  createNewForm: boolean;
-  endRetroManually: boolean;
-  inviteMembers: boolean;
-  makePayment: boolean;
-  manageCircleSettings: boolean;
-  manageMembers: boolean;
-  managePaymentOptions: boolean;
-  manageProjectSettings: boolean;
-  manageRoles: boolean;
-  distributeCredentials: boolean;
-  manageCardProperties: {
-    Task: boolean;
-    Bounty: boolean;
-  };
-  createNewCard: {
-    Task: boolean;
-    Bounty: boolean;
-  };
-  manageRewards: {
-    Task: boolean;
-    Bounty: boolean;
-  };
-  reviewWork: {
-    Task: boolean;
-    Bounty: boolean;
-  };
-  canClaim: {
-    Task: boolean;
-    Bounty: boolean;
-  };
-}
-
-export type NonCardPermissions =
+export type PermissionString =
   | "createNewCircle"
-  | "createNewProject"
-  | "createNewRetro"
   | "createNewForm"
-  | "endRetroManually"
   | "inviteMembers"
   | "makePayment"
   | "manageCircleSettings"
   | "manageMembers"
   | "managePaymentOptions"
-  | "manageProjectSettings"
-  | "manageRoles"
-  | "distributeCredentials";
+  | "manageRoles";
 
-export type CardPermissions =
-  | "manageCardProperties"
-  | "createNewCard"
-  | "manageRewards"
-  | "reviewWork"
-  | "canClaim";
+export interface Permissions {
+  createNewCircle: boolean;
+  createNewForm: boolean;
+  inviteMembers: boolean;
+  makePayment: boolean;
+  manageCircleSettings: boolean;
+  manageMembers: boolean;
+  managePaymentOptions: boolean;
+  manageRoles: boolean;
+}
 
 export interface DiscordRoleMappingType {
   [roleId: string]: {
@@ -163,55 +104,6 @@ export type GuildxyzToCircleRoles = {
     id: number;
   };
 };
-
-export interface RetroType {
-  circle: string;
-  createdAt: string;
-  creator: string;
-  description: string;
-  duration: number;
-  id: string;
-  members: string[];
-  reward: {
-    chain: Chain;
-    token: Token;
-    value: number;
-  };
-  slug: string;
-  stats: {
-    [userId: string]: {
-      canGive: boolean;
-      canReceive: boolean;
-      owner: string;
-      votesAllocated: number;
-      votesGiven: {
-        [userId: string]: number;
-      };
-      votesRemaining: number;
-      feedbackGiven: {
-        [userId: string]: string;
-      };
-      voted?: boolean;
-    };
-  };
-  feedbackGiven: {
-    [key: string]: string;
-  };
-  feedbackReceived: {
-    [key: string]: string;
-  };
-  strategy: "Quadratic Voting" | "Normal Voting";
-  distribution: {
-    [userId: string]: number;
-  };
-  status: {
-    active: boolean;
-    paid: boolean;
-    archived: boolean;
-  };
-  title: string;
-  updatedtAt: string;
-}
 
 export interface BucketizedCircleType {
   memberOf: CircleType[];
@@ -248,7 +140,6 @@ export interface CircleType {
     };
   };
   slug: string;
-  templates: any[];
   updatedAt: string;
   whitelistedTokens: any;
   memberRoles: {
@@ -288,12 +179,6 @@ export interface CircleType {
   };
   guildxyzId: number;
   guildxyzToCircleRoles: GuildxyzToCircleRoles;
-  questbookWorkspaceUrl?: string;
-  questbookWorkspaceId?: string;
-  grantMilestoneProject?: string;
-  grantApplicantProject?: string;
-  paymentAddress: string;
-  grantNotificationChannel?: DiscordChannel;
   automations: AutomationType;
   automationsIndexedByCollection: AutomationsIndexedByCollectionSlugType;
   rootAutomations: RootAutomationsType;
@@ -312,6 +197,11 @@ export interface CircleType {
   };
   sidebarConfig?: SidebarConfig;
   hasSetupZealy?: boolean;
+  pricingPlan: number;
+  topUpMembers: number;
+  subscriptionId: string;
+  pendingBonus?: number;
+  referredBy?: string;
 }
 
 export type CirclePrivate = {
@@ -329,152 +219,7 @@ export type SidebarConfig = {
   showDiscussion?: boolean;
 };
 
-// interface ProjectType {
-//   archived: boolean;
-//   columnOrder: string[];
-//   createdAt: string;
-//   id: string;
-//   name: string;
-//   parents: Circle[];
-//   private: boolean;
-//   slug: string;
-//   templates: any[];
-//   updatedAt: string;
-// }
-
-export interface CardType {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  creator: string;
-  reviewer: string[];
-  assignee: string[];
-  project: ProjectType;
-  circle: string;
-  reward: {
-    chain: Chain;
-    token: Token;
-    value: number;
-    transactionHash?: string;
-  };
-  type: "Task" | "Bounty";
-  deadline: string;
-  startDate: string;
-  labels: string[];
-  priority: number;
-  columnId: string;
-  activity: Activity[];
-  status: Status;
-  workThreadOrder: string[];
-  workThreads: {
-    [key: string]: WorkThreadType;
-  };
-  application: {
-    [applicationId: string]: ApplicationType;
-  };
-  applicationOrder: string[];
-  myApplication?: ApplicationType;
-  children: CardType[];
-  parent: CardType;
-  kudosMinted: KudosForType;
-  kudosClaimedBy: KudosClaimedType;
-  eligibleToClaimKudos: KudosClaimedType;
-  unauthorized?: boolean;
-  assignedCircle: string;
-}
-
-export interface ApplicationType {
-  applicationId: string;
-  content: string;
-  createdAt: string;
-  sstatus: "active" | "rejected" | "picked";
-  updatedAt: string;
-  user: string;
-  title: string;
-}
-
-export interface WorkThreadType {
-  workUnitOrder: string[];
-  workUnits: {
-    [key: string]: WorkUnitType;
-  };
-  active: boolean;
-  status: "accepted" | "inRevision" | "inReview" | "draft";
-  threadId: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface WorkUnitType {
-  user: string;
-  content: string;
-  pr: string;
-  workUnitId: string;
-  createdAt: string;
-  updatedAt: string;
-  type: "submission" | "revision" | "feedback";
-  workUnitId: string;
-}
-
-export interface ProjectType {
-  id: string;
-  name: string;
-  cards: {
-    [key: string]: CardType;
-  };
-  columnDetails: {
-    [key: string]: ColumnType;
-  };
-  columnOrder: string[];
-  createdAt: string;
-  updatedAt: string;
-  description: string;
-  archived: boolean;
-  slug: string;
-  private: boolean;
-  defaultView: ViewType;
-  parents: CircleType[];
-  discordDiscussionChannel: {
-    id: string;
-    name: string;
-  };
-  viewOrder?: string[];
-  viewDetails?: {
-    [key: string]: Views;
-  };
-  unauthorized?: boolean;
-}
-
-export type ViewType = "List" | "Board" | "Gantt" | "Table";
-
-interface ActionValidation {
-  valid: boolean;
-  reason: string;
-}
-export interface CardActions {
-  addFeedback: ActionValidation;
-  addRevisionInstruction: ActionValidation;
-  applyToBounty: ActionValidation;
-  archive: ActionValidation;
-  canCreateCard: ActionValidation;
-  close: ActionValidation;
-  createDiscordThread: ActionValidation;
-  duplicate: ActionValidation;
-  pay: ActionValidation;
-  submit: ActionValidation;
-  updateAssignee: ActionValidation;
-  updateColumn: ActionValidation;
-  updateDeadline: ActionValidation;
-  updateStartDate: ActionValidation;
-  updateGeneralCardInfo: ActionValidation;
-  claim: ActionValidation;
-}
-
-export interface ProjectCardActionsType {
-  [cardId: string]: CardActions;
-}
+export type ViewType = "List" | "Board" | "Table";
 
 export interface Chain {
   chainId: string;
@@ -507,18 +252,6 @@ export type NetworkInfo = {
   chainlinkVRFConsumerAddress: string;
 };
 
-export interface Template {
-  _id: string;
-  name: string;
-  type: string;
-  data: {
-    columnOrder: string[];
-    columnDetails: {
-      [key: string]: Column;
-    };
-  };
-}
-
 export interface MemberDetails {
   memberDetails: {
     [key: string]: UserType;
@@ -540,14 +273,6 @@ export interface CollectionActivity {
   owner?: string;
   imageRef?: string;
 }
-
-// export interface Ref {
-//   actor: {
-//     id: string;
-//     type?: string;
-//     refType?: string;
-//   };
-// }
 
 export interface Activity {
   content: string;
@@ -594,37 +319,6 @@ export interface CardDetails {
   };
 }
 
-export type Filter = {
-  assignee: string[];
-  reviewer: string[];
-  column: string[];
-  label: string[];
-  status: string[];
-  title: string;
-  type: string[];
-  priority: string[];
-  deadline: string;
-  assignedCircle: string[];
-};
-
-export type CardsType = {
-  [key: string]: CardType;
-};
-
-export type Views = {
-  type: ViewType;
-  hidden: boolean;
-  filters: Filter;
-  slug?: string;
-  name: string;
-};
-
-export type Status = {
-  active: boolean;
-  paid: boolean;
-  archived: boolean;
-};
-
 export type Notification = {
   content: string;
   avatar: string;
@@ -639,16 +333,6 @@ export type SafeAddresses = {
 
 export type ContentPlaceholder = {
   [key: string]: string;
-};
-
-export type AdvancedFilters = {
-  inputTitle: string;
-  groupBy: "Status" | "Assignee";
-  sortBy: "none" | "Priority" | "Deadline";
-  order: "asc" | "des";
-  show: {
-    subTasks: boolean;
-  };
 };
 
 export type KudosAttribute = {
@@ -685,6 +369,11 @@ export type KudosType = {
   createdAtTimestamp?: boolean;
   imageUrl: string;
   claimabilityAttributes: ClaimabilityAttributes;
+  customAttributes: {
+    fieldName: string;
+    type: string;
+    value: string;
+  }[];
 };
 
 export type POAPEventType = {
@@ -704,6 +393,7 @@ export type POAPEventType = {
   virtual_event: boolean;
   event_template_id: number;
   private_event: boolean;
+  claimed?: boolean;
 };
 
 export type KudosForType = {
@@ -775,12 +465,6 @@ export type DiscordChannel = {
   id: string;
   name: string;
 };
-export type OpportunityInfoType = {
-  type: string;
-  experience: string;
-  skills: string[];
-  tags: string[];
-};
 
 export interface CollectionType {
   id: string;
@@ -806,6 +490,7 @@ export interface CollectionType {
   dataActivities?: MappedItem<MappedItem<CollectionActivity>>;
   dataActivityOrder?: MappedItem<string[]>;
   collectionType: 0 | 1;
+  editorVersion: 1 | 2;
   formMetadata: FormMetadata;
   projectMetadata: ProjectMetadata;
   archived: boolean;
@@ -847,28 +532,23 @@ export type PaymentConfig = {
 export type FormMetadata = {
   cover?: string;
   logo: string;
-  purpose?: string;
   formRoleGating?: GuildRole[];
   sybilProtectionEnabled?: boolean;
   sybilProtectionScores?: MappedItem<number>;
   mintkudosTokenId?: number;
+  mintkudosAssetUrl?: string;
   messageOnSubmission: string;
   multipleResponsesAllowed: boolean;
   updatingResponseAllowed: boolean;
   numOfKudos?: number;
   credentialCurationEnabled?: boolean;
-  isAnOpportunity?: boolean;
-  opportunityInfo?: OpportunityInfoType;
   active: boolean;
-  canFillForm: boolean;
   hasPassedSybilCheck: boolean;
   previousResponses: any[];
   hasClaimedKudos: boolean;
   hasRole: boolean;
-  discordConnectionRequired: boolean;
   canClaimKudos: boolean;
   allowAnonymousResponses: boolean;
-  walletConnectionRequired: boolean;
   paymentConfig?: PaymentConfig;
   surveyTokenId?: number;
   surveyTokenClaimedByUser: boolean;
@@ -881,8 +561,6 @@ export type FormMetadata = {
   surveyDistributionType?: number;
   ceramicEnabled?: boolean;
   captchaEnabled?: boolean;
-  claimCodes?: string[];
-  claimCode?: string;
   poapEventId?: string;
   poapEditCode?: string;
   transactionHashes?: {
@@ -912,6 +590,8 @@ export type FormMetadata = {
   lookup?: {
     tokens: LookupToken[];
     snapshot: number;
+    verifiedAddress: boolean;
+    communities: boolean;
   };
   discordRoleGating?: {
     id: string;
@@ -937,6 +617,7 @@ export type Chart = {
   type: "bar" | "pie" | "line" | "doughnut";
   fields: string[];
   filters?: Condition[];
+  advancedFilters?: ConditionGroup;
 };
 
 export type LookupToken = {
@@ -944,10 +625,16 @@ export type LookupToken = {
   contractAddress: string;
   metadata: {
     name: string;
-    image: string;
+    image?: string;
+    symbol: string;
   };
   chainId: number;
+  chainName?: string;
   tokenId?: string;
+  tokenAttributes?: {
+    key: string;
+    value: string;
+  }[];
 };
 
 export type ProjectMetadata = {
@@ -962,6 +649,7 @@ export type ProjectMetadata = {
         direction: "asc" | "desc";
       };
       groupByColumn: string;
+      advancedFilters?: ConditionGroup;
     };
   };
   cardOrders: {
@@ -1019,13 +707,23 @@ export type Property = {
   onUpdateNotifyUserTypes?: FormUserType[];
   required?: boolean;
   description?: string;
-  viewConditions?: Condition[];
+  // viewConditions?: Condition[];
+  advancedConditions?: ConditionGroup;
   payWallOptions?: PayWallOptions;
   internal?: boolean;
   maxSelections?: number;
   allowCustom?: boolean;
   milestoneFields?: string[];
   immutable?: boolean;
+  sliderOptions?: SliderOptions;
+};
+
+export type SliderOptions = {
+  min: number;
+  max: number;
+  step: number;
+  minLabel: string;
+  maxLabel: string;
 };
 
 export type PropertyType =
@@ -1039,6 +737,7 @@ export type PropertyType =
   | "date"
   | "singleSelect"
   | "multiSelect"
+  | "slider"
   | "ethAddress"
   | "milestone"
   | "singleURL"
@@ -1091,6 +790,7 @@ export interface FormType {
   slug: string;
   private: boolean;
   description: string;
+  editorVersion: 1 | 2;
   properties: {
     [key: string]: Property;
   };
@@ -1100,6 +800,7 @@ export interface FormType {
     id: string;
     name: string;
     slug: string;
+    pricingPlan: number;
   }[];
   defaultView: string;
   viewConditions: Condition[];
@@ -1107,6 +808,26 @@ export interface FormType {
   updatedAt: string;
   id: string;
   formMetadata: FormMetadata;
+  collectionType: 0 | 1;
+}
+
+export interface PublicProjectType {
+  name: string;
+  slug: string;
+  private: boolean;
+  description: string;
+  editorVersion: 1 | 2;
+  properties: {
+    [key: string]: Property;
+  };
+  propertyOrder: string[];
+  creator: string;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+  projectMetadata: ProjectMetadata;
+  data: MappedItem<any>;
+  collectionType: 0 | 1;
 }
 
 export type KudosType = {
@@ -1163,7 +884,18 @@ export type Stamp = {
   defaultScore: number;
   stampName: string;
   stampDescription: string;
-  score?: number;
+};
+
+export type StampWithScore = Stamp & {
+  score: number;
+};
+
+export type StampWithVerification = Stamp & {
+  verified: boolean;
+};
+
+export type StampWithScoreAndVerification = StampWithScore & {
+  verified: boolean;
 };
 
 export interface MappedItem<T> {
@@ -1215,70 +947,6 @@ export type Voting = {
   periodsOnCollection?: MappedItem<VotingPeriod>;
 };
 
-export type Experience = {
-  id: string;
-  role: string;
-  description: string;
-  organization: string;
-  startDate: string;
-  endDate: string;
-  isCurrent: boolean;
-  linkedCredentials?: string[];
-  lensExperienceId?: string;
-};
-
-export type Education = {
-  id: string;
-  title: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  linkedCredentials?: string[];
-  lensEducationId?: string;
-};
-
-export type Skill = {
-  id: string;
-  name: string;
-  linkedCredentials?: string[];
-  lensSkillId?: string;
-};
-
-export type LensSkills = {
-  title: string;
-  category: string;
-  icon: string;
-  nfts: NFT[];
-  poaps: string[];
-  linkedCredentials: Credential[];
-};
-
-export type LensExperience = {
-  jobTitle: string;
-  company: string;
-  companyLogo: string;
-  description: string;
-  start_date: LensDate;
-  end_date: LensDate;
-  linkedCredentials: Credential[];
-  currentlyWorking: boolean;
-  nfts: NFT[];
-  poaps: string[];
-};
-
-export type LensEducation = {
-  courseDegree: string;
-  school: string;
-  schoolLogo: string;
-  description: string;
-  start_date: LensDate;
-  end_date: LensDate;
-  currentlyStudying: boolean;
-  nfts: NFT[];
-  poaps: string[];
-  linkedCredentials: Credential[];
-};
-
 export type NFT = {
   contractName: string;
   contractAddress: string;
@@ -1325,13 +993,14 @@ export type Credential = {
 };
 
 export type PoapCredential = {
-  tokenId: string;
-  owner: string;
+  tokenId?: string;
+  owner?: string;
   chain: string;
-  created: string;
+  created?: string;
   event: POAPEventType;
 };
 
+// TODO: Remove "any" types
 export type Action = {
   id: string;
   type: string;
@@ -1343,6 +1012,27 @@ export type Action = {
   value: any;
   icon: string;
   label: string;
+};
+
+export type CreateCardActionData = {
+  selectedCollection: Option;
+  values: CreateCardActionDataValue[];
+};
+
+export type CreateCardActionDataValue = {
+  type: "mapping" | "default" | "responder";
+  default?: Default;
+  mapping?: Mapping;
+};
+
+type Mapping = {
+  from?: Option;
+  to?: Option;
+};
+
+type Default = {
+  field?: Option;
+  value?: any;
 };
 
 export type Trigger = {
@@ -1360,6 +1050,13 @@ export type Condition = {
   service: string;
   data: any;
 };
+export type ConditionGroup = {
+  id: string;
+  operator: "and" | "or";
+  conditions: { [id: string]: Condition };
+  conditionGroups?: { [id: string]: ConditionGroup };
+  order: string[];
+};
 
 export type Automation = {
   id: string;
@@ -1367,6 +1064,7 @@ export type Automation = {
   description: string;
   trigger: Trigger;
   conditions?: Condition[];
+  advancedConditions?: ConditionGroup;
   actions: Action[];
   triggerCategory: "collection" | "root";
   triggerCollectionSlug?: string;
@@ -1415,3 +1113,150 @@ export type PaymentDetails = {
   collection?: Option;
   data?: Option;
 };
+
+export type NFTFromAlchemy = {
+  balance?: number;
+  contract: {
+    address: string;
+    name: string;
+    symbol: string;
+    totalSupply?: number;
+  };
+  description?: string;
+  media?: {
+    bytes: number;
+    format: string;
+    gateway: string;
+    raw: string;
+    thumbnail: string;
+  }[];
+  rawMetadata: {
+    name: string;
+    image?: string;
+    description?: string;
+    attributes?: {
+      trait_type: string;
+      display_type: string;
+      value: string;
+    }[];
+  };
+  timeLastUpdated?: string;
+  title?: string;
+  tokenId?: string;
+  tokenType: string;
+  tokenUri?: {
+    gateway: string;
+    raw: string;
+  };
+  chainId: number;
+};
+
+export type NFTFromAnkr = {
+  contractAddress: string;
+  blockchain: string;
+  collectionName?: string;
+  symbol: string;
+  tokenId?: string;
+  contractType: string;
+  tokenUrl?: string;
+  name: string;
+  imageUrl?: string;
+  quantity?: string;
+};
+
+export declare enum NftTokenType {
+  ERC721 = "ERC721",
+  ERC1155 = "ERC1155",
+  UNKNOWN = "UNKNOWN",
+}
+
+export declare enum OpenSeaSafelistRequestStatus {
+  /** Verified collection. */
+  VERIFIED = "verified",
+  /** Collections that are approved on open sea and can be found in search results. */
+  APPROVED = "approved",
+  /** Collections that requested safelisting on OpenSea. */
+  REQUESTED = "requested",
+  /** Brand new collections. */
+  NOT_REQUESTED = "not_requested",
+}
+
+export type AlchemyNftContract = {
+  /** The type of the token in the contract. */
+  tokenType: NftTokenType;
+  /** The name of the contract. */
+  name?: string;
+  /** The symbol of the contract. */
+  symbol?: string;
+  /** The number of NFTs in the contract as an integer string. */
+  totalSupply?: string;
+  /** OpenSea's metadata for the contract. */
+  openSea?: {
+    floorPrice?: number;
+    /** The name of the collection on OpenSea. */
+    collectionName?: string;
+    /** The approval status of the collection on OpenSea. */
+    safelistRequestStatus?: OpenSeaSafelistRequestStatus;
+    /** The image URL determined by OpenSea. */
+    imageUrl?: string;
+    /** The description of the collection on OpenSea. */
+    description?: string;
+    /** The homepage of the collection as determined by OpenSea. */
+    externalUrl?: string;
+    /** The Twitter handle of the collection. */
+    twitterUsername?: string;
+    /** The Discord URL of the collection. */
+    discordUrl?: string;
+    /** Timestamp of when the OpenSea metadata was last ingested by Alchemy. */
+    lastIngestedAt?: string;
+  };
+  address: string;
+};
+
+export interface LookupTokenWithBalance extends LookupToken {
+  balance: string;
+}
+
+export type GithubFieldFromOauthData = {
+  id: string;
+  login?: string;
+  avatar_url?: string;
+};
+
+export type DiscordFieldFromOauthData = {
+  id: string;
+  username?: string;
+  avatar?: string;
+};
+
+export type TemplateRequirement =
+  | "discordRole"
+  | "discordChannel"
+  | "discordCategory";
+
+export type TemplateAction = {
+  name: string;
+  description?: string;
+  requirements: TemplateRequirement[];
+};
+
+export type TemplateAutomation = {
+  id: string;
+  name: string;
+  description: string;
+  actions: TemplateAction[];
+};
+
+export interface Template extends TemplateMinimal {
+  url: string;
+  description: string;
+  automations: TemplateAutomation[];
+}
+
+export interface TemplateMinimal {
+  id: string;
+  name: string;
+  shortDescription: string;
+  image: string;
+  tags: string[];
+}

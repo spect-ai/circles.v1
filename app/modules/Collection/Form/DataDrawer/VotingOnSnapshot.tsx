@@ -372,33 +372,19 @@ export default function SnapshotVoting({
                         width="1/3"
                         alignItems="center"
                       >
-                        <a
-                          href={`/profile/${
-                            user?.username == undefined
-                              ? "fren"
-                              : user?.username
-                          }`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <Stack
-                            direction="horizontal"
-                            align="center"
-                            space="2"
-                          >
-                            <Avatar
-                              src={user?.avatar}
-                              address={vote.voter}
-                              label=""
-                              size="8"
-                            />
-                            <Text color="accentText" weight="semiBold">
-                              {user?.username == undefined
-                                ? smartTrim(vote.voter, 5)
-                                : user?.username}
-                            </Text>
-                          </Stack>
-                        </a>
+                        <Stack direction="horizontal" align="center" space="2">
+                          <Avatar
+                            src={user?.avatar}
+                            address={vote.voter}
+                            label=""
+                            size="8"
+                          />
+                          <Text color="accentText" weight="semiBold">
+                            {user?.username == undefined
+                              ? smartTrim(vote.voter, 5)
+                              : user?.username}
+                          </Text>
+                        </Stack>
                       </Box>
                       <Box
                         display="flex"

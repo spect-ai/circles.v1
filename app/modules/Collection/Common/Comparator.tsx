@@ -22,6 +22,7 @@ export function getComparators(propertyType: string): Option[] {
       ];
 
     case "number":
+    case "slider":
       return [
         { label: "is", value: "is" },
         { label: "is not", value: "is not" },

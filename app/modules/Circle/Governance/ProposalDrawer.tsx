@@ -98,7 +98,12 @@ export default function ProposalDrawer({
       >
         {proposalData && (
           <ScrollContainer>
-            <Stack space="2" direction={"horizontal"} align="flex-start" justify={"space-between"}>
+            <Stack
+              space="2"
+              direction={"horizontal"}
+              align="flex-start"
+              justify={"space-between"}
+            >
               <Stack space="8">
                 <Heading wordBreak="break-word">
                   {proposalData?.proposal?.title}
@@ -106,6 +111,7 @@ export default function ProposalDrawer({
                 <Editor
                   value={proposalData?.proposal?.body as string}
                   disabled={true}
+                  version={2}
                 />
               </Stack>
 

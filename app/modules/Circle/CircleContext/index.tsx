@@ -6,7 +6,6 @@ import {
   CircleType,
   MemberDetails,
   Registry,
-  RetroType,
   UserType,
 } from "@/app/types";
 import { useAtom } from "jotai";
@@ -194,7 +193,7 @@ export function useProviderCircleContext() {
     if (circle?.id) {
       const getPrivateCredentials = async () => {
         const res = await getPrivateCircleCredentials(circle?.id);
-        setPrivateCredentials(res);
+        if (res && typeof res !== "boolean") setPrivateCredentials(res);
       };
 
       try {
@@ -209,7 +208,7 @@ export function useProviderCircleContext() {
     window.addEventListener(
       "message",
       (event) => {
-        if (event.data.discordGuildId) {
+        if (event.data.discordGuildId && circle?.id) {
           if (circle?.discordGuildId !== event.data.discordGuildId) {
             void fetchCircle();
           } else {

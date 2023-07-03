@@ -62,11 +62,29 @@ export default function CreateCard({
     if (mappedCollection)
       if (fieldType === "mapping" && fromPropertyOptionType) {
         return Object.entries(mappedCollection?.properties)
-          .filter(
-            ([propertyId, property]) =>
-              (property as Property).type === fromPropertyOptionType &&
-              !usedProperty[propertyId]
-          )
+          .filter(([propertyId, property]) => {
+            if (
+              [
+                "longText",
+                "email",
+                "ethAddress",
+                "url",
+                "number",
+                "date",
+              ].includes(fromPropertyOptionType)
+            ) {
+              return (
+                ["shortText", fromPropertyOptionType].includes(
+                  (property as Property).type
+                ) && !usedProperty[propertyId]
+              );
+            } else {
+              return (
+                (property as Property).type === fromPropertyOptionType &&
+                !usedProperty[propertyId]
+              );
+            }
+          })
           .map(([propertyId, property]) => ({
             label: (property as Property).name,
             value: propertyId,
@@ -151,12 +169,12 @@ export default function CreateCard({
     void fetchCollectionOptions();
     void fetchCollection();
 
-    const milestoneFields = Object.entries(collection.properties).filter(
+    const milestoneFields = Object.entries(collection.properties || {}).filter(
       ([propertyId, property]) => property.type === "milestone"
     );
-    const notMilestoneFields = Object.entries(collection.properties).filter(
-      ([propertyId, property]) => property.type !== "milestone"
-    );
+    const notMilestoneFields = Object.entries(
+      collection.properties || {}
+    ).filter(([propertyId, property]) => property.type !== "milestone");
     let propOptions = notMilestoneFields.map(([propertyId, property]) => ({
       label: property.name,
       value: propertyId,
@@ -551,44 +569,37 @@ export default function CreateCard({
             >
               + Default Value
             </PrimaryButton>
-            <PrimaryButton
-              variant="tertiary"
-              onClick={() => {
-                if (
-                  collection.collectionType === 0 &&
-                  collection.formMetadata.allowAnonymousResponses
-                ) {
-                  toast.warning(
-                    "You can only map the responder if the form collects responder profile"
-                  );
-                  return;
-                }
-                // if (
-                //   collection.collectionType === 0 &&
-                //   !collection.formMetadata.walletConnectionRequired
-                // ) {
-                //   toast.warning(
-                //     "The selected form does not require wallet connection, so the responder cannot be mapped. Please change it in the form settings"
-                //   );
-                //   return;
-                // }
-                setFieldType("responder");
-                setValues([
-                  ...values,
-                  {
-                    type: "responder",
-                    mapping: {
-                      to: {
-                        label: "",
-                        value: "",
+            {collection.collectionType === 0 && (
+              <PrimaryButton
+                variant="tertiary"
+                onClick={() => {
+                  if (
+                    collection.collectionType === 0 &&
+                    collection.formMetadata.allowAnonymousResponses
+                  ) {
+                    toast.warning(
+                      "You can only map the responder if the form collects responder profile"
+                    );
+                    return;
+                  }
+                  setFieldType("responder");
+                  setValues([
+                    ...values,
+                    {
+                      type: "responder",
+                      mapping: {
+                        to: {
+                          label: "",
+                          value: "",
+                        },
                       },
                     },
-                  },
-                ]);
-              }}
-            >
-              + Map Responder
-            </PrimaryButton>
+                  ]);
+                }}
+              >
+                + Map Responder
+              </PrimaryButton>
+            )}
             {collection.formMetadata &&
               collection.formMetadata.allowAnonymousResponses && (
                 <Tooltip title="You can only map the responder if the form collects responder profile">
