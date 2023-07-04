@@ -98,16 +98,7 @@ function CollectionHeading() {
   };
 
   return (
-    <Box
-      width="full"
-      display="flex"
-      flexDirection="column"
-      paddingLeft="3"
-      paddingRight={{
-        xs: "3",
-        md: "8",
-      }}
-    >
+    <Box width="full" display="flex" flexDirection="column">
       <Hidden xs sm>
         <Box marginLeft="6" marginTop="2">
           {navigationBreadcrumbs && (

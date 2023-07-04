@@ -100,99 +100,101 @@ const FormEditor = () => {
   };
 
   return (
-    <Stack align="center">
-      <AnimatePresence>
-        {showConfirmOnDelete && (
-          <ConfirmModal
-            title="This will remove existing data associated with this field, if you're looking to avoid this please set the field as inactive. Are you sure you want to delete this field?"
-            handleClose={() => setShowConfirmOnDelete(false)}
-            onConfirm={async () => {
-              setDeleteLoading(true);
-              const res: CollectionType = await deleteField(
-                collection.id,
-                (propertyId as string).trim()
-              );
-              if (res.id) {
-                updateCollection(res);
-              } else {
-                logError("Error deleting field");
-              }
-              setShowConfirmOnDelete(false);
-              setDeleteLoading(false);
-            }}
-            onCancel={() => setShowConfirmOnDelete(false)}
-          />
-        )}
-      </AnimatePresence>
-      <Container>
-        <Box width="full">
-          <Stack>
-            {collection.formMetadata.logo && (
-              <Avatar src={collection.formMetadata.logo} label="" size="20" />
-            )}
-            <NameInput
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
-              onBlur={async () => {
-                if (name === collection.name) return;
-                const res = await updateFormCollection(collection.id, {
-                  name,
-                });
+    <ScrollContainer>
+      <Stack align="center">
+        <AnimatePresence>
+          {showConfirmOnDelete && (
+            <ConfirmModal
+              title="This will remove existing data associated with this field, if you're looking to avoid this please set the field as inactive. Are you sure you want to delete this field?"
+              handleClose={() => setShowConfirmOnDelete(false)}
+              onConfirm={async () => {
+                setDeleteLoading(true);
+                const res: CollectionType = await deleteField(
+                  collection.id,
+                  (propertyId as string).trim()
+                );
                 if (res.id) {
                   updateCollection(res);
                 } else {
-                  logError("Failed to update collection name");
+                  logError("Error deleting field");
                 }
+                setShowConfirmOnDelete(false);
+                setDeleteLoading(false);
               }}
+              onCancel={() => setShowConfirmOnDelete(false)}
             />
+          )}
+        </AnimatePresence>
+        <Container>
+          <Box width="full">
             <Stack>
-              <Editor
-                placeholder={`Form description`}
-                isDirty={isDirty}
-                onChange={() => {
-                  setIsDirty(true);
+              {collection.formMetadata.logo && (
+                <Avatar src={collection.formMetadata.logo} label="" size="20" />
+              )}
+              <NameInput
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
                 }}
-                onSave={async (value) => {
+                onBlur={async () => {
+                  if (name === collection.name) return;
                   const res = await updateFormCollection(collection.id, {
-                    description: value,
+                    name,
                   });
-                  setIsDirty(false);
                   if (res.id) {
                     updateCollection(res);
                   } else {
-                    logError("Failed to update collection description");
+                    logError("Failed to update collection name");
                   }
                 }}
-                version={2}
               />
-              <DragDropContext onDragEnd={onDragEnd}>
-                {collection.formMetadata.pageOrder.map((pageId) => {
-                  const page = collection.formMetadata.pages[pageId];
-                  return (
-                    <Page
-                      key={pageId}
-                      pageId={pageId}
-                      fields={page.properties}
-                      setShowConfirmOnDelete={setShowConfirmOnDelete}
-                      setPropertyId={setPropertyId}
-                    />
-                  );
-                })}
-              </DragDropContext>
+              <Stack>
+                <Editor
+                  placeholder={`Form description`}
+                  isDirty={isDirty}
+                  onChange={() => {
+                    setIsDirty(true);
+                  }}
+                  onSave={async (value) => {
+                    const res = await updateFormCollection(collection.id, {
+                      description: value,
+                    });
+                    setIsDirty(false);
+                    if (res.id) {
+                      updateCollection(res);
+                    } else {
+                      logError("Failed to update collection description");
+                    }
+                  }}
+                  version={2}
+                />
+                <DragDropContext onDragEnd={onDragEnd}>
+                  {collection.formMetadata.pageOrder.map((pageId) => {
+                    const page = collection.formMetadata.pages[pageId];
+                    return (
+                      <Page
+                        key={pageId}
+                        pageId={pageId}
+                        fields={page.properties}
+                        setShowConfirmOnDelete={setShowConfirmOnDelete}
+                        setPropertyId={setPropertyId}
+                      />
+                    );
+                  })}
+                </DragDropContext>
+              </Stack>
             </Stack>
-          </Stack>
-        </Box>
-        <Box
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-          }}
-        ></Box>
-      </Container>
-    </Stack>
+          </Box>
+          <Box
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+            }}
+          ></Box>
+        </Container>
+      </Stack>
+    </ScrollContainer>
   );
 };
 
@@ -203,6 +205,14 @@ const Container = styled(Box)`
   }
 
   width: 42rem;
+`;
+
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 0px;
+  }
+  height: calc(100vh - 16rem);
 `;
 
 export default FormEditor;
