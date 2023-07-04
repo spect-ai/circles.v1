@@ -15,7 +15,7 @@ const paidPlan = [
   "Unlimited form plugins",
   "Response Analytics",
   "No Spect branding at the end of form",
-  "200 automations",
+  "2000 automation runs per month",
   "Unlimited projects with unlimited rows",
   "Unlimited workstreams",
   "5 members in space",
