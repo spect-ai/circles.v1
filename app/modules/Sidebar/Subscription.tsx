@@ -33,7 +33,7 @@ const Subscription = ({ handleClose }: Props) => {
     <Box padding="8">
       <Stack align="center">
         {!circle?.pricingPlan ? (
-          <Heading>Premium Plan</Heading>
+          <Heading>Premium Plan - 29$</Heading>
         ) : (
           <Heading>You are on Premium Plan</Heading>
         )}
@@ -96,7 +96,7 @@ const Subscription = ({ handleClose }: Props) => {
                       "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                      memberTopUp: members - 5,
+                      memberTopUp: members > 5 ? members - 5 : 0,
                       refCode,
                     }),
                     credentials: "include",
@@ -152,6 +152,9 @@ const Subscription = ({ handleClose }: Props) => {
           href="https://spect.network/pricing"
           target="_blank"
           rel="noreferrer"
+          style={{
+            marginTop: "1rem",
+          }}
         >
           <Text variant="label">See pricing</Text>
         </a>
