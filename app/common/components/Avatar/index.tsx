@@ -5,7 +5,7 @@ import { GithubOutlined } from "@ant-design/icons";
 import { Avatar, Box, Button, Tag, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { Tooltip } from "react-tippy";
+import { Tooltip } from "react-tooltip";
 import styled from "styled-components";
 import { smartTrim } from "../../utils/utils";
 
@@ -45,6 +45,7 @@ export default function ClickableAvatar({
 
   return (
     <>
+      <Tooltip id="button-tooltip" />
       <Box
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
@@ -118,15 +119,15 @@ export default function ClickableAvatar({
                     )}
                     <InfoBox gap="1">
                       {profile.discordUsername && (
-                        <Tooltip title={profile.discordUsername}>
-                          <Button
-                            shape="circle"
-                            size="small"
-                            variant="transparent"
-                          >
-                            <DiscordIcon />
-                          </Button>
-                        </Tooltip>
+                        <Button
+                          shape="circle"
+                          size="small"
+                          variant="transparent"
+                          data-tooltip-id="button-tooltip"
+                          data-tooltip-content={profile.discordUsername}
+                        >
+                          <DiscordIcon />
+                        </Button>
                       )}
                     </InfoBox>
                     <InfoBox gap="1">

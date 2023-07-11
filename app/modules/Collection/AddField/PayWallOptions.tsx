@@ -2,7 +2,7 @@ import { PayWallOptions, Registry } from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import React, { useEffect, useState } from "react";
 import { isAddress } from "ethers/lib/utils";
-import { Tooltip } from "react-tippy";
+import { Tooltip } from "react-tooltip";
 import RewardTokenOptions from "./RewardTokenOptions";
 
 interface Props {
@@ -47,7 +47,7 @@ export default function PayWall({ payWallOption, setPayWallOption }: Props) {
               }}
             />
           </Stack>
-          <Tooltip
+          {/* <Tooltip
             html={
               <Text>
                 This is optional. It is recommended to leave it empty where you
@@ -57,22 +57,21 @@ export default function PayWall({ payWallOption, setPayWallOption }: Props) {
               </Text>
             }
             theme={mode}
-          >
-            {" "}
-            <Stack direction="vertical" space="0">
-              <Text variant="label">Receiving Amount</Text>
-              <Input
-                min={0}
-                label=""
-                placeholder="Token Value eg. 10"
-                value={payWallOption?.value}
-                type="number"
-                onChange={(e) => {
-                  setValue(parseFloat(e.target.value));
-                }}
-              />
-            </Stack>
-          </Tooltip>
+          > */}
+          <Stack direction="vertical" space="0">
+            <Text variant="label">Receiving Amount</Text>
+            <Input
+              min={0}
+              label=""
+              placeholder="Token Value eg. 10"
+              value={payWallOption?.value}
+              type="number"
+              onChange={(e) => {
+                setValue(parseFloat(e.target.value));
+              }}
+            />
+          </Stack>
+          {/* </Tooltip> */}
           <RewardTokenOptions
             networks={networks}
             setNetworks={setNetworks}

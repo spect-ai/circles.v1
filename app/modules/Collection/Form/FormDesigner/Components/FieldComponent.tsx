@@ -20,6 +20,7 @@ import RewardField from "@/app/modules/PublicForm/Fields/RewardField";
 
 import Slider from "@/app/common/components/Slider";
 import { useLocalCollection } from "../../../Context/LocalCollectionContext";
+import { FieldContainer, InputField, SelectField } from "@avp1598/vibes";
 
 type Props = {
   id: string;
@@ -46,8 +47,12 @@ function FieldComponent({ id, formData, setFormData }: Props) {
   }));
 
   return (
-    <div className="p-4 scale-[0.8]">
-      <Stack direction="vertical" space="1">
+    <FieldContainer
+      label={collection.properties[id]?.name}
+      description={collection.properties[id]?.description}
+      required={collection.properties[id]?.required}
+    >
+      {/* <Stack direction="vertical" space="1">
         {fieldNeedsAttention[id] && (
           <Text variant="small" color="yellow">
             Needs your attention
@@ -80,18 +85,80 @@ function FieldComponent({ id, formData, setFormData }: Props) {
             />
           )}
         </Box>
-      </Stack>
-      {collection.properties[id]?.type === "shortText" && (
-        <Input
-          label=""
-          placeholder={`Enter short text`}
+      </Stack> */}
+      {["readonly"].includes(collection.properties[id]?.type) && (
+        <InputField
+          placeholder={`Your answer`}
           value={collection.data && collection.data[id]}
-          // onChange={(e) => setLabel(e.target.value)}
+          readOnly
         />
       )}
-      {collection.properties[id]?.type === "email" && (
+      {[
+        "shortText",
+        "email",
+        "singleUrl",
+        "number",
+        "ethAddress",
+        "date",
+      ].includes(collection.properties[id]?.type) && (
+        <InputField
+          placeholder={`Your answer`}
+          value={collection.data && collection.data[id]}
+          type={collection.properties[id]?.type}
+        />
+      )}
+      {["longText"].includes(collection.properties[id]?.type) && (
+        <InputField
+          placeholder={`Your answer`}
+          value={collection.data && collection.data[id]}
+          fieldType="longText"
+        />
+      )}
+
+      {["singleSelect", "user"].includes(collection.properties[id]?.type) && (
+        <SelectField
+          allowCustomValue={collection.properties[id]?.allowCustom || false}
+          options={
+            collection.properties[id]?.type === "user"
+              ? (memberOptions as any)
+              : collection.properties[id]?.options
+          }
+          value={collection.data && collection.data[id]}
+          isMulti={false}
+          name={id}
+          onChange={(e) => {}}
+        />
+      )}
+      {["multiSelect", "user[]"].includes(collection.properties[id]?.type) && (
+        <SelectField
+          allowCustomValue={collection.properties[id]?.allowCustom || false}
+          options={
+            collection.properties[id]?.type === "user"
+              ? (memberOptions as any)
+              : collection.properties[id]?.options
+          }
+          value={collection.data && collection.data[id]}
+          isMulti={true}
+          name={id}
+          onChange={(e) => {}}
+        />
+      )}
+      {["slider"].includes(collection.properties[id]?.type) && (
+        <SelectField
+          type="rating"
+          options={Array.from(Array(10).keys()).map((i) => ({
+            label: `${i + 1}`,
+            value: `${i + 1}`,
+          }))}
+          value={collection.data && collection.data[id]}
+          isMulti={false}
+          name={id}
+          onChange={(e) => {}}
+        />
+      )}
+      {/* {collection.properties[id]?.type === "email" && (
         <Input
-          label=""
+          label=
           placeholder={`Enter email`}
           value={collection.data && collection.data[id]}
           inputMode="email"
@@ -106,13 +173,8 @@ function FieldComponent({ id, formData, setFormData }: Props) {
           inputMode="text"
           // onChange={(e) => setLabel(e.target.value)}
         />
-      )}
-      {collection.properties[id]?.type === "payWall" && (
-        <Box marginTop="2">
-          <PrimaryButton>Pay</PrimaryButton>
-        </Box>
-      )}
-      {collection.properties[id]?.type === "multiURL" && (
+      )} */}
+      {/* {collection.properties[id]?.type === "multiURL" && (
         <Input
           label=""
           placeholder={`Enter URL`}
@@ -120,8 +182,8 @@ function FieldComponent({ id, formData, setFormData }: Props) {
           inputMode="text"
           // onChange={(e) => setLabel(e.target.value)}
         />
-      )}
-      {collection.properties[id]?.type === "number" && (
+      )} */}
+      {/* {collection.properties[id]?.type === "number" && (
         <Input
           label=""
           placeholder={`Enter number`}
@@ -129,8 +191,8 @@ function FieldComponent({ id, formData, setFormData }: Props) {
           // onChange={(e) => setLabel(e.target.value)}
           type="number"
         />
-      )}
-      {collection.properties[id]?.type === "date" && (
+      )} */}
+      {/* {collection.properties[id]?.type === "date" && (
         <DateInput
           placeholder={`Enter date`}
           value={collection.data && collection.data[id]}
@@ -138,8 +200,8 @@ function FieldComponent({ id, formData, setFormData }: Props) {
           type="date"
           mode={mode}
         />
-      )}
-      {collection.properties[id]?.type === "ethAddress" && (
+      )} */}
+      {/* {collection.properties[id]?.type === "ethAddress" && (
         <Input
           label=""
           placeholder={`Enter ethereum address or ENS`}
@@ -150,8 +212,8 @@ function FieldComponent({ id, formData, setFormData }: Props) {
           //   !ethers.utils.isAddress(collection.data && collection.data[id])
           // }
         />
-      )}
-      {collection.properties[id]?.type === "longText" && (
+      )} */}
+      {/* {collection.properties[id]?.type === "longText" && (
         <Box
           marginTop="4"
           width="full"
@@ -172,8 +234,8 @@ function FieldComponent({ id, formData, setFormData }: Props) {
             bounds=".bounds"
           />
         </Box>
-      )}
-      {(collection.properties[id]?.type === "singleSelect" ||
+      )} */}
+      {/* {(collection.properties[id]?.type === "singleSelect" ||
         collection.properties[id]?.type === "user") && (
         <Box marginTop="4">
           <SingleSelect
@@ -219,8 +281,8 @@ function FieldComponent({ id, formData, setFormData }: Props) {
             propertyId={id}
           />
         </Box>
-      )}
-      {collection.properties[id]?.type === "slider" && (
+      )} */}
+      {/* {collection.properties[id]?.type === "slider" && (
         <Slider
           min={collection.properties[id]?.sliderOptions?.min || 1}
           max={collection.properties[id]?.sliderOptions?.max || 10}
@@ -232,7 +294,7 @@ function FieldComponent({ id, formData, setFormData }: Props) {
           maxLabel={collection.properties[id]?.sliderOptions?.maxLabel}
           value={formData[id]}
         />
-      )}
+      )} */}
       {collection.properties[id]?.type === "reward" && (
         <Box marginTop="4">
           <RewardField
@@ -242,7 +304,7 @@ function FieldComponent({ id, formData, setFormData }: Props) {
           />
         </Box>
       )}
-      {collection.properties[id]?.type === "milestone" && (
+      {/* {collection.properties[id]?.type === "milestone" && (
         <Box marginTop="4" width="full">
           <PrimaryButton
             variant="tertiary"
@@ -252,7 +314,7 @@ function FieldComponent({ id, formData, setFormData }: Props) {
             Add new milestone
           </PrimaryButton>
         </Box>
-      )}
+      )} */}
       {collection.properties[id]?.type === "discord" && (
         <Box marginTop="4" width="64">
           <PrimaryButton
@@ -297,7 +359,7 @@ function FieldComponent({ id, formData, setFormData }: Props) {
           </PrimaryButton>
         </Box>
       )}
-    </div>
+    </FieldContainer>
   );
 }
 

@@ -17,7 +17,8 @@
     "baseUrl": ".",
     "paths": {
       // use @/ to access path related to root of project
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "react": ["node_modules/react"]
     }
   },
   "include": [

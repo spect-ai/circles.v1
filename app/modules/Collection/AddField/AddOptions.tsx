@@ -7,7 +7,7 @@ import ColorPicker from "react-best-gradient-color-picker";
 import Popover from "@/app/common/components/Popover";
 import { motion } from "framer-motion";
 import CheckBox from "@/app/common/components/Table/Checkbox";
-import { Tooltip } from "react-tippy";
+import { Tooltip } from "react-tooltip";
 import { BiHelpCircle } from "react-icons/bi";
 
 type Props = {
@@ -187,18 +187,18 @@ export default function AddOptions({
             <Text variant="label">Settings</Text>
 
             <Stack direction="horizontal" align="center" space="2">
-              <Tooltip
+              {/* <Tooltip
                 title="Ensures no one can update this field. If field is updated, all associated data will be deleted and the activity will be recorded. This can be particularly useful for voting & protecting responses from being tampered with."
                 theme={mode}
-              >
-                <CheckBox
-                  isChecked={immutable}
-                  onClick={() => {
-                    setIsDirty && setIsDirty(true);
-                    setImmutable(!immutable);
-                  }}
-                />
-              </Tooltip>
+              > */}
+              <CheckBox
+                isChecked={immutable}
+                onClick={() => {
+                  setIsDirty && setIsDirty(true);
+                  setImmutable(!immutable);
+                }}
+              />
+              {/* </Tooltip> */}
 
               <Text size="small" weight="light">
                 Make it immutable

@@ -4,7 +4,7 @@ import { Box, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { Tooltip } from "react-tippy";
+import { Tooltip } from "react-tooltip";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
 import usePaymentViewCommon from "./Common/usePaymentCommon";
@@ -118,36 +118,35 @@ export default function PendingPayments() {
                 Object.entries(circle?.safeAddresses).some(
                   ([aChain, aSafes]) => aSafes?.length > 0
                 ) && (
-                  <Tooltip
-                    title="Gnosis safe will be used to pay on networks which have a connected safe"
-                    theme={mode}
-                    position="top"
-                  >
-                    {" "}
-                    <PrimaryButton
-                      onClick={async () => {
-                        setIsGnosisPayLoading(true);
-                        const uniqueNetworks = getUniqueNetworks(
-                          circle.pendingPayments,
-                          circle.paymentDetails
-                        );
-                        console.log({ uniqueNetworks });
-                        for (const chainId of uniqueNetworks) {
-                          if (!circle.safeAddresses?.[chainId]?.length)
-                            await pay(chainId);
-                          else {
-                            await pay(chainId, true);
-                          }
+                  // <Tooltip
+                  //   title="Gnosis safe will be used to pay on networks which have a connected safe"
+                  //   theme={mode}
+                  //   position="top"
+                  // >
+                  <PrimaryButton
+                    onClick={async () => {
+                      setIsGnosisPayLoading(true);
+                      const uniqueNetworks = getUniqueNetworks(
+                        circle.pendingPayments,
+                        circle.paymentDetails
+                      );
+                      console.log({ uniqueNetworks });
+                      for (const chainId of uniqueNetworks) {
+                        if (!circle.safeAddresses?.[chainId]?.length)
+                          await pay(chainId);
+                        else {
+                          await pay(chainId, true);
                         }
-                        setIsGnosisPayLoading(false);
-                      }}
-                      loading={isGnosisPayLoading}
-                      disabled={isPayLoading}
-                    >
-                      Pay All With Gnosis
-                    </PrimaryButton>
-                  </Tooltip>
-                )}{" "}
+                      }
+                      setIsGnosisPayLoading(false);
+                    }}
+                    loading={isGnosisPayLoading}
+                    disabled={isPayLoading}
+                  >
+                    Pay All With Gnosis
+                  </PrimaryButton>
+                  // </Tooltip>
+                )}
               <PrimaryButton
                 onClick={async () => {
                   setIsPayLoading(true);

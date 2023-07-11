@@ -1,7 +1,7 @@
 import { UserType } from "@/app/types";
 import { GithubOutlined, TwitterOutlined } from "@ant-design/icons";
 import { Avatar, Box, Button, Stack, Tag, Text } from "degen";
-import { Tooltip } from "react-tippy";
+import { Tooltip } from "react-tooltip";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { Globe } from "react-feather";
 import { smartTrim } from "@/app/common/utils/utils";
@@ -45,11 +45,11 @@ const ProfileInfo = ({ member }: Props) => {
 
               <Stack direction="horizontal" wrap space="1">
                 {member.discordUsername && (
-                  <Tooltip title={member.discordUsername}>
-                    <Button shape="circle" size="small" variant="transparent">
-                      <DiscordIcon />
-                    </Button>
-                  </Tooltip>
+                  // <Tooltip title={member.discordUsername}>
+                  <Button shape="circle" size="small" variant="transparent">
+                    <DiscordIcon />
+                  </Button>
+                  // </Tooltip>
                 )}
                 {member.githubUsername && (
                   <a

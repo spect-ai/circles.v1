@@ -13,7 +13,7 @@ import {
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { Col, Row } from "react-grid-system";
-import { Tooltip } from "react-tippy";
+import { Tooltip } from "react-tooltip";
 
 type Props = {
   runs: FlowRuns;
@@ -26,18 +26,18 @@ const ViewRuns = ({ runs }: Props) => {
 
   return (
     <Box>
-      <Tooltip title="View runs">
-        <Button
-          onClick={() => {
-            setIsOpen(true);
-          }}
-          shape="circle"
-          size="small"
-          variant="tertiary"
-        >
-          <IconCollection />
-        </Button>
-      </Tooltip>
+      {/* <Tooltip title="View runs"> */}
+      <Button
+        onClick={() => {
+          setIsOpen(true);
+        }}
+        shape="circle"
+        size="small"
+        variant="tertiary"
+      >
+        <IconCollection />
+      </Button>
+      {/* </Tooltip> */}
       <AnimatePresence>
         {isOpen && (
           <Modal title="Flow runs" handleClose={() => setIsOpen(false)}>

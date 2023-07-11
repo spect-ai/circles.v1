@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Dropdown from "@/app/common/components/Dropdown";
 import { Option, Registry, Reward } from "@/app/types";
-import { Box, Input, Stack } from "degen";
+import { InputField, SelectField, Text } from "@avp1598/vibes";
+import { Box, Stack } from "degen";
 import { useEffect, useState } from "react";
 
 type Props = {
@@ -19,7 +20,7 @@ export default function RewardField({
   onValueKeyDown,
   disabled,
 }: Props) {
-  if (!Object.values(rewardOptions)) return null;
+  if (!rewardOptions || !Object.values(rewardOptions)) return null;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const firstChainName =
     Object.values(rewardOptions).length > 0
@@ -56,20 +57,12 @@ export default function RewardField({
   });
 
   return (
-    <Stack
-      direction={{
-        xs: "vertical",
-        md: "horizontal",
-      }}
-      align="center"
-    >
-      <Box
-        width={{
-          xs: "full",
-        }}
-        marginTop="2"
-      >
-        <Dropdown
+    <Stack space="0">
+      <Stack space="1">
+        <Text type="label">Chain</Text>
+        <SelectField
+          name="chain"
+          value={selectedChain}
           options={
             rewardOptions
               ? Object.entries(rewardOptions).map(([chainId, network]) => {
@@ -80,7 +73,6 @@ export default function RewardField({
                 })
               : []
           }
-          selected={selectedChain}
           onChange={(option) => {
             setSelectedChain(option);
             const tokens = Object.entries(
@@ -99,20 +91,16 @@ export default function RewardField({
             });
             setTokenOptions(tokens);
           }}
-          multiple={false}
-          isClearable={false}
-          disabled={disabled}
+          isMulti={false}
         />
-      </Box>
-      <Box
-        width={{
-          xs: "full",
-        }}
-        marginTop="2"
-      >
-        <Dropdown
+      </Stack>
+
+      <Stack space="1">
+        <Text type="label">Token</Text>
+        <SelectField
+          name="chain"
+          value={selectedToken}
           options={tokenOptions}
-          selected={selectedToken}
           onChange={(option) => {
             setSelectedToken(option);
             updateData({
@@ -121,20 +109,13 @@ export default function RewardField({
               value: value?.value,
             });
           }}
-          multiple={false}
-          isClearable={false}
-          disabled={disabled}
+          isMulti={false}
         />
-      </Box>
-      <Box
-        width={{
-          xs: "full",
-        }}
-        marginTop="2"
-      >
-        <Input
-          label=""
-          placeholder={`Enter Reward Amount`}
+      </Stack>
+      <Stack space="1">
+        <Text type="label">Value</Text>
+        <InputField
+          placeholder="Enter Reward Amount"
           value={value?.value}
           onChange={(e) => {
             updateData({
@@ -145,10 +126,10 @@ export default function RewardField({
           }}
           type="number"
           onKeyDown={onValueKeyDown}
-          units={selectedToken?.label}
+          prefix={selectedToken?.label}
           disabled={disabled}
         />
-      </Box>
+      </Stack>
     </Stack>
   );
 }

@@ -218,7 +218,7 @@ export default function CollectPayment({
             "Network Gas Token"
           }`,
           error: {
-            render: ({ data }: { data: any }) =>
+            render: ({ data }: { data?: any }) =>
               data.message || data.toString(),
           },
         },
@@ -410,7 +410,7 @@ export default function CollectPayment({
                         {
                           pending: `Approving ${selectedToken.label} Token`,
                           error: {
-                            render: ({ data }: { data: any }) =>
+                            render: ({ data }: { data?: any }) =>
                               JSON.stringify(data),
                           },
                         },

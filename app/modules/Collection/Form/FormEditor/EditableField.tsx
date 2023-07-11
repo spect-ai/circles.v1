@@ -1,3 +1,4 @@
+import React from "react";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import {
   Box,
@@ -13,7 +14,6 @@ import styled from "styled-components";
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Option, PropertyType, Registry } from "@/app/types";
-import RewardField from "@/app/modules/PublicForm/Fields/RewardField";
 import {
   FaDiscord,
   FaGithub,
@@ -360,7 +360,7 @@ const EditableField = ({
                         focused={hover}
                       />
                     )}
-                    {collection.properties[id]?.type === "reward" && (
+                    {/* {collection.properties[id]?.type === "reward" && (
                       <Box marginTop="-2">
                         <RewardField
                           rewardOptions={
@@ -371,7 +371,7 @@ const EditableField = ({
                           value={{} as any}
                         />
                       </Box>
-                    )}
+                    )} */}
                     {collection.properties[id]?.type === "milestone" && (
                       <PrimaryButton
                         variant="tertiary"

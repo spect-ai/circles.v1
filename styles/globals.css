@@ -171,3 +171,8 @@ a {
   color: #0f0 !important;
   outline: solid #f00 1px !important;
 } */
+
+.react-beautiful-editor .ProseMirror p {
+  margin: 0.4rem 0 !important;
+  font-size: 13px !important;
+}

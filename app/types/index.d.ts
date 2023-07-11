@@ -1,3 +1,5 @@
+import { FormContextProps } from "@avp1598/vibes";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface UserType {
   accounts: string[];
@@ -609,6 +611,7 @@ export type FormMetadata = {
   canClaimZealy?: number;
   hasClaimedZealy?: boolean;
   zealySubdomain?: string;
+  theme?: FormContextProps;
 };
 
 export type Chart = {

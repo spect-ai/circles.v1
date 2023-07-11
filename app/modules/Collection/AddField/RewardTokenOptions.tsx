@@ -6,7 +6,7 @@ import { Registry } from "@/app/types";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Box, Button, IconClose, Input, Stack, Text, useTheme } from "degen";
 import React, { useEffect, useState } from "react";
-import { Tooltip } from "react-tippy";
+import { Tooltip } from "react-tooltip";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
 
@@ -89,7 +89,7 @@ export default function RewardTokenOptions({
             {customText ? customText : "Token Options for reward"}
           </Text>
           <Text variant="label">
-            <Tooltip
+            {/* <Tooltip
               title={
                 customTooltip
                   ? customTooltip
@@ -97,9 +97,9 @@ export default function RewardTokenOptions({
               }
               theme={mode}
               position="top"
-            >
-              <QuestionCircleOutlined style={{ fontSize: "1rem" }} />
-            </Tooltip>
+            > */}
+            <QuestionCircleOutlined style={{ fontSize: "1rem" }} />
+            {/* </Tooltip> */}
           </Text>
         </Stack>
         {networks &&

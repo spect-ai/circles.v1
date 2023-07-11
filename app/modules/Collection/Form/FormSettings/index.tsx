@@ -32,6 +32,7 @@ function FormSettings({ headerButton }: Props) {
     <Box>
       {headerButton ? (
         <HeaderButton
+          active={isOpen}
           icon={<AiFillSetting size={20} />}
           label="Settings"
           onClick={() => {
