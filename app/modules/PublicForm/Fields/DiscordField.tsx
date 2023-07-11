@@ -1,5 +1,5 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Avatar, Box, Stack, Text } from "degen";
+import { Button, Text } from "@avp1598/vibes";
+import { Avatar, Box, Stack } from "degen";
 import { useEffect, useState } from "react";
 import { FaDiscord } from "react-icons/fa";
 import { useLocation } from "react-use";
@@ -87,9 +87,7 @@ export default function DiscordField({
               />
             )}
             <Box overflow={"hidden"}>
-              <Text size="extraSmall" font="mono" weight="bold">
-                {data[propertyId].username}
-              </Text>
+              <Text>{data[propertyId].username}</Text>
             </Box>
           </Stack>
           {showDisconnect && (
@@ -120,23 +118,16 @@ export default function DiscordField({
                     }
                   }}
                 >
-                  <Text
-                    size="extraSmall"
-                    font="mono"
-                    weight="bold"
-                    color="accent"
-                  >
-                    Disconnect
-                  </Text>
+                  <Text type="label">Disconnect</Text>
                 </Box>
               </Box>
             </Box>
           )}
         </Box>
       ) : (
-        <PrimaryButton
-          variant="tertiary"
-          icon={<FaDiscord size={24} />}
+        <Button
+          variant="secondary"
+          // icon={<FaDiscord size={24} />}
           onClick={async () => {
             const url = `https://discord.com/api/oauth2/authorize?client_id=${
               process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID
@@ -149,7 +140,7 @@ export default function DiscordField({
           }}
         >
           Connect Discord
-        </PrimaryButton>
+        </Button>
       )}
     </Box>
   );

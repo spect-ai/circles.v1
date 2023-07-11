@@ -7,6 +7,8 @@ import FormBuilder from "./FormBuilder";
 import FormEditor from "./FormEditor";
 import EditorHeader from "./FormEditor/EditorHeader";
 import FormDesigner from "./FormDesigner";
+import ViewPlugins from "../../Plugins/ViewPlugins";
+import FormSettings from "./FormSettings";
 
 export function Form() {
   const { loading } = useLocalCollection();
@@ -23,6 +25,8 @@ export function Form() {
       {viewPage === "editor" && <FormEditor />}
       {viewPage === "preview" && <FormBuilder />}
       {viewPage === "design" && <FormDesigner />}
+      {viewPage === "plugins" && <ViewPlugins />}
+      {viewPage === "settings" && <FormSettings />}
     </Box>
   );
 }

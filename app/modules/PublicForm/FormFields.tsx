@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { isEmail, isURL, logError } from "@/app/common/utils/utils";
 import {
   addData,
@@ -41,6 +40,7 @@ import ConnectDiscordPage from "../Collection/Form/FormBuilder/ConnectDiscordPag
 import SubmittedPage from "../Collection/Form/FormBuilder/SubmittedPage";
 import CollectPage from "../Collection/Form/FormBuilder/CollectPage";
 import CollectPayment from "./Fields/CollectPayment";
+import { Button, Page } from "@avp1598/vibes";
 
 const Modal = dynamic(() => import("@/app/common/components/Modal"));
 
@@ -414,8 +414,8 @@ function FormFields({ form, setForm }: Props) {
   }, [currentPage]);
 
   return (
-    <Container borderRadius="2xLarge">
-      <Stack align="center">
+    <Box>
+      {/* <Stack align="center">
         {form && (
           <Stepper
             steps={form.formMetadata.pageOrder.length}
@@ -447,8 +447,8 @@ function FormFields({ form, setForm }: Props) {
           />
         )}
         <Box marginBottom="4" />
-      </Stack>
-      {emailModalOpen && (
+      </Stack> */}
+      {/* {emailModalOpen && (
         <Modal
           title="Please enter email"
           size="small"
@@ -475,14 +475,14 @@ function FormFields({ form, setForm }: Props) {
             />
           </Box>
         </Modal>
-      )}
-      <AnimatePresence>
+      )} */}
+      {/* <AnimatePresence>
         {notificationPreferenceModalOpen && (
           <NotificationPreferenceModal
             handleClose={() => setNotificationPreferenceModalOpen(false)}
           />
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
       {Array.from({ length: 1 }).map((_, i) => {
         if (currentPage === "start") {
           return (
@@ -545,86 +545,73 @@ function FormFields({ form, setForm }: Props) {
             const pageOrder = form.formMetadata.pageOrder;
             const fields = pages[currentPage || ""]?.properties;
 
-            return (
-              <FormFieldContainer
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                overflow="auto"
-                key={i}
-              >
-                <Stack>
-                  {fields.map((field) => {
-                    if (form.properties[field]?.isPartOfFormView) {
-                      return (
-                        <PublicField
-                          form={form}
-                          propertyId={field}
-                          data={data}
-                          setData={setData}
-                          memberOptions={memberOptions}
-                          requiredFieldsNotSet={requiredFieldsNotSet}
-                          key={field}
-                          updateRequiredFieldNotSet={updateRequiredFieldNotSet}
-                          fieldHasInvalidType={fieldHasInvalidType}
-                          updateFieldHasInvalidType={updateFieldHasInvalidType}
-                          disabled={submitted ? !updateResponse : false}
-                        />
-                      );
-                    }
-                  })}
-                  {fields.every((field: string) => {
-                    return !satisfiesAdvancedConditions(
-                      data,
-                      form.properties as { [propertyId: string]: Property },
-                      form.properties[field].advancedConditions ||
-                        ({} as ConditionGroup)
-                    );
-                  }) && (
-                    <Box>
-                      <Text variant="label">
-                        No fields to display on this page
-                      </Text>
-                    </Box>
-                  )}
+            console.log({ pages, pageOrder });
 
-                  {form.formMetadata.paymentConfig &&
-                    !pages[pageOrder[pageOrder.indexOf(currentPage || "") + 1]]
-                      .movable && (
-                      <Box marginBottom="8">
-                        <CollectPayment
-                          paymentConfig={form.formMetadata.paymentConfig}
-                          circleSlug={form.parents[0].slug}
-                          circleId={form.parents[0].id}
-                          data={data}
-                          setData={setData}
-                        />
+            return (
+              <Page>
+                <FormFieldContainer
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="space-between"
+                  overflow="auto"
+                  key={i}
+                  width="full"
+                >
+                  <Stack>
+                    {fields.map((field) => {
+                      if (form.properties[field]?.isPartOfFormView) {
+                        return (
+                          <PublicField
+                            form={form}
+                            propertyId={field}
+                            data={data}
+                            setData={setData}
+                            memberOptions={memberOptions}
+                            requiredFieldsNotSet={requiredFieldsNotSet}
+                            key={field}
+                            updateRequiredFieldNotSet={
+                              updateRequiredFieldNotSet
+                            }
+                            fieldHasInvalidType={fieldHasInvalidType}
+                            updateFieldHasInvalidType={
+                              updateFieldHasInvalidType
+                            }
+                            disabled={submitted ? !updateResponse : false}
+                          />
+                        );
+                      }
+                    })}
+                    {fields.every((field: string) => {
+                      return !satisfiesAdvancedConditions(
+                        data,
+                        form.properties as { [propertyId: string]: Property },
+                        form.properties[field].advancedConditions ||
+                          ({} as ConditionGroup)
+                      );
+                    }) && (
+                      <Box>
+                        <Text variant="label">
+                          No fields to display on this page
+                        </Text>
                       </Box>
                     )}
-                </Stack>
-                <Stack direction="horizontal" justify="space-between">
-                  <Box
-                    paddingX="5"
-                    paddingBottom="4"
-                    width={{
-                      xs: "40",
-                      md: "56",
-                    }}
-                  >
-                    <PrimaryButton
-                      variant="transparent"
-                      onClick={() => {
-                        setCurrentPage(
-                          pageOrder[pageOrder.indexOf(currentPage || "") - 1]
-                        );
-                      }}
-                    >
-                      Back
-                    </PrimaryButton>
-                  </Box>
-                  {pages[pageOrder[pageOrder.indexOf(currentPage || "") + 1]]
-                    .movable ||
-                  (submitted && !updateResponse) ? (
+
+                    {form.formMetadata.paymentConfig &&
+                      !pages[
+                        pageOrder[pageOrder.indexOf(currentPage || "") + 1]
+                      ].movable && (
+                        <Box marginBottom="8">
+                          <CollectPayment
+                            paymentConfig={form.formMetadata.paymentConfig}
+                            circleSlug={form.parents[0].slug}
+                            circleId={form.parents[0].id}
+                            data={data}
+                            setData={setData}
+                          />
+                        </Box>
+                      )}
+                  </Stack>
+                  <Stack direction="horizontal" justify="space-between">
                     <Box
                       paddingX="5"
                       paddingBottom="4"
@@ -633,48 +620,72 @@ function FormFields({ form, setForm }: Props) {
                         md: "56",
                       }}
                     >
-                      <PrimaryButton
-                        onClick={async () => {
-                          if (!checkRequired(data)) {
-                            const toast = await (
-                              await import("react-toastify")
-                            ).toast;
-                            toast.error("Please fill all required fields");
-                            return;
-                          }
-                          if (!checkValue(data)) return;
+                      <Button
+                        variant="tertiary"
+                        onClick={() => {
                           setCurrentPage(
-                            pageOrder[pageOrder.indexOf(currentPage) + 1]
+                            pageOrder[pageOrder.indexOf(currentPage || "") - 1]
                           );
                         }}
                       >
-                        Next
-                      </PrimaryButton>
+                        Back
+                      </Button>
                     </Box>
-                  ) : (
-                    <Box
-                      paddingX="5"
-                      paddingBottom="4"
-                      width={{
-                        xs: "40",
-                        md: "56",
-                      }}
-                    >
-                      <PrimaryButton
-                        onClick={() => form && onSubmit(form as CollectionType)}
-                        loading={submitting}
+                    {pages[pageOrder[pageOrder.indexOf(currentPage || "") + 1]]
+                      .movable ||
+                    (submitted && !updateResponse) ? (
+                      <Box
+                        paddingX="5"
+                        paddingBottom="4"
+                        width={{
+                          xs: "40",
+                          md: "56",
+                        }}
                       >
-                        Submit
-                      </PrimaryButton>
-                    </Box>
-                  )}
-                </Stack>
-              </FormFieldContainer>
+                        <Button
+                          onClick={async () => {
+                            if (!checkRequired(data)) {
+                              const toast = await (
+                                await import("react-toastify")
+                              ).toast;
+                              toast.error("Please fill all required fields");
+                              return;
+                            }
+                            if (!checkValue(data)) return;
+                            setCurrentPage(
+                              pageOrder[pageOrder.indexOf(currentPage) + 1]
+                            );
+                          }}
+                        >
+                          Next
+                        </Button>
+                      </Box>
+                    ) : (
+                      <Box
+                        paddingX="5"
+                        paddingBottom="4"
+                        width={{
+                          xs: "40",
+                          md: "56",
+                        }}
+                      >
+                        <Button
+                          onClick={() =>
+                            form && onSubmit(form as CollectionType)
+                          }
+                        >
+                          Submit
+                        </Button>
+                      </Box>
+                    )}
+                  </Stack>
+                </FormFieldContainer>
+              </Page>
             );
           }
         }
       })}
-    </Container>
+    </Box>
   );
 }
 

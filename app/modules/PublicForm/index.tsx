@@ -16,6 +16,7 @@ import {
   useProviderCircleContext,
 } from "../Circle/CircleContext";
 import PublicFormLayout from "@/app/common/layout/PublicLayout/PublicFormLayout";
+import { Form, FormProvider } from "@avp1598/vibes";
 
 type Props = {
   form?: FormType;
@@ -72,30 +73,19 @@ function PublicForm({ form: fetchedForm, embed }: Props) {
                 }`,
               }}
             />
-            {route !== "embed" && (
-              <CoverImage
-                src={form?.formMetadata.cover || ""}
-                backgroundColor="accentSecondary"
-              />
-            )}
-            <Container embed={route === "embed"}>
-              <FormContainer
-                backgroundColor={
-                  route === "embed" ? "transparent" : "background"
-                }
-                borderRadius={route === "embed" ? "none" : "2xLarge"}
-                style={{
-                  boxShadow: `0rem 0.2rem 0.5rem ${
-                    mode === "dark"
-                      ? "rgba(0, 0, 0, 0.25)"
-                      : "rgba(0, 0, 0, 0.1)"
-                  }`,
-                }}
-              >
+            <FormProvider
+              formProps={form?.formMetadata.theme?.formProps || {}}
+              pageProps={form?.formMetadata.theme?.pageProps || {}}
+              fieldProps={form?.formMetadata.theme?.fieldProps || {}}
+              buttonProps={form?.formMetadata.theme?.buttonProps || {}}
+              textProps={form?.formMetadata.theme?.textProps || {}}
+              logoProps={form?.formMetadata.theme?.logoProps || {}}
+              optionProps={form?.formMetadata.theme?.optionProps || {}}
+            >
+              <Form>
                 <FormFields form={form} setForm={setForm} />
-              </FormContainer>
-              <Box marginBottom="8" />
-            </Container>
+              </Form>
+            </FormProvider>
           </ScrollContainer>
         </PublicFormLayout>
       </CircleContext.Provider>

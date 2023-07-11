@@ -21,7 +21,11 @@ import {
   FaTwitter,
 } from "react-icons/fa";
 import Dropdown from "@/app/common/components/Dropdown";
-import { fieldOptionsDropdownInProjects, fields } from "../../Constants";
+import {
+  fieldOptionsDropdownInForms,
+  fieldOptionsDropdownInProjects,
+  fields,
+} from "../../Constants";
 import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 
@@ -436,7 +440,7 @@ const EditableField = ({
                     <Box width="full" marginTop="4">
                       <Stack>
                         <Dropdown
-                          options={fieldOptionsDropdownInProjects}
+                          options={fieldOptionsDropdownInForms}
                           selected={type}
                           onChange={(type) => {
                             onUpdateField(type);

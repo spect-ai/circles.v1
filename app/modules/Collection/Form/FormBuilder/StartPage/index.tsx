@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import Footer from "./Footer";
 import Messages from "./Messages";
 import { motion } from "framer-motion";
+import { Logo, Page, Text } from "@avp1598/vibes";
 
 type Props = {
   form: CollectionType | undefined;
@@ -37,38 +38,41 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
 
   if (form) {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <Box
+      <Page>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          id="motion page"
           style={{
-            minHeight: "calc(100vh - 20rem)",
+            width: "100%",
           }}
-          display="flex"
-          flexDirection="column"
-          justifyContent="space-between"
         >
-          <Stack space="2">
-            {form.formMetadata.logo && (
-              <Avatar src={form.formMetadata.logo} label="" size="20" />
-            )}
-            <NameInput autoFocus value={form.name} disabled />
-            {form.description && (
-              <Editor
-                value={form.description}
-                isDirty={true}
-                disabled
-                version={form.editorVersion}
-              />
-            )}
-            <Messages form={form} />
-          </Stack>
-          <Footer
-            collection={form}
-            setCaptchaVerified={setCaptchaVerified}
-            captchaVerified={captchaVerified}
-            setCurrentPage={setCurrentPage}
-          />
-        </Box>
-      </motion.div>
+          <Box
+            style={{
+              minHeight: "calc(100vh - 20rem)",
+            }}
+            display="flex"
+            flexDirection="column"
+            justifyContent="space-between"
+          >
+            <Stack space="2">
+              {form.formMetadata.logo && <Logo src={form.formMetadata.logo} />}
+              {/* <NameInput autoFocus value={form.name} disabled /> */}
+              <Text type="heading">{form.name}</Text>
+              {form.description && (
+                <Text type="description" description={form.description} />
+              )}
+              <Messages form={form} />
+            </Stack>
+            <Footer
+              collection={form}
+              setCaptchaVerified={setCaptchaVerified}
+              captchaVerified={captchaVerified}
+              setCurrentPage={setCurrentPage}
+            />
+          </Box>
+        </motion.div>
+      </Page>
     );
   } else return null;
 };

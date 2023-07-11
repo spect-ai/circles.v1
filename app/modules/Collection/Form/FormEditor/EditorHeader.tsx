@@ -14,6 +14,7 @@ import {
 import { FaPlug } from "react-icons/fa";
 import styled from "styled-components";
 import FormSettings from "../FormSettings";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
 type Props = {
   icon: React.ReactNode;
@@ -44,6 +45,7 @@ const EditorHeader = ({
   setViewPage: (page: string) => void;
   viewPage: string;
 }) => {
+  const { localCollection: collection } = useLocalCollection();
   return (
     <Box paddingY="4">
       <Stack direction="horizontal" space="2" justify="center">
@@ -120,14 +122,16 @@ const EditorHeader = ({
           active={viewPage === "design"}
         />
         <Box borderLeftWidth="0.375" height="14" />
-        <HeaderButton
-          icon={<BsFillEyeFill size={20} />}
-          label="Preview"
-          onClick={() => {
-            setViewPage("preview");
-          }}
-          active={viewPage === "preview"}
-        />
+        <a href={`/r/${collection?.slug}`} target="_blank" rel="noreferrer">
+          <HeaderButton
+            icon={<BsFillEyeFill size={20} />}
+            label="Preview"
+            onClick={() => {
+              setViewPage("preview");
+            }}
+            active={viewPage === "preview"}
+          />
+        </a>
         <HeaderButton
           icon={<BsShareFill size={20} />}
           label="Share"

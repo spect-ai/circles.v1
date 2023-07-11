@@ -480,9 +480,6 @@ function CollectionHeading() {
             setIsOpen={setShareOnDiscordOpen}
           />
         )}
-        {isViewPluginsOpen && (
-          <ViewPlugins handleClose={() => setIsViewPluginsOpen(false)} />
-        )}
       </AnimatePresence>
     </Box>
   );
