@@ -130,9 +130,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       }
     )
   )?.json();
-
-  console.log({ form: form.parents[0] });
-  console.log({ form: form.slug });
+  // console.log({ form: form });
+  // console.log({ form: form.parents[0] });
+  // console.log({ form: form.slug });
 
   console.timeEnd("fetch");
 

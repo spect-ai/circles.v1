@@ -2,8 +2,7 @@ import { Avatar, Box, Stack, Text } from "degen";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { NameInput } from "@/app/modules/PublicForm/FormFields";
 import Editor from "@/app/common/components/Editor";
-import EditorHeader from "./EditorHeader";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Page from "./Page";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { logError } from "@/app/common/utils/utils";
@@ -14,8 +13,11 @@ import { CollectionType } from "@/app/types";
 import { AnimatePresence } from "framer-motion";
 
 const FormEditor = () => {
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+  const {
+    localCollection: collection,
+    updateCollection,
+    scrollContainerRef,
+  } = useLocalCollection();
   const [name, setName] = useState(collection.name);
   const [isDirty, setIsDirty] = useState(false);
   const [showConfirmOnDelete, setShowConfirmOnDelete] = useState(false);
@@ -100,7 +102,7 @@ const FormEditor = () => {
   };
 
   return (
-    <ScrollContainer>
+    <ScrollContainer ref={scrollContainerRef}>
       <Stack align="center">
         <AnimatePresence>
           {showConfirmOnDelete && (
@@ -125,30 +127,34 @@ const FormEditor = () => {
             />
           )}
         </AnimatePresence>
-        <Container>
+        <Container borderWidth="0.375" borderRadius="2xLarge" padding="8">
           <Box width="full">
-            <Stack>
-              {collection.formMetadata.logo && (
-                <Avatar src={collection.formMetadata.logo} label="" size="20" />
-              )}
-              <NameInput
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                }}
-                onBlur={async () => {
-                  if (name === collection.name) return;
-                  const res = await updateFormCollection(collection.id, {
-                    name,
-                  });
-                  if (res.id) {
-                    updateCollection(res);
-                  } else {
-                    logError("Failed to update collection name");
-                  }
-                }}
-              />
-              <Stack>
+            <Stack space="4">
+              <Box padding="8">
+                {collection.formMetadata.logo && (
+                  <Avatar
+                    src={collection.formMetadata.logo}
+                    label=""
+                    size="12"
+                  />
+                )}
+                <NameInput
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                  }}
+                  onBlur={async () => {
+                    if (name === collection.name) return;
+                    const res = await updateFormCollection(collection.id, {
+                      name,
+                    });
+                    if (res.id) {
+                      updateCollection(res);
+                    } else {
+                      logError("Failed to update collection name");
+                    }
+                  }}
+                />
                 <Editor
                   placeholder={`Form description`}
                   isDirty={isDirty}
@@ -168,6 +174,8 @@ const FormEditor = () => {
                   }}
                   version={2}
                 />
+              </Box>
+              <Stack>
                 <DragDropContext onDragEnd={onDragEnd}>
                   {collection.formMetadata.pageOrder.map((pageId) => {
                     const page = collection.formMetadata.pages[pageId];
@@ -185,13 +193,6 @@ const FormEditor = () => {
               </Stack>
             </Stack>
           </Box>
-          <Box
-            style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-            }}
-          ></Box>
         </Container>
       </Stack>
     </ScrollContainer>
@@ -204,7 +205,7 @@ const Container = styled(Box)`
     padding: 0 1.5rem;
   }
 
-  width: 42rem;
+  width: 46rem;
 `;
 
 const ScrollContainer = styled(Box)`
@@ -212,7 +213,7 @@ const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
     width: 0px;
   }
-  height: calc(100vh - 16rem);
+  height: calc(100vh - 14rem);
 `;
 
 export default FormEditor;

@@ -9,8 +9,11 @@ import React, { useEffect, useState } from "react";
 import { Tooltip } from "react-tooltip";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
+import { updateField } from "@/app/services/Collection";
+import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type Props = {
+  propertyId: string;
   networks?: Registry;
   setNetworks: React.Dispatch<React.SetStateAction<any>>;
   customText?: string;
@@ -22,6 +25,7 @@ type Props = {
 
 export default function RewardTokenOptions({
   networks,
+  propertyId,
   setNetworks,
   customText,
   customTooltip,
@@ -29,6 +33,9 @@ export default function RewardTokenOptions({
   singleSelect,
   setIsDirty,
 }: Props) {
+  const { localCollection: collection, updateCollection } =
+    useLocalCollection();
+
   const { registry, circle, setRegistryData } = useCircle();
   const [newToken, setNewToken] = useState(newTokenOpen || false);
   const { mode } = useTheme();
@@ -82,7 +89,7 @@ export default function RewardTokenOptions({
   }, [selectedChain]);
 
   return (
-    <ScrollContainer maxHeight="72" overflow="auto">
+    <ScrollContainer width="full">
       <Stack>
         <Stack direction="horizontal" space="2" align="center">
           <Text variant="label">
@@ -156,7 +163,13 @@ export default function RewardTokenOptions({
           })}
 
         {newToken && (
-          <Box display="flex" flexDirection="column" marginTop="4">
+          <Box
+            display="flex"
+            flexDirection="column"
+            marginTop="4"
+            gap="2"
+            width="full"
+          >
             <Text variant="label">Add new token</Text>
             <Stack
               direction={{
@@ -176,7 +189,6 @@ export default function RewardTokenOptions({
                 multiple={false}
                 isClearable={false}
               />
-
               {addFrom === "address" && (
                 <Input
                   label=""
@@ -202,7 +214,7 @@ export default function RewardTokenOptions({
                 />
               )}
               {addFrom === "whitelist" && (
-                <Box width="1/2">
+                <Box>
                   <Dropdown
                     options={tokenOptions}
                     selected={selectedToken}
@@ -284,6 +296,14 @@ export default function RewardTokenOptions({
                         },
                       };
                     });
+                  }
+                  const result = await updateField(collection.id, {
+                    id: propertyId,
+                    rewardOptions: newNetworks,
+                  });
+                  console.log({ result });
+                  if (result.id) {
+                    updateCollection(result);
                   }
                   setLoading(false);
                   setNetworks(newNetworks);

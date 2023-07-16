@@ -1,5 +1,3 @@
-import Dropdown from "@/app/common/components/Dropdown";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { logError } from "@/app/common/utils/utils";
 import {
   getCurrencyPrice,
@@ -14,12 +12,13 @@ import {
 } from "@/app/services/Paymentv2/utils";
 import { PaymentConfig, Registry } from "@/app/types";
 import { DollarCircleOutlined } from "@ant-design/icons";
-import { Box, Input, Stack, Text } from "degen";
+import { Box, IconEth, IconEtherscan, Stack } from "degen";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { Connect } from "../../Sidebar/ProfileButton/ConnectButton";
+import { Button, InputField, SelectField, Text } from "@avp1598/vibes";
 
 type Props = {
   paymentConfig: PaymentConfig;
@@ -283,7 +282,7 @@ export default function CollectPayment({
 
   return (
     <Stack space="2">
-      <Text variant="label">
+      <Text type="label">
         {paymentConfig.type === "paywall"
           ? "This form is paywalled. You need to pay the required amount before submitting the form"
           : "This form allows donation, you can donate any amount from any of the tokens"}
@@ -296,7 +295,7 @@ export default function CollectPayment({
           target="_blank"
           rel="noreferrer"
         >
-          <Text underline>View Transaction</Text>
+          <Text color="secondary">View Transaction</Text>
         </a>
       )}
       {!data["__payment__"] && (
@@ -314,13 +313,16 @@ export default function CollectPayment({
                 md: "1/3",
               }}
             >
-              <Dropdown
-                options={networkOptions}
-                selected={selectedNetwork}
-                onChange={setSelectedNetwork}
-                multiple={false}
-                isClearable={false}
-              />
+              <Stack space="0">
+                <Text type="label">Chain</Text>
+                <SelectField
+                  name="payment-chain"
+                  value={selectedNetwork}
+                  options={networkOptions}
+                  onChange={setSelectedNetwork}
+                  isMulti={false}
+                />
+              </Stack>
             </Box>
             <Box
               width={{
@@ -328,43 +330,43 @@ export default function CollectPayment({
                 md: "1/3",
               }}
             >
-              <Dropdown
-                options={tokenOptions}
-                selected={selectedToken}
-                onChange={setSelectedToken}
-                multiple={false}
-                isClearable={false}
-              />
+              <Stack space="0">
+                <Text type="label">Token</Text>
+                <SelectField
+                  name="payment-token"
+                  value={selectedToken}
+                  options={tokenOptions}
+                  onChange={setSelectedToken}
+                  isMulti={false}
+                />
+              </Stack>
             </Box>
-            <Stack>
-              <Input
-                width="full"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                disabled={paymentConfig.type === "paywall"}
-                units={selectedToken.label}
-                placeholder="Add any amount of"
-                label={
-                  paymentConfig.networks[selectedNetwork.value].tokens[
-                    selectedToken.value
-                  ]?.dollarAmount && paymentConfig.type === "paywall"
-                    ? `
+            <Stack space="0">
+              <Text type="label">
+                {paymentConfig.networks[selectedNetwork.value].tokens[
+                  selectedToken.value
+                ]?.dollarAmount && paymentConfig.type === "paywall"
+                  ? `
                   ${
                     paymentConfig.networks[selectedNetwork.value].tokens[
                       selectedToken.value
                     ].dollarAmount
                   } USD converted to ${selectedToken.label}`
-                    : "Token Amount"
-                }
+                  : "Amount"}
+              </Text>
+              <InputField
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                disabled={paymentConfig.type === "paywall"}
+                placeholder="Add any amount of"
               />
-              <Text variant="label"></Text>
             </Stack>
           </Stack>
           <Box width="1/3">
             {address ? (
-              <PrimaryButton
+              <Button
                 loading={loading}
-                icon={<DollarCircleOutlined />}
+                icon={<IconEth size="4" />}
                 variant="secondary"
                 onClick={async () => {
                   try {
@@ -427,7 +429,7 @@ export default function CollectPayment({
                 }}
               >
                 {paymentConfig.type === "paywall" ? "Pay" : "Donate"}
-              </PrimaryButton>
+              </Button>
             ) : (
               <Connect
                 text={`

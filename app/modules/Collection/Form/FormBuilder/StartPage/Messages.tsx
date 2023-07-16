@@ -1,7 +1,7 @@
 import { CollectionType } from "@/app/types";
 import WalletOutlined from "@ant-design/icons/WalletOutlined";
 import { Text } from "@avp1598/vibes";
-import { Box } from "degen";
+import { Box, Stack } from "degen";
 import { BsDiscord } from "react-icons/bs";
 
 type Props = {
@@ -47,16 +47,16 @@ export default function Messages({ form }: Props) {
         <Text>✋ This form is Sybil protected</Text>
       )}
       {form.formMetadata.pages["connect"] && (
-        <Box display="flex" flexDirection="row" gap="2">
-          <Text>
+        <Stack direction="horizontal" align="center" space="2">
+          <Text color="secondary">
             <WalletOutlined />
           </Text>
           <Text>This form requires you to sign in</Text>
-        </Box>
+        </Stack>
       )}
       {form.formMetadata.pages["connectDiscord"] && (
         <Box display="flex" flexDirection="row" gap="2">
-          <Text>
+          <Text color="secondary">
             <BsDiscord />
           </Text>
           <Text>This form requires you to connect Discord</Text>

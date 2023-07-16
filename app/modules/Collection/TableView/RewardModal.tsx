@@ -45,6 +45,7 @@ function RewardModal({ propertyId, dataId, handleClose, form, value }: Props) {
           updateData={(reward: Reward) => {
             setData(reward);
           }}
+          propertyId={propertyId}
         />
       </Box>
     </Modal>

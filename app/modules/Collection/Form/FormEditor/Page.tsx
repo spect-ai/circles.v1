@@ -54,7 +54,6 @@ const Page = ({
 
   const { formActions } = useRoleGate();
   const { y } = useScroll(scrollContainerRef);
-  const { mode } = useTheme();
 
   const onAddField = async (type: string) => {
     const fieldId = uuid();
@@ -379,7 +378,6 @@ const Page = ({
       </Stack>
     );
   }
-
   return (
     <Droppable droppableId={pageId}>
       {(provided) => (
@@ -396,9 +394,8 @@ const Page = ({
             </div>
           </PageDivder>
           <Box minHeight="32">
-            <Stack space="8">
+            <Stack space="4">
               {fields.map((field, index) => {
-                const property = collection.properties[field];
                 return (
                   <Box
                     onMouseEnter={() => {
@@ -411,7 +408,8 @@ const Page = ({
                     <Stack direction="horizontal">
                       <Box width="full">
                         <EditableField
-                          key={property.id}
+                          pageId={pageId}
+                          key={field}
                           id={field}
                           index={index}
                           setShowConfirmOnDelete={setShowConfirmOnDelete}
@@ -421,7 +419,6 @@ const Page = ({
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: hover === field ? 1 : 0 }}
-                        transition={{ duration: 0.2 }}
                         style={{
                           marginLeft: "-1rem",
                         }}
@@ -429,20 +426,20 @@ const Page = ({
                         <Box
                           backgroundColor="accentSecondary"
                           height="fit"
-                          padding="1"
+                          padding="0"
                           borderRadius="2xLarge"
-                          marginTop="1"
+                          marginTop="2"
                           style={{
                             // position it on the right side of the screen
                             position: "absolute",
                             // position it 1rem below the top of the screen
-                            marginLeft: "2rem",
+                            marginLeft: "2.5rem",
                             marginTop: `-${y}px`,
                           }}
                           borderColor="accentSecondary"
                           // borderWidth="0.375"
                         >
-                          <Stack space="3">
+                          <Stack space="2">
                             <Button
                               shape="circle"
                               size="extraSmall"
@@ -487,116 +484,49 @@ const Page = ({
                     <Text variant="label">
                       There are no fields in this page
                     </Text>
-                    <Stack direction="horizontal">
-                      <PrimaryButton
-                        loading={loading === "field"}
-                        variant="tertiary"
-                        width="fit"
-                        onClick={async () => {
-                          setLoading("field");
-                          const fieldId = uuid();
-                          const res = await addField(
-                            collection.id,
-                            {
-                              id: fieldId,
-                              name: "Untitled Field",
-                              type: "shortText" as "shortText",
-                              isPartOfFormView: true,
-                            },
-                            pageId
-                          );
-                          if (res.id) {
-                            updateCollection(res);
-                          } else {
-                            logError("Failed to update collection");
-                          }
-                          setLoading("none");
-                        }}
-                      >
-                        <Text color="accent">Add field</Text>
-                      </PrimaryButton>
-                      {/* <PrimaryButton
-                        loading={loading === "page"}
-                        variant="tertiary"
-                        width="fit"
-                        onClick={async () => {
-                          setLoading("page");
-                          const pageOrder = collection.formMetadata.pageOrder;
-                          const lastIndex = collection.formMetadata.pages[
-                            "collect"
-                          ]
-                            ? pageOrder.length - 2
-                            : pageOrder.length - 1;
-                          const fieldId = `page-${lastIndex + 1}`;
-                          const update = {
-                            ...collection,
-                            formMetadata: {
-                              ...collection.formMetadata,
-                              pages: {
-                                ...collection.formMetadata.pages,
-                                [fieldId]: {
-                                  id: fieldId,
-                                  name: `Page ${lastIndex + 1}`,
-                                  properties: [],
-                                },
-                              },
-                              pageOrder: [
-                                ...pageOrder.slice(0, lastIndex),
-                                fieldId,
-                                ...pageOrder.slice(lastIndex),
-                              ],
-                            },
-                          };
-                          updateCollection(update);
-                          const res = await updateFormCollection(
-                            collection.id,
-                            update
-                          );
-                          if (!res.id) {
-                            logError("Failed to update collection");
-                          }
-                          setLoading("none");
-                        }}
-                      >
-                        <Text color="accent">Add page</Text>
-                      </PrimaryButton> */}
-                      <PrimaryButton
-                        loading={loading === "text"}
-                        variant="tertiary"
-                        width="fit"
-                        onClick={async () => {
-                          setLoading("text");
-                          const fieldId = uuid();
-                          const res = await addField(
-                            collection.id,
-                            {
-                              id: fieldId,
-                              name: "read-only",
-                              type: "readonly" as "readonly",
-                              isPartOfFormView: true,
-                            },
-                            pageId
-                          );
-                          if (res.id) {
-                            updateCollection(res);
-                          }
-                          if (!res.id) {
-                            logError("Failed to update collection");
-                          }
-                          setLoading("none");
-                        }}
-                      >
-                        <Text color="accent">Add text</Text>
-                      </PrimaryButton>
-                      <PrimaryButton
-                        loading={loading === "text"}
-                        variant="tertiary"
-                        width="fit"
-                        onClick={() => onPageDelete(pageId)}
-                      >
-                        <Text color="red">Delete page</Text>
-                      </PrimaryButton>
-                    </Stack>
+                    <Box
+                      backgroundColor="accentSecondary"
+                      padding="2"
+                      borderRadius="2xLarge"
+                      marginTop="2"
+                      borderColor="accentSecondary"
+                      width="fit"
+                    >
+                      <Stack space="2" direction="horizontal" align="center">
+                        <Button
+                          shape="circle"
+                          size="extraSmall"
+                          variant="transparent"
+                          onClick={() => onAddField("shortText")}
+                        >
+                          <Text color="accent">
+                            <IconPlusSmall size="5" />
+                          </Text>
+                        </Button>
+                        <Button
+                          shape="circle"
+                          size="extraSmall"
+                          variant="transparent"
+                          onClick={() => onAddField("readonly")}
+                        >
+                          <Box marginTop="1">
+                            <Text color="accent">
+                              <RxText size={22} />
+                            </Text>
+                          </Box>
+                        </Button>
+                        <Button
+                          shape="circle"
+                          size="extraSmall"
+                          variant="transparent"
+                          onClick={onAddPage}
+                        >
+                          <Text color="accent">
+                            <IconDocumentAdd size="6" />
+                          </Text>
+                        </Button>
+                      </Stack>
+                    </Box>
                   </Stack>
                 </Box>
               )}
@@ -612,6 +542,7 @@ const PageDivder = styled.div`
   .container {
     display: flex;
     align-items: center;
+    margin-bottom: 10px;
   }
 
   .border {

@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import {
   Box,
+  Button,
   IconPlusSmall,
   IconTrash,
   Input,
@@ -13,7 +14,7 @@ import {
 import styled from "styled-components";
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Option, PropertyType, Registry } from "@/app/types";
+import { ConditionGroup, Option, PropertyType, Registry } from "@/app/types";
 import {
   FaDiscord,
   FaGithub,
@@ -21,11 +22,7 @@ import {
   FaTwitter,
 } from "react-icons/fa";
 import Dropdown from "@/app/common/components/Dropdown";
-import {
-  fieldOptionsDropdownInForms,
-  fieldOptionsDropdownInProjects,
-  fields,
-} from "../../Constants";
+import { fieldOptionsDropdownInForms, fields } from "../../Constants";
 import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 
@@ -40,8 +37,18 @@ import RewardTokenOptions from "../../AddField/RewardTokenOptions";
 import { updateField } from "@/app/services/Collection";
 import { logError } from "@/app/common/utils/utils";
 import CheckBox from "@/app/common/components/Table/Checkbox";
+// import { useClickAway } from "react-use";
+import Switch from "@/app/common/components/Switch";
+import { RiDraggable } from "react-icons/ri";
+import { FormProvider } from "@avp1598/vibes";
+import RewardField from "@/app/modules/PublicForm/Fields/RewardField";
+import Slider from "@/app/common/components/Slider";
+import { useClickAway } from "react-use";
+import Accordian from "@/app/common/components/Accordian";
+import AddAdvancedConditions from "../../Common/AddAdvancedConditions";
 
 type Props = {
+  pageId: string;
   id: string;
   index: number;
   setShowConfirmOnDelete: (show: boolean) => void;
@@ -49,6 +56,7 @@ type Props = {
 };
 
 const EditableField = ({
+  pageId,
   id,
   index,
   setShowConfirmOnDelete,
@@ -61,18 +69,72 @@ const EditableField = ({
   const { registry, circle } = useCircle();
 
   const property = collection.properties[id];
-  const [hover, setHover] = useState(false);
-
   const [isDirty, setIsDirty] = useState(false);
-
   const [allowCustom, setAllowCustom] = useState(false);
   const [maxSelections, setMaxSelections] = useState<number>();
   const [immutable, setImmutable] = useState(false);
   const [required, setRequired] = useState(false);
-
   const [defaultRewardOptions, setDefaultRewardOptions] = useState<Registry>(
     {}
   );
+  const [advancedConditions, setAdvancedConditions] = useState<ConditionGroup>(
+    (id && collection.properties[id]?.advancedConditions) ||
+      ({} as ConditionGroup)
+  );
+  const [advancedDefaultOpen, setAdvancedDefaultOpen] = useState(
+    advancedConditions?.order?.length > 0 ? true : false
+  );
+
+  const [focused, setFocused] = useState(false);
+
+  const [rating, setRating] = useState({
+    min: collection.properties[id]?.sliderOptions?.min || 1,
+    max: collection.properties[id]?.sliderOptions?.max || 5,
+    minLabel: collection.properties[id]?.sliderOptions?.minLabel || "",
+    maxLabel: collection.properties[id]?.sliderOptions?.maxLabel || "",
+  });
+
+  const containerRef = useRef(null);
+  useClickAway(containerRef, () => {
+    console.log("clicked away");
+    setFocused(false);
+  });
+
+  let validConditionFields = [] as string[];
+  if (collection.collectionType === 0) {
+    if (id) {
+      const fieldSortedByLocations = [] as string[];
+      for (const page of collection.formMetadata.pageOrder) {
+        fieldSortedByLocations.push(
+          ...collection.formMetadata.pages[page].properties
+        );
+      }
+      for (const field of fieldSortedByLocations) {
+        if (field !== id) {
+          validConditionFields.push(field);
+        } else break;
+      }
+    } else {
+      const currPageIndex = collection.formMetadata.pageOrder.indexOf(
+        pageId || ""
+      );
+      for (const page of collection.formMetadata.pageOrder.slice(
+        0,
+        currPageIndex + 1
+      )) {
+        validConditionFields.push(
+          ...collection.formMetadata.pages[page].properties
+        );
+      }
+    }
+    validConditionFields = validConditionFields
+      .filter((field) => collection.properties[field].type !== "multiURL")
+      .filter((field) => collection.properties[field].isPartOfFormView);
+  } else if (collection.collectionType === 1) {
+    validConditionFields = Object.keys(collection.properties).filter(
+      (field) => collection.properties[field].type !== "multiURL"
+    );
+  }
 
   useEffect(() => {
     if (circle && registry) {
@@ -136,368 +198,408 @@ const EditableField = ({
     }
   };
 
+  const handleSliderChange = async (fieldToUpdate: keyof typeof rating) => {
+    try {
+      const res = await updateField(collection.id, {
+        id: collection.properties[id].id,
+        sliderOptions: {
+          min: rating.min,
+          max: rating.max,
+          minLabel: rating.minLabel,
+          maxLabel: rating.maxLabel,
+          step: 1,
+        },
+      });
+
+      if (res.id) {
+        updateCollection(res);
+      } else {
+        setRating({ ...rating, [fieldToUpdate]: rating[fieldToUpdate] });
+        logError("Error updating field");
+      }
+    } catch (error) {
+      // Handle API error
+      console.error(error);
+      logError("Error updating field");
+    }
+  };
+
   return (
-    <Draggable draggableId={id} index={index}>
-      {(provided, snapshot) => (
-        <Container
-          padding="0"
-          marginTop="4"
-          borderRadius="large"
-          mode={mode}
-          isDragging={snapshot.isDragging}
-          {...provided.draggableProps}
-          ref={provided.innerRef}
-          display="flex"
-          onMouseEnter={() => setHover(true)}
-          onMouseLeave={() => setHover(false)}
-          backgroundColor="backgroundSecondary"
-        >
-          <Box
-            style={{
-              marginLeft: "-56px",
-              marginRight: "8px",
-              display: "flex",
-              flexDirection: "row-reverse",
-              gap: "8px",
-            }}
-          >
-            <Box {...provided.dragHandleProps}>
-              <motion.div
-                whileHover={{ y: -5 }}
-                initial={{ opacity: 0 }}
-                animate={{
-                  opacity: hover ? 1 : 0,
-                }}
-                transition={{ duration: 0.2 }}
-              >
-                <Text color="textTertiary">
-                  <RxDragHandleDots2 size={22} />
-                </Text>
-              </motion.div>
-            </Box>
-            <motion.div
-              whileHover={{ y: -5, cursor: "pointer" }}
-              initial={{ opacity: 0 }}
-              animate={{
-                opacity: hover ? 1 : 0,
-              }}
-              transition={{ duration: 0.2 }}
+    <Box ref={containerRef}>
+      <FormProvider
+        formProps={{}}
+        pageProps={{}}
+        fieldProps={{}}
+        buttonProps={{}}
+        textProps={{}}
+        logoProps={{}}
+        optionProps={{}}
+        tagProps={{}}
+        stepperProps={{}}
+      >
+        <Draggable draggableId={id} index={index}>
+          {(provided, snapshot) => (
+            <Container
+              paddingX="8"
+              paddingY="4"
+              marginTop="0"
+              borderRadius="large"
+              cursor={focused ? "default" : "pointer"}
+              mode={mode}
+              display="flex"
+              backgroundColor={focused ? "background" : "backgroundSecondary"}
               onClick={() => {
-                setPropertyId(id);
-                setShowConfirmOnDelete(true);
+                setFocused(true);
               }}
+              ref={provided.innerRef}
+              position={"relative"}
+              isDragging={snapshot.isDragging}
+              {...provided.draggableProps}
             >
-              <Text color="red">
-                <IconTrash size="5" />
-              </Text>
-            </motion.div>
-          </Box>
-          <Box width="full">
-            <Stack space="2">
-              {/* {fieldNeedsAttention[id] && (
-          <Text variant="small" color="yellow">
-            Needs your attention
-          </Text>
-        )} */}
-              <Stack space="1">
-                {collection.properties[id]?.type !== "readonly" && (
-                  <Box width="full" display="flex" flexDirection="row" gap="2">
-                    <NameInput
-                      defaultValue={collection.properties[id]?.name}
-                      autoFocus
-                      onBlur={async (e) => {
-                        if (e.target.value === collection.properties[id]?.name)
-                          return;
-                        const res = await updateField(collection.id, {
-                          ...collection.properties[id],
-                          name: e.target.value,
-                        });
-                        if (res.id) {
-                          updateCollection(res);
-                        } else {
-                          logError("Error updating field name");
-                        }
-                      }}
-                    />
-                    {collection.properties[id].required && (
-                      <Tag size="small" tone="accent">
-                        Required
-                      </Tag>
-                    )}
-                    {collection.properties[id].immutable && (
-                      <Tag size="small" tone="blue">
-                        Immutable
-                      </Tag>
-                    )}
-                  </Box>
-                )}
-                <Editor
-                  value={collection.properties[id]?.description}
-                  placeholder={
-                    collection.properties[id]?.type === "readonly"
-                      ? "Add text"
-                      : "Add field description"
-                  }
-                  onChange={() => {
-                    setIsDirty(true);
-                  }}
-                  onSave={async (val) => {
-                    const res = await updateField(collection.id, {
-                      ...collection.properties[id],
-                      description: val,
-                    });
-                    setIsDirty(false);
-                    if (res.id) {
-                      updateCollection(res);
-                    } else {
-                      logError("Error updating field description");
-                    }
-                  }}
-                  isDirty={isDirty}
-                  version={2}
-                />
-              </Stack>
-              {collection.properties[id]?.type !== "readonly" && (
-                <Stack direction="horizontal" align="flex-start">
-                  <Box width="2/3" marginTop="4">
-                    {collection.properties[id]?.type === "shortText" && (
-                      <Input
-                        label=""
-                        placeholder={`Enter short text`}
-                        // value={collection.data && collection.data[id]}
-                        // onChange={(e) => setLabel(e.target.value)}
-                      />
-                    )}
-                    {collection.properties[id]?.type === "email" && (
-                      <Input
-                        label=""
-                        placeholder={`Enter email`}
-                        // value={collection.data && collection.data[id]}
-                        inputMode="email"
-                        // onChange={(e) => setLabel(e.target.value)}
-                      />
-                    )}
-                    {collection.properties[id]?.type === "singleURL" && (
-                      <Input
-                        label=""
-                        placeholder={`Enter URL`}
-                        // value={collection.data && collection.data[id]}
-                        inputMode="text"
-                        // onChange={(e) => setLabel(e.target.value)}
-                      />
-                    )}
-                    {collection.properties[id]?.type === "multiURL" && (
-                      <Input
-                        label=""
-                        placeholder={`Enter URL`}
-                        // value={collection.data && collection.data[id]?.[0]}
-                        inputMode="text"
-                        // onChange={(e) => setLabel(e.target.value)}
-                      />
-                    )}
-                    {collection.properties[id]?.type === "number" && (
-                      <Input
-                        label=""
-                        placeholder={`Enter number`}
-                        // value={collection.data && collection.data[id]}
-                        // onChange={(e) => setLabel(e.target.value)}
-                        type="number"
-                      />
-                    )}
-                    {collection.properties[id]?.type === "date" && (
-                      <DateInput
-                        placeholder={`Enter date`}
-                        // value={collection.data && collection.data[id]}
-                        // onChange={(e) => setLabel(e.target.value)}
-                        type="date"
-                        mode={mode}
-                      />
-                    )}
-                    {collection.properties[id]?.type === "ethAddress" && (
-                      <Input
-                        label=""
-                        placeholder={`Enter ethereum address or ENS`}
-                        // value={collection.data && collection.data[id]}
-                        // onChange={(e) => setLabel(e.target.value)}
-                        // error={
-                        //   collection.data &&
-                        //   !ethers.utils.isAddress(collection.data && collection.data[id])
-                        // }
-                      />
-                    )}
-                    {collection.properties[id]?.type === "longText" && (
-                      <Box
-                        width="full"
-                        borderWidth="0.375"
-                        padding="4"
-                        borderRadius="large"
-                        maxHeight="64"
-                        overflow="auto"
-                        id="editorContainer"
-                      >
-                        <Editor
-                          placeholder={`Enter long text, use / for commands`}
-                          isDirty={true}
-                          version={2}
-                        />
-                      </Box>
-                    )}
-                    {(collection.properties[id]?.type === "singleSelect" ||
-                      collection.properties[id]?.type === "user") && (
-                      <EditableSingleSelect
-                        options={collection.properties[id].options as Option[]}
-                        selected={
-                          collection.properties[id].options?.[0] as Option
-                        }
-                        propertyId={id}
-                        focused={hover}
-                      />
-                    )}
-                    {(collection.properties[id]?.type === "multiSelect" ||
-                      collection.properties[id]?.type === "user[]") && (
-                      <EditableMultiSelect
-                        options={collection.properties[id]?.options as Option[]}
-                        selected={
-                          [collection.properties[id]?.options as Option[]][0]
-                        }
-                        propertyId={id}
-                        focused={hover}
-                      />
-                    )}
-                    {/* {collection.properties[id]?.type === "reward" && (
-                      <Box marginTop="-2">
-                        <RewardField
-                          rewardOptions={
-                            collection.properties[id]?.rewardOptions ||
-                            defaultRewardOptions
-                          }
-                          updateData={() => {}}
-                          value={{} as any}
-                        />
-                      </Box>
-                    )} */}
-                    {collection.properties[id]?.type === "milestone" && (
-                      <PrimaryButton
-                        variant="tertiary"
-                        icon={<IconPlusSmall />}
-                        onClick={async () => {}}
-                      >
-                        Add new milestone
-                      </PrimaryButton>
-                    )}
-                    {collection.properties[id]?.type === "discord" && (
-                      <Box marginTop="2">
-                        <PrimaryButton
-                          variant="tertiary"
-                          icon={<FaDiscord size={24} />}
-                          onClick={async () => {}}
-                        >
-                          Connect Discord
-                        </PrimaryButton>
-                      </Box>
-                    )}
-                    {collection.properties[id]?.type === "twitter" && (
-                      <PrimaryButton
-                        variant="tertiary"
-                        icon={<FaTwitter size={24} />}
-                        onClick={async () => {}}
-                      >
-                        Connect Twitter
-                      </PrimaryButton>
-                    )}
-                    {collection.properties[id]?.type === "telegram" && (
-                      <Box marginTop="2">
-                        <PrimaryButton
-                          variant="tertiary"
-                          icon={<FaTelegramPlane size={24} />}
-                          onClick={async () => {}}
-                        >
-                          Connect Telegram
-                        </PrimaryButton>
-                      </Box>
-                    )}
-                    {collection.properties[id]?.type === "github" && (
-                      <Box marginTop="2">
-                        <PrimaryButton
-                          variant="tertiary"
-                          icon={<FaGithub size={24} />}
-                          onClick={async () => {}}
-                        >
-                          Connect Github
-                        </PrimaryButton>
-                      </Box>
-                    )}
-                  </Box>
+              <Box position="absolute" left="0" top="6">
+                <Box {...provided.dragHandleProps}>
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{
-                      opacity: hover ? 1 : 0,
+                      opacity: focused ? 1 : 0,
                     }}
-                    style={{
-                      width: "33%",
-                    }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <Box width="full" marginTop="4">
-                      <Stack>
-                        <Dropdown
-                          options={fieldOptionsDropdownInForms}
-                          selected={type}
-                          onChange={(type) => {
-                            onUpdateField(type);
+                    <Text color="accent">
+                      <RiDraggable size={"28"} />
+                    </Text>
+                  </motion.div>
+                </Box>
+              </Box>
+              <Box width="full" id="ref">
+                <Stack space="2">
+                  <Stack space="1">
+                    {collection.properties[id]?.type !== "readonly" && (
+                      <Box
+                        width="full"
+                        display="flex"
+                        flexDirection="row"
+                        gap="2"
+                      >
+                        <NameInput
+                          defaultValue={collection.properties[id]?.name}
+                          onBlur={async (e) => {
+                            if (
+                              e.target.value === collection.properties[id]?.name
+                            )
+                              return;
+                            const res = await updateField(collection.id, {
+                              ...collection.properties[id],
+                              name: e.target.value,
+                            });
+                            if (res.id) {
+                              updateCollection(res);
+                            } else {
+                              logError("Error updating field name");
+                            }
                           }}
-                          multiple={false}
-                          isClearable={false}
                         />
-                        <Stack direction="horizontal" align="center" space="2">
-                          <CheckBox
-                            isChecked={required}
-                            onClick={async () => {
-                              setRequired(!required);
-                              const res = await updateField(collection.id, {
-                                ...collection.properties[id],
-                                required: !required,
-                              });
-                              if (res.id) {
-                                updateCollection(res);
-                              } else {
-                                setRequired(required);
-                                logError("Error updating field required");
-                              }
-                            }}
-                          />
-                          <Text size="small" weight="light">
+                        {collection.properties[id].required && (
+                          <Tag size="small" tone="accent">
                             Required
-                          </Text>
+                          </Tag>
+                        )}
+                        {collection.properties[id].immutable && (
+                          <Tag size="small" tone="blue">
+                            Immutable
+                          </Tag>
+                        )}
+                      </Box>
+                    )}
+                    <Editor
+                      value={collection.properties[id]?.description}
+                      placeholder={
+                        collection.properties[id]?.type === "readonly"
+                          ? "Add text"
+                          : "Add field description"
+                      }
+                      onChange={() => {
+                        setIsDirty(true);
+                      }}
+                      onSave={async (val) => {
+                        const res = await updateField(collection.id, {
+                          ...collection.properties[id],
+                          description: val,
+                        });
+                        setIsDirty(false);
+                        if (res.id) {
+                          updateCollection(res);
+                        } else {
+                          logError("Error updating field description");
+                        }
+                      }}
+                      isDirty={isDirty}
+                      version={2}
+                    />
+                  </Stack>
+                  <Stack space="4">
+                    <Box>
+                      {collection.properties[id]?.type === "shortText" && (
+                        <Input
+                          label=""
+                          placeholder={`Enter short text`}
+                          // value={collection.data && collection.data[id]}
+                          // onChange={(e) => setLabel(e.target.value)}
+                        />
+                      )}
+                      {collection.properties[id]?.type === "email" && (
+                        <Input
+                          label=""
+                          placeholder={`Enter email`}
+                          // value={collection.data && collection.data[id]}
+                          inputMode="email"
+                          // onChange={(e) => setLabel(e.target.value)}
+                        />
+                      )}
+                      {collection.properties[id]?.type === "singleURL" && (
+                        <Input
+                          label=""
+                          placeholder={`Enter URL`}
+                          // value={collection.data && collection.data[id]}
+                          inputMode="text"
+                          // onChange={(e) => setLabel(e.target.value)}
+                        />
+                      )}
+                      {collection.properties[id]?.type === "multiURL" && (
+                        <Input
+                          label=""
+                          placeholder={`Enter URL`}
+                          // value={collection.data && collection.data[id]?.[0]}
+                          inputMode="text"
+                          // onChange={(e) => setLabel(e.target.value)}
+                        />
+                      )}
+                      {collection.properties[id]?.type === "number" && (
+                        <Input
+                          label=""
+                          placeholder={`Enter number`}
+                          // value={collection.data && collection.data[id]}
+                          // onChange={(e) => setLabel(e.target.value)}
+                          type="number"
+                        />
+                      )}
+                      {collection.properties[id]?.type === "date" && (
+                        <DateInput
+                          placeholder={`Enter date`}
+                          // value={collection.data && collection.data[id]}
+                          // onChange={(e) => setLabel(e.target.value)}
+                          type="date"
+                          mode={mode}
+                        />
+                      )}
+                      {collection.properties[id]?.type === "ethAddress" && (
+                        <Input
+                          label=""
+                          placeholder={`Enter ethereum address or ENS`}
+                          // value={collection.data && collection.data[id]}
+                          // onChange={(e) => setLabel(e.target.value)}
+                          // error={
+                          //   collection.data &&
+                          //   !ethers.utils.isAddress(collection.data && collection.data[id])
+                          // }
+                        />
+                      )}
+                      {collection.properties[id]?.type === "longText" && (
+                        <Box
+                          width="full"
+                          borderWidth="0.375"
+                          padding="4"
+                          borderRadius="large"
+                          maxHeight="64"
+                          overflow="auto"
+                          id="editorContainer"
+                        >
+                          <Editor
+                            placeholder={`Enter long text, use / for commands`}
+                            isDirty={true}
+                            version={2}
+                          />
+                        </Box>
+                      )}
+                      {(collection.properties[id]?.type === "singleSelect" ||
+                        collection.properties[id]?.type === "user") && (
+                        <EditableSingleSelect
+                          options={
+                            collection.properties[id].options as Option[]
+                          }
+                          selected={
+                            collection.properties[id].options?.[0] as Option
+                          }
+                          propertyId={id}
+                          focused={focused}
+                        />
+                      )}
+                      {(collection.properties[id]?.type === "multiSelect" ||
+                        collection.properties[id]?.type === "user[]") && (
+                        <EditableMultiSelect
+                          options={
+                            collection.properties[id]?.options as Option[]
+                          }
+                          selected={
+                            [collection.properties[id]?.options as Option[]][0]
+                          }
+                          propertyId={id}
+                          focused={focused}
+                        />
+                      )}
+                      {collection.properties[id]?.type === "reward" && (
+                        <Box marginTop="-2">
+                          <RewardField
+                            rewardOptions={
+                              collection.properties[id]?.rewardOptions ||
+                              defaultRewardOptions
+                            }
+                            updateData={() => {}}
+                            value={{} as any}
+                            propertyId={id}
+                          />
+                        </Box>
+                      )}
+                      {collection.properties[id]?.type === "milestone" && (
+                        <PrimaryButton
+                          variant="tertiary"
+                          icon={<IconPlusSmall />}
+                          onClick={async () => {}}
+                        >
+                          Add new milestone
+                        </PrimaryButton>
+                      )}
+                      {collection.properties[id]?.type === "discord" && (
+                        <Box marginTop="2">
+                          <PrimaryButton
+                            variant="tertiary"
+                            icon={<FaDiscord size={24} />}
+                            onClick={async () => {}}
+                          >
+                            Connect Discord
+                          </PrimaryButton>
+                        </Box>
+                      )}
+                      {collection.properties[id]?.type === "twitter" && (
+                        <PrimaryButton
+                          variant="tertiary"
+                          icon={<FaTwitter size={24} />}
+                          onClick={async () => {}}
+                        >
+                          Connect Twitter
+                        </PrimaryButton>
+                      )}
+                      {collection.properties[id]?.type === "telegram" && (
+                        <Box marginTop="2">
+                          <PrimaryButton
+                            variant="tertiary"
+                            icon={<FaTelegramPlane size={24} />}
+                            onClick={async () => {}}
+                          >
+                            Connect Telegram
+                          </PrimaryButton>
+                        </Box>
+                      )}
+                      {collection.properties[id]?.type === "github" && (
+                        <Box marginTop="2">
+                          <PrimaryButton
+                            variant="tertiary"
+                            icon={<FaGithub size={24} />}
+                            onClick={async () => {}}
+                          >
+                            Connect Github
+                          </PrimaryButton>
+                        </Box>
+                      )}
+                      {collection.properties[id]?.type === "slider" && (
+                        <Slider
+                          label=""
+                          min={
+                            collection.properties[id]?.sliderOptions?.min || 1
+                          }
+                          max={
+                            collection.properties[id]?.sliderOptions?.max || 10
+                          }
+                          value={{
+                            label: "10",
+                            value: "10",
+                          }}
+                          minLabel={
+                            collection.properties[id]?.sliderOptions?.minLabel
+                          }
+                          maxLabel={
+                            collection.properties[id]?.sliderOptions?.maxLabel
+                          }
+                          onChange={(value: any) => {}}
+                        />
+                      )}
+                    </Box>
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{
+                        height: focused && !snapshot.isDragging ? "auto" : 0,
+                        opacity: focused && !snapshot.isDragging ? 1 : 0,
+                      }}
+                      style={{
+                        overflow: "hidden",
+                      }}
+                    >
+                      <Stack>
+                        <Stack direction="horizontal" align="center" space="4">
+                          <Box
+                            width="1/3"
+                            display="flex"
+                            flexDirection="row"
+                            alignItems="center"
+                          >
+                            <Dropdown
+                              options={fieldOptionsDropdownInForms}
+                              selected={type}
+                              onChange={(type) => {
+                                onUpdateField(type);
+                              }}
+                              multiple={false}
+                              isClearable={false}
+                              portal
+                            />
+                          </Box>
+                          {/* <RadixSelect /> */}
+                          <Button
+                            tone="red"
+                            shape="circle"
+                            size="small"
+                            variant="secondary"
+                            onClick={() => {
+                              setPropertyId(id);
+                              setShowConfirmOnDelete(true);
+                            }}
+                          >
+                            <IconTrash />
+                          </Button>
                         </Stack>
-                        {(collection.properties[id]?.type === "singleSelect" ||
-                          collection.properties[id]?.type ===
-                            "multiSelect") && (
+                        {collection.properties[id]?.type !== "readonly" && (
                           <Stack
                             direction="horizontal"
                             align="center"
                             space="2"
                           >
-                            <CheckBox
-                              isChecked={allowCustom}
-                              onClick={async () => {
-                                setAllowCustom(!allowCustom);
+                            <Switch
+                              checked={required}
+                              onChange={async (checked) => {
+                                setRequired(checked);
                                 const res = await updateField(collection.id, {
-                                  id: collection.properties[id].id,
-                                  allowCustom: !allowCustom,
+                                  ...collection.properties[id],
+                                  required: checked,
                                 });
                                 if (res.id) {
                                   updateCollection(res);
                                 } else {
-                                  setAllowCustom(allowCustom);
-                                  logError(
-                                    "Error updating field custom answer"
-                                  );
+                                  setRequired(checked);
+                                  logError("Error updating field required");
                                 }
                               }}
                             />
-                            <Text size="small" weight="light">
-                              Allow custom answer
-                            </Text>
+                            <Text variant="label">Required</Text>
                           </Stack>
                         )}
                         {(collection.properties[id]?.type === "singleSelect" ||
@@ -508,25 +610,52 @@ const EditableField = ({
                             align="center"
                             space="2"
                           >
-                            <CheckBox
-                              isChecked={immutable}
-                              onClick={async () => {
-                                setImmutable(!immutable);
+                            <Switch
+                              checked={allowCustom}
+                              onChange={async (checked) => {
+                                setAllowCustom(checked);
                                 const res = await updateField(collection.id, {
-                                  id: collection.properties[id].id,
-                                  immutable: !immutable,
+                                  ...collection.properties[id],
+                                  allowCustom: checked,
                                 });
                                 if (res.id) {
                                   updateCollection(res);
                                 } else {
-                                  setImmutable(immutable);
+                                  setAllowCustom(checked);
+                                  logError(
+                                    "Error updating field custom answer"
+                                  );
+                                }
+                              }}
+                            />
+                            <Text variant="label">Allow custom answer</Text>
+                          </Stack>
+                        )}
+                        {(collection.properties[id]?.type === "singleSelect" ||
+                          collection.properties[id]?.type ===
+                            "multiSelect") && (
+                          <Stack
+                            direction="horizontal"
+                            align="center"
+                            space="2"
+                          >
+                            <Switch
+                              checked={immutable}
+                              onChange={async (checked) => {
+                                setImmutable(checked);
+                                const res = await updateField(collection.id, {
+                                  ...collection.properties[id],
+                                  immutable: checked,
+                                });
+                                if (res.id) {
+                                  updateCollection(res);
+                                } else {
+                                  setImmutable(!checked);
                                   logError("Error updating field immutability");
                                 }
                               }}
                             />
-                            <Text size="small" weight="light">
-                              Immutable
-                            </Text>
+                            <Text variant="label">Immutable</Text>
                           </Stack>
                         )}
                         {collection.properties[id]?.type === "multiSelect" && (
@@ -551,51 +680,122 @@ const EditableField = ({
                                   logError("Error updating field immutability");
                                 }
                               }}
-                              placeholder="2"
+                              // placeholder="2"
                               type="number"
                               step={1}
                             />
-                            <Text size="small" weight="light">
-                              Max. selections
-                            </Text>
+                            <Text variant="label">Max selections</Text>
                           </Stack>
                         )}
+                        {collection.properties[id]?.type === "slider" && (
+                          <Stack>
+                            <Stack direction="horizontal">
+                              <Input
+                                label="Min"
+                                value={rating.min}
+                                type="number"
+                                onChange={(e) => {
+                                  setRating({
+                                    ...rating,
+                                    min: parseInt(e.target.value),
+                                  });
+                                }}
+                                onBlur={() => handleSliderChange("min")}
+                              />
+                              <Input
+                                label="Max"
+                                value={rating.max}
+                                type="number"
+                                onChange={(e) => {
+                                  setRating({
+                                    ...rating,
+                                    max: parseInt(e.target.value),
+                                  });
+                                }}
+                                onBlur={() => handleSliderChange("max")}
+                              />
+                            </Stack>
+                            <Stack direction="horizontal">
+                              <Input
+                                label="Min Label"
+                                value={rating.minLabel}
+                                onChange={(e) => {
+                                  setRating({
+                                    ...rating,
+                                    minLabel: e.target.value,
+                                  });
+                                }}
+                                onBlur={() => handleSliderChange("minLabel")}
+                              />
+                              <Input
+                                label="Max Label"
+                                value={rating.maxLabel}
+                                onChange={(e) => {
+                                  setRating({
+                                    ...rating,
+                                    maxLabel: e.target.value,
+                                  });
+                                }}
+                                onBlur={() => handleSliderChange("maxLabel")}
+                              />
+                            </Stack>
+                          </Stack>
+                        )}
+                        <Accordian
+                          name="Advanced"
+                          defaultOpen={advancedDefaultOpen}
+                        >
+                          <AddAdvancedConditions
+                            rootConditionGroup={advancedConditions}
+                            setRootConditionGroup={(conditionGroup) => {
+                              setIsDirty(true);
+                              setAdvancedConditions(conditionGroup);
+                            }}
+                            firstRowMessage="When"
+                            buttonText="Add Condition"
+                            groupButtonText="Group Conditions"
+                            collection={collection}
+                            dropDownPortal={true}
+                            validConditionFields={validConditionFields}
+                          />
+                        </Accordian>
                       </Stack>
-                    </Box>
-                  </motion.div>
+                    </motion.div>
+                  </Stack>
+                  {collection.properties[id]?.type === "reward" && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{
+                        opacity: focused ? 1 : 0,
+                        height: focused ? "auto" : 0,
+                      }}
+                      exit={{ opacity: 0, height: 0 }}
+                    >
+                      <Box marginTop="2">
+                        <RewardTokenOptions
+                          networks={defaultRewardOptions}
+                          setNetworks={setDefaultRewardOptions}
+                          propertyId={id}
+                        />
+                      </Box>
+                    </motion.div>
+                  )}
                 </Stack>
-              )}
-              {collection.properties[id]?.type === "reward" && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{
-                    opacity: hover ? 1 : 0,
-                    height: hover ? "auto" : 0,
-                  }}
-                  exit={{ opacity: 0, height: 0 }}
-                  style={{
-                    width: "33%",
-                  }}
-                >
-                  <Box marginTop="2">
-                    <RewardTokenOptions
-                      networks={defaultRewardOptions}
-                      setNetworks={setDefaultRewardOptions}
-                    />
-                  </Box>
-                </motion.div>
-              )}
-            </Stack>
-          </Box>
-        </Container>
-      )}
-    </Draggable>
+              </Box>
+            </Container>
+          )}
+        </Draggable>
+      </FormProvider>
+    </Box>
   );
 };
 
 const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
-  opacity: ${(props) => (props.isDragging ? 0.95 : 1)};
-  border-radius: 0.55rem;
+  opacity: ${(props) => (props.isDragging ? 0.5 : 1)};
+  border: 1px solid
+    ${(props) =>
+      props.isDragging ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
+
   transition: border-color 0.5s ease;
 `;
 
@@ -644,7 +844,7 @@ const MaxSelectionsInput = styled.input`
   caret-color: rgb(255, 255, 255, 0.75);
   color: rgb(255, 255, 255, 0.75);
   overflow: hidden;
-  width: 40px;
+  width: 48px;
 `;
 
 export default EditableField;

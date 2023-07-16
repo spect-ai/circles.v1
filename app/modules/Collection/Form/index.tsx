@@ -3,7 +3,6 @@ import { useState } from "react";
 
 import { SkeletonLoader } from "../../Explore/SkeletonLoader";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
-import FormBuilder from "./FormBuilder";
 import FormEditor from "./FormEditor";
 import EditorHeader from "./FormEditor/EditorHeader";
 import FormDesigner from "./FormDesigner";
@@ -23,7 +22,6 @@ export function Form() {
     <Box>
       <EditorHeader setViewPage={setViewPage} viewPage={viewPage} />
       {viewPage === "editor" && <FormEditor />}
-      {viewPage === "preview" && <FormBuilder />}
       {viewPage === "design" && <FormDesigner />}
       {viewPage === "plugins" && <ViewPlugins />}
       {viewPage === "settings" && <FormSettings />}

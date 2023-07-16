@@ -19,6 +19,7 @@ type Props = {
   minLabel: string | undefined;
   maxLabel: string | undefined;
   disabled?: boolean;
+  error?: string;
 };
 
 const Slider = ({
@@ -30,6 +31,7 @@ const Slider = ({
   minLabel,
   maxLabel,
   disabled,
+  error,
 }: Props) => {
   return (
     // <Box paddingY="4" paddingX="3">
@@ -79,7 +81,7 @@ const Slider = ({
     // </Box>
     <SelectField
       name={label || "Rating"}
-      value={value}
+      value={value || {}}
       options={Array.from({ length: max - min + 1 }, (_, i) => ({
         label: `${i + min}`,
         value: `${i + min}`,
@@ -89,6 +91,8 @@ const Slider = ({
       startLabel={minLabel}
       endLabel={maxLabel}
       type="rating"
+      disabled={disabled}
+      error={error}
     />
   );
 };

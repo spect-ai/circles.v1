@@ -14,7 +14,7 @@ import {
   Property,
   UserType,
 } from "@/app/types";
-import { Box, Input, Stack, Text } from "degen";
+import { Box, Heading, Input, Stack, Text } from "degen";
 import React, { useCallback, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import styled from "@emotion/styled";
@@ -29,8 +29,6 @@ import { AnimatePresence } from "framer-motion";
 import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
-import Stepper from "@/app/common/components/Stepper";
-
 import dynamic from "next/dynamic";
 import PublicField from "./Fields/PublicField";
 import { satisfiesAdvancedConditions } from "../Collection/Common/SatisfiesAdvancedFilter";
@@ -40,7 +38,7 @@ import ConnectDiscordPage from "../Collection/Form/FormBuilder/ConnectDiscordPag
 import SubmittedPage from "../Collection/Form/FormBuilder/SubmittedPage";
 import CollectPage from "../Collection/Form/FormBuilder/CollectPage";
 import CollectPayment from "./Fields/CollectPayment";
-import { Button, Page } from "@avp1598/vibes";
+import { Button, Page, Stepper } from "@avp1598/vibes";
 
 const Modal = dynamic(() => import("@/app/common/components/Modal"));
 
@@ -55,6 +53,7 @@ const NotificationPreferenceModal = dynamic(
 type Props = {
   form: FormType | undefined;
   setForm: (form: FormType) => void;
+  preview?: boolean;
 };
 
 export const getUser = async () => {
@@ -64,7 +63,7 @@ export const getUser = async () => {
   return await res.json();
 };
 
-function FormFields({ form, setForm }: Props) {
+function FormFields({ form, setForm, preview }: Props) {
   const [data, setData] = useState<any>({});
   const [memberOptions, setMemberOptions] = useState([]);
   const [updateResponse, setUpdateResponse] = useState(false);
@@ -221,6 +220,10 @@ function FormFields({ form, setForm }: Props) {
   }, [form?.name, form?.formMetadata.previousResponses?.length]);
 
   const onSubmit = async (form: CollectionType) => {
+    if (preview) {
+      setCurrentPage("submitted");
+      return;
+    }
     const toast = await (await import("react-toastify")).toast;
     if (
       !email &&
@@ -390,6 +393,32 @@ function FormFields({ form, setForm }: Props) {
     }
   };
 
+  const onStepChange = async (step: number) => {
+    if (!form) return;
+    if (preview) {
+      setCurrentPage(form.formMetadata.pageOrder[step]);
+      return;
+    }
+    const toast = await (await import("react-toastify")).toast;
+
+    if (submitted) {
+      setCurrentPage(form.formMetadata.pageOrder[step]);
+    } else if (updateResponse || !submitted) {
+      // can only go back
+      if (step < form.formMetadata.pageOrder.indexOf(currentPage || "")) {
+        setCurrentPage(form.formMetadata.pageOrder[step]);
+      } else {
+        if (currentPage === "start") {
+          toast.error("You can get started by clicking on the start button");
+        } else {
+          toast.error("You can only go back");
+        }
+      }
+    } else {
+      setCurrentPage(form.formMetadata.pageOrder[step]);
+    }
+  };
+
   useEffect(() => {
     if (currentPage) {
       void (async () => {
@@ -414,7 +443,7 @@ function FormFields({ form, setForm }: Props) {
   }, [currentPage]);
 
   return (
-    <Box>
+    <Box zIndex="10">
       {/* <Stack align="center">
         {form && (
           <Stepper
@@ -488,7 +517,9 @@ function FormFields({ form, setForm }: Props) {
           return (
             <StartPage
               form={form as CollectionType}
+              currentPage={currentPage}
               setCurrentPage={setCurrentPage}
+              onStepChange={onStepChange}
               setForm={setForm}
               key={i}
             />
@@ -500,7 +531,9 @@ function FormFields({ form, setForm }: Props) {
               setForm={setForm}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
+              onStepChange={onStepChange}
               key={i}
+              preview={preview}
             />
           );
         } else if (currentPage === "connectDiscord" && form) {
@@ -516,6 +549,7 @@ function FormFields({ form, setForm }: Props) {
               discordUser={discordUser}
               setDiscordUser={setDiscordUser}
               key={i}
+              onStepChange={onStepChange}
             />
           );
         } else if (currentPage === "collect") {
@@ -526,13 +560,16 @@ function FormFields({ form, setForm }: Props) {
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
               key={i}
+              onStepChange={onStepChange}
             />
           );
         } else if (currentPage === "submitted" && form) {
           return (
             <SubmittedPage
               form={form as CollectionType}
+              currentPage={currentPage}
               setCurrentPage={setCurrentPage}
+              onStepChange={onStepChange}
               setUpdateResponse={setUpdateResponse}
               setSubmitted={setSubmitted}
               setData={setData}
@@ -558,6 +595,15 @@ function FormFields({ form, setForm }: Props) {
                   width="full"
                 >
                   <Stack>
+                    <Box marginBottom="8">
+                      <Stepper
+                        steps={form.formMetadata.pageOrder.length}
+                        currentStep={form.formMetadata.pageOrder.indexOf(
+                          currentPage || ""
+                        )}
+                        onStepChange={onStepChange}
+                      />
+                    </Box>
                     {fields.map((field) => {
                       if (form.properties[field]?.isPartOfFormView) {
                         return (
@@ -644,6 +690,12 @@ function FormFields({ form, setForm }: Props) {
                       >
                         <Button
                           onClick={async () => {
+                            if (preview) {
+                              setCurrentPage(
+                                pageOrder[pageOrder.indexOf(currentPage) + 1]
+                              );
+                              return;
+                            }
                             if (!checkRequired(data)) {
                               const toast = await (
                                 await import("react-toastify")
@@ -670,6 +722,7 @@ function FormFields({ form, setForm }: Props) {
                         }}
                       >
                         <Button
+                          loading={submitting}
                           onClick={() =>
                             form && onSubmit(form as CollectionType)
                           }

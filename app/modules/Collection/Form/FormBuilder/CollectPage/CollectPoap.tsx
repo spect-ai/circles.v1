@@ -1,12 +1,12 @@
 import { PassportStampIcons } from "@/app/assets";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { logError } from "@/app/common/utils/utils";
 import { getForm } from "@/app/services/Collection";
 import { getPoap } from "@/app/services/Poap";
 import { CollectionType, POAPEventType } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
+import { Button, Text } from "@avp1598/vibes";
 import styled from "@emotion/styled";
-import { Box, Spinner, Stack, Text } from "degen";
+import { Box, Spinner, Stack } from "degen";
 import { useEffect, useState } from "react";
 import { TwitterShareButton } from "react-share";
 import { toast } from "react-toastify";
@@ -90,9 +90,7 @@ export default function CollectPoap({
         )}
       {poapClaimed ? (
         <Stack>
-          <Text variant="extraLarge" weight="bold">
-            You have claimed this Poap 🏅
-          </Text>
+          <Text weight="bold">You have claimed this Poap 🏅</Text>
           <Box>
             <Stack direction="vertical">
               <TwitterShareButton
@@ -107,19 +105,18 @@ export default function CollectPoap({
                     md: "72",
                   }}
                 >
-                  <PrimaryButton
-                    variant="transparent"
+                  <Button
+                    variant="tertiary"
                     icon={
                       <TwitterOutlined
                         style={{
-                          fontSize: "1.8rem",
-                          color: "rgb(29, 155, 240, 1)",
+                          fontSize: "1.1rem",
                         }}
                       />
                     }
                   >
                     <Text>Share on Twitter</Text>
-                  </PrimaryButton>
+                  </Button>
                 </Box>
               </TwitterShareButton>
 
@@ -129,16 +126,15 @@ export default function CollectPoap({
                   md: "72",
                 }}
               >
-                <PrimaryButton
-                  variant="transparent"
+                <Button
+                  variant="tertiary"
                   icon={PassportStampIcons["POAP"]}
                   onClick={() => {
                     window.open(`https://app.poap.xyz/`, "_blank");
                   }}
                 >
-                  {" "}
                   <Text>View on poap.xyz</Text>
-                </PrimaryButton>
+                </Button>
               </Box>
             </Stack>
           </Box>
@@ -161,12 +157,10 @@ export default function CollectPoap({
             <Stack direction="horizontal" align="flex-start">
               <Box>
                 {" "}
-                <Text variant="extraLarge" weight="bold">
-                  👉
-                </Text>
+                <Text weight="bold">👉</Text>
               </Box>
               <Stack>
-                <Text weight="semiBold" variant="large">
+                <Text weight="semiBold">
                   You are eligible to receive a POAP for submitting a response
                   🏅
                 </Text>
@@ -176,7 +170,7 @@ export default function CollectPoap({
                     md: "72",
                   }}
                 >
-                  <PrimaryButton
+                  <Button
                     loading={claiming}
                     onClick={async () => {
                       setClaiming(true);
@@ -223,7 +217,7 @@ export default function CollectPoap({
                     }}
                   >
                     Claim POAP
-                  </PrimaryButton>
+                  </Button>
                 </Box>
               </Stack>
             </Stack>
@@ -236,12 +230,10 @@ export default function CollectPoap({
                 .minimumNumberOfAnswersThatNeedToMatchForPoap && (
               <Stack direction="horizontal" align="flex-start">
                 <Box>
-                  <Text variant="extraLarge" weight="bold">
-                    👉
-                  </Text>
+                  <Text weight="bold">👉</Text>
                 </Box>
                 <Stack>
-                  <Text weight="semiBold" variant="large">
+                  <Text weight="semiBold">
                     You received a score of{" "}
                     {form.formMetadata.matchCountForPoap} out of{" "}
                     {

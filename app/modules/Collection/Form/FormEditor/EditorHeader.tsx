@@ -126,10 +126,8 @@ const EditorHeader = ({
           <HeaderButton
             icon={<BsFillEyeFill size={20} />}
             label="Preview"
-            onClick={() => {
-              setViewPage("preview");
-            }}
-            active={viewPage === "preview"}
+            onClick={() => {}}
+            active={false}
           />
         </a>
         <HeaderButton

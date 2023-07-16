@@ -1,10 +1,9 @@
 import { UserType } from "@/app/types";
-import { GithubOutlined, TwitterOutlined } from "@ant-design/icons";
-import { Avatar, Box, Button, Stack, Tag, Text } from "degen";
-import { Tooltip } from "react-tooltip";
+import { GithubOutlined } from "@ant-design/icons";
+import { Avatar, Box, Stack } from "degen";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
-import { Globe } from "react-feather";
 import { smartTrim } from "@/app/common/utils/utils";
+import { Button, Text } from "@avp1598/vibes";
 
 type Props = {
   member: UserType;
@@ -32,21 +31,22 @@ const ProfileInfo = ({ member }: Props) => {
             />
           </Box>
           <Box
-            backgroundColor="background"
+            backgroundColor="transparent"
             padding="4"
             width="full"
             borderRadius="2xLarge"
-            boxShadow="0.5"
           >
             <Box marginTop="4" />
             <Stack align="center">
-              <Text weight="semiBold">{member.username}</Text>
-              <Text variant="small">{smartTrim(member.ethAddress, 20)}</Text>
+              <Text weight="semiBold" color="secondary">
+                {member.username}
+              </Text>
+              <Text>{smartTrim(member.ethAddress, 20)}</Text>
 
               <Stack direction="horizontal" wrap space="1">
                 {member.discordUsername && (
                   // <Tooltip title={member.discordUsername}>
-                  <Button shape="circle" size="small" variant="transparent">
+                  <Button variant="tertiary">
                     <DiscordIcon />
                   </Button>
                   // </Tooltip>
@@ -57,7 +57,7 @@ const ProfileInfo = ({ member }: Props) => {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <Button shape="circle" size="small" variant="transparent">
+                    <Button variant="tertiary">
                       <GithubOutlined style={{ fontSize: "1.3rem" }} />
                     </Button>
                   </a>

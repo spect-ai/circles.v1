@@ -20,7 +20,7 @@ import { toast } from "react-toastify";
 import { useLocation } from "react-use";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
-import AddField from "../AddField";
+// import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
@@ -464,9 +464,9 @@ function CollectionHeading() {
         )}
       </Box>
       <AnimatePresence>
-        {isAddFieldOpen && (
+        {/* {isAddFieldOpen && (
           <AddField handleClose={() => setIsAddFieldOpen(false)} />
-        )}
+        )} */}
         {isEmbedModalOpen && (
           <Embed
             setIsOpen={setIsEmbedModalOpen}

@@ -8,15 +8,23 @@ import { useEffect, useState } from "react";
 import Footer from "./Footer";
 import Messages from "./Messages";
 import { motion } from "framer-motion";
-import { Logo, Page, Text } from "@avp1598/vibes";
+import { Logo, Page, Stepper, Text } from "@avp1598/vibes";
 
 type Props = {
   form: CollectionType | undefined;
   setForm: (form: CollectionType | FormType) => void;
+  currentPage: string | undefined;
   setCurrentPage: (page: string) => void;
+  onStepChange: (step: number) => void;
 };
 
-const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
+const StartPage = ({
+  form,
+  currentPage,
+  setCurrentPage,
+  onStepChange,
+  setForm,
+}: Props) => {
   const router = useRouter();
   const { formId } = router.query;
 
@@ -47,6 +55,15 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
             width: "100%",
           }}
         >
+          <Box marginBottom="8">
+            <Stepper
+              steps={form.formMetadata.pageOrder.length}
+              currentStep={form.formMetadata.pageOrder.indexOf(
+                currentPage || ""
+              )}
+              onStepChange={onStepChange}
+            />
+          </Box>
           <Box
             style={{
               minHeight: "calc(100vh - 20rem)",
@@ -58,7 +75,9 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
             <Stack space="2">
               {form.formMetadata.logo && <Logo src={form.formMetadata.logo} />}
               {/* <NameInput autoFocus value={form.name} disabled /> */}
-              <Text type="heading">{form.name}</Text>
+              <Text type="heading" color="secondary">
+                {form.name}
+              </Text>
               {form.description && (
                 <Text type="description" description={form.description} />
               )}

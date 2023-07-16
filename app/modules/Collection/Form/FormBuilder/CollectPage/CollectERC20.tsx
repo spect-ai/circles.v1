@@ -1,4 +1,3 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { logError } from "@/app/common/utils/utils";
 import {
   getEscrowBalance,
@@ -9,8 +8,9 @@ import {
 import { socketAtom } from "@/app/state/socket";
 import { CollectionType, Registry } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
+import { Button, Text } from "@avp1598/vibes";
 import styled from "@emotion/styled";
-import { Box, IconDocumentsSolid, Stack, Text } from "degen";
+import { Box, IconDocumentsSolid, Stack } from "degen";
 import { BigNumber, ethers } from "ethers";
 import { useAtom } from "jotai";
 import _ from "lodash";
@@ -190,10 +190,8 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
             }}
           >
             {" "}
-            <Text variant="extraLarge" weight="bold">
-              🙌
-            </Text>
-            <Text variant="large" weight="bold">
+            <Text weight="bold">🙌</Text>
+            <Text weight="bold">
               {form.formMetadata.surveyDistributionType === 1
                 ? distributionInfo?.amountPerResponse
                   ? `You have claimed ${ethers.utils.formatEther(
@@ -224,8 +222,8 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                     md: "48",
                   }}
                 >
-                  <PrimaryButton
-                    variant="transparent"
+                  <Button
+                    variant="tertiary"
                     icon={
                       <TwitterOutlined
                         style={{
@@ -236,7 +234,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                     }
                   >
                     <Text>Share on Twitter</Text>
-                  </PrimaryButton>
+                  </Button>
                 </Box>
               </TwitterShareButton>
               {registry && surveyTokenClaimTransactionHash && (
@@ -246,8 +244,8 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                     md: "48",
                   }}
                 >
-                  <PrimaryButton
-                    variant="transparent"
+                  <Button
+                    variant="tertiary"
                     icon={<IconDocumentsSolid color="white" />}
                     onClick={() => {
                       window.open(
@@ -260,7 +258,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                     }}
                   >
                     <Text>View Transaction</Text>
-                  </PrimaryButton>
+                  </Button>
                 </Box>
               )}
             </Stack>
@@ -284,10 +282,8 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
             form.formMetadata?.surveyTokenId &&
             escrowHasInsufficientBalance && (
               <Stack direction="horizontal" align="flex-start">
-                <Text variant="extraLarge" weight="bold">
-                  👉
-                </Text>
-                <Text weight="bold" variant="large">
+                <Text weight="bold">👉</Text>
+                <Text weight="bold">
                   {" "}
                   Looks like all {form.formMetadata.surveyToken?.label} for this
                   form have been claimed, please reach out to form creator
@@ -301,7 +297,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
               !escrowHasInsufficientBalance)) && (
             <Stack direction="horizontal" align="flex-start" wrap>
               <Stack>
-                <Text weight="semiBold" variant="large">
+                <Text weight="semiBold">
                   {form.formMetadata.surveyDistributionType === 1
                     ? distributionInfo?.amountPerResponse
                       ? `You are eligible to receive ${ethers.utils.formatEther(
@@ -314,7 +310,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                     : `You are eligible to receive ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
                 </Text>
                 {!canClaimSurveyToken && (
-                  <Text variant="small">
+                  <Text>
                     It takes a few seconds for your response to be processed
                     after which you will be able to claim your tokens.
                   </Text>
@@ -326,7 +322,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                   }}
                 >
                   {" "}
-                  <PrimaryButton
+                  <Button
                     loading={claiming}
                     disabled={!canClaimSurveyToken}
                     onClick={async () => {
@@ -363,7 +359,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                     }}
                   >
                     Claim Token
-                  </PrimaryButton>
+                  </Button>
                 </Box>
               </Stack>
             </Stack>
@@ -375,7 +371,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
               !escrowHasInsufficientBalance)) && (
             <Stack direction="horizontal" align="flex-start" wrap>
               <Stack>
-                <Text weight="semiBold" variant="large">
+                <Text weight="semiBold">
                   You have been automatically entered into a lottery for
                   responding to this form. You'll be notified via email if you
                   win.

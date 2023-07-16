@@ -301,6 +301,7 @@ function FieldComponent({ id, formData, setFormData }: Props) {
             rewardOptions={collection.properties[id]?.rewardOptions as Registry}
             updateData={() => {}}
             value={{} as any}
+            propertyId={id}
           />
         </Box>
       )}

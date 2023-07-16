@@ -8,11 +8,15 @@ var imagekit = new ImageKit({
 });
 
 export async function storeImage(imageFile: File) {
-  const randomId = Math.random().toString(36).substring(2, 15);
-  const res = await imagekit.upload({
-    file: imageFile,
-    fileName: imageFile.name + randomId,
-  });
-  console.log({ res });
-  return { imageGatewayURL: res.url };
+  // const randomId = Math.random().toString(36).substring(2, 15);
+  // const res = await imagekit.upload({
+  //   file: imageFile,
+  //   fileName: imageFile.name + randomId,
+  // });
+  // console.log({ res });
+  // return { imageGatewayURL: res.url };
+  return {
+    imageGatewayURL:
+      "https://ik.imagekit.io/spectcdn/Dark-Wordmark-logo.pngx9yaxp92kw_gAwg6z0BY?updatedAt=1687943549108",
+  };
 }

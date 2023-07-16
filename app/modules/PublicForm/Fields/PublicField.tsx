@@ -22,10 +22,7 @@ import styled from "@emotion/styled";
 import Slider from "@/app/common/components/Slider";
 import { satisfiesAdvancedConditions } from "../../Collection/Common/SatisfiesAdvancedFilter";
 import { FieldContainer, InputField, SelectField, Text } from "@avp1598/vibes";
-
-const Editor = dynamic(() => import("@/app/common/components/Editor"), {
-  ssr: false,
-});
+import { storeImage } from "@/app/common/utils/ipfs";
 
 const RewardField = dynamic(() => import("./RewardField"));
 const MilestoneField = dynamic(() => import("./MilestoneField"));
@@ -74,6 +71,8 @@ export default function PublicField({
   ) {
     return null;
   }
+
+  console.log(form.properties[propertyId]?.options);
 
   return (
     <Box paddingY="4" borderRadius="large">
@@ -131,6 +130,11 @@ export default function PublicField({
               updateRequiredFieldNotSet(propertyId, e.target.value);
             }}
             disabled={disabled}
+            error={
+              requiredFieldsNotSet[propertyId]
+                ? "This field is required"
+                : undefined
+            }
           />
         )}
         {form.properties[propertyId]?.type === "email" && (
@@ -144,6 +148,8 @@ export default function PublicField({
             error={
               data && data[propertyId] && !isEmail(data[propertyId])
                 ? "Invalid email"
+                : requiredFieldsNotSet[propertyId]
+                ? "This field is required"
                 : undefined
             }
             onBlur={(e) => {
@@ -164,6 +170,8 @@ export default function PublicField({
             error={
               data && data[propertyId] && !isURL(data[propertyId])
                 ? "Invalid URL"
+                : requiredFieldsNotSet[propertyId]
+                ? "This field is required"
                 : undefined
             }
             onBlur={(e) => {
@@ -214,6 +222,13 @@ export default function PublicField({
               updateRequiredFieldNotSet(propertyId, e.target.value);
             }}
             disabled={disabled}
+            error={
+              invalidNumberCharEntered[propertyId]
+                ? "Invalid number"
+                : requiredFieldsNotSet[propertyId]
+                ? "This field is required"
+                : undefined
+            }
           />
         )}
         {form.properties[propertyId]?.type === "date" && (
@@ -228,27 +243,26 @@ export default function PublicField({
               updateRequiredFieldNotSet(propertyId, e.target.value);
             }}
             disabled={disabled}
+            error={
+              requiredFieldsNotSet[propertyId]
+                ? "This field is required"
+                : undefined
+            }
           />
         )}
         {form.properties[propertyId]?.type === "ethAddress" && (
-          // <EthAddressField
-          //   value={data && data[propertyId]}
-          //   disabled={disabled}
-          //   onChange={(value) => {
-          //     setData({ ...data, [propertyId]: value });
-          //     updateRequiredFieldNotSet(propertyId, value);
-          //   }}
-          // />
-          <InputField
-            placeholder={`Your answer`}
+          <EthAddressField
             value={data && data[propertyId]}
-            onChange={(e) => {
-              setData({ ...data, [propertyId]: e.target.value });
-            }}
-            onBlur={(e) => {
-              updateRequiredFieldNotSet(propertyId, e.target.value);
-            }}
             disabled={disabled}
+            onChange={(value) => {
+              setData({ ...data, [propertyId]: value });
+              updateRequiredFieldNotSet(propertyId, value);
+            }}
+            formError={
+              requiredFieldsNotSet[propertyId]
+                ? "This field is required"
+                : undefined
+            }
           />
         )}
         {form.properties[propertyId]?.type === "longText" && (
@@ -282,11 +296,12 @@ export default function PublicField({
           <InputField
             placeholder={`Your answer`}
             value={data && data[propertyId]}
-            onChange={(e) => {
-              setData({ ...data, [propertyId]: e.target.value });
+            onChange={(value) => {
+              console.log("value", value);
+              setData({ ...data, [propertyId]: value });
             }}
-            onBlur={(e) => {
-              const value = e.target.value;
+            onBlur={(value) => {
+              console.log("value", value);
               if (!value) return;
               data[propertyId] = value;
               setData({ ...data });
@@ -294,6 +309,15 @@ export default function PublicField({
             }}
             fieldType="longText"
             disabled={disabled}
+            uploadImage={async (file) => {
+              const { imageGatewayURL } = await storeImage(file);
+              return imageGatewayURL;
+            }}
+            error={
+              requiredFieldsNotSet[propertyId]
+                ? "This field is required"
+                : undefined
+            }
           />
         )}
         {(form.properties[propertyId]?.type === "singleSelect" ||
@@ -310,14 +334,19 @@ export default function PublicField({
                   ? (memberOptions as any)
                   : form.properties[propertyId]?.options
               }
-              value={data && data[propertyId]}
+              value={data && data[propertyId] ? data[propertyId] : {}}
               onChange={(value: any) => {
                 if (disabled) return;
                 setData({ ...data, [propertyId]: value });
               }}
               name={propertyId}
               isMulti={false}
-              // disabled={disabled}
+              disabled={disabled}
+              error={
+                requiredFieldsNotSet[propertyId]
+                  ? "This field is required"
+                  : undefined
+              }
             />
           </Box>
         )}
@@ -325,7 +354,7 @@ export default function PublicField({
           form.properties[propertyId]?.type === "user[]") && (
           <Box marginTop="4">
             <SelectField
-              // disabled={disabled}
+              disabled={disabled}
               allowCustomValue={
                 blockCustomValues
                   ? !blockCustomValues
@@ -336,56 +365,73 @@ export default function PublicField({
                   ? (memberOptions as any)
                   : form.properties[propertyId]?.options
               }
-              value={data && data[propertyId]}
+              value={data && data[propertyId] ? data[propertyId] : []}
               onChange={(value: any) => {
-                if (disabled) return;
-                if (!data[propertyId]) {
-                  setData({ ...data, [propertyId]: [value] });
-                } else {
-                  if (
-                    data[propertyId].some(
-                      (item: any) => item.value === value.value
-                    )
-                  ) {
-                    if (value.value === "__custom__" && value.label !== "") {
-                      // change value of custom option
-                      setData({
-                        ...data,
-                        [propertyId]: data[propertyId].map((item: any) => {
-                          if (item.value === "__custom__") {
-                            return value;
-                          }
-                          return item;
-                        }),
-                      });
-                      return;
-                    }
-                    setData({
-                      ...data,
-                      [propertyId]: data[propertyId].filter(
-                        (item: any) => item.value !== value.value
-                      ),
-                    });
-                  } else {
-                    const maxSelections =
-                      form.properties[propertyId]?.maxSelections;
-                    if (maxSelections && data[propertyId]) {
-                      if (data[propertyId].length >= maxSelections) {
-                        toast.error(
-                          `You can only select ${maxSelections} options`
-                        );
-                        return;
-                      }
-                    }
-                    setData({
-                      ...data,
-                      [propertyId]: [...data[propertyId], value],
-                    });
+                const maxSelections =
+                  form.properties[propertyId]?.maxSelections;
+                if (maxSelections && value) {
+                  if (value.length > maxSelections) {
+                    toast.error(`You can only select ${maxSelections} options`);
+                    return;
                   }
                 }
+                setData({ ...data, [propertyId]: value });
+                // console.log({ value, data: data[propertyId] });
+                // if (disabled) return;
+                // if (!data[propertyId]) {
+                //   console.log("here1");
+                //   setData({ ...data, [propertyId]: [value] });
+                // } else {
+                //   console.log("here");
+                //   if (
+                //     data[propertyId].some(
+                //       (item: any) => item.value === value.value
+                //     )
+                //   ) {
+                //     if (value.value === "__custom__" && value.label !== "") {
+                //       // change value of custom option
+                //       setData({
+                //         ...data,
+                //         [propertyId]: data[propertyId].map((item: any) => {
+                //           if (item.value === "__custom__") {
+                //             return value;
+                //           }
+                //           return item;
+                //         }),
+                //       });
+                //       return;
+                //     }
+                //     setData({
+                //       ...data,
+                //       [propertyId]: data[propertyId].filter(
+                //         (item: any) => item.value !== value.value
+                //       ),
+                //     });
+                //   } else {
+                // const maxSelections =
+                //   form.properties[propertyId]?.maxSelections;
+                // if (maxSelections && data[propertyId]) {
+                //   if (data[propertyId].length >= maxSelections) {
+                //     toast.error(
+                //       `You can only select ${maxSelections} options`
+                //     );
+                //     return;
+                //   }
+                // }
+                //     setData({
+                //       ...data,
+                //       [propertyId]: [...data[propertyId], value],
+                //     });
+                //   }
+                // }
               }}
               name={propertyId}
               isMulti={true}
+              error={
+                requiredFieldsNotSet[propertyId]
+                  ? "This field is required"
+                  : undefined
+              }
             />
           </Box>
         )}
@@ -401,11 +447,17 @@ export default function PublicField({
               setData({ ...data, [propertyId]: value });
             }}
             disabled={disabled}
+            error={
+              requiredFieldsNotSet[propertyId]
+                ? "This field is required"
+                : undefined
+            }
           />
         )}
         {form.properties[propertyId]?.type === "reward" && (
-          <Box marginTop="0">
+          <Box marginTop="0" width="full">
             <RewardField
+              propertyId={propertyId}
               disabled={disabled}
               rewardOptions={
                 form.properties[propertyId]?.rewardOptions as Registry
@@ -431,6 +483,13 @@ export default function PublicField({
                   });
                 }
               }}
+              error={
+                requiredFieldsNotSet[propertyId]
+                  ? "This field is required"
+                  : invalidNumberCharEntered[propertyId]
+                  ? "Please enter a valid number"
+                  : undefined
+              }
             />
           </Box>
         )}
@@ -451,6 +510,11 @@ export default function PublicField({
             propertyId={propertyId}
             updateRequiredFieldNotSet={updateRequiredFieldNotSet}
             showAvatar={true}
+            error={
+              requiredFieldsNotSet[propertyId]
+                ? "This field is required"
+                : undefined
+            }
           />
         )}
         {form.properties[propertyId]?.type === "github" && (
@@ -460,6 +524,11 @@ export default function PublicField({
             propertyId={propertyId}
             updateRequiredFieldNotSet={updateRequiredFieldNotSet}
             showAvatar={true}
+            error={
+              requiredFieldsNotSet[propertyId]
+                ? "This field is required"
+                : undefined
+            }
           />
         )}
         {form.properties[propertyId]?.type === "telegram" && (
@@ -468,6 +537,11 @@ export default function PublicField({
             setData={setData}
             propertyId={propertyId}
             updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+            error={
+              requiredFieldsNotSet[propertyId]
+                ? "This field is required"
+                : undefined
+            }
           />
         )}
 

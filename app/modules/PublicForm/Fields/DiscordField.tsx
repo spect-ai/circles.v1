@@ -12,6 +12,7 @@ type Props = {
   showAvatar?: boolean;
   verify?: boolean;
   showDisconnect?: boolean;
+  error?: string;
 };
 
 export default function DiscordField({
@@ -22,6 +23,7 @@ export default function DiscordField({
   showAvatar,
   verify = false,
   showDisconnect = false,
+  error,
 }: Props) {
   const { hostname } = useLocation();
   const [code, setCode] = useState("");
@@ -127,7 +129,7 @@ export default function DiscordField({
       ) : (
         <Button
           variant="secondary"
-          // icon={<FaDiscord size={24} />}
+          icon={<FaDiscord size={18} />}
           onClick={async () => {
             const url = `https://discord.com/api/oauth2/authorize?client_id=${
               process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID
@@ -141,6 +143,11 @@ export default function DiscordField({
         >
           Connect Discord
         </Button>
+      )}
+      {error && (
+        <Box marginTop="2">
+          <Text>{error}</Text>
+        </Box>
       )}
     </Box>
   );

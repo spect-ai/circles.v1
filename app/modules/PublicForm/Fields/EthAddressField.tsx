@@ -1,20 +1,25 @@
-import { Input } from "degen";
 import { useState } from "react";
 import { fetchEnsAddress } from "@wagmi/core";
 import { ethers } from "ethers";
+import { InputField } from "@avp1598/vibes";
 
 type Props = {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  formError?: string;
 };
 
-export default function EthAddressField({ value, onChange, disabled }: Props) {
+export default function EthAddressField({
+  value,
+  onChange,
+  disabled,
+  formError,
+}: Props) {
   const [error, setError] = useState("");
   const [tempValue, setTempValue] = useState(value || "");
   return (
-    <Input
-      label=""
+    <InputField
       value={tempValue}
       onChange={(e) => {
         const value = e.target.value as `0x${string}`;
@@ -46,8 +51,8 @@ export default function EthAddressField({ value, onChange, disabled }: Props) {
         }
       }}
       disabled={disabled}
-      placeholder="Enter EthAddress (0x...) or ENS name"
-      error={error}
+      placeholder="EthAddress (0x...) or ENS name"
+      error={error || formError}
     />
   );
 }

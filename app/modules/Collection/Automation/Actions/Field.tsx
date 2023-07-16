@@ -173,6 +173,7 @@ export function Field({
             updateData={(reward) => {
               setData(reward);
             }}
+            propertyId={propertyId || ""}
           />
         </Box>
       )}

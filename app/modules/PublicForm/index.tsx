@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { FormType } from "@/app/types";
 import { Box, useTheme } from "degen";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { useLocation } from "react-use";
 import { ToastContainer } from "react-toastify";
@@ -21,9 +21,10 @@ import { Form, FormProvider } from "@avp1598/vibes";
 type Props = {
   form?: FormType;
   embed?: boolean;
+  preview?: boolean;
 };
 
-function PublicForm({ form: fetchedForm, embed }: Props) {
+function PublicForm({ form: fetchedForm, embed, preview }: Props) {
   const [form, setForm] = useState<FormType | undefined>(fetchedForm);
   const { mode } = useTheme();
   const { pathname } = useLocation();
@@ -31,6 +32,10 @@ function PublicForm({ form: fetchedForm, embed }: Props) {
 
   const context = useProviderCircleContext();
   const profileContext = useProviderLocalProfile();
+
+  useEffect(() => {
+    setForm(fetchedForm);
+  }, [fetchedForm]);
 
   if (embed) {
     return (
@@ -74,16 +79,22 @@ function PublicForm({ form: fetchedForm, embed }: Props) {
               }}
             />
             <FormProvider
-              formProps={form?.formMetadata.theme?.formProps || {}}
+              formProps={{
+                ...form?.formMetadata?.theme?.formProps,
+                cover: `url(${form?.formMetadata?.cover})`,
+                backgroundPosition: preview ? "absolute" : "fixed",
+              }}
               pageProps={form?.formMetadata.theme?.pageProps || {}}
               fieldProps={form?.formMetadata.theme?.fieldProps || {}}
               buttonProps={form?.formMetadata.theme?.buttonProps || {}}
               textProps={form?.formMetadata.theme?.textProps || {}}
               logoProps={form?.formMetadata.theme?.logoProps || {}}
               optionProps={form?.formMetadata.theme?.optionProps || {}}
+              tagProps={form?.formMetadata.theme?.tagProps || {}}
+              stepperProps={form?.formMetadata.theme?.stepperProps || {}}
             >
               <Form>
-                <FormFields form={form} setForm={setForm} />
+                <FormFields form={form} setForm={setForm} preview={preview} />
               </Form>
             </FormProvider>
           </ScrollContainer>

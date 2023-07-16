@@ -39,8 +39,8 @@ import {
 } from "../Constants";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import AddOptions from "./AddOptions";
-import MilestoneOptions from "./MilestoneOptions";
-import PayWall from "./PayWallOptions";
+// import MilestoneOptions from "./MilestoneOptions";
+// import PayWall from "./PayWallOptions";
 import RewardTokenOptions from "./RewardTokenOptions";
 import Editor from "@/app/common/components/Editor";
 import SliderOptions from "./SliderOptions";
@@ -568,9 +568,10 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
                 networks={networks}
                 setNetworks={setNetworks as any}
                 setIsDirty={setIsDirty}
+                propertyId={propertyId || ""}
               />
             )}
-            {type.value === "milestone" && (
+            {/* {type.value === "milestone" && (
               <MilestoneOptions
                 networks={networks}
                 setNetworks={setNetworks}
@@ -582,7 +583,7 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
                 payWallOption={payWallOption}
                 setPayWallOption={setPayWallOption}
               />
-            )}
+            )} */}
             {type.value === "slider" && (
               <SliderOptions
                 min={sliderMin}
@@ -682,5 +683,3 @@ export default function AddField({ propertyId, pageId, handleClose }: Props) {
     </Box>
   );
 }
-
-//

@@ -1,4 +1,3 @@
-import { Button } from "degen";
 import queryClient from "@/app/common/utils/queryClient";
 import { useAtom } from "jotai";
 import { useDisconnect } from "wagmi";
@@ -8,12 +7,39 @@ import {
   isProfilePanelExpandedAtom,
 } from "@/app/state/global";
 import PrimaryButton from "../PrimaryButton";
+import { Button } from "@avp1598/vibes";
 
-export default function Logout() {
+type Props = {
+  publicForm?: boolean;
+};
+
+export default function Logout({ publicForm }: Props) {
   const { disconnect } = useDisconnect();
   const [, setAuthenticationStatus] = useAtom(authStatusAtom);
   const [, setConnectedUser] = useAtom(connectedUserAtom);
   const [, setIsProfilePanelExpanded] = useAtom(isProfilePanelExpandedAtom);
+
+  if (publicForm)
+    return (
+      <Button
+        variant="secondary"
+        onClick={async () => {
+          setIsProfilePanelExpanded(false);
+          await fetch(`${process.env.API_HOST}/auth/disconnect`, {
+            method: "POST",
+            credentials: "include",
+          });
+          disconnect();
+          queryClient.setQueryData("getMyUser", null);
+          void queryClient.invalidateQueries("getMyUser");
+          setAuthenticationStatus("unauthenticated");
+          setConnectedUser("");
+        }}
+      >
+        Logout
+      </Button>
+    );
+
   return (
     <PrimaryButton
       variant="tertiary"

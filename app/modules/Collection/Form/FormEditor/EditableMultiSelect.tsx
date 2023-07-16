@@ -1,5 +1,5 @@
 import { Option } from "@/app/types";
-import { Box, Button, IconTrash, Input, Stack, Text } from "degen";
+import { Box, Button, IconClose, IconTrash, Input, Stack, Text } from "degen";
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
 
@@ -8,6 +8,7 @@ import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { logError } from "@/app/common/utils/utils";
 import { updateField } from "@/app/services/Collection";
 import { motion } from "framer-motion";
+import { SelectInputComponent } from "@avp1598/vibes";
 
 type Props = {
   options: Option[];
@@ -39,7 +40,7 @@ const EditableMultiSelect = ({
   return (
     <Box>
       <Stack>
-        {options.map((option) => (
+        {options?.map((option) => (
           <Box
             key={option.value}
             onMouseEnter={() => setOptionHover(option.value)}
@@ -51,15 +52,13 @@ const EditableMultiSelect = ({
               align="center"
               space="2"
             >
-              <input
+              <SelectInputComponent
                 name={propertyId}
-                type="checkbox"
-                value={option.value}
-                checked={selected?.some((o) => o.value === option.value)}
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  cursor: "pointer",
+                value={selected}
+                isMulti={true}
+                option={{
+                  label: "",
+                  value: option.value,
                 }}
               />
               <NameInput
@@ -89,14 +88,13 @@ const EditableMultiSelect = ({
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{
-                  opacity: optionHover === option.value ? 1 : 0,
+                  opacity: focused ? 1 : 0,
                 }}
               >
                 <Button
                   shape="circle"
                   size="extraSmall"
-                  variant="secondary"
-                  tone="red"
+                  variant="transparent"
                   onClick={async () => {
                     const tempCollection = collection;
                     updateCollection({
@@ -127,7 +125,7 @@ const EditableMultiSelect = ({
                     }
                   }}
                 >
-                  <IconTrash size="4" />
+                  <IconClose size="4" />
                 </Button>
               </motion.div>
             </Stack>
@@ -142,12 +140,7 @@ const EditableMultiSelect = ({
             disabled
           />
         )}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: focused ? 1 : 0,
-          }}
-        >
+        {focused && (
           <Box
             style={{
               opacity: 0.2,
@@ -185,20 +178,11 @@ const EditableMultiSelect = ({
               }
             }}
           >
-            <Stack direction="horizontal" align="center" space="2">
-              <input
-                name={propertyId}
-                type="checkbox"
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  cursor: "pointer",
-                }}
-              />
-              <NameInput defaultValue={"New Option"} disabled />
-            </Stack>
+            <Box marginTop="0">
+              <Text>Add New Option</Text>
+            </Box>
           </Box>
-        </motion.div>
+        )}
       </Stack>
     </Box>
   );

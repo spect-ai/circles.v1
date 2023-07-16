@@ -612,6 +612,7 @@ export type FormMetadata = {
   hasClaimedZealy?: boolean;
   zealySubdomain?: string;
   theme?: FormContextProps;
+  selectedTheme?: string;
 };
 
 export type Chart = {

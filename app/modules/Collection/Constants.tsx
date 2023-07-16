@@ -48,7 +48,7 @@ export const fieldOptionsDropdownInForms = [
         icon: getPropertyIcon("readonly"),
       },
       {
-        label: "Slider (new)",
+        label: "Rating (new)",
         value: "slider",
         icon: getPropertyIcon("slider"),
       },
@@ -113,11 +113,11 @@ export const fieldOptionsDropdownInForms = [
         icon: getPropertyIcon("ethAddress"),
       },
       { label: "Reward", value: "reward", icon: getPropertyIcon("reward") },
-      {
-        label: "Milestone",
-        value: "milestone",
-        icon: getPropertyIcon("milestone"),
-      },
+      // {
+      //   label: "Milestone",
+      //   value: "milestone",
+      //   icon: getPropertyIcon("milestone"),
+      // },
     ],
   },
   {

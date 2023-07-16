@@ -133,11 +133,20 @@ export default function TableView() {
   useEffect(() => {
     if (collection.data) {
       // for each date property in the data, convert the date string to a date object for all the rows
-      const dateProperties = collection.propertyOrder.map((property) => {
-        if (collection.properties[property]?.type === "date")
-          return collection.properties[property].id;
-      });
-      const data = Object.keys(collection.data).map((key) => {
+      const dateProperties = collection.propertyOrder
+        .map((property) => {
+          if (collection.properties[property]?.type === "date")
+            return collection.properties[property].id;
+        })
+        .filter(Boolean);
+      const sliderProperties = collection.propertyOrder
+        .map((property) => {
+          if (collection.properties[property]?.type === "slider")
+            return collection.properties[property].id;
+        })
+        .filter(Boolean);
+      console.log({ sliderProperties });
+      let data = Object.keys(collection.data).map((key) => {
         const row = collection.data?.[key];
         dateProperties.forEach((property) => {
           if (row[property as string]) {
@@ -153,6 +162,12 @@ export default function TableView() {
             });
           }
         });
+        sliderProperties.forEach((property) => {
+          if (row[property as string]) {
+            row[property as string] = `${row[property as string].label}`;
+          }
+        });
+
         return {
           id: key,
           ...row,
