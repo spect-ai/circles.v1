@@ -21,12 +21,16 @@ const FormEditor = () => {
   } = useLocalCollection();
   const [name, setName] = useState(collection.name);
   const [description, setDescription] = useState("");
+  const [descriptionLoading, setDescriptionLoading] = useState(false);
 
   const [isDirty, setIsDirty] = useState(false);
   const [showConfirmOnDelete, setShowConfirmOnDelete] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [propertyId, setPropertyId] = useState<string | null>(null);
+
+  const router = useRouter();
+
+  const { collection: cId } = router.query;
 
   const onDragEnd = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -106,17 +110,22 @@ const FormEditor = () => {
   };
 
   useEffect(() => {
-    console.log({
-      description: collection.description,
-      slug: collection.slug,
-      name: collection.name,
-    });
-    setName(collection.name);
-    setDescription(collection.description);
-  }, [collection.slug]);
+    if (cId === collection.slug) {
+      console.log({
+        description: collection.description,
+        slug: collection.slug,
+      });
+      setName(collection.name);
+      setDescriptionLoading(true);
+      setTimeout(() => {
+        setDescription(collection.description);
+        setDescriptionLoading(false);
+      }, 200);
+    }
+  }, [collection.slug, cId]);
 
   return (
-    <ScrollContainer ref={scrollContainerRef}>
+    <ScrollContainer ref={scrollContainerRef} key={collection.id}>
       <Stack align="center">
         <AnimatePresence>
           {showConfirmOnDelete && (
@@ -169,7 +178,7 @@ const FormEditor = () => {
                     }
                   }}
                 />
-                {description && (
+                {!descriptionLoading && (
                   <Editor
                     value={description}
                     placeholder={`Form description`}

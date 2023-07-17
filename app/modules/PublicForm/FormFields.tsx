@@ -442,6 +442,20 @@ function FormFields({ form, setForm, preview }: Props) {
     }
   }, [currentPage]);
 
+  useEffect(() => {
+    if (preview) {
+      // set page to the first page with a property
+      const firstPageWithProperty = form?.formMetadata.pageOrder.find(
+        (pageId) => {
+          return form?.formMetadata.pages[pageId].properties.length > 0;
+        }
+      );
+      if (firstPageWithProperty) {
+        setCurrentPage(firstPageWithProperty);
+      }
+    }
+  }, [preview]);
+
   return (
     <Box
       zIndex="10"

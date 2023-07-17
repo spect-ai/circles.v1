@@ -303,7 +303,8 @@ const Page = ({
             </Box>
           )}
           <Box
-            width="1/4"
+            padding="4"
+            width="40"
             onClick={(e) => {
               e.stopPropagation();
             }}

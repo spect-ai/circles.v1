@@ -94,7 +94,7 @@ const EditableField = ({
 
   const [rating, setRating] = useState({
     min: collection.properties[id]?.sliderOptions?.min || 1,
-    max: collection.properties[id]?.sliderOptions?.max || 5,
+    max: collection.properties[id]?.sliderOptions?.max || 10,
     minLabel: collection.properties[id]?.sliderOptions?.minLabel || "",
     maxLabel: collection.properties[id]?.sliderOptions?.maxLabel || "",
   });
@@ -626,7 +626,8 @@ const EditableField = ({
                                 if (
                                   !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
                                     collection.properties[id].type
-                                  ].includes(type.value)
+                                  ].includes(type.value) &&
+                                  collection.data
                                 ) {
                                   setShowConfirm(true);
                                 } else {

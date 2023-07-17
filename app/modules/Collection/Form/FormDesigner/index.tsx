@@ -6,6 +6,7 @@ import styled from "@emotion/styled";
 import {
   DeformProps,
   GFormProps,
+  SpectLightProps,
   SpectProps,
   TypeformProps,
 } from "@avp1598/vibes";
@@ -138,6 +139,37 @@ const FormDesigner = () => {
                   hover
                 >
                   Spect
+                </Tag>
+              </Box>
+              <Box
+                onClick={() => {
+                  updateCollection({
+                    ...collection,
+                    formMetadata: {
+                      ...collection.formMetadata,
+                      theme: SpectLightProps,
+                      selectedTheme: "spectLight",
+                    },
+                  });
+                  updateFormCollection(collection.id, {
+                    formMetadata: {
+                      ...collection.formMetadata,
+                      theme: SpectLightProps,
+                      selectedTheme: "spectLight",
+                    },
+                  });
+                }}
+                cursor="pointer"
+              >
+                <Tag
+                  tone={
+                    collection.formMetadata.selectedTheme === "spectLight"
+                      ? "accent"
+                      : undefined
+                  }
+                  hover
+                >
+                  Spect Light
                 </Tag>
               </Box>
               <Box
