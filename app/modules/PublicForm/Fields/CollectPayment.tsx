@@ -282,7 +282,7 @@ export default function CollectPayment({
 
   return (
     <Stack space="2">
-      <Text type="label">
+      <Text type="label" color="tertiary">
         {paymentConfig.type === "paywall"
           ? "This form is paywalled. You need to pay the required amount before submitting the form"
           : "This form allows donation, you can donate any amount from any of the tokens"}
@@ -305,7 +305,7 @@ export default function CollectPayment({
               xs: "vertical",
               md: "horizontal",
             }}
-            align="center"
+            align="flex-start"
           >
             <Box
               width={{

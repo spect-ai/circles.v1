@@ -30,7 +30,6 @@ import EditableSingleSelect from "./EditableSingleSelect";
 import EditableMultiSelect from "./EditableMultiSelect";
 import { Draggable } from "react-beautiful-dnd";
 
-import { RxDragHandleDots2 } from "react-icons/rx";
 import { motion } from "framer-motion";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import RewardTokenOptions from "../../AddField/RewardTokenOptions";
@@ -46,6 +45,8 @@ import Slider from "@/app/common/components/Slider";
 import { useClickAway } from "react-use";
 import Accordian from "@/app/common/components/Accordian";
 import AddAdvancedConditions from "../../Common/AddAdvancedConditions";
+import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
+import { prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance } from "@/app/common/utils/constants";
 
 type Props = {
   pageId: string;
@@ -87,6 +88,10 @@ const EditableField = ({
 
   const [focused, setFocused] = useState(false);
 
+  const [memberOptions, setMemberOptions] = useState([]);
+  const [fetchingMemberOptions, setFetchingMemberOptions] = useState(true);
+  const [showConfirm, setShowConfirm] = useState(false);
+
   const [rating, setRating] = useState({
     min: collection.properties[id]?.sliderOptions?.min || 1,
     max: collection.properties[id]?.sliderOptions?.max || 5,
@@ -96,7 +101,6 @@ const EditableField = ({
 
   const containerRef = useRef(null);
   useClickAway(containerRef, () => {
-    console.log("clicked away");
     setFocused(false);
   });
 
@@ -224,8 +228,48 @@ const EditableField = ({
     }
   };
 
+  useEffect(() => {
+    if (
+      collection.parents &&
+      (collection.properties[id]?.type === "user" ||
+        collection.properties[id]?.type === "user[]")
+    ) {
+      void (async () => {
+        setFetchingMemberOptions(true);
+        const res = await (
+          await fetch(
+            `${process.env.API_HOST}/circle/${collection.parents[0].id}/memberDetails?circleIds=${collection.parents[0].id}`
+          )
+        ).json();
+        const fetchedMemberOptions = res.members?.map((member: string) => ({
+          label: res.memberDetails && res.memberDetails[member]?.username,
+          value: member,
+        }));
+        if (fetchedMemberOptions.length !== memberOptions.length) {
+          setMemberOptions(fetchedMemberOptions);
+        }
+        setFetchingMemberOptions(false);
+      })();
+    } else {
+      setFetchingMemberOptions(false);
+    }
+  }, [collection.parents]);
+
   return (
     <Box ref={containerRef}>
+      {showConfirm && (
+        <ConfirmModal
+          title={
+            "This will remove existing data associated with this field as the field type is changed. Are you sure you want to continue?"
+          }
+          handleClose={() => setShowConfirm(false)}
+          onConfirm={() => {
+            onUpdateField(type);
+            setShowConfirm(false);
+          }}
+          onCancel={() => setShowConfirm(false)}
+        />
+      )}
       <FormProvider
         formProps={{}}
         pageProps={{}}
@@ -421,32 +465,54 @@ const EditableField = ({
                           />
                         </Box>
                       )}
-                      {(collection.properties[id]?.type === "singleSelect" ||
-                        collection.properties[id]?.type === "user") && (
-                        <EditableSingleSelect
-                          options={
-                            collection.properties[id].options as Option[]
-                          }
-                          selected={
-                            collection.properties[id].options?.[0] as Option
-                          }
-                          propertyId={id}
-                          focused={focused}
-                        />
-                      )}
-                      {(collection.properties[id]?.type === "multiSelect" ||
-                        collection.properties[id]?.type === "user[]") && (
-                        <EditableMultiSelect
-                          options={
-                            collection.properties[id]?.options as Option[]
-                          }
-                          selected={
-                            [collection.properties[id]?.options as Option[]][0]
-                          }
-                          propertyId={id}
-                          focused={focused}
-                        />
-                      )}
+                      {!fetchingMemberOptions &&
+                        (collection.properties[id]?.type === "singleSelect" ||
+                          collection.properties[id]?.type === "user") && (
+                          <EditableSingleSelect
+                            options={
+                              collection.properties[id]?.type === "singleSelect"
+                                ? (collection.properties[id]
+                                    .options as Option[])
+                                : memberOptions
+                            }
+                            selected={
+                              collection.properties[id]?.type === "singleSelect"
+                                ? (collection.properties[id]
+                                    .options?.[0] as Option)
+                                : memberOptions[0]
+                            }
+                            propertyId={id}
+                            focused={focused}
+                            userProperty={
+                              collection.properties[id]?.type === "user"
+                            }
+                          />
+                        )}
+                      {!fetchingMemberOptions &&
+                        (collection.properties[id]?.type === "multiSelect" ||
+                          collection.properties[id]?.type === "user[]") && (
+                          <EditableMultiSelect
+                            options={
+                              collection.properties[id]?.type === "multiSelect"
+                                ? (collection.properties[id]
+                                    ?.options as Option[])
+                                : memberOptions
+                            }
+                            selected={
+                              collection.properties[id]?.type === "multiSelect"
+                                ? [
+                                    collection.properties[id]
+                                      ?.options as Option[],
+                                  ][0]
+                                : [memberOptions[0]]
+                            }
+                            propertyId={id}
+                            focused={focused}
+                            userProperty={
+                              collection.properties[id]?.type === "user[]"
+                            }
+                          />
+                        )}
                       {collection.properties[id]?.type === "reward" && (
                         <Box marginTop="-2">
                           <RewardField
@@ -556,7 +622,16 @@ const EditableField = ({
                               options={fieldOptionsDropdownInForms}
                               selected={type}
                               onChange={(type) => {
-                                onUpdateField(type);
+                                setType(type);
+                                if (
+                                  !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
+                                    collection.properties[id].type
+                                  ].includes(type.value)
+                                ) {
+                                  setShowConfirm(true);
+                                } else {
+                                  onUpdateField(type);
+                                }
                               }}
                               multiple={false}
                               isClearable={false}

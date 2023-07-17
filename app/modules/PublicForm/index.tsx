@@ -81,7 +81,9 @@ function PublicForm({ form: fetchedForm, embed, preview }: Props) {
             <FormProvider
               formProps={{
                 ...form?.formMetadata?.theme?.formProps,
-                cover: `url(${form?.formMetadata?.cover})`,
+                cover: form?.formMetadata.cover
+                  ? `url(${form?.formMetadata?.cover})`
+                  : "rgb(191, 90, 242,0.2)",
                 backgroundPosition: preview ? "absolute" : "fixed",
               }}
               pageProps={form?.formMetadata.theme?.pageProps || {}}

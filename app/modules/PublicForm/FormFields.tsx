@@ -443,7 +443,13 @@ function FormFields({ form, setForm, preview }: Props) {
   }, [currentPage]);
 
   return (
-    <Box zIndex="10">
+    <Box
+      zIndex="10"
+      width={{
+        xs: "full",
+        md: "fit",
+      }}
+    >
       {/* <Stack align="center">
         {form && (
           <Stepper
@@ -594,7 +600,7 @@ function FormFields({ form, setForm, preview }: Props) {
                   key={i}
                   width="full"
                 >
-                  <Stack>
+                  <Stack space="0">
                     <Box marginBottom="8">
                       <Stepper
                         steps={form.formMetadata.pageOrder.length}

@@ -28,6 +28,7 @@ import { useScroll } from "react-use";
 import { GuildRole, Stamp } from "@/app/types";
 import { StampCard } from "@/app/modules/PublicForm";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
+import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 
 type Props = {
   pageId: string;
@@ -51,6 +52,7 @@ const Page = ({
 
   const [loading, setLoading] = useState("none");
   const [hover, setHover] = useState("none");
+  const [isDirty, setIsDirty] = useState(false);
 
   const { formActions } = useRoleGate();
   const { y } = useScroll(scrollContainerRef);
@@ -108,7 +110,7 @@ const Page = ({
     const lastIndex = collection.formMetadata.pages["collect"]
       ? pageOrder.length - 2
       : pageOrder.length - 1;
-    const fieldId = `page-${lastIndex + 1}`;
+    const fieldId = uuid();
     const update = {
       ...collection,
       formMetadata: {
@@ -117,8 +119,9 @@ const Page = ({
           ...collection.formMetadata.pages,
           [fieldId]: {
             id: fieldId,
-            name: `Page ${lastIndex + 1}`,
+            name: `Fields Page`,
             properties: [],
+            movable: true,
           },
         },
         pageOrder: [
@@ -145,6 +148,14 @@ const Page = ({
       );
       return;
     }
+    const movablePages = Object.keys(pages).filter(
+      (pageId) => pages[pageId].movable
+    );
+    if (movablePages.length === 1) {
+      toast.error("You need to have at least one page");
+      return;
+    }
+
     const newPages = { ...pages };
     const page = newPages[id];
     if (page.properties.length > 0) {
@@ -189,6 +200,24 @@ const Page = ({
             <Editor
               value={collection.formMetadata.messageOnSubmission}
               version={2}
+              onChange={() => {
+                setIsDirty(true);
+              }}
+              onSave={(value) => {
+                console.log({ value });
+                const update = {
+                  formMetadata: {
+                    ...collection.formMetadata,
+                    messageOnSubmission: value,
+                  },
+                };
+                updateCollection({
+                  ...collection,
+                  ...update,
+                });
+                updateFormCollection(collection.id, update);
+              }}
+              isDirty={isDirty}
             />
           </Stack>
         </Box>
@@ -273,6 +302,14 @@ const Page = ({
               </Text>
             </Box>
           )}
+          <Box
+            width="1/4"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <PrimaryButton>Sign in</PrimaryButton>
+          </Box>
         </motion.div>
       </Stack>
     );
@@ -523,6 +560,16 @@ const Page = ({
                         >
                           <Text color="accent">
                             <IconDocumentAdd size="6" />
+                          </Text>
+                        </Button>
+                        <Button
+                          shape="circle"
+                          size="extraSmall"
+                          variant="transparent"
+                          onClick={() => onPageDelete(pageId)}
+                        >
+                          <Text color="red">
+                            <IconTrash size="6" />
                           </Text>
                         </Button>
                       </Stack>

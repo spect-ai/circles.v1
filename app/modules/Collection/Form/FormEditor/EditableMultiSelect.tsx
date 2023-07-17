@@ -15,6 +15,7 @@ type Props = {
   selected: Option[];
   propertyId: string;
   focused: boolean;
+  userProperty?: boolean;
   disabled?: boolean;
 };
 
@@ -23,29 +24,22 @@ const EditableMultiSelect = ({
   selected,
   propertyId,
   focused,
+  userProperty,
 }: Props) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
-  const [allowCustom, setAllowCustom] = useState(false);
-  const [optionHover, setOptionHover] = useState("none");
-
+  const [allowCustom, setAllowCustom] = useState(
+    collection.properties[propertyId].allowCustom || false
+  );
   useEffect(() => {
-    if (allowCustom && !options.some((o) => o.value === "__custom__")) {
-      options.push({ label: "Other", value: "__custom__" });
-    }
-  }, []);
-
-  const inputRef: any = useRef();
+    setAllowCustom(collection.properties[propertyId].allowCustom || false);
+  }, [collection.properties[propertyId].allowCustom]);
 
   return (
     <Box>
       <Stack>
         {options?.map((option) => (
-          <Box
-            key={option.value}
-            onMouseEnter={() => setOptionHover(option.value)}
-            onMouseLeave={() => setOptionHover("none")}
-          >
+          <Box key={option.value}>
             <Stack
               key={option.value}
               direction="horizontal"
@@ -85,62 +79,71 @@ const EditableMultiSelect = ({
                   }
                 }}
               />
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{
-                  opacity: focused ? 1 : 0,
-                }}
-              >
-                <Button
-                  shape="circle"
-                  size="extraSmall"
-                  variant="transparent"
-                  onClick={async () => {
-                    const tempCollection = collection;
-                    updateCollection({
-                      ...tempCollection,
-                      properties: {
-                        ...tempCollection.properties,
-                        [propertyId]: {
-                          ...tempCollection.properties[propertyId],
-                          options: tempCollection.properties[
-                            propertyId
-                          ].options?.filter((o) => o.value !== option.value),
-                        },
-                      },
-                    });
-
-                    const res = await updateField(collection.id, {
-                      id: propertyId,
-                      options: collection.properties[
-                        propertyId
-                      ].options?.filter((o) => o.value !== option.value),
-                    });
-                    if (res.id) {
-                      // updateCollection(res);
-                      console.log("res", res);
-                    } else {
-                      updateCollection(tempCollection);
-                      logError("Error deleting option");
-                    }
+              {!userProperty && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    opacity: focused ? 1 : 0,
                   }}
                 >
-                  <IconClose size="4" />
-                </Button>
-              </motion.div>
+                  <Button
+                    shape="circle"
+                    size="extraSmall"
+                    variant="transparent"
+                    onClick={async () => {
+                      const tempCollection = collection;
+                      updateCollection({
+                        ...tempCollection,
+                        properties: {
+                          ...tempCollection.properties,
+                          [propertyId]: {
+                            ...tempCollection.properties[propertyId],
+                            options: tempCollection.properties[
+                              propertyId
+                            ].options?.filter((o) => o.value !== option.value),
+                          },
+                        },
+                      });
+
+                      const res = await updateField(collection.id, {
+                        id: propertyId,
+                        options: collection.properties[
+                          propertyId
+                        ].options?.filter((o) => o.value !== option.value),
+                      });
+                      if (res.id) {
+                        // updateCollection(res);
+                        console.log("res", res);
+                      } else {
+                        updateCollection(tempCollection);
+                        logError("Error deleting option");
+                      }
+                    }}
+                  >
+                    <IconClose size="4" />
+                  </Button>
+                </motion.div>
+              )}
             </Stack>
           </Box>
         ))}
         {allowCustom && (
-          <Input
-            ref={inputRef}
-            label=""
-            placeholder="Custom answer"
-            defaultValue={selected[0]?.label}
-            disabled
-          />
+          <Stack>
+            <Stack direction="horizontal" align="center" space="2">
+              <SelectInputComponent
+                name={propertyId}
+                value={selected}
+                isMulti
+                option={{
+                  label: "",
+                  value: "__custom__",
+                }}
+              />
+              <NameInput defaultValue={"Other"} disabled />
+            </Stack>
+          </Stack>
         )}
-        {focused && (
+        {!userProperty && focused && (
           <Box
             style={{
               opacity: 0.2,

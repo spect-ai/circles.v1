@@ -248,8 +248,7 @@ export function useProviderLocalCollection() {
       if (data.collectionType === 1) {
         setProjectViewId(data.projectMetadata.viewOrder[0]);
       }
-    } else setLocalCollection({} as CollectionType);
-    if (id) {
+    } else {
       setLoading(true);
       fetchCollection()
         .then((res) => {

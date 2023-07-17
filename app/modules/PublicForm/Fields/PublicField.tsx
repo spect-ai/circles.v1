@@ -72,13 +72,17 @@ export default function PublicField({
     return null;
   }
 
-  console.log(form.properties[propertyId]?.options);
+  console.log(form.properties[propertyId].description);
 
   return (
-    <Box paddingY="4" borderRadius="large">
+    <Box paddingY="2" borderRadius="large">
       <FieldContainer
         label={form.properties[propertyId]?.name}
-        description={form.properties[propertyId]?.description}
+        description={
+          form.properties[propertyId]?.description === "<p></p>"
+            ? ""
+            : form.properties[propertyId]?.description
+        }
         required={form.properties[propertyId]?.required}
       >
         {/* <Stack direction="vertical" space="2">

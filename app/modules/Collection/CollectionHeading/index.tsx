@@ -161,7 +161,7 @@ function CollectionHeading() {
                     setView(0);
                   }}
                 >
-                  Edit Form
+                  Form
                 </PrimaryButton>
                 <PrimaryButton
                   variant={view === 1 ? "tertiary" : "transparent"}
@@ -230,7 +230,7 @@ function CollectionHeading() {
                       borderWidth="0.5"
                       borderRadius="2xLarge"
                     >
-                      <PopoverOption
+                      {/* <PopoverOption
                         onClick={() => {
                           void navigator.clipboard.writeText(
                             `https://circles.spect.network/r/${collection?.slug}`
@@ -258,8 +258,8 @@ function CollectionHeading() {
                         }}
                       >
                         Share on Discord 🔥
-                      </PopoverOption>
-                      <PopoverOption
+                      </PopoverOption> */}
+                      {/* <PopoverOption
                         onClick={() => {
                           process.env.NODE_ENV === "production" &&
                             mixpanel.track("Form Embed", {
@@ -272,8 +272,8 @@ function CollectionHeading() {
                         }}
                       >
                         Embed
-                      </PopoverOption>
-                      <PopoverOption
+                      </PopoverOption> */}
+                      {/* <PopoverOption
                         onClick={() => {
                           onViewPluginsOpen();
                           setIsOpen(false);
@@ -282,8 +282,8 @@ function CollectionHeading() {
                         {numPluginsAdded > 0
                           ? ` Plugins (${numPluginsAdded} added)`
                           : `Add Plugins`}
-                      </PopoverOption>
-                      <a
+                      </PopoverOption> */}
+                      {/* <a
                         href={`/r/${collection?.slug}`}
                         target="_blank"
                         rel="noreferrer"
@@ -295,7 +295,7 @@ function CollectionHeading() {
                         >
                           Preview
                         </PopoverOption>
-                      </a>
+                      </a> */}
                       {view !== 1 && (
                         <PopoverOption
                           onClick={() => {

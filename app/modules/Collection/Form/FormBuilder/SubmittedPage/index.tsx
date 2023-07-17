@@ -1,3 +1,4 @@
+import Editor from "@/app/common/components/Editor";
 import { CollectionType, UserType } from "@/app/types";
 import { Button, Page, Stepper, Text } from "@avp1598/vibes";
 import { Box, Stack, useTheme } from "degen";
@@ -48,7 +49,8 @@ const SubmittedPage = ({
           />
         </Box>
         <Stack align="center" space="8">
-          <Text type="heading">{form.formMetadata.messageOnSubmission}</Text>
+          {/* <Text type="heading">{form.formMetadata.messageOnSubmission}</Text> */}
+          <Editor value={form.formMetadata.messageOnSubmission} disabled />
           <Box marginBottom="8" />
           {!preview && form.parents[0].pricingPlan === 0 && (
             <Stack>

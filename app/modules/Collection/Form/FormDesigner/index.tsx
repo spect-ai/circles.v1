@@ -23,7 +23,6 @@ const FormDesigner = () => {
   const logoInputRef = React.useRef<HTMLDivElement>(null);
   const coverInputRef = React.useRef<HTMLDivElement>(null);
 
-  console.log({ deform: DeformProps });
   return (
     <div className="p-8">
       <div className="flex flex-col gap-4 xl:flex-row overflow-auto">
@@ -200,7 +199,7 @@ const FormDesigner = () => {
                   }
                   hover
                 >
-                  Classic
+                  Refi
                 </Tag>
               </Box>
               <Box
@@ -262,8 +261,8 @@ const ScrollContainer = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  @media (max-width: 768px) {
-    height: calc(100vh - 16rem);
+  @media (max-width: 1279px) {
+    height: calc(100vh - 28rem);
   }
   height: calc(100vh - 16rem);
   border-radius: 1rem;

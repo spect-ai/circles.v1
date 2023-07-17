@@ -2,7 +2,7 @@ import { Avatar, Box, Stack, Text } from "degen";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { NameInput } from "@/app/modules/PublicForm/FormFields";
 import Editor from "@/app/common/components/Editor";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Page from "./Page";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { logError } from "@/app/common/utils/utils";
@@ -11,6 +11,7 @@ import styled from "@emotion/styled";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { CollectionType } from "@/app/types";
 import { AnimatePresence } from "framer-motion";
+import { useRouter } from "next/router";
 
 const FormEditor = () => {
   const {
@@ -19,8 +20,11 @@ const FormEditor = () => {
     scrollContainerRef,
   } = useLocalCollection();
   const [name, setName] = useState(collection.name);
+  const [description, setDescription] = useState("");
+
   const [isDirty, setIsDirty] = useState(false);
   const [showConfirmOnDelete, setShowConfirmOnDelete] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [propertyId, setPropertyId] = useState<string | null>(null);
 
@@ -101,6 +105,16 @@ const FormEditor = () => {
     }
   };
 
+  useEffect(() => {
+    console.log({
+      description: collection.description,
+      slug: collection.slug,
+      name: collection.name,
+    });
+    setName(collection.name);
+    setDescription(collection.description);
+  }, [collection.slug]);
+
   return (
     <ScrollContainer ref={scrollContainerRef}>
       <Stack align="center">
@@ -155,25 +169,29 @@ const FormEditor = () => {
                     }
                   }}
                 />
-                <Editor
-                  placeholder={`Form description`}
-                  isDirty={isDirty}
-                  onChange={() => {
-                    setIsDirty(true);
-                  }}
-                  onSave={async (value) => {
-                    const res = await updateFormCollection(collection.id, {
-                      description: value,
-                    });
-                    setIsDirty(false);
-                    if (res.id) {
-                      updateCollection(res);
-                    } else {
-                      logError("Failed to update collection description");
-                    }
-                  }}
-                  version={2}
-                />
+                {description && (
+                  <Editor
+                    value={description}
+                    placeholder={`Form description`}
+                    isDirty={isDirty}
+                    onChange={() => {
+                      setIsDirty(true);
+                    }}
+                    onSave={async (value) => {
+                      console.log(value);
+                      const res = await updateFormCollection(collection.id, {
+                        description: value,
+                      });
+                      setIsDirty(false);
+                      if (res.id) {
+                        updateCollection(res);
+                      } else {
+                        logError("Failed to update collection description");
+                      }
+                    }}
+                    version={2}
+                  />
+                )}
               </Box>
               <Stack>
                 <DragDropContext onDragEnd={onDragEnd}>

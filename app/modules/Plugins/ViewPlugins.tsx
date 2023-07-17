@@ -211,7 +211,7 @@ export default function ViewPlugins() {
           xs: "4",
           md: "8",
         }}
-        width="2/3"
+        width="3/4"
       >
         <Stack direction="horizontal" wrap>
           <Stack

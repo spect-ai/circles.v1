@@ -1,5 +1,5 @@
 import { Box, useTheme } from "degen";
-import React, { memo, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { FaFigma } from "react-icons/fa";
 import { SiLoom, SiMiro } from "react-icons/si";
 import { toast } from "react-toastify";
@@ -13,6 +13,7 @@ import MiroEmbed from "../Embeds/MiroEmbed";
 import TweetEmbed, { extractTweetId } from "../Embeds/TwitterEmbed";
 import { TwitterOutlined, YoutubeFilled } from "@ant-design/icons";
 import YouTubeEmbed from "../Embeds/YoutubeEmbed";
+import { useEffectOnce } from "react-use";
 const RichEditor = dynamic(
   () => import("@avp1598/react-beautiful-editor").then((mod) => mod.Editor),
   { ssr: false }
@@ -27,7 +28,7 @@ type Props = {
   isDirty?: boolean;
   onFocus?: () => void;
   bounds?: string;
-  version: 1 | 2;
+  version?: 1 | 2;
 };
 
 function Editor({
@@ -40,15 +41,13 @@ function Editor({
   setIsDirty,
   onFocus,
   bounds,
-  version,
+  version = 2,
 }: Props) {
   const [content, setcontent] = useState(value);
   const { mode } = useTheme();
-
   const editorRef = useRef<RichMarkdownEditor | null>(null);
-  const [dropdownPosition, setDropdownPosition] =
-    useState<{ top: number; left: number } | null>(null);
-  const [pastedData, setPastedData] = useState<string | null>(null);
+  useState<{ top: number; left: number } | null>(null);
+
   return (
     <Box
       onMouseLeave={() => {

@@ -67,6 +67,7 @@ const StartPage = ({
           <Box
             style={{
               minHeight: "calc(100vh - 20rem)",
+              width: "100%",
             }}
             display="flex"
             flexDirection="column"
