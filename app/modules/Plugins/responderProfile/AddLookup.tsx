@@ -366,7 +366,7 @@ const AddLookup = ({ handleClose }: Props) => {
                 const res = await updateFormCollection(collection.id, {
                   formMetadata: {
                     ...collection.formMetadata,
-                    allowAnonymousResponses: false,
+                    allowAnonymousResponses: true,
                     lookup: {
                       tokens: [],
                       snapshot: 0,

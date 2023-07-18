@@ -171,3 +171,11 @@ a {
   color: #0f0 !important;
   outline: solid #f00 1px !important;
 } */
+
+/* get all buttons under class xar-wallet and make them white */
+
+.xar-wallet {
+  background-color: rgb(255, 255, 255, 0.2);
+  padding: 0 0.5rem;
+  color: #000 !important;
+}
