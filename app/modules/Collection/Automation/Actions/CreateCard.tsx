@@ -5,7 +5,7 @@ import { Action, CollectionType, Option, Property } from "@/app/types";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Box, Button, IconClose, Text } from "degen";
 import { useEffect, useState } from "react";
-import { Tooltip } from "react-tippy";
+import { Tooltip } from "react-tooltip";
 import { toast } from "react-toastify";
 import { Field } from "./Field";
 
@@ -602,11 +602,9 @@ export default function CreateCard({
             )}
             {collection.formMetadata &&
               collection.formMetadata.allowAnonymousResponses && (
-                <Tooltip title="You can only map the responder if the form collects responder profile">
-                  <InfoCircleOutlined
-                    style={{ color: "rgb(191, 90, 242, 1)" }}
-                  />
-                </Tooltip>
+                // <Tooltip title="You can only map the responder if the form collects responder profile">
+                <InfoCircleOutlined style={{ color: "rgb(191, 90, 242, 1)" }} />
+                // </Tooltip>
               )}
           </Box>
         </Box>

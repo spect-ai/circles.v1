@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { FormType } from "@/app/types";
 import { Box, useTheme } from "degen";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { useLocation } from "react-use";
 import { ToastContainer } from "react-toastify";
@@ -16,13 +16,15 @@ import {
   useProviderCircleContext,
 } from "../Circle/CircleContext";
 import PublicFormLayout from "@/app/common/layout/PublicLayout/PublicFormLayout";
+import { Form, FormProvider } from "@avp1598/vibes";
 
 type Props = {
   form?: FormType;
   embed?: boolean;
+  preview?: boolean;
 };
 
-function PublicForm({ form: fetchedForm, embed }: Props) {
+function PublicForm({ form: fetchedForm, embed, preview }: Props) {
   const [form, setForm] = useState<FormType | undefined>(fetchedForm);
   const { mode } = useTheme();
   const { pathname } = useLocation();
@@ -30,6 +32,10 @@ function PublicForm({ form: fetchedForm, embed }: Props) {
 
   const context = useProviderCircleContext();
   const profileContext = useProviderLocalProfile();
+
+  useEffect(() => {
+    setForm(fetchedForm);
+  }, [fetchedForm]);
 
   if (embed) {
     return (
@@ -72,30 +78,27 @@ function PublicForm({ form: fetchedForm, embed }: Props) {
                 }`,
               }}
             />
-            {route !== "embed" && (
-              <CoverImage
-                src={form?.formMetadata.cover || ""}
-                backgroundColor="accentSecondary"
-              />
-            )}
-            <Container embed={route === "embed"}>
-              <FormContainer
-                backgroundColor={
-                  route === "embed" ? "transparent" : "background"
-                }
-                borderRadius={route === "embed" ? "none" : "2xLarge"}
-                style={{
-                  boxShadow: `0rem 0.2rem 0.5rem ${
-                    mode === "dark"
-                      ? "rgba(0, 0, 0, 0.25)"
-                      : "rgba(0, 0, 0, 0.1)"
-                  }`,
-                }}
-              >
-                <FormFields form={form} setForm={setForm} />
-              </FormContainer>
-              <Box marginBottom="8" />
-            </Container>
+            <FormProvider
+              formProps={{
+                ...form?.formMetadata?.theme?.formProps,
+                cover: form?.formMetadata.cover
+                  ? `url(${form?.formMetadata?.cover})`
+                  : "rgb(191, 90, 242,0.2)",
+                backgroundPosition: preview ? "absolute" : "fixed",
+              }}
+              pageProps={form?.formMetadata.theme?.pageProps || {}}
+              fieldProps={form?.formMetadata.theme?.fieldProps || {}}
+              buttonProps={form?.formMetadata.theme?.buttonProps || {}}
+              textProps={form?.formMetadata.theme?.textProps || {}}
+              logoProps={form?.formMetadata.theme?.logoProps || {}}
+              optionProps={form?.formMetadata.theme?.optionProps || {}}
+              tagProps={form?.formMetadata.theme?.tagProps || {}}
+              stepperProps={form?.formMetadata.theme?.stepperProps || {}}
+            >
+              <Form>
+                <FormFields form={form} setForm={setForm} preview={preview} />
+              </Form>
+            </FormProvider>
           </ScrollContainer>
         </PublicFormLayout>
       </CircleContext.Provider>

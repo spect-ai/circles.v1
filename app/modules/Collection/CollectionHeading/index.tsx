@@ -20,7 +20,7 @@ import { toast } from "react-toastify";
 import { useLocation } from "react-use";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
-import AddField from "../AddField";
+// import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
@@ -28,8 +28,6 @@ import { UserType } from "@/app/types";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Embed } from "../Embed";
 import { SendOutlined } from "@ant-design/icons";
-import { smartTrim } from "@/app/common/utils/utils";
-import FormSettings from "../Form/FormSettings";
 import { PopoverOption } from "../../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
 import ViewPlugins, { isPluginAdded } from "../../Plugins/ViewPlugins";
 import { ShareOnDiscord } from "../ShareOnDiscord";
@@ -100,18 +98,9 @@ function CollectionHeading() {
   };
 
   return (
-    <Box
-      width="full"
-      display="flex"
-      flexDirection="column"
-      paddingLeft="3"
-      paddingRight={{
-        xs: "3",
-        md: "8",
-      }}
-    >
+    <Box width="full" display="flex" flexDirection="column">
       <Hidden xs sm>
-        <Box marginLeft="4" marginTop="2">
+        <Box marginLeft="6" marginTop="2">
           {navigationBreadcrumbs && (
             <Breadcrumbs crumbs={navigationBreadcrumbs} />
           )}
@@ -134,7 +123,7 @@ function CollectionHeading() {
                   md: "4",
                 }}
               >
-                <Text
+                {/* <Text
                   size={{
                     xs: "large",
                     md: "headingThree",
@@ -143,7 +132,7 @@ function CollectionHeading() {
                   ellipsis
                 >
                   {smartTrim(collection?.name, 20)}
-                </Text>
+                </Text> */}
               </Box>
               <Visible xs sm>
                 <Button
@@ -156,7 +145,7 @@ function CollectionHeading() {
                   <IconPlug color="accent" />
                 </Button>
               </Visible>
-              <FormSettings />
+              {/* <FormSettings /> */}
               <Hidden xs sm>
                 <PrimaryButton
                   // icon={<IconPencil />}
@@ -172,7 +161,7 @@ function CollectionHeading() {
                     setView(0);
                   }}
                 >
-                  Edit Form
+                  Form
                 </PrimaryButton>
                 <PrimaryButton
                   variant={view === 1 ? "tertiary" : "transparent"}
@@ -241,7 +230,7 @@ function CollectionHeading() {
                       borderWidth="0.5"
                       borderRadius="2xLarge"
                     >
-                      <PopoverOption
+                      {/* <PopoverOption
                         onClick={() => {
                           void navigator.clipboard.writeText(
                             `https://circles.spect.network/r/${collection?.slug}`
@@ -269,8 +258,8 @@ function CollectionHeading() {
                         }}
                       >
                         Share on Discord 🔥
-                      </PopoverOption>
-                      <PopoverOption
+                      </PopoverOption> */}
+                      {/* <PopoverOption
                         onClick={() => {
                           process.env.NODE_ENV === "production" &&
                             mixpanel.track("Form Embed", {
@@ -283,8 +272,8 @@ function CollectionHeading() {
                         }}
                       >
                         Embed
-                      </PopoverOption>
-                      <PopoverOption
+                      </PopoverOption> */}
+                      {/* <PopoverOption
                         onClick={() => {
                           onViewPluginsOpen();
                           setIsOpen(false);
@@ -293,8 +282,8 @@ function CollectionHeading() {
                         {numPluginsAdded > 0
                           ? ` Plugins (${numPluginsAdded} added)`
                           : `Add Plugins`}
-                      </PopoverOption>
-                      <a
+                      </PopoverOption> */}
+                      {/* <a
                         href={`/r/${collection?.slug}`}
                         target="_blank"
                         rel="noreferrer"
@@ -306,7 +295,7 @@ function CollectionHeading() {
                         >
                           Preview
                         </PopoverOption>
-                      </a>
+                      </a> */}
                       {view !== 1 && (
                         <PopoverOption
                           onClick={() => {
@@ -343,7 +332,7 @@ function CollectionHeading() {
               </Visible>
             </Stack>
             <Hidden xs sm>
-              <Stack
+              {/* <Stack
                 direction="horizontal"
                 space={{
                   xs: "2",
@@ -455,7 +444,7 @@ function CollectionHeading() {
                     </a>
                   </Box>
                 </Popover>
-              </Stack>
+              </Stack> */}
             </Hidden>
           </Stack>
         )}
@@ -475,9 +464,9 @@ function CollectionHeading() {
         )}
       </Box>
       <AnimatePresence>
-        {isAddFieldOpen && (
+        {/* {isAddFieldOpen && (
           <AddField handleClose={() => setIsAddFieldOpen(false)} />
-        )}
+        )} */}
         {isEmbedModalOpen && (
           <Embed
             setIsOpen={setIsEmbedModalOpen}
@@ -490,9 +479,6 @@ function CollectionHeading() {
             isOpen={shareOnDiscordOpen}
             setIsOpen={setShareOnDiscordOpen}
           />
-        )}
-        {isViewPluginsOpen && (
-          <ViewPlugins handleClose={() => setIsViewPluginsOpen(false)} />
         )}
       </AnimatePresence>
     </Box>

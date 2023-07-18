@@ -1,0 +1,34 @@
+.SwitchRoot {
+  all: unset;
+  width: 44px;
+  height: 20px;
+  background-color: rgb(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  position: relative;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  padding: 2px;
+  /* border: 1px solid rgb(255, 255, 255, 0.2); */
+  transition: all 400ms;
+  cursor: pointer;
+}
+.SwitchRoot:focus {
+  box-shadow: inset 0 0 0 1px rgb(191, 90, 242, 1);
+}
+.SwitchRoot[data-state="checked"] {
+  background-color: rgb(191, 90, 242, 0.2);
+  /* border: 1px solid transparent; */
+}
+
+.SwitchThumb {
+  display: block;
+  width: 20px;
+  height: 20px;
+  background-color: rgb(255, 255, 255, 0.8);
+  border-radius: 9999px;
+  transition: transform 400ms;
+  transform: translateX(2px);
+  will-change: transform;
+}
+.SwitchThumb[data-state="checked"] {
+  transform: translateX(22px);
+}

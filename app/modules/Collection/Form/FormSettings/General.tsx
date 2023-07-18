@@ -19,33 +19,6 @@ export default function General() {
 
   return (
     <Stack>
-      <Stack space="1">
-        <Text variant="label">
-          After the form is submitted, show the following message
-        </Text>
-        <Textarea
-          width={{
-            xs: "full",
-            md: "2/3",
-          }}
-          label=""
-          value={messageOnSubmission}
-          rows={2}
-          onChange={(e) => {
-            setMessageOnSubmission(e.target.value);
-          }}
-          onBlur={async () => {
-            const res = await updateFormCollection(collection.id, {
-              formMetadata: {
-                ...collection.formMetadata,
-                messageOnSubmission,
-              },
-            });
-            if (res.id) updateCollection(res);
-            else logError("Error updating collection");
-          }}
-        />
-      </Stack>
       <AdditionalSettings />
       <Notifications />
     </Stack>

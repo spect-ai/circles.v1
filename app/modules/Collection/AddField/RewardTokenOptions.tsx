@@ -1,25 +1,21 @@
-import Accordian from "@/app/common/components/Accordian";
 import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { addToken } from "@/app/services/Payment";
 import useERC20 from "@/app/services/Payment/useERC20";
 import { Registry } from "@/app/types";
-import {
-  InfoOutlined,
-  QuestionCircleFilled,
-  QuestionCircleOutlined,
-  QuestionCircleTwoTone,
-} from "@ant-design/icons";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Box, Button, IconClose, Input, Stack, Text, useTheme } from "degen";
 import React, { useEffect, useState } from "react";
-import { Tooltip } from "react-tippy";
-import { toast } from "react-toastify";
+import { Tooltip } from "react-tooltip";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
+import { updateField } from "@/app/services/Collection";
+import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type Props = {
+  propertyId: string;
   networks?: Registry;
-  setNetworks: React.Dispatch<React.SetStateAction<Registry | undefined>>;
+  setNetworks: React.Dispatch<React.SetStateAction<any>>;
   customText?: string;
   customTooltip?: string;
   newTokenOpen?: boolean;
@@ -29,6 +25,7 @@ type Props = {
 
 export default function RewardTokenOptions({
   networks,
+  propertyId,
   setNetworks,
   customText,
   customTooltip,
@@ -36,6 +33,9 @@ export default function RewardTokenOptions({
   singleSelect,
   setIsDirty,
 }: Props) {
+  const { localCollection: collection, updateCollection } =
+    useLocalCollection();
+
   const { registry, circle, setRegistryData } = useCircle();
   const [newToken, setNewToken] = useState(newTokenOpen || false);
   const { mode } = useTheme();
@@ -89,14 +89,14 @@ export default function RewardTokenOptions({
   }, [selectedChain]);
 
   return (
-    <ScrollContainer maxHeight="72" overflow="auto">
+    <ScrollContainer width="full">
       <Stack>
         <Stack direction="horizontal" space="2" align="center">
           <Text variant="label">
             {customText ? customText : "Token Options for reward"}
           </Text>
           <Text variant="label">
-            <Tooltip
+            {/* <Tooltip
               title={
                 customTooltip
                   ? customTooltip
@@ -104,9 +104,9 @@ export default function RewardTokenOptions({
               }
               theme={mode}
               position="top"
-            >
-              <QuestionCircleOutlined style={{ fontSize: "1rem" }} />
-            </Tooltip>
+            > */}
+            <QuestionCircleOutlined style={{ fontSize: "1rem" }} />
+            {/* </Tooltip> */}
           </Text>
         </Stack>
         {networks &&
@@ -163,7 +163,13 @@ export default function RewardTokenOptions({
           })}
 
         {newToken && (
-          <Box display="flex" flexDirection="column" marginTop="4">
+          <Box
+            display="flex"
+            flexDirection="column"
+            marginTop="4"
+            gap="2"
+            width="full"
+          >
             <Text variant="label">Add new token</Text>
             <Stack
               direction={{
@@ -183,12 +189,11 @@ export default function RewardTokenOptions({
                 multiple={false}
                 isClearable={false}
               />
-
               {addFrom === "address" && (
                 <Input
                   label=""
                   placeholder="Token Address"
-                  width="72"
+                  width="1/2"
                   value={address}
                   onChange={async (e) => {
                     setAddress(e.target.value);
@@ -209,7 +214,7 @@ export default function RewardTokenOptions({
                 />
               )}
               {addFrom === "whitelist" && (
-                <Box width="72">
+                <Box>
                   <Dropdown
                     options={tokenOptions}
                     selected={selectedToken}
@@ -292,6 +297,14 @@ export default function RewardTokenOptions({
                       };
                     });
                   }
+                  const result = await updateField(collection.id, {
+                    id: propertyId,
+                    rewardOptions: newNetworks,
+                  });
+                  console.log({ result });
+                  if (result.id) {
+                    updateCollection(result);
+                  }
                   setLoading(false);
                   setNetworks(newNetworks);
                   setNewToken(false);
@@ -332,7 +345,6 @@ export default function RewardTokenOptions({
         {!newToken &&
           (singleSelect ? Object.keys(networks || {}).length === 0 : true) && (
             <Box
-              marginTop="4"
               display="flex"
               flexDirection="row"
               justifyContent="flex-start"

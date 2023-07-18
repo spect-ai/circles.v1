@@ -1,4 +1,5 @@
-import { Avatar, Box, Stack, Text } from "degen";
+import { Text } from "@avp1598/vibes";
+import { Avatar, Box, Stack } from "degen";
 
 type Props = {
   avatar: string;
@@ -15,9 +16,7 @@ export default function DiscordProfileInfo({ avatar, username, id }: Props) {
           src={`https://cdn.discordapp.com/avatars/${id}/${avatar}.png`}
         />
         <Box>
-          <Text size="extraSmall" font="mono" weight="bold">
-            {username}
-          </Text>
+          <Text weight="bold">{username}</Text>
         </Box>
       </Stack>
     </Box>

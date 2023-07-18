@@ -1,5 +1,5 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Stack, Text } from "degen";
+import { Button, Text } from "@avp1598/vibes";
+import { Box, Stack } from "degen";
 import { FaTelegram } from "react-icons/fa";
 
 type Props = {
@@ -7,6 +7,7 @@ type Props = {
   data: any;
   propertyId: string;
   updateRequiredFieldNotSet: (key: string, value: any) => void;
+  error?: string;
 };
 
 export default function TelegramField({
@@ -14,6 +15,7 @@ export default function TelegramField({
   setData,
   propertyId,
   updateRequiredFieldNotSet,
+  error,
 }: Props) {
   return (
     <Box marginTop="4" width="64">
@@ -21,16 +23,14 @@ export default function TelegramField({
         <Box borderWidth="0.375" borderRadius="2xLarge" padding="2">
           <Stack direction="horizontal" align="center" justify="center">
             <Box overflow={"hidden"}>
-              <Text size="extraSmall" font="mono" weight="bold">
-                {data[propertyId].username}
-              </Text>{" "}
+              <Text weight="bold">{data[propertyId].username}</Text>
             </Box>
           </Stack>
         </Box>
       ) : (
-        <PrimaryButton
-          variant="tertiary"
-          icon={<FaTelegram size={24} />}
+        <Button
+          variant="secondary"
+          icon={<FaTelegram size={18} />}
           onClick={async () => {
             (window as any).Telegram.Login.auth(
               { bot_id: "5655889542", request_access: true },
@@ -42,7 +42,12 @@ export default function TelegramField({
           }}
         >
           Connect Telegram
-        </PrimaryButton>
+        </Button>
+      )}
+      {error && (
+        <Box marginTop="2">
+          <Text>{error}</Text>
+        </Box>
       )}
     </Box>
   );

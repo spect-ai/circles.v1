@@ -7,7 +7,7 @@ import { useAtom } from "jotai";
 import { matchSorter } from "match-sorter";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { Tooltip } from "react-tippy";
+import { Tooltip } from "react-tooltip";
 import { toast } from "react-toastify";
 import { useCircle } from "./CircleContext";
 import InviteMemberModal from "./ContributorsModal/InviteMembersModal";
@@ -71,28 +71,28 @@ function CircleMembers() {
         />
         {!circle.members.includes(connectedUser) &&
           (circle.discordGuildId || circle.guildxyzId) && (
-            <Tooltip
-              title="You can join circle if you have an eligible discord or guild role"
-              theme={mode}
-              position="top"
+            // <Tooltip
+            //   title="You can join circle if you have an eligible discord or guild role"
+            //   theme={mode}
+            //   position="top"
+            // >
+            <Button
+              loading={loading}
+              onClick={async () => {
+                setLoading(true);
+                const data = await joinCircle(circle.id);
+                if (data) {
+                  setCircleData(data);
+                  fetchMemberDetails();
+                }
+                setLoading(false);
+              }}
+              variant="secondary"
+              size="small"
             >
-              <Button
-                loading={loading}
-                onClick={async () => {
-                  setLoading(true);
-                  const data = await joinCircle(circle.id);
-                  if (data) {
-                    setCircleData(data);
-                    fetchMemberDetails();
-                  }
-                  setLoading(false);
-                }}
-                variant="secondary"
-                size="small"
-              >
-                Join Circle
-              </Button>
-            </Tooltip>
+              Join Circle
+            </Button>
+            // </Tooltip>
           )}
         {canDo("inviteMembers") && (
           <Box

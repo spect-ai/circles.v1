@@ -25,7 +25,7 @@ export function Collection() {
   const [faqOpen, setFaqOpen] = useState(false);
   const { mode } = useTheme();
 
-  if (!collection?.id && loading) {
+  if (loading) {
     return <SkeletonLoader />;
   }
 

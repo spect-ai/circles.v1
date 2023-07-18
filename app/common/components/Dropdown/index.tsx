@@ -72,17 +72,19 @@ const Dropdown: FC<Props> = ({
   const { mode } = useTheme();
 
   return (
-    <Stack space="2">
-      <Box marginLeft="2">
-        <Text
-          variant={variant || undefined}
-          color="textSecondary"
-          weight="semiBold"
-          size="small"
-        >
-          {label}
-        </Text>
-      </Box>
+    <Box display="flex" flexDirection="column" gap="2" width="full">
+      {label && (
+        <Box marginLeft="2">
+          <Text
+            variant={variant || undefined}
+            color="textSecondary"
+            weight="semiBold"
+            size="small"
+          >
+            {label}
+          </Text>
+        </Box>
+      )}
       {creatable ? (
         <CreatableSelect
           formatOptionLabel={formatOptionLabel}
@@ -94,6 +96,7 @@ const Dropdown: FC<Props> = ({
           isMulti={multiple}
           onChange={(option) => onChange(option as any)}
           menuPortalTarget={portal ? document.body : undefined}
+          menuPlacement="auto"
           isClearable={isClearable}
           styles={{
             menuPortal: (base) => ({ ...base, zIndex: 9999 }),
@@ -104,14 +107,16 @@ const Dropdown: FC<Props> = ({
             }),
             menu: (provided) => ({
               ...provided,
-              backgroundColor: mode === "dark" ? "#1A1A1A" : "#FFFFFF",
-              color: mode === "dark" ? "#FFFFFF" : "#000000",
+              backgroundColor:
+                mode === "dark" ? "#1A1A1A" : "rgb(255,255,255,0.8)",
+              color: mode === "dark" ? "rgb(255,255,255,0.8)" : "#000000",
             }),
             control: (provided) => ({
               ...provided,
               height: "100%",
               boxShadow: "none",
-              background: mode === "dark" ? "rgb(20,20,20)" : "#FFFFFF",
+              background:
+                mode === "dark" ? "rgb(20,20,20)" : "rgb(255,255,255,0.8)",
               border:
                 mode === "dark"
                   ? "1px solid rgb(255, 255, 255, 0.1) !important"
@@ -121,11 +126,11 @@ const Dropdown: FC<Props> = ({
             }),
             input: (provided) => ({
               ...provided,
-              color: mode === "dark" ? "#FFFFFF" : "#000000",
+              color: mode === "dark" ? "rgb(255,255,255,0.8)" : "#000000",
             }),
             singleValue: (provided) => ({
               ...provided,
-              color: mode === "dark" ? "#FFFFFF" : "#000000",
+              color: mode === "dark" ? "rgb(255,255,255,0.8)" : "#000000",
             }),
             multiValue: (styles) => {
               return {
@@ -162,7 +167,7 @@ const Dropdown: FC<Props> = ({
                   ? "rgb(255, 255, 255, 0.1) !important"
                   : "rgb(20, 20, 20, 0.1) !important"
                 : "transparent",
-              color: mode === "dark" ? "#FFFFFF" : "#000000",
+              color: mode === "dark" ? "rgb(255,255,255,0.8)" : "#000000",
               cursor: "pointer",
             }),
 
@@ -186,6 +191,7 @@ const Dropdown: FC<Props> = ({
           isMulti={multiple}
           onChange={(option) => onChange(option as any)}
           menuPortalTarget={portal ? document.body : undefined}
+          menuPlacement="auto"
           isClearable={isClearable}
           components={{ Option: IconOption }}
           styles={{
@@ -197,28 +203,31 @@ const Dropdown: FC<Props> = ({
             }),
             menu: (provided) => ({
               ...provided,
-              backgroundColor: mode === "dark" ? "#1A1A1A" : "#FFFFFF",
-              color: mode === "dark" ? "#FFFFFF" : "#000000",
+              backgroundColor:
+                mode === "dark" ? "#1A1A1A" : "rgb(255,255,255,0.8)",
+              color: mode === "dark" ? "rgb(255,255,255,0.8)" : "#000000",
             }),
             control: (provided) => ({
               ...provided,
               height: "100%",
               boxShadow: "none",
-              background: mode === "dark" ? "rgb(20,20,20)" : "#FFFFFF",
+              background:
+                mode === "dark" ? "rgb(20,20,20)" : "rgb(255,255,255,0.8)",
               border:
                 mode === "dark"
                   ? "1px solid rgb(255, 255, 255, 0.1) !important"
                   : "1px solid rgb(20, 20, 20, 0.1) !important",
               borderRadius: "8px",
               padding: "5px",
+              fontSize: "14px",
             }),
             input: (provided) => ({
               ...provided,
-              color: mode === "dark" ? "#FFFFFF" : "#000000",
+              color: mode === "dark" ? "rgb(255,255,255,0.7)" : "#000000",
             }),
             singleValue: (provided) => ({
               ...provided,
-              color: mode === "dark" ? "#FFFFFF" : "#000000",
+              color: mode === "dark" ? "rgb(255,255,255,0.7)" : "#000000",
             }),
             multiValue: (styles) => {
               return {
@@ -255,7 +264,7 @@ const Dropdown: FC<Props> = ({
                   ? "rgb(255, 255, 255, 0.1) !important"
                   : "rgb(20, 20, 20, 0.1) !important"
                 : "transparent",
-              color: mode === "dark" ? "#FFFFFF" : "#000000",
+              color: mode === "dark" ? "rgb(255,255,255,0.8)" : "#000000",
               cursor: "pointer",
             }),
 
@@ -270,7 +279,7 @@ const Dropdown: FC<Props> = ({
           }}
         />
       )}
-    </Stack>
+    </Box>
   );
 };
 

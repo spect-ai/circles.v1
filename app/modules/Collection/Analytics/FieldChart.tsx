@@ -15,7 +15,7 @@ import { ImEmbed } from "react-icons/im";
 import { logError } from "@/app/common/utils/utils";
 import { satisfiesAdvancedConditions } from "../Common/SatisfiesAdvancedFilter";
 import Plot from "./Plot";
-import { Tooltip } from "react-tippy";
+import { Tooltip } from "react-tooltip";
 
 type Props =
   | {
@@ -140,71 +140,67 @@ const FieldChart = ({
               }}
             >
               <Stack direction="horizontal" space="1" align="flex-start">
-                <Tooltip title="Embed chart" theme={mode} position="top">
-                  {" "}
-                  <Button
-                    size="extraSmall"
-                    shape="circle"
-                    variant="transparent"
-                    onClick={() => {
-                      if (disabled) return;
-                      setChartId(chart.id);
-                      setIsEmbedOpen(true);
-                    }}
-                  >
-                    <Box>
-                      <Text color="accent">
-                        <ImEmbed size={16} />
-                      </Text>
-                    </Box>
-                  </Button>
-                </Tooltip>
-                <Tooltip title="Edit chart" theme={mode} position="top">
-                  {" "}
-                  <Button
-                    size="extraSmall"
-                    shape="circle"
-                    variant="transparent"
-                    onClick={() => {
-                      if (disabled) return;
-                      setChartId(chart.id);
-                      setIsAddChartOpen(true);
-                    }}
-                  >
+                {/* <Tooltip title="Embed chart" theme={mode} position="top"> */}
+                <Button
+                  size="extraSmall"
+                  shape="circle"
+                  variant="transparent"
+                  onClick={() => {
+                    if (disabled) return;
+                    setChartId(chart.id);
+                    setIsEmbedOpen(true);
+                  }}
+                >
+                  <Box>
                     <Text color="accent">
-                      <IconPencil size="4" />
+                      <ImEmbed size={16} />
                     </Text>
-                  </Button>
-                </Tooltip>
-                <Tooltip title="Delete chart" theme={mode} position="top">
-                  {" "}
-                  <Button
-                    size="extraSmall"
-                    shape="circle"
-                    variant="transparent"
-                    onClick={async () => {
-                      delete collection.formMetadata.charts?.[chart.id];
-                      const res = await updateFormCollection(collection.id, {
-                        formMetadata: {
-                          ...collection.formMetadata,
-                          chartOrder:
-                            collection.formMetadata.chartOrder?.filter(
-                              (item) => item !== chart.id
-                            ),
-                        },
-                      });
-                      if (res.id) {
-                        updateCollection(res);
-                      } else {
-                        logError("Error deleting chart");
-                      }
-                    }}
-                  >
-                    <Text color="red">
-                      <IconTrash size="4" />
-                    </Text>
-                  </Button>
-                </Tooltip>
+                  </Box>
+                </Button>
+                {/* </Tooltip> */}
+                {/* <Tooltip title="Edit chart" theme={mode} position="top"> */}
+                <Button
+                  size="extraSmall"
+                  shape="circle"
+                  variant="transparent"
+                  onClick={() => {
+                    if (disabled) return;
+                    setChartId(chart.id);
+                    setIsAddChartOpen(true);
+                  }}
+                >
+                  <Text color="accent">
+                    <IconPencil size="4" />
+                  </Text>
+                </Button>
+                {/* </Tooltip> */}
+                {/* <Tooltip title="Delete chart" theme={mode} position="top"> */}
+                <Button
+                  size="extraSmall"
+                  shape="circle"
+                  variant="transparent"
+                  onClick={async () => {
+                    delete collection.formMetadata.charts?.[chart.id];
+                    const res = await updateFormCollection(collection.id, {
+                      formMetadata: {
+                        ...collection.formMetadata,
+                        chartOrder: collection.formMetadata.chartOrder?.filter(
+                          (item) => item !== chart.id
+                        ),
+                      },
+                    });
+                    if (res.id) {
+                      updateCollection(res);
+                    } else {
+                      logError("Error deleting chart");
+                    }
+                  }}
+                >
+                  <Text color="red">
+                    <IconTrash size="4" />
+                  </Text>
+                </Button>
+                {/* </Tooltip> */}
               </Stack>
             </motion.div>
           </Box>

@@ -1,5 +1,5 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Avatar, Box, Stack, Text } from "degen";
+import { Button, Text } from "@avp1598/vibes";
+import { Avatar, Box, Stack } from "degen";
 import { useEffect, useState } from "react";
 import { FaGithub } from "react-icons/fa";
 
@@ -11,6 +11,7 @@ type Props = {
   showAvatar?: boolean;
   verify?: boolean;
   showDisconnect?: boolean;
+  error?: string;
 };
 
 export default function GithubField({
@@ -21,6 +22,7 @@ export default function GithubField({
   showAvatar,
   verify = false,
   showDisconnect = false,
+  error,
 }: Props) {
   const [code, setCode] = useState("");
 
@@ -83,9 +85,7 @@ export default function GithubField({
               <Avatar label="Github Avatar" src={data[propertyId].avatar_url} />
             )}
             <Box overflow={"hidden"}>
-              <Text size="extraSmall" font="mono" weight="bold" ellipsis>
-                {data[propertyId].login}
-              </Text>
+              <Text weight="bold">{data[propertyId].login}</Text>
             </Box>
           </Stack>
           {showDisconnect && (
@@ -116,12 +116,7 @@ export default function GithubField({
                     }
                   }}
                 >
-                  <Text
-                    size="extraSmall"
-                    font="mono"
-                    weight="bold"
-                    color="accent"
-                  >
+                  <Text weight="bold" color="secondary">
                     Disconnect
                   </Text>
                 </Box>
@@ -130,16 +125,21 @@ export default function GithubField({
           )}
         </Box>
       ) : (
-        <PrimaryButton
-          variant="tertiary"
-          icon={<FaGithub size={24} />}
+        <Button
+          variant="secondary"
+          icon={<FaGithub size={18} />}
           onClick={async () => {
             const url = `https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab`;
             window.open(url, "popup", "width=600,height=600");
           }}
         >
           Connect Github
-        </PrimaryButton>
+        </Button>
+      )}
+      {error && (
+        <Box marginTop="2">
+          <Text>{error}</Text>
+        </Box>
       )}
     </Box>
   );

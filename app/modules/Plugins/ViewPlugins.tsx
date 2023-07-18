@@ -77,7 +77,7 @@ export const isPluginAdded = (
   }
 };
 
-export default function ViewPlugins({ handleClose }: Props) {
+export default function ViewPlugins() {
   const { mode } = useTheme();
   const { registry, circle } = useCircle();
   const { canDo } = useRoleGate();
@@ -205,114 +205,103 @@ export default function ViewPlugins({ handleClose }: Props) {
   };
 
   return (
-    <>
-      <Modal
-        handleClose={handleClose}
-        title="Plugins"
-        size="large"
-        key="plugins"
-        height="90vh"
+    <Stack align="center">
+      <ScrollContainer
+        padding={{
+          xs: "4",
+          md: "8",
+        }}
+        width="3/4"
       >
-        <Box
-          padding={{
-            xs: "4",
-            md: "8",
-          }}
-        >
-          <Stack direction="horizontal" wrap>
-            <Stack
-              direction={{
-                xs: "vertical",
-                md: "horizontal",
+        <Stack direction="horizontal" wrap>
+          <Stack
+            direction={{
+              xs: "vertical",
+              md: "horizontal",
+            }}
+            space="4"
+            align="flex-start"
+          >
+            <Input
+              placeholder="Search"
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                updateFilteredPlugins(
+                  e.target.value,
+                  showAdded,
+                  selectedGroups
+                );
               }}
-              space="4"
-              align="flex-start"
-            >
-              <Input
-                placeholder="Search"
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  updateFilteredPlugins(
-                    e.target.value,
-                    showAdded,
-                    selectedGroups
-                  );
-                }}
-                label=""
-                width="1/2"
-                prefix={<IconSearch size="4" />}
-              />
+              label=""
+              width="1/2"
+              prefix={<IconSearch size="4" />}
+            />
 
-              <Stack direction="horizontal" space="2" wrap>
+            <Stack direction="horizontal" space="2" wrap>
+              <GroupTag
+                mode={mode}
+                selected={showAdded}
+                cursor="pointer"
+                onClick={() => {
+                  setShowAdded(!showAdded);
+                  updateFilteredPlugins(searchTerm, !showAdded, selectedGroups);
+                }}
+              >
+                <Text>Show Added</Text>
+              </GroupTag>
+              {Object.keys(groupedPlugins).map((group) => (
                 <GroupTag
                   mode={mode}
-                  selected={showAdded}
-                  cursor="pointer"
+                  selected={selectedGroups.includes(group)}
                   onClick={() => {
-                    setShowAdded(!showAdded);
-                    updateFilteredPlugins(
-                      searchTerm,
-                      !showAdded,
-                      selectedGroups
-                    );
-                  }}
-                >
-                  <Text>Show Added</Text>
-                </GroupTag>
-                {Object.keys(groupedPlugins).map((group) => (
-                  <GroupTag
-                    mode={mode}
-                    selected={selectedGroups.includes(group)}
-                    onClick={() => {
-                      let groups = [...selectedGroups];
-                      if (groups.includes(group)) {
-                        groups = groups.filter((g) => g !== group);
-                      } else {
-                        groups.push(group);
-                      }
-                      setSelectedGroups(groups);
-                      updateFilteredPlugins(searchTerm, showAdded, groups);
-                    }}
-                    cursor="pointer"
-                  >
-                    <Text>{group}</Text>
-                  </GroupTag>
-                ))}
-              </Stack>
-            </Stack>
-            {/* <Stack direction="horizontal" wrap space="4"> */}
-            {filteredPlugins.map((pluginName) => (
-              <PluginCard
-                key={pluginName}
-                plugin={spectPlugins[pluginName]}
-                onClick={async () => {
-                  process.env.NODE_ENV === "production" &&
-                    mixpanel.track(`${pluginName} plugin open`, {
-                      collection: collection.slug,
-                      circle: collection.parents[0].slug,
-                      user: currentUser?.username,
-                    });
-                  if (pluginName === "erc20") {
-                    const res = await isWhitelisted("Survey Protocol");
-                    if (!res) {
-                      window.open(
-                        "https://circles.spect.network/r/9991d6ed-f3c8-425a-8b9e-0f598514482c",
-                        "_blank"
-                      );
+                    let groups = [...selectedGroups];
+                    if (groups.includes(group)) {
+                      groups = groups.filter((g) => g !== group);
                     } else {
-                      onClick(pluginName as PluginType);
+                      groups.push(group);
                     }
+                    setSelectedGroups(groups);
+                    updateFilteredPlugins(searchTerm, showAdded, groups);
+                  }}
+                  cursor="pointer"
+                >
+                  <Text>{group}</Text>
+                </GroupTag>
+              ))}
+            </Stack>
+          </Stack>
+          {/* <Stack direction="horizontal" wrap space="4"> */}
+          {filteredPlugins.map((pluginName) => (
+            <PluginCard
+              key={pluginName}
+              plugin={spectPlugins[pluginName]}
+              onClick={async () => {
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track(`${pluginName} plugin open`, {
+                    collection: collection.slug,
+                    circle: collection.parents[0].slug,
+                    user: currentUser?.username,
+                  });
+                if (pluginName === "erc20") {
+                  const res = await isWhitelisted("Survey Protocol");
+                  if (!res) {
+                    window.open(
+                      "https://circles.spect.network/r/9991d6ed-f3c8-425a-8b9e-0f598514482c",
+                      "_blank"
+                    );
                   } else {
                     onClick(pluginName as PluginType);
                   }
-                }}
-                added={isPluginAdded(pluginName as PluginType, collection)}
-              />
-            ))}
-            {/* </Stack> */}
-          </Stack>
-        </Box>
-      </Modal>
+                } else {
+                  onClick(pluginName as PluginType);
+                }
+              }}
+              added={isPluginAdded(pluginName as PluginType, collection)}
+            />
+          ))}
+          {/* </Stack> */}
+        </Stack>
+      </ScrollContainer>
       <AnimatePresence>
         {isPluginOpen && pluginOpen === "guildxyz" && (
           <RoleGate handleClose={() => setIsPluginOpen(false)} key="guildxyz" />
@@ -374,7 +363,7 @@ export default function ViewPlugins({ handleClose }: Props) {
           />
         )}
       </AnimatePresence>
-    </>
+    </Stack>
   );
 }
 
@@ -468,6 +457,20 @@ export const GroupTag = styled(Box)<{ mode: string; selected: boolean }>`
   padding: 0.5rem 0.8rem;
   justify-content: center;
   align-items: center;
-  overflow: auto;
   height: 2.5rem;
+`;
+
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 0px;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  @media (max-width: 768px) {
+    height: calc(100vh - 14rem);
+  }
+  height: calc(100vh - 14rem);
+  border-radius: 1rem;
+  margin: 0rem 2rem;
 `;

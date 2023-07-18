@@ -12,7 +12,7 @@ const nextConfig = {
         : null,
     ].filter(Boolean);
   },
-  reactStrictMode: true,
+  reactStrictMode: false,
   images: {
     domains: [
       "s3.amazonaws.com",

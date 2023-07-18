@@ -6,7 +6,7 @@ import mixpanel from "mixpanel-browser";
 import { useState } from "react";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
-import AddField from "../../AddField";
+// import AddField from "../../AddField";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { PageComponent } from "./PageComponent";
 
@@ -177,13 +177,13 @@ export const PageLine = () => {
     return (
       <Box>
         <AnimatePresence>
-          {addFieldOpen && (
+          {/* {addFieldOpen && (
             <AddField
               handleClose={() => setAddFieldOpen(false)}
               pageId={activePage}
               propertyId={propertyId}
             />
-          )}
+          )} */}
         </AnimatePresence>
         <Stack>
           {firstHalf.map((pageId) => (

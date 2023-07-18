@@ -1,7 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateCircle } from "@/app/services/UpdateCircle";
-import { updateCollection } from "@/app/services/UpdateCollection";
 import { UserType } from "@/app/types";
 import { guild } from "@guildxyz/sdk";
 import { Box, Input, Stack, Tag, Text } from "degen";
@@ -12,6 +11,7 @@ import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { logError } from "@/app/common/utils/utils";
+import { updateFormCollection } from "@/app/services/Collection";
 
 type Props = {
   handleClose: () => void;
@@ -192,15 +192,12 @@ export default function RoleGate({ handleClose }: Props) {
                   onClick={async () => {
                     setLoading(true);
 
-                    const res = await updateCollection(
-                      {
-                        formMetadata: {
-                          ...collection.formMetadata,
-                          formRoleGating: [],
-                        },
+                    const res = await updateFormCollection(collection.id, {
+                      formMetadata: {
+                        ...collection.formMetadata,
+                        formRoleGating: [],
                       },
-                      collection.id
-                    );
+                    });
                     setLocalCollection(res);
 
                     setLoading(false);
@@ -219,15 +216,12 @@ export default function RoleGate({ handleClose }: Props) {
                     (r, index) => selectedRoles[index] === true
                   );
                   if (selectedRoleIds) {
-                    const res = await updateCollection(
-                      {
-                        formMetadata: {
-                          ...collection.formMetadata,
-                          formRoleGating: selectedRoleIds,
-                        },
+                    const res = await updateFormCollection(collection.id, {
+                      formMetadata: {
+                        ...collection.formMetadata,
+                        formRoleGating: selectedRoleIds,
                       },
-                      collection.id
-                    );
+                    });
                     if (res.id) setLocalCollection(res);
                     else logError(res.message);
                   }

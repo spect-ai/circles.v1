@@ -8,14 +8,23 @@ import { useEffect, useState } from "react";
 import Footer from "./Footer";
 import Messages from "./Messages";
 import { motion } from "framer-motion";
+import { Logo, Page, Stepper, Text } from "@avp1598/vibes";
 
 type Props = {
   form: CollectionType | undefined;
   setForm: (form: CollectionType | FormType) => void;
+  currentPage: string | undefined;
   setCurrentPage: (page: string) => void;
+  onStepChange: (step: number) => void;
 };
 
-const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
+const StartPage = ({
+  form,
+  currentPage,
+  setCurrentPage,
+  onStepChange,
+  setForm,
+}: Props) => {
   const router = useRouter();
   const { formId } = router.query;
 
@@ -37,43 +46,53 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
 
   if (form) {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <Box
+      <Page>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          id="motion page"
           style={{
-            minHeight: "calc(100vh - 20rem)",
+            width: "100%",
           }}
-          display="flex"
-          flexDirection="column"
-          justifyContent="space-between"
         >
-          <Stack space="2">
-            {form.formMetadata.logo && (
-              <Avatar src={form.formMetadata.logo} label="" size="20" />
-            )}
-            <NameInput
-              autoFocus
-              value={form.name}
-              disabled
-              rows={Math.floor(form.name?.length / 20) + 1}
+          <Box marginBottom="8">
+            <Stepper
+              steps={form.formMetadata.pageOrder.length}
+              currentStep={form.formMetadata.pageOrder.indexOf(
+                currentPage || ""
+              )}
+              onStepChange={onStepChange}
             />
-            {form.description && (
-              <Editor
-                value={form.description}
-                isDirty={true}
-                disabled
-                version={form.editorVersion}
-              />
-            )}
-            <Messages form={form} />
-          </Stack>
-          <Footer
-            collection={form}
-            setCaptchaVerified={setCaptchaVerified}
-            captchaVerified={captchaVerified}
-            setCurrentPage={setCurrentPage}
-          />
-        </Box>
-      </motion.div>
+          </Box>
+          <Box
+            style={{
+              minHeight: "calc(100vh - 20rem)",
+              width: "100%",
+            }}
+            display="flex"
+            flexDirection="column"
+            justifyContent="space-between"
+          >
+            <Stack space="2">
+              {form.formMetadata.logo && <Logo src={form.formMetadata.logo} />}
+              {/* <NameInput autoFocus value={form.name} disabled /> */}
+              <Text type="heading" color="secondary">
+                {form.name}
+              </Text>
+              {form.description && (
+                <Text type="description" description={form.description} />
+              )}
+              <Messages form={form} />
+            </Stack>
+            <Footer
+              collection={form}
+              setCaptchaVerified={setCaptchaVerified}
+              captchaVerified={captchaVerified}
+              setCurrentPage={setCurrentPage}
+            />
+          </Box>
+        </motion.div>
+      </Page>
     );
   } else return null;
 };

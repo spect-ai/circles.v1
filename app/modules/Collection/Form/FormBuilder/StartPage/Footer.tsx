@@ -1,7 +1,7 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CollectionType } from "@/app/types";
 import { Box, Stack } from "degen";
 import Captcha from "./Captcha";
+import { Button } from "@avp1598/vibes";
 
 type Props = {
   collection: CollectionType;
@@ -31,7 +31,7 @@ const Footer = ({
           {collection.formMetadata.captchaEnabled && (
             <Captcha setCaptchaVerified={setCaptchaVerified} />
           )}
-          <PrimaryButton
+          <Button
             disabled={
               collection.formMetadata.captchaEnabled && !captchaVerified
             }
@@ -40,7 +40,7 @@ const Footer = ({
             }}
           >
             Start
-          </PrimaryButton>
+          </Button>
         </Stack>
       </Box>
     </Stack>

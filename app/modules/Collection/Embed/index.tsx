@@ -3,7 +3,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Stack, Tag, Text, useTheme } from "degen";
 import React, { useState } from "react";
 import { Copy, HelpCircle } from "react-feather";
-import { Tooltip } from "react-tippy";
+import { Tooltip } from "react-tooltip";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
@@ -23,13 +23,13 @@ export const Embed = ({ setIsOpen, embedRoute }: EmbedProps) => {
             <Text variant="label">Color Mode</Text>
             <Box cursor="pointer" display="flex" alignItems="center">
               <Text variant="label">
-                <Tooltip
+                {/* <Tooltip
                   title="Select dark mode if you are embedding it on a dark background or light mode if you are embedding it on a light background"
                   theme={mode}
                   position="top"
-                >
-                  <HelpCircle size={16} />
-                </Tooltip>
+                > */}
+                <HelpCircle size={16} />
+                {/* </Tooltip> */}
               </Text>
             </Box>
           </Stack>

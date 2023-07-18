@@ -14,8 +14,9 @@ import "@/app/styles/DateTimePicker.css";
 import "@/app/styles/GanttChart.css";
 import "@/app/styles/Table.css";
 import "react-toastify/dist/ReactToastify.css";
-import "react-tippy/dist/tippy.css";
 import "reactflow/dist/style.css";
+import "@avp1598/vibes/dist/index.css";
+
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 

@@ -38,17 +38,23 @@ export function useOutsideAlerter(
           dependentRef?.current?.contains(event.target)
         )
       ) {
+        console.log({ event: event.target, ref: ref.current });
         // alert("You clicked outside of me!");
+        console.log("clicked outside");
         setTimeout(() => {
           setIsOpen(false);
         }, 200);
       }
     }
     // Bind the event listener
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside, {
+      capture: true,
+    });
     return () => {
       // Unbind the event listener on clean up
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside, {
+        capture: true,
+      });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref, setIsOpen]);

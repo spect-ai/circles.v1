@@ -34,7 +34,7 @@ import { getFlow, runFlow, updateFlow } from "@/app/services/Workflows";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import AddNodePopover from "./AddNodePopover";
-import { Tooltip } from "react-tippy";
+import { Tooltip } from "react-tooltip";
 import { ToastContainer, toast } from "react-toastify";
 import { AnimatePresence } from "framer-motion";
 import ViewRuns from "./ViewRuns";
@@ -80,7 +80,7 @@ const FlowEditor = ({ flow, setEditingFlow }: Props) => {
   const [flowConfig, setFlowConfig] = useState<FlowConfig>();
 
   const onDeleteNode = useCallback(
-    (nodeId) => {
+    (nodeId: any) => {
       setNodes((nds) => nds.filter((nd) => nd.id !== nodeId));
       setEdges((eds) => eds.filter((ed) => ed.source !== nodeId));
     },
@@ -88,12 +88,12 @@ const FlowEditor = ({ flow, setEditingFlow }: Props) => {
   );
 
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
+    (params: any) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
   );
 
   const onDrop = useCallback(
-    (event) => {
+    (event: any) => {
       event.preventDefault();
 
       const reactFlowBounds = (
@@ -123,7 +123,7 @@ const FlowEditor = ({ flow, setEditingFlow }: Props) => {
   );
 
   const onNodeDataUpdate = useCallback(
-    (nodeId, data) => {
+    (nodeId: any, data: any) => {
       setNodes((nds) =>
         nds.map((nd) =>
           nd.id === nodeId
@@ -141,7 +141,7 @@ const FlowEditor = ({ flow, setEditingFlow }: Props) => {
     [setNodes]
   );
 
-  const onDragOver = useCallback((event) => {
+  const onDragOver = useCallback((event: any) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
   }, []);
@@ -353,51 +353,51 @@ const FlowEditor = ({ flow, setEditingFlow }: Props) => {
               gap: "1rem",
             }}
           >
-            <Tooltip title="Save Flow">
-              <Button
-                loading={saving}
-                shape="circle"
-                size="small"
-                variant="tertiary"
-                onClick={onSave}
-              >
-                <IconUpload />
-              </Button>
-            </Tooltip>
-            <Tooltip title="Run Flow">
-              <Button
-                shape="circle"
-                size="small"
-                variant="secondary"
-                onClick={async () => {
-                  await onSave();
-                  setFlowRunningModal(true);
-                  setRunning(true);
-                  const res = await runFlow(flow.id);
-                  if (!res) {
+            {/* <Tooltip title="Save Flow"> */}
+            <Button
+              loading={saving}
+              shape="circle"
+              size="small"
+              variant="tertiary"
+              onClick={onSave}
+            >
+              <IconUpload />
+            </Button>
+            {/* </Tooltip> */}
+            {/* <Tooltip title="Run Flow"> */}
+            <Button
+              shape="circle"
+              size="small"
+              variant="secondary"
+              onClick={async () => {
+                await onSave();
+                setFlowRunningModal(true);
+                setRunning(true);
+                const res = await runFlow(flow.id);
+                if (!res) {
+                  setRunning(false);
+                  setFlowRunningModal(false);
+                  return;
+                }
+                const updatedFlow = await getFlow(flow.id);
+                if (updatedFlow) {
+                  setFlowData(updatedFlow.flowData);
+                  setFlowConfig(updatedFlow.flowConfig);
+                }
+                if (res) {
+                  if (!res.formSlug) {
+                    setFormLink("");
                     setRunning(false);
-                    setFlowRunningModal(false);
                     return;
                   }
-                  const updatedFlow = await getFlow(flow.id);
-                  if (updatedFlow) {
-                    setFlowData(updatedFlow.flowData);
-                    setFlowConfig(updatedFlow.flowConfig);
-                  }
-                  if (res) {
-                    if (!res.formSlug) {
-                      setFormLink("");
-                      setRunning(false);
-                      return;
-                    }
-                    setFormLink(res.formSlug.toString());
-                  }
-                  setRunning(false);
-                }}
-              >
-                <IconLightningBolt />
-              </Button>
-            </Tooltip>
+                  setFormLink(res.formSlug.toString());
+                }
+                setRunning(false);
+              }}
+            >
+              <IconLightningBolt />
+            </Button>
+            {/* </Tooltip> */}
           </Box>
         </Box>
       </Box>

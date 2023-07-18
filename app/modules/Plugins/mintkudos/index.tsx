@@ -16,7 +16,7 @@ import { Box, Button, Input, MediaPicker, Stack, Text, Textarea } from "degen";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { Tooltip } from "react-tippy";
+import { Tooltip } from "react-tooltip";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -175,11 +175,11 @@ export default function SendKudos({ handleClose }: Props) {
                   <Stack direction="vertical" space="1">
                     <Stack direction="horizontal" space="1" align="center">
                       <Text variant="label">Headline</Text>
-                      <Tooltip title="The headline only shows up in the image for the default mintkudos image. For custom images, the headline is still added on chain with the NFT, however it doesn't show up in the image.">
-                        <Text color="foregroundSecondary">
-                          <InfoCircleOutlined />
-                        </Text>
-                      </Tooltip>
+                      {/* <Tooltip title="The headline only shows up in the image for the default mintkudos image. For custom images, the headline is still added on chain with the NFT, however it doesn't show up in the image."> */}
+                      <Text color="foregroundSecondary">
+                        <InfoCircleOutlined />
+                      </Text>
+                      {/* </Tooltip> */}
                     </Stack>
                     <Textarea
                       label={""}

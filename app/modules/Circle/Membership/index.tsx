@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Hidden } from "react-grid-system";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { useCircle } from "../CircleContext";
-import { Tooltip } from "react-tippy";
+import { Tooltip } from "react-tooltip";
 import { Globe } from "react-feather";
 import { AnimatePresence, motion } from "framer-motion";
 import { Embed } from "../../Collection/Embed";
@@ -205,11 +205,11 @@ const Member = ({ member, roles }: MemberProps) => {
                 </Stack>
                 <Stack direction="horizontal" wrap space="1">
                   {member.discordUsername && (
-                    <Tooltip title={member.discordUsername}>
-                      <Button shape="circle" size="small" variant="transparent">
-                        <DiscordIcon />
-                      </Button>
-                    </Tooltip>
+                    // <Tooltip title={member.discordUsername}>
+                    <Button shape="circle" size="small" variant="transparent">
+                      <DiscordIcon />
+                    </Button>
+                    // </Tooltip>
                   )}
                   {member.githubUsername && (
                     <a

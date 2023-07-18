@@ -1,15 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Dropdown from "@/app/common/components/Dropdown";
 import { Option, Registry, Reward } from "@/app/types";
-import { Box, Input, Stack } from "degen";
-import { useEffect, useState } from "react";
+import { InputField, SelectField, Text } from "@avp1598/vibes";
+import { Box, Stack } from "degen";
+import { useState } from "react";
 
 type Props = {
   rewardOptions: Registry;
   value: Reward;
   updateData: (reward: Reward) => void;
   onValueKeyDown?: (e: any) => void;
+  propertyId: string;
   disabled?: boolean;
+  error?: string;
 };
 
 export default function RewardField({
@@ -17,8 +20,11 @@ export default function RewardField({
   value,
   updateData,
   onValueKeyDown,
+  propertyId,
   disabled,
+  error,
 }: Props) {
+  if (!rewardOptions || !Object.values(rewardOptions)) return null;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const firstChainName =
     Object.values(rewardOptions).length > 0
@@ -27,11 +33,13 @@ export default function RewardField({
   const firstChainId =
     Object.keys(rewardOptions).length > 0 ? Object.keys(rewardOptions)[0] : "";
   const firstTokenSymbol = Object.values(
-    rewardOptions[firstChainId]?.tokenDetails
-  )[0].symbol;
+    rewardOptions[firstChainId]?.tokenDetails || {}
+  )[0]?.symbol;
   const firstTokenAddress = Object.keys(
-    rewardOptions[firstChainId]?.tokenDetails
+    rewardOptions[firstChainId]?.tokenDetails || {}
   )[0];
+
+  if (!firstTokenSymbol || !firstTokenAddress) return null;
 
   const [tokenOptions, setTokenOptions] = useState<Option[]>(
     Object.entries(
@@ -54,97 +62,112 @@ export default function RewardField({
 
   return (
     <Stack
+      space="0"
       direction={{
         xs: "vertical",
         md: "horizontal",
       }}
-      align="center"
     >
       <Box
         width={{
           xs: "full",
+          md: "1/3",
         }}
-        marginTop="2"
       >
-        <Dropdown
-          options={
-            rewardOptions
-              ? Object.entries(rewardOptions).map(([chainId, network]) => {
-                  return {
-                    label: network.name,
-                    value: chainId,
-                  };
-                })
-              : []
-          }
-          selected={selectedChain}
-          onChange={(option) => {
-            setSelectedChain(option);
-            const tokens = Object.entries(
-              rewardOptions[option.value].tokenDetails
-            ).map(([address, token]) => {
-              return {
-                label: token.symbol,
-                value: address,
-              };
-            });
-            setSelectedToken(tokens[0]);
-            updateData({
-              chain: option,
-              token: tokens[0],
-              value: value?.value,
-            });
-            setTokenOptions(tokens);
-          }}
-          multiple={false}
-          isClearable={false}
-          disabled={disabled}
-        />
+        <Stack space="1">
+          <Text type="label" color="tertiary">
+            Chain
+          </Text>
+          <SelectField
+            name={`chain-${propertyId}`}
+            value={selectedChain}
+            options={
+              rewardOptions
+                ? Object.entries(rewardOptions).map(([chainId, network]) => {
+                    return {
+                      label: network.name,
+                      value: chainId,
+                    };
+                  })
+                : []
+            }
+            onChange={(option) => {
+              setSelectedChain(option);
+              const tokens = Object.entries(
+                rewardOptions[option.value].tokenDetails
+              ).map(([address, token]) => {
+                return {
+                  label: token.symbol,
+                  value: address,
+                };
+              });
+              setSelectedToken(tokens[0]);
+              updateData({
+                chain: option,
+                token: tokens[0],
+                value: value?.value,
+              });
+              setTokenOptions(tokens);
+            }}
+            isMulti={false}
+            disabled={disabled}
+          />
+        </Stack>
       </Box>
       <Box
         width={{
           xs: "full",
+          md: "1/3",
         }}
-        marginTop="2"
       >
-        <Dropdown
-          options={tokenOptions}
-          selected={selectedToken}
-          onChange={(option) => {
-            setSelectedToken(option);
-            updateData({
-              chain: selectedChain,
-              token: option,
-              value: value?.value,
-            });
-          }}
-          multiple={false}
-          isClearable={false}
-          disabled={disabled}
-        />
+        <Stack space="1">
+          <Text type="label" color="tertiary">
+            Token
+          </Text>
+          <SelectField
+            name={`token-${propertyId}`}
+            value={selectedToken}
+            options={tokenOptions}
+            onChange={(option) => {
+              setSelectedToken(option);
+              updateData({
+                chain: selectedChain,
+                token: option,
+                value: value?.value,
+              });
+            }}
+            isMulti={false}
+            disabled={disabled}
+          />
+        </Stack>
       </Box>
       <Box
         width={{
           xs: "full",
+          md: "1/3",
         }}
-        marginTop="2"
       >
-        <Input
-          label=""
-          placeholder={`Enter Reward Amount`}
-          value={value?.value}
-          onChange={(e) => {
-            updateData({
-              chain: selectedChain,
-              token: selectedToken,
-              value: parseFloat(e.target.value),
-            });
-          }}
-          type="number"
-          onKeyDown={onValueKeyDown}
-          units={selectedToken?.label}
-          disabled={disabled}
-        />
+        <Stack space="1">
+          <Text type="label" color="tertiary">
+            Value
+          </Text>
+          <InputField
+            placeholder="Enter Reward Amount"
+            value={value?.value}
+            onChange={(e) => {
+              updateData({
+                chain: selectedChain,
+                token: selectedToken,
+                value: parseFloat(e.target.value),
+              });
+            }}
+            type="number"
+            onKeyDown={onValueKeyDown}
+            prefix={selectedToken?.label}
+            disabled={disabled}
+            error={error}
+          />
+        </Stack>
       </Box>
     </Stack>
   );

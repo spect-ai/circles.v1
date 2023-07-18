@@ -1,6 +1,7 @@
 import { CollectionType } from "@/app/types";
 import WalletOutlined from "@ant-design/icons/WalletOutlined";
-import { Box, Text } from "degen";
+import { Text } from "@avp1598/vibes";
+import { Box, Stack } from "degen";
 import { BsDiscord } from "react-icons/bs";
 
 type Props = {
@@ -18,55 +19,47 @@ export default function Messages({ form }: Props) {
     <Box display="flex" flexDirection="column" marginTop="4" gap="4">
       {form.formMetadata.formRoleGating &&
         form.formMetadata.formRoleGating.length > 0 && (
-          <Text weight="semiBold">
-            ⛩️ This form is role gated using guild.xyz
-          </Text>
+          <Text>⛩️ This form is role gated using guild.xyz</Text>
         )}
       {form.formMetadata.poapEventId && (
-        <Text weight="semiBold">
-          🏅 This form distributes a POAP to responders{" "}
+        <Text>
+          🏅 This form distributes a POAP to responders
           {form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap
             ? `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap} / ${poapQuizValidFields}  or higher`
             : null}
         </Text>
       )}
       {form.formMetadata.mintkudosTokenId && (
-        <Text weight="semiBold">
-          🎉 This form distributes soulbound tokens to responders{" "}
+        <Text>
+          🎉 This form distributes soulbound tokens to responders
           {form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForMintkudos
             ? `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForMintkudos} / ${kudosQuizValidFields} or higher`
             : null}
         </Text>
       )}
       {form.formMetadata.surveyTokenId && (
-        <Text weight="semiBold">
-          💰 This form distributes erc20 tokens to responders
-        </Text>
+        <Text>💰 This form distributes erc20 tokens to responders</Text>
       )}
       {form.formMetadata.zealyXP && (
-        <Text weight="semiBold">
-          😎 This form distributes XP on Zealy to responders
-        </Text>
+        <Text>😎 This form distributes XP on Zealy to responders</Text>
       )}
       {form.formMetadata.sybilProtectionEnabled && (
-        <Text weight="semiBold">✋ This form is Sybil protected</Text>
+        <Text>✋ This form is Sybil protected</Text>
       )}
       {form.formMetadata.pages["connect"] && (
-        <Box display="flex" flexDirection="row" gap="2">
-          <Text weight="semiBold" color="accent">
+        <Stack direction="horizontal" align="center" space="2">
+          <Text color="secondary">
             <WalletOutlined />
-          </Text>{" "}
-          <Text weight="semiBold">This form requires you to sign in</Text>
-        </Box>
+          </Text>
+          <Text>This form requires you to sign in</Text>
+        </Stack>
       )}
       {form.formMetadata.pages["connectDiscord"] && (
         <Box display="flex" flexDirection="row" gap="2">
-          <Text weight="semiBold" color="accent">
+          <Text color="secondary">
             <BsDiscord />
-          </Text>{" "}
-          <Text weight="semiBold">
-            This form requires you to connect Discord
           </Text>
+          <Text>This form requires you to connect Discord</Text>
         </Box>
       )}
     </Box>
