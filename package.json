@@ -19,7 +19,7 @@
     "@arcana/auth": "^1.0.5",
     "@arcana/auth-wagmi": "^1.0.0",
     "@avp1598/react-beautiful-editor": "^0.2.1",
-    "@avp1598/vibes": "file:/Users/avp/Desktop/Coding/@avp1598/vibes",
+    "@avp1598/vibes": "^0.1.1",
     "@ceramicnetwork/http-client": "^2.15.0",
     "@composedb/client": "^0.3.1",
     "@didtools/pkh-ethereum": "^0.0.3",
@@ -149,7 +149,6 @@
     "yarn": "^1.22.19"
   },
   "resolutions": {
-    "prosemirror-model": "1.16.0",
-    "@avp1598/vibes": "portal:/Users/avp/Desktop/Coding/@avp1598/vibes"
+    "prosemirror-model": "1.16.0"
   }
 }
