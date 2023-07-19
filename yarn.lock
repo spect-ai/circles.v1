@@ -116,10 +116,10 @@
     typescript "^5.1.3"
     zod "^3.21.4"
 
-"@avp1598/vibes@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@avp1598/vibes/-/vibes-0.1.1.tgz#b6b3b1cdf622e5fde09bbdc0974c5b9cf588c549"
-  integrity sha512-lAiPgNvTL9ijN3d9WygTgXQmvGV46hyMGGWDklgVucNc7HcECpp+EklZ6ovMqG8mGIZ95uQUTHEjaVwrl6PUGg==
+"@avp1598/vibes@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@avp1598/vibes/-/vibes-0.2.1.tgz#1f25267de26962baca7c2e8a6aa28e196e81417e"
+  integrity sha512-wQm9Uw4JlLjgmNuRdRnbz/D7HpL6DeKBSz24iNscIgV7OKGr0XyzALFdD4r9IWPJgnXsbr90svIZNUmeLoLcSA==
   dependencies:
     "@avp1598/react-beautiful-editor" "^0.2.2"
     "@vanilla-extract/css" "^1.12.0"

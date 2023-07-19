@@ -1,4 +1,4 @@
-import { FormContextProps } from "@avp1598/vibes";
+import { ColorPallette, FormContextProps } from "@avp1598/vibes";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface UserType {
@@ -611,8 +611,11 @@ export type FormMetadata = {
   canClaimZealy?: number;
   hasClaimedZealy?: boolean;
   zealySubdomain?: string;
-  theme?: FormContextProps;
-  selectedTheme?: string;
+  theme: {
+    layout: FormContextProps;
+    selectedLayout: string;
+    selectedTheme: string;
+  };
 };
 
 export type Chart = {

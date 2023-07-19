@@ -79,21 +79,22 @@ function PublicForm({ form: fetchedForm, embed, preview }: Props) {
               }}
             />
             <FormProvider
+              colorPalette={form?.formMetadata.theme?.layout.colorPalette || {}}
               formProps={{
-                ...form?.formMetadata?.theme?.formProps,
+                ...form?.formMetadata?.theme?.layout?.formProps,
                 cover: form?.formMetadata.cover
                   ? `url(${form?.formMetadata?.cover})`
                   : "rgb(191, 90, 242,0.2)",
                 backgroundPosition: preview ? "absolute" : "fixed",
               }}
-              pageProps={form?.formMetadata.theme?.pageProps || {}}
-              fieldProps={form?.formMetadata.theme?.fieldProps || {}}
-              buttonProps={form?.formMetadata.theme?.buttonProps || {}}
-              textProps={form?.formMetadata.theme?.textProps || {}}
-              logoProps={form?.formMetadata.theme?.logoProps || {}}
-              optionProps={form?.formMetadata.theme?.optionProps || {}}
-              tagProps={form?.formMetadata.theme?.tagProps || {}}
-              stepperProps={form?.formMetadata.theme?.stepperProps || {}}
+              pageProps={form?.formMetadata.theme?.layout.pageProps || {}}
+              fieldProps={form?.formMetadata.theme?.layout.fieldProps || {}}
+              buttonProps={form?.formMetadata.theme?.layout.buttonProps || {}}
+              textProps={form?.formMetadata.theme?.layout.textProps || {}}
+              logoProps={form?.formMetadata.theme?.layout.logoProps || {}}
+              optionProps={form?.formMetadata.theme?.layout.optionProps || {}}
+              tagProps={form?.formMetadata.theme?.layout.tagProps || {}}
+              stepperProps={form?.formMetadata.theme?.layout.stepperProps || {}}
             >
               <Form>
                 <FormFields form={form} setForm={setForm} preview={preview} />

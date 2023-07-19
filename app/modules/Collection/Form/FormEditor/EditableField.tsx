@@ -271,6 +271,7 @@ const EditableField = ({
         />
       )}
       <FormProvider
+        colorPalette={{}}
         formProps={{}}
         pageProps={{}}
         fieldProps={{}}

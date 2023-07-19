@@ -4,11 +4,14 @@ import PublicForm from "@/app/modules/PublicForm";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import styled from "@emotion/styled";
 import {
-  DeformProps,
-  GFormProps,
-  SpectLightProps,
-  SpectProps,
-  TypeformProps,
+  DeformBase,
+  DeformThemes,
+  GFormBase,
+  GformThemes,
+  SpectBase,
+  SpectThemes,
+  TypeformBase,
+  TypeformThemes,
 } from "@avp1598/vibes";
 import { updateFormCollection } from "@/app/services/Collection";
 import { storeImage } from "@/app/common/utils/ipfs";
@@ -16,6 +19,15 @@ import { toast } from "react-toastify";
 import { HeaderButton } from "../FormEditor/EditorHeader";
 import { BsHexagon } from "react-icons/bs";
 import { FaPager } from "react-icons/fa";
+
+const themeMapper: {
+  [key: string]: any;
+} = {
+  spect: SpectThemes,
+  typeform: TypeformThemes,
+  gform: GformThemes,
+  deform: DeformThemes,
+};
 
 const FormDesigner = () => {
   const { localCollection: collection, updateCollection } =
@@ -108,31 +120,35 @@ const FormDesigner = () => {
             </Stack>
           </Stack>
           <Stack>
-            <Text variant="label">Themes</Text>
+            <Text variant="label">Layouts</Text>
             <Stack direction="horizontal" wrap>
               <Box
                 onClick={() => {
-                  updateCollection({
+                  const update = {
                     ...collection,
                     formMetadata: {
                       ...collection.formMetadata,
-                      theme: SpectProps,
-                      selectedTheme: "spect",
+                      theme: {
+                        layout: {
+                          ...SpectBase,
+                          colorPalette:
+                            themeMapper.spect[
+                              Object.keys(themeMapper.spect)[0]
+                            ],
+                        },
+                        selectedLayout: "spect",
+                        selectedTheme: Object.keys(themeMapper.spect)[0],
+                      },
                     },
-                  });
-                  updateFormCollection(collection.id, {
-                    formMetadata: {
-                      ...collection.formMetadata,
-                      theme: SpectProps,
-                      selectedTheme: "spect",
-                    },
-                  });
+                  };
+                  updateCollection(update);
+                  updateFormCollection(collection.id, update);
                 }}
                 cursor="pointer"
               >
                 <Tag
                   tone={
-                    collection.formMetadata.selectedTheme === "spect"
+                    collection.formMetadata.theme?.selectedLayout === "spect"
                       ? "accent"
                       : undefined
                   }
@@ -143,120 +159,101 @@ const FormDesigner = () => {
               </Box>
               <Box
                 onClick={() => {
-                  updateCollection({
+                  const update = {
                     ...collection,
                     formMetadata: {
                       ...collection.formMetadata,
-                      theme: SpectLightProps,
-                      selectedTheme: "spectLight",
+                      theme: {
+                        layout: {
+                          ...TypeformBase,
+                          colorPalette:
+                            themeMapper.typeform[
+                              Object.keys(themeMapper.typeform)[0]
+                            ],
+                        },
+                        selectedLayout: "typeform",
+                        selectedTheme: Object.keys(themeMapper.typeform)[0],
+                      },
                     },
-                  });
-                  updateFormCollection(collection.id, {
-                    formMetadata: {
-                      ...collection.formMetadata,
-                      theme: SpectLightProps,
-                      selectedTheme: "spectLight",
-                    },
-                  });
+                  };
+                  updateCollection(update);
+                  updateFormCollection(collection.id, update);
                 }}
                 cursor="pointer"
               >
                 <Tag
                   tone={
-                    collection.formMetadata.selectedTheme === "spectLight"
+                    collection.formMetadata.theme.selectedLayout === "typeform"
                       ? "accent"
                       : undefined
                   }
                   hover
                 >
-                  Spect Light
+                  Type
                 </Tag>
               </Box>
               <Box
                 onClick={() => {
-                  updateCollection({
+                  const update = {
                     ...collection,
                     formMetadata: {
                       ...collection.formMetadata,
-                      theme: TypeformProps,
-                      selectedTheme: "typeform",
+                      theme: {
+                        layout: {
+                          ...GFormBase,
+                          colorPalette:
+                            themeMapper.gform[
+                              Object.keys(themeMapper.gform)[0]
+                            ],
+                        },
+                        selectedLayout: "gform",
+                        selectedTheme: Object.keys(themeMapper.gform)[0],
+                      },
                     },
-                  });
-                  updateFormCollection(collection.id, {
-                    formMetadata: {
-                      ...collection.formMetadata,
-                      theme: TypeformProps,
-                      selectedTheme: "typeform",
-                    },
-                  });
+                  };
+                  updateCollection(update);
+                  updateFormCollection(collection.id, update);
                 }}
                 cursor="pointer"
               >
                 <Tag
                   tone={
-                    collection.formMetadata.selectedTheme === "typeform"
+                    collection.formMetadata.theme.selectedLayout === "gform"
                       ? "accent"
                       : undefined
                   }
                   hover
                 >
-                  Hype
+                  Classic
                 </Tag>
               </Box>
               <Box
                 onClick={() => {
-                  updateCollection({
+                  const update = {
                     ...collection,
                     formMetadata: {
                       ...collection.formMetadata,
-                      theme: GFormProps,
-                      selectedTheme: "gform",
+                      theme: {
+                        layout: {
+                          ...DeformBase,
+                          colorPalette:
+                            themeMapper.deform[
+                              Object.keys(themeMapper.deform)[0]
+                            ],
+                        },
+                        selectedLayout: "deform",
+                        selectedTheme: Object.keys(themeMapper.deform)[0],
+                      },
                     },
-                  });
-                  updateFormCollection(collection.id, {
-                    formMetadata: {
-                      ...collection.formMetadata,
-                      theme: GFormProps,
-                      selectedTheme: "gform",
-                    },
-                  });
+                  };
+                  updateCollection(update);
+                  updateFormCollection(collection.id, update);
                 }}
                 cursor="pointer"
               >
                 <Tag
                   tone={
-                    collection.formMetadata.selectedTheme === "gform"
-                      ? "accent"
-                      : undefined
-                  }
-                  hover
-                >
-                  Refi
-                </Tag>
-              </Box>
-              <Box
-                onClick={() => {
-                  updateCollection({
-                    ...collection,
-                    formMetadata: {
-                      ...collection.formMetadata,
-                      theme: DeformProps,
-                      selectedTheme: "deform",
-                    },
-                  });
-                  updateFormCollection(collection.id, {
-                    formMetadata: {
-                      ...collection.formMetadata,
-                      theme: DeformProps,
-                      selectedTheme: "deform",
-                    },
-                  });
-                }}
-                cursor="pointer"
-              >
-                <Tag
-                  tone={
-                    collection.formMetadata.selectedTheme === "deform"
+                    collection.formMetadata.theme.selectedLayout === "deform"
                       ? "accent"
                       : undefined
                   }
@@ -265,14 +262,60 @@ const FormDesigner = () => {
                   Futuristic
                 </Tag>
               </Box>
-              <Box
+              {/* <Box
                 cursor="pointer"
                 onClick={() => {
                   toast("Coming soon!");
                 }}
               >
                 <Tag hover>Custom</Tag>
-              </Box>
+              </Box> */}
+            </Stack>
+          </Stack>
+          <Stack>
+            <Text variant="label">Themes</Text>
+            <Stack direction="horizontal" wrap>
+              {Object.keys(
+                themeMapper[collection.formMetadata.theme.selectedLayout]
+              ).map((theme) => (
+                <Box
+                  key={theme}
+                  onClick={() => {
+                    const update = {
+                      ...collection,
+                      formMetadata: {
+                        ...collection.formMetadata,
+                        theme: {
+                          ...collection.formMetadata.theme,
+                          layout: {
+                            ...collection.formMetadata.theme.layout,
+                            colorPalette:
+                              themeMapper[
+                                collection.formMetadata.theme.selectedLayout
+                              ][theme],
+                          },
+                          selectedTheme: theme,
+                        },
+                      },
+                    };
+                    console.log({ update: update.formMetadata.theme });
+                    updateCollection(update);
+                    updateFormCollection(collection.id, update);
+                  }}
+                  cursor="pointer"
+                >
+                  <Tag
+                    tone={
+                      collection.formMetadata.theme.selectedTheme === theme
+                        ? "accent"
+                        : undefined
+                    }
+                    hover
+                  >
+                    {theme}
+                  </Tag>
+                </Box>
+              ))}
             </Stack>
           </Stack>
         </div>
