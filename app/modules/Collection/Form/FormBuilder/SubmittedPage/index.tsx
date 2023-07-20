@@ -50,7 +50,11 @@ const SubmittedPage = ({
         </Box>
         <Stack align="center" space="8">
           {/* <Text type="heading">{form.formMetadata.messageOnSubmission}</Text> */}
-          <Editor value={form.formMetadata.messageOnSubmission} disabled />
+          {/* <Editor value={form.formMetadata.messageOnSubmission} disabled /> */}
+          <Text
+            type="description"
+            description={form.formMetadata.messageOnSubmission}
+          />
           <Box marginBottom="8" />
           {!preview && form.parents[0].pricingPlan === 0 && (
             <Stack>

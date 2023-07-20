@@ -72,8 +72,6 @@ export default function PublicField({
     return null;
   }
 
-  console.log(form.properties[propertyId].description);
-
   return (
     <Box paddingY="2" borderRadius="large">
       <FieldContainer
@@ -301,11 +299,9 @@ export default function PublicField({
             placeholder={`Your answer`}
             value={data && data[propertyId]}
             onChange={(value) => {
-              console.log("value", value);
               setData({ ...data, [propertyId]: value });
             }}
             onBlur={(value) => {
-              console.log("value", value);
               if (!value) return;
               data[propertyId] = value;
               setData({ ...data });

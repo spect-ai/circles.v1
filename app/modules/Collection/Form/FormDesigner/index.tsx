@@ -1,5 +1,5 @@
 import { Box, FileInput, Stack, Tag, Text } from "degen";
-import React from "react";
+import React, { useState } from "react";
 import PublicForm from "@/app/modules/PublicForm";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import styled from "@emotion/styled";
@@ -19,6 +19,10 @@ import { toast } from "react-toastify";
 import { HeaderButton } from "../FormEditor/EditorHeader";
 import { BsHexagon } from "react-icons/bs";
 import { FaPager } from "react-icons/fa";
+import Popover from "@/app/common/components/Popover";
+import { motion } from "framer-motion";
+import ColorPicker from "react-best-gradient-color-picker";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 
 const themeMapper: {
   [key: string]: any;
@@ -29,12 +33,25 @@ const themeMapper: {
   deform: DeformThemes,
 };
 
+const colorLabelMapper = [
+  "Background",
+  "Page Background",
+  "Primary",
+  "Accent",
+  "Secondary",
+];
+
 const FormDesigner = () => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
 
   const logoInputRef = React.useRef<HTMLDivElement>(null);
   const coverInputRef = React.useRef<HTMLDivElement>(null);
+
+  const [openColorPicker, setOpenColorPicker] = useState(false);
+  const [editColorForOption, setEditColorForOption] = useState(-1);
+  const [colorPickerColor, setColorPickerColor] = useState("#000000");
+  const [activeColor, setActiveColor] = useState("");
 
   return (
     <div className="p-8">
@@ -315,6 +332,121 @@ const FormDesigner = () => {
                     {theme}
                   </Tag>
                 </Box>
+              ))}
+            </Stack>
+          </Stack>
+          <Stack>
+            <Box color="inherit" width="1/3">
+              <Popover
+                isOpen={openColorPicker}
+                setIsOpen={(isOpen) => {
+                  setOpenColorPicker(isOpen);
+                }}
+                butttonComponent={<Box></Box>}
+              >
+                <motion.div
+                  initial={{ height: 0 }}
+                  animate={{ height: "auto", transition: { duration: 0.2 } }}
+                  exit={{ height: 0 }}
+                  style={{
+                    overflow: "hidden",
+                  }}
+                >
+                  <Box backgroundColor="background" padding="2">
+                    <ColorPicker
+                      // hideInputs={true}
+                      // hideControls={true}
+                      hidePresets={true}
+                      hideColorTypeBtns={activeColor !== "primaryBg"}
+                      hideAdvancedSliders={true}
+                      hideColorGuide={true}
+                      hideInputType={true}
+                      value={colorPickerColor}
+                      hideOpacity={true}
+                      onChange={(color: string) => {
+                        console.log({ color });
+                        setColorPickerColor(color);
+                        // return;
+
+                        // color comes as rgba(0,0,0,1)
+                        const [r, g, b] = color.slice(5, -1).split(",");
+                        console.log({ r, g, b });
+                        let selectedColor = `${r},${g},${b}`;
+                        if (activeColor === "primaryBg") {
+                          selectedColor = color;
+                        }
+                        console.log({ selectedColor, activeColor });
+                        const update = {
+                          ...collection,
+                          formMetadata: {
+                            ...collection.formMetadata,
+                            theme: {
+                              ...collection.formMetadata.theme,
+                              layout: {
+                                ...collection.formMetadata.theme.layout,
+                                colorPalette: {
+                                  ...collection.formMetadata.theme.layout
+                                    .colorPalette,
+                                  [activeColor]: selectedColor,
+                                },
+                              },
+                            },
+                          },
+                        };
+                        console.log({ update: update.formMetadata.theme });
+                        updateCollection(update);
+                        updateFormCollection(collection.id, update);
+                      }}
+                    />
+                  </Box>
+                </motion.div>
+              </Popover>
+            </Box>
+            <Text variant="label">Customize</Text>
+            <Stack>
+              {Object.keys(
+                collection.formMetadata.theme.layout.colorPalette
+              ).map((color, index) => (
+                <Stack direction="horizontal" align="center">
+                  <Box width="1/2">
+                    <Text>{colorLabelMapper[index] || color} </Text>
+                  </Box>
+                  <Box
+                    key={color}
+                    onClick={() => {
+                      setColorPickerColor(
+                        index === 0
+                          ? collection.formMetadata.theme.layout.colorPalette[
+                              color as keyof typeof collection.formMetadata.theme.layout.colorPalette
+                            ] || "#000000"
+                          : `rgb(${
+                              collection.formMetadata.theme.layout.colorPalette[
+                                color as keyof typeof collection.formMetadata.theme.layout.colorPalette
+                              ]
+                            })`
+                      );
+                      setActiveColor(color);
+                      setOpenColorPicker(true);
+                    }}
+                    height="8"
+                    width="8"
+                    borderRadius="full"
+                    borderWidth="0.375"
+                    cursor="pointer"
+                    style={{
+                      background:
+                        index === 0
+                          ? collection.formMetadata.theme.layout.colorPalette[
+                              color as keyof typeof collection.formMetadata.theme.layout.colorPalette
+                            ]
+                          : `rgb(${
+                              collection.formMetadata.theme.layout.colorPalette[
+                                color as keyof typeof collection.formMetadata.theme.layout.colorPalette
+                              ]
+                            })`,
+                    }}
+                  />
+                </Stack>
               ))}
             </Stack>
           </Stack>

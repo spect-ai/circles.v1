@@ -602,8 +602,6 @@ function FormFields({ form, setForm, preview }: Props) {
             const pageOrder = form.formMetadata.pageOrder;
             const fields = pages[currentPage || ""]?.properties;
 
-            console.log({ pages, pageOrder });
-
             return (
               <Page>
                 <FormFieldContainer
