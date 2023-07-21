@@ -58,8 +58,13 @@ const Page = ({
   const { formActions } = useRoleGate();
   const { y } = useScroll(scrollContainerRef);
 
+  const [newField, setNewField] = useState("");
+
+  const fieldRef = React.useRef<HTMLDivElement>(null);
+
   const onAddField = async (type: string) => {
     const fieldId = uuid();
+    setNewField(fieldId);
     const tempCollection = collection;
     updateCollection({
       ...tempCollection,
@@ -99,6 +104,14 @@ const Page = ({
     );
     if (res.id) {
       updateCollection(res);
+      setTimeout(() => {
+        console.log({ fieldRef: fieldRef.current });
+        // scroll the field into view
+        fieldRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 100);
     } else {
       logError("Failed to update collection");
       updateCollection(tempCollection);
@@ -445,7 +458,7 @@ const Page = ({
                     }}
                   >
                     <Stack direction="horizontal">
-                      <Box width="full">
+                      <Box width="full" ref={fieldRef}>
                         <EditableField
                           pageId={pageId}
                           key={field}
@@ -453,6 +466,7 @@ const Page = ({
                           index={index}
                           setShowConfirmOnDelete={setShowConfirmOnDelete}
                           setPropertyId={setPropertyId}
+                          isFocused={newField === field}
                         />
                       </Box>
                       <motion.div
@@ -539,7 +553,7 @@ const Page = ({
               })}
               {provided.placeholder}
               {fields.length === 0 && (
-                <Box marginY="8">
+                <Box margin="8">
                   <Stack>
                     <Text variant="label">
                       There are no fields in this page

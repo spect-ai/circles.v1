@@ -54,6 +54,7 @@ type Props = {
   index: number;
   setShowConfirmOnDelete: (show: boolean) => void;
   setPropertyId: (id: string | null) => void;
+  isFocused?: boolean;
 };
 
 const EditableField = ({
@@ -62,6 +63,7 @@ const EditableField = ({
   index,
   setShowConfirmOnDelete,
   setPropertyId,
+  isFocused = false,
 }: Props) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
@@ -86,7 +88,7 @@ const EditableField = ({
     advancedConditions?.order?.length > 0 ? true : false
   );
 
-  const [focused, setFocused] = useState(false);
+  const [focused, setFocused] = useState(isFocused);
 
   const [memberOptions, setMemberOptions] = useState([]);
   const [fetchingMemberOptions, setFetchingMemberOptions] = useState(true);
