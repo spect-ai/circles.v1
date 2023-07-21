@@ -13,6 +13,7 @@ import {
   useTheme,
 } from "degen";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import Tooltip from "@/app/common/components/Tooltip";
 import styled from "styled-components";
 import { Droppable } from "react-beautiful-dnd";
 import Editor from "@/app/common/components/Editor";
@@ -478,36 +479,57 @@ const Page = ({
                           // borderWidth="0.375"
                         >
                           <Stack space="2">
-                            <Button
-                              shape="circle"
-                              size="extraSmall"
-                              variant="transparent"
-                              onClick={() => onAddField("shortText")}
-                            >
-                              <Text color="accent">
-                                <IconPlusSmall size="5" />
-                              </Text>
-                            </Button>
-                            <Button
-                              shape="circle"
-                              size="extraSmall"
-                              variant="transparent"
-                              onClick={() => onAddField("readonly")}
-                            >
-                              <Text color="accent">
-                                <RxText size={20} />
-                              </Text>
-                            </Button>
-                            <Button
-                              shape="circle"
-                              size="extraSmall"
-                              variant="transparent"
-                              onClick={onAddPage}
-                            >
-                              <Text color="accent">
-                                <IconDocumentAdd size="5" />
-                              </Text>
-                            </Button>
+                            <Tooltip content="Add Field" side="left">
+                              <Button
+                                shape="circle"
+                                size="extraSmall"
+                                variant="transparent"
+                                onClick={() => onAddField("shortText")}
+                              >
+                                <Text color="accent">
+                                  <IconPlusSmall size="5" />
+                                </Text>
+                              </Button>
+                            </Tooltip>
+                            <Tooltip content="Add Text" side="left">
+                              <Button
+                                shape="circle"
+                                size="extraSmall"
+                                variant="transparent"
+                                onClick={() => onAddField("readonly")}
+                              >
+                                <Text color="accent">
+                                  <RxText size={20} />
+                                </Text>
+                              </Button>
+                            </Tooltip>
+                            <Tooltip content="Add Page" side="left">
+                              <Button
+                                shape="circle"
+                                size="extraSmall"
+                                variant="transparent"
+                                onClick={onAddPage}
+                              >
+                                <Text color="accent">
+                                  <IconDocumentAdd size="5" />
+                                </Text>
+                              </Button>
+                            </Tooltip>
+                            <Tooltip content="Delete Field" side="left">
+                              <Button
+                                shape="circle"
+                                size="extraSmall"
+                                variant="transparent"
+                                onClick={() => {
+                                  setPropertyId(field);
+                                  setShowConfirmOnDelete(true);
+                                }}
+                              >
+                                <Text color="red">
+                                  <IconTrash size="5" />
+                                </Text>
+                              </Button>
+                            </Tooltip>
                           </Stack>
                         </Box>
                       </motion.div>
@@ -531,48 +553,56 @@ const Page = ({
                       width="fit"
                     >
                       <Stack space="2" direction="horizontal" align="center">
-                        <Button
-                          shape="circle"
-                          size="extraSmall"
-                          variant="transparent"
-                          onClick={() => onAddField("shortText")}
-                        >
-                          <Text color="accent">
-                            <IconPlusSmall size="5" />
-                          </Text>
-                        </Button>
-                        <Button
-                          shape="circle"
-                          size="extraSmall"
-                          variant="transparent"
-                          onClick={() => onAddField("readonly")}
-                        >
-                          <Box marginTop="1">
+                        <Tooltip content="Add Field">
+                          <Button
+                            shape="circle"
+                            size="extraSmall"
+                            variant="transparent"
+                            onClick={() => onAddField("shortText")}
+                          >
                             <Text color="accent">
-                              <RxText size={22} />
+                              <IconPlusSmall size="5" />
                             </Text>
-                          </Box>
-                        </Button>
-                        <Button
-                          shape="circle"
-                          size="extraSmall"
-                          variant="transparent"
-                          onClick={onAddPage}
-                        >
-                          <Text color="accent">
-                            <IconDocumentAdd size="6" />
-                          </Text>
-                        </Button>
-                        <Button
-                          shape="circle"
-                          size="extraSmall"
-                          variant="transparent"
-                          onClick={() => onPageDelete(pageId)}
-                        >
-                          <Text color="red">
-                            <IconTrash size="6" />
-                          </Text>
-                        </Button>
+                          </Button>
+                        </Tooltip>
+                        <Tooltip content="Add Text">
+                          <Button
+                            shape="circle"
+                            size="extraSmall"
+                            variant="transparent"
+                            onClick={() => onAddField("readonly")}
+                          >
+                            <Box marginTop="1">
+                              <Text color="accent">
+                                <RxText size={22} />
+                              </Text>
+                            </Box>
+                          </Button>
+                        </Tooltip>
+                        <Tooltip content="Add Page">
+                          <Button
+                            shape="circle"
+                            size="extraSmall"
+                            variant="transparent"
+                            onClick={onAddPage}
+                          >
+                            <Text color="accent">
+                              <IconDocumentAdd size="6" />
+                            </Text>
+                          </Button>
+                        </Tooltip>
+                        <Tooltip content="Delete Page">
+                          <Button
+                            shape="circle"
+                            size="extraSmall"
+                            variant="transparent"
+                            onClick={() => onPageDelete(pageId)}
+                          >
+                            <Text color="red">
+                              <IconTrash size="6" />
+                            </Text>
+                          </Button>
+                        </Tooltip>
                       </Stack>
                     </Box>
                   </Stack>

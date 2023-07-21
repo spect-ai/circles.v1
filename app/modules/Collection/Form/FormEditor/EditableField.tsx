@@ -91,6 +91,7 @@ const EditableField = ({
   const [memberOptions, setMemberOptions] = useState([]);
   const [fetchingMemberOptions, setFetchingMemberOptions] = useState(true);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   const [rating, setRating] = useState({
     min: collection.properties[id]?.sliderOptions?.min || 1,
@@ -299,6 +300,8 @@ const EditableField = ({
               ref={provided.innerRef}
               position={"relative"}
               isDragging={snapshot.isDragging}
+              onMouseOver={() => setHovered(true)}
+              onMouseLeave={() => setHovered(false)}
               {...provided.draggableProps}
             >
               <Box position="absolute" left="0" top="6">
@@ -306,7 +309,7 @@ const EditableField = ({
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{
-                      opacity: focused ? 1 : 0,
+                      opacity: hovered ? 1 : 0,
                     }}
                     transition={{ duration: 0.2 }}
                   >
@@ -360,8 +363,8 @@ const EditableField = ({
                       value={collection.properties[id]?.description}
                       placeholder={
                         collection.properties[id]?.type === "readonly"
-                          ? "Add text"
-                          : "Add field description"
+                          ? `Add text,  "/" for commands`
+                          : `Add field description, "/" for commands`
                       }
                       onChange={() => {
                         setIsDirty(true);
@@ -641,7 +644,7 @@ const EditableField = ({
                             />
                           </Box>
                           {/* <RadixSelect /> */}
-                          <Button
+                          {/* <Button
                             tone="red"
                             shape="circle"
                             size="small"
@@ -652,7 +655,7 @@ const EditableField = ({
                             }}
                           >
                             <IconTrash />
-                          </Button>
+                          </Button> */}
                         </Stack>
                         {collection.properties[id]?.type !== "readonly" && (
                           <Stack
@@ -708,7 +711,7 @@ const EditableField = ({
                             <Text variant="label">Allow custom answer</Text>
                           </Stack>
                         )}
-                        {(collection.properties[id]?.type === "singleSelect" ||
+                        {/* {(collection.properties[id]?.type === "singleSelect" ||
                           collection.properties[id]?.type ===
                             "multiSelect") && (
                           <Stack
@@ -734,7 +737,7 @@ const EditableField = ({
                             />
                             <Text variant="label">Immutable</Text>
                           </Stack>
-                        )}
+                        )} */}
                         {collection.properties[id]?.type === "multiSelect" && (
                           <Stack
                             direction="horizontal"

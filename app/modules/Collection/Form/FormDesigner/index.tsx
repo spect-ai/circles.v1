@@ -405,7 +405,7 @@ const FormDesigner = () => {
             <Text variant="label">Customize</Text>
             <Stack>
               {Object.keys(
-                collection.formMetadata.theme.layout.colorPalette
+                collection.formMetadata.theme.layout.colorPalette || {}
               ).map((color, index) => (
                 <Stack direction="horizontal" align="center">
                   <Box width="1/2">
