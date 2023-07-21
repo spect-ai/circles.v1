@@ -5,7 +5,6 @@ import { Action, CollectionType, Option, Property } from "@/app/types";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Box, Button, IconClose, Text } from "degen";
 import { useEffect, useState } from "react";
-import { Tooltip } from "react-tooltip";
 import { toast } from "react-toastify";
 import { Field } from "./Field";
 

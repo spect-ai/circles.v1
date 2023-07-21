@@ -7,7 +7,6 @@ import ColorPicker from "react-best-gradient-color-picker";
 import Popover from "@/app/common/components/Popover";
 import { motion } from "framer-motion";
 import CheckBox from "@/app/common/components/Table/Checkbox";
-import { Tooltip } from "react-tooltip";
 import { BiHelpCircle } from "react-icons/bi";
 
 type Props = {

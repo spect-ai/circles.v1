@@ -7,7 +7,6 @@ import { useAtom } from "jotai";
 import { matchSorter } from "match-sorter";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { Tooltip } from "react-tooltip";
 import { toast } from "react-toastify";
 import { useCircle } from "./CircleContext";
 import InviteMemberModal from "./ContributorsModal/InviteMembersModal";

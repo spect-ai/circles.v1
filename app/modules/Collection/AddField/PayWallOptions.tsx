@@ -2,7 +2,6 @@
 // import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 // import React, { useEffect, useState } from "react";
 // import { isAddress } from "ethers/lib/utils";
-// import { Tooltip } from "react-tooltip";
 // import RewardTokenOptions from "./RewardTokenOptions";
 
 // interface Props {

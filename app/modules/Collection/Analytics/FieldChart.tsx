@@ -15,7 +15,6 @@ import { ImEmbed } from "react-icons/im";
 import { logError } from "@/app/common/utils/utils";
 import { satisfiesAdvancedConditions } from "../Common/SatisfiesAdvancedFilter";
 import Plot from "./Plot";
-import { Tooltip } from "react-tooltip";
 
 type Props =
   | {

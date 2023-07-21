@@ -6,7 +6,6 @@ import { Registry } from "@/app/types";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Box, Button, IconClose, Input, Stack, Text, useTheme } from "degen";
 import React, { useEffect, useState } from "react";
-import { Tooltip } from "react-tooltip";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
 import { updateField } from "@/app/services/Collection";

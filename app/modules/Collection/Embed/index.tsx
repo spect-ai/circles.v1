@@ -3,9 +3,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Stack, Tag, Text, useTheme } from "degen";
 import React, { useState } from "react";
 import { Copy, HelpCircle } from "react-feather";
-import { Tooltip } from "react-tooltip";
 import { toast } from "react-toastify";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type EmbedProps = {
   setIsOpen: (isOpen: boolean) => void;

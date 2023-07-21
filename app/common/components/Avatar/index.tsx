@@ -5,7 +5,6 @@ import { GithubOutlined } from "@ant-design/icons";
 import { Avatar, Box, Button, Tag, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { Tooltip } from "react-tooltip";
 import styled from "styled-components";
 import { smartTrim } from "../../utils/utils";
 
@@ -45,7 +44,6 @@ export default function ClickableAvatar({
 
   return (
     <>
-      <Tooltip id="button-tooltip" />
       <Box
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}

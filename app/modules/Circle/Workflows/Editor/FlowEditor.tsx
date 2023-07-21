@@ -34,7 +34,6 @@ import { getFlow, runFlow, updateFlow } from "@/app/services/Workflows";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import AddNodePopover from "./AddNodePopover";
-import { Tooltip } from "react-tooltip";
 import { ToastContainer, toast } from "react-toastify";
 import { AnimatePresence } from "framer-motion";
 import ViewRuns from "./ViewRuns";

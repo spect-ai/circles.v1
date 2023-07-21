@@ -13,7 +13,6 @@ import {
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { Col, Row } from "react-grid-system";
-import { Tooltip } from "react-tooltip";
 
 type Props = {
   runs: FlowRuns;

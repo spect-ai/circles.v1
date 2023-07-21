@@ -16,7 +16,6 @@ import { Box, Button, Input, MediaPicker, Stack, Text, Textarea } from "degen";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { Tooltip } from "react-tooltip";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
