@@ -1,6 +1,6 @@
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
-import { useCircle } from "@/app/modules/Circle/CircleContext";
-import PublicProject from "@/app/modules/PublicProject";
+// import { useCircle } from "@/app/modules/Circle/CircleContext";
+// import PublicProject from "@/app/modules/PublicProject";
 import { FormType } from "@/app/types";
 import { GetServerSidePropsContext, NextPage } from "next";
 import dynamic from "next/dynamic";
@@ -12,13 +12,14 @@ const PublicFormLayout = dynamic(
 
 const PublicForm = dynamic(() => import("@/app/modules/PublicForm"));
 
+const PublicProject = dynamic(() => import("@/app/modules/PublicProject"));
+
 interface Props {
   slug: string;
   form?: FormType;
 }
 
 const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
-  const { circle } = useCircle();
   if (!form) {
     return (
       <>
@@ -91,7 +92,6 @@ const FormPage: NextPage<Props> = ({ slug, form }: Props) => {
               "Projects for communities to share contect about tasks, contacts, content and more."
             }
             image={
-              circle?.avatar ||
               "https://ik.imagekit.io/spectcdn/spect_landscape.pngcz0kiyzu43m_fb9pRIjVW?updatedAt=1681837726214"
             }
           />
@@ -131,8 +131,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     )
   )?.json();
 
-  console.log({ form: form.parents[0] });
-  console.log({ form: form.slug });
+  // console.log({ form: form.parents[0] });
+  // console.log({ form: form.slug });
 
   console.timeEnd("fetch");
 
