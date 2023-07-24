@@ -17,6 +17,7 @@ import {
 } from "../Circle/CircleContext";
 import PublicFormLayout from "@/app/common/layout/PublicLayout/PublicFormLayout";
 import { Form, FormProvider } from "@avp1598/vibes";
+import { useRouter } from "next/router";
 
 type Props = {
   form?: FormType;
@@ -33,9 +34,29 @@ function PublicForm({ form: fetchedForm, embed, previewPage }: Props) {
   const context = useProviderCircleContext();
   const profileContext = useProviderLocalProfile();
 
+  const { formId } = useRouter().query;
+
   useEffect(() => {
-    setForm(fetchedForm);
-  }, [fetchedForm]);
+    if (!fetchedForm && formId) {
+      (async () => {
+        const form = await (
+          await fetch(
+            `${process.env.SERVERSIDE_API_HOST}/collection/v1/public/slug/${formId}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include",
+            }
+          )
+        )?.json();
+        setForm(form);
+      })();
+    } else {
+      setForm(fetchedForm);
+    }
+  }, [fetchedForm, formId]);
 
   if (embed) {
     return (
@@ -50,11 +71,32 @@ function PublicForm({ form: fetchedForm, embed, previewPage }: Props) {
             }`,
           }}
         />
-        <Container embed={true} id="container">
-          <FormContainer>
-            <FormFields form={form} setForm={setForm} />
-          </FormContainer>
-        </Container>
+        <FormProvider
+          colorPalette={form?.formMetadata.theme?.layout.colorPalette || {}}
+          formProps={{
+            ...form?.formMetadata?.theme?.layout?.formProps,
+            cover: form?.formMetadata.cover
+              ? `url(${form?.formMetadata?.cover})`
+              : "rgb(191, 90, 242,0.2)",
+            backgroundPosition: previewPage ? "absolute" : "fixed",
+          }}
+          pageProps={form?.formMetadata.theme?.layout.pageProps || {}}
+          fieldProps={form?.formMetadata.theme?.layout.fieldProps || {}}
+          buttonProps={form?.formMetadata.theme?.layout.buttonProps || {}}
+          textProps={form?.formMetadata.theme?.layout.textProps || {}}
+          logoProps={form?.formMetadata.theme?.layout.logoProps || {}}
+          optionProps={form?.formMetadata.theme?.layout.optionProps || {}}
+          tagProps={form?.formMetadata.theme?.layout.tagProps || {}}
+          stepperProps={form?.formMetadata.theme?.layout.stepperProps || {}}
+        >
+          <Form>
+            <FormFields
+              form={form}
+              setForm={setForm}
+              previewPage={previewPage}
+            />
+          </Form>
+        </FormProvider>
       </ScrollContainer>
     );
   }
