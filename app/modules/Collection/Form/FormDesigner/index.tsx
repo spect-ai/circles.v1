@@ -464,7 +464,7 @@ const FormDesigner = () => {
         </div>
         <div className="w-full xl:w-2/3">
           <ScrollContainer>
-            <PublicForm form={collection} preview />
+            <PublicForm form={collection} previewPage="fields" />
           </ScrollContainer>
         </div>
       </div>

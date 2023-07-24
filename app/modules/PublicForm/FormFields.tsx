@@ -46,14 +46,14 @@ const Modal = dynamic(() => import("@/app/common/components/Modal"));
 //   ssr: false,
 // });
 
-const NotificationPreferenceModal = dynamic(
-  () => import("./Fields/NotificationPreferenceModal")
-);
+// const NotificationPreferenceModal = dynamic(
+//   () => import("./Fields/NotificationPreferenceModal")
+// );
 
 type Props = {
   form: FormType | undefined;
   setForm: (form: FormType) => void;
-  preview?: boolean;
+  previewPage?: string;
 };
 
 export const getUser = async () => {
@@ -63,7 +63,7 @@ export const getUser = async () => {
   return await res.json();
 };
 
-function FormFields({ form, setForm, preview }: Props) {
+function FormFields({ form, setForm, previewPage }: Props) {
   const [data, setData] = useState<any>({});
   const [memberOptions, setMemberOptions] = useState([]);
   const [updateResponse, setUpdateResponse] = useState(false);
@@ -220,7 +220,7 @@ function FormFields({ form, setForm, preview }: Props) {
   }, [form?.name, form?.formMetadata.previousResponses?.length]);
 
   const onSubmit = async (form: CollectionType) => {
-    if (preview) {
+    if (previewPage) {
       setCurrentPage("submitted");
       return;
     }
@@ -395,7 +395,7 @@ function FormFields({ form, setForm, preview }: Props) {
 
   const onStepChange = async (step: number) => {
     if (!form) return;
-    if (preview) {
+    if (previewPage) {
       setCurrentPage(form.formMetadata.pageOrder[step]);
       return;
     }
@@ -443,7 +443,7 @@ function FormFields({ form, setForm, preview }: Props) {
   }, [currentPage]);
 
   useEffect(() => {
-    if (preview) {
+    if (previewPage === "fields") {
       // set page to the first page with a property
       const firstPageWithProperty = form?.formMetadata.pageOrder.find(
         (pageId) => {
@@ -453,8 +453,8 @@ function FormFields({ form, setForm, preview }: Props) {
       if (firstPageWithProperty) {
         setCurrentPage(firstPageWithProperty);
       }
-    }
-  }, [preview]);
+    } else setCurrentPage(previewPage || "start");
+  }, [previewPage]);
 
   return (
     <Box
@@ -553,7 +553,7 @@ function FormFields({ form, setForm, preview }: Props) {
               setCurrentPage={setCurrentPage}
               onStepChange={onStepChange}
               key={i}
-              preview={preview}
+              preview={!!previewPage}
             />
           );
         } else if (currentPage === "connectDiscord" && form) {
@@ -708,7 +708,7 @@ function FormFields({ form, setForm, preview }: Props) {
                       >
                         <Button
                           onClick={async () => {
-                            if (preview) {
+                            if (previewPage) {
                               setCurrentPage(
                                 pageOrder[pageOrder.indexOf(currentPage) + 1]
                               );

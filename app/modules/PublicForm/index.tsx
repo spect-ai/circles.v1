@@ -21,10 +21,10 @@ import { Form, FormProvider } from "@avp1598/vibes";
 type Props = {
   form?: FormType;
   embed?: boolean;
-  preview?: boolean;
+  previewPage?: string;
 };
 
-function PublicForm({ form: fetchedForm, embed, preview }: Props) {
+function PublicForm({ form: fetchedForm, embed, previewPage }: Props) {
   const [form, setForm] = useState<FormType | undefined>(fetchedForm);
   const { mode } = useTheme();
   const { pathname } = useLocation();
@@ -85,7 +85,7 @@ function PublicForm({ form: fetchedForm, embed, preview }: Props) {
                 cover: form?.formMetadata.cover
                   ? `url(${form?.formMetadata?.cover})`
                   : "rgb(191, 90, 242,0.2)",
-                backgroundPosition: preview ? "absolute" : "fixed",
+                backgroundPosition: previewPage ? "absolute" : "fixed",
               }}
               pageProps={form?.formMetadata.theme?.layout.pageProps || {}}
               fieldProps={form?.formMetadata.theme?.layout.fieldProps || {}}
@@ -97,7 +97,11 @@ function PublicForm({ form: fetchedForm, embed, preview }: Props) {
               stepperProps={form?.formMetadata.theme?.layout.stepperProps || {}}
             >
               <Form>
-                <FormFields form={form} setForm={setForm} preview={preview} />
+                <FormFields
+                  form={form}
+                  setForm={setForm}
+                  previewPage={previewPage}
+                />
               </Form>
             </FormProvider>
           </ScrollContainer>

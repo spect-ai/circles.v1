@@ -56,10 +56,10 @@ const FormShare = () => {
       </AnimatePresence>
       <Stack align="center">
         <Heading>Multiple ways to share your form with the world</Heading>
-        <div className="-translate-y-16 flex flex-col items-center w-full">
+        <div className="-translate-y-12 flex flex-col items-center w-full">
           <div className="w-full xl:w-2/3 scale-75 ">
             <ScrollContainer>
-              <PublicForm form={collection} preview />
+              <PublicForm form={collection} previewPage="start" />
             </ScrollContainer>
           </div>
           <Stack direction="horizontal">
