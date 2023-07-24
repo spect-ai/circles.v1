@@ -535,8 +535,10 @@ const Page = ({
                                 size="extraSmall"
                                 variant="transparent"
                                 onClick={() => {
-                                  setPropertyId(field);
-                                  setShowConfirmOnDelete(true);
+                                  if (collection.data) {
+                                    setPropertyId(field);
+                                    setShowConfirmOnDelete(true);
+                                  }
                                 }}
                               >
                                 <Text color="red">
