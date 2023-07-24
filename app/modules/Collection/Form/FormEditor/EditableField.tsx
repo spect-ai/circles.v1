@@ -825,24 +825,6 @@ const EditableField = ({
                             </Stack>
                           </Stack>
                         )}
-                        <Accordian
-                          name="Advanced"
-                          defaultOpen={advancedDefaultOpen}
-                        >
-                          <AddAdvancedConditions
-                            rootConditionGroup={advancedConditions}
-                            setRootConditionGroup={(conditionGroup) => {
-                              setIsDirty(true);
-                              setAdvancedConditions(conditionGroup);
-                            }}
-                            firstRowMessage="When"
-                            buttonText="Add Condition"
-                            groupButtonText="Group Conditions"
-                            collection={collection}
-                            dropDownPortal={true}
-                            validConditionFields={validConditionFields}
-                          />
-                        </Accordian>
                       </Stack>
                     </motion.div>
                   </Stack>
@@ -864,6 +846,21 @@ const EditableField = ({
                       </Box>
                     </motion.div>
                   )}
+                  <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
+                    <AddAdvancedConditions
+                      rootConditionGroup={advancedConditions}
+                      setRootConditionGroup={(conditionGroup) => {
+                        setIsDirty(true);
+                        setAdvancedConditions(conditionGroup);
+                      }}
+                      firstRowMessage="When"
+                      buttonText="Add Condition"
+                      groupButtonText="Group Conditions"
+                      collection={collection}
+                      dropDownPortal={true}
+                      validConditionFields={validConditionFields}
+                    />
+                  </Accordian>
                 </Stack>
               </Box>
             </Container>
