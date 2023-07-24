@@ -6,6 +6,7 @@ import { useQuery } from "react-query";
 import DiscordField from "../../PublicForm/Fields/DiscordField";
 import GithubField from "../../PublicForm/Fields/GithubField";
 import { useProfile } from "./LocalProfileContext";
+import { FormProvider } from "@avp1598/vibes";
 
 export function BasicInfo() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -107,31 +108,44 @@ export function BasicInfo() {
             Connect Accounts
           </Text>
         </Box>
-        <Stack
-          direction={{
-            xs: "vertical",
-            md: "horizontal",
-          }}
+        <FormProvider
+          colorPalette={{}}
+          formProps={{}}
+          pageProps={{}}
+          fieldProps={{}}
+          buttonProps={{}}
+          textProps={{}}
+          logoProps={{}}
+          optionProps={{}}
+          tagProps={{}}
+          stepperProps={{}}
         >
-          <DiscordField
-            data={verifiedSocials}
-            setData={setVerifiedSocials}
-            propertyId="discord"
-            updateRequiredFieldNotSet={() => {}}
-            verify={true}
-            showAvatar={true}
-            showDisconnect={true}
-          />
-          <GithubField
-            data={verifiedSocials}
-            setData={setVerifiedSocials}
-            propertyId="github"
-            updateRequiredFieldNotSet={() => {}}
-            showAvatar={true}
-            verify={true}
-            showDisconnect={true}
-          />
-        </Stack>
+          <Stack
+            direction={{
+              xs: "vertical",
+              md: "horizontal",
+            }}
+          >
+            <DiscordField
+              data={verifiedSocials}
+              setData={setVerifiedSocials}
+              propertyId="discord"
+              updateRequiredFieldNotSet={() => {}}
+              verify={true}
+              showAvatar={true}
+              showDisconnect={true}
+            />
+            <GithubField
+              data={verifiedSocials}
+              setData={setVerifiedSocials}
+              propertyId="github"
+              updateRequiredFieldNotSet={() => {}}
+              showAvatar={true}
+              verify={true}
+              showDisconnect={true}
+            />
+          </Stack>
+        </FormProvider>
       </Stack>
     </Stack>
   );
