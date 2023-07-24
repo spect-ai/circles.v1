@@ -323,13 +323,14 @@ const EditableField = ({
               </Box>
               <Box width="full" id="ref">
                 <Stack space="2">
-                  <Stack space="1">
+                  <Box display="flex" flexDirection="column" gap="1">
                     {collection.properties[id]?.type !== "readonly" && (
                       <Box
                         width="full"
                         display="flex"
                         flexDirection="row"
                         gap="2"
+                        className="bounds"
                       >
                         <NameInput
                           defaultValue={collection.properties[id]?.name}
@@ -362,6 +363,7 @@ const EditableField = ({
                       </Box>
                     )}
                     <Editor
+                      bounds=".bounds"
                       value={collection.properties[id]?.description}
                       placeholder={
                         collection.properties[id]?.type === "readonly"
@@ -386,7 +388,7 @@ const EditableField = ({
                       isDirty={isDirty}
                       version={2}
                     />
-                  </Stack>
+                  </Box>
                   <Stack space="4">
                     <Box>
                       {collection.properties[id]?.type === "shortText" && (

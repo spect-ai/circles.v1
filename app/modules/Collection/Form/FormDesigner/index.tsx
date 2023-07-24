@@ -36,9 +36,9 @@ const themeMapper: {
 const colorLabelMapper = [
   "Background",
   "Page Background",
-  "Primary",
-  "Accent",
-  "Secondary",
+  "Primary (Text)",
+  "Accent (Buttons)",
+  "Secondary (Border)",
 ];
 
 const FormDesigner = () => {
@@ -406,48 +406,59 @@ const FormDesigner = () => {
             <Stack>
               {Object.keys(
                 collection.formMetadata.theme.layout.colorPalette || {}
-              ).map((color, index) => (
-                <Stack direction="horizontal" align="center">
-                  <Box width="1/2">
-                    <Text>{colorLabelMapper[index] || color} </Text>
-                  </Box>
-                  <Box
-                    key={color}
-                    onClick={() => {
-                      setColorPickerColor(
-                        index === 0
-                          ? collection.formMetadata.theme.layout.colorPalette[
-                              color as keyof typeof collection.formMetadata.theme.layout.colorPalette
-                            ] || "#000000"
-                          : `rgb(${
-                              collection.formMetadata.theme.layout.colorPalette[
+              ).map((color, index) => {
+                if (
+                  ["deform", "typeform"].includes(
+                    collection.formMetadata.theme.selectedLayout
+                  ) &&
+                  ["primaryBg", "secondaryBg"].includes(color)
+                )
+                  return null;
+                return (
+                  <Stack direction="horizontal" align="center">
+                    <Box width="1/2">
+                      <Text>{colorLabelMapper[index] || color} </Text>
+                    </Box>
+                    <Box
+                      key={color}
+                      onClick={() => {
+                        setColorPickerColor(
+                          index === 0
+                            ? collection.formMetadata.theme.layout.colorPalette[
+                                color as keyof typeof collection.formMetadata.theme.layout.colorPalette
+                              ] || "#000000"
+                            : `rgb(${
+                                collection.formMetadata.theme.layout
+                                  .colorPalette[
+                                  color as keyof typeof collection.formMetadata.theme.layout.colorPalette
+                                ]
+                              })`
+                        );
+                        setActiveColor(color);
+                        setOpenColorPicker(true);
+                      }}
+                      height="8"
+                      width="8"
+                      borderRadius="full"
+                      borderWidth="0.375"
+                      cursor="pointer"
+                      style={{
+                        background:
+                          index === 0
+                            ? collection.formMetadata.theme.layout.colorPalette[
                                 color as keyof typeof collection.formMetadata.theme.layout.colorPalette
                               ]
-                            })`
-                      );
-                      setActiveColor(color);
-                      setOpenColorPicker(true);
-                    }}
-                    height="8"
-                    width="8"
-                    borderRadius="full"
-                    borderWidth="0.375"
-                    cursor="pointer"
-                    style={{
-                      background:
-                        index === 0
-                          ? collection.formMetadata.theme.layout.colorPalette[
-                              color as keyof typeof collection.formMetadata.theme.layout.colorPalette
-                            ]
-                          : `rgb(${
-                              collection.formMetadata.theme.layout.colorPalette[
-                                color as keyof typeof collection.formMetadata.theme.layout.colorPalette
-                              ]
-                            })`,
-                    }}
-                  />
-                </Stack>
-              ))}
+                            : `rgb(${
+                                collection.formMetadata.theme.layout
+                                  .colorPalette[
+                                  color as keyof typeof collection.formMetadata.theme.layout.colorPalette
+                                ]
+                              })`,
+                      }}
+                    />
+                  </Stack>
+                );
+              })}
             </Stack>
           </Stack>
         </div>

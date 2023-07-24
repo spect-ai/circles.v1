@@ -153,7 +153,7 @@ const FormEditor = () => {
         <Container borderWidth="0.375" borderRadius="2xLarge" padding="8">
           <Box width="full">
             <Stack space="4">
-              <Box padding="8">
+              <Box padding="8" className="bounds">
                 {collection.formMetadata.logo && (
                   <Avatar
                     src={collection.formMetadata.logo}
@@ -180,6 +180,7 @@ const FormEditor = () => {
                 />
                 {!descriptionLoading && (
                   <Editor
+                    bounds=".bounds"
                     value={description}
                     placeholder={`Form description`}
                     isDirty={isDirty}
