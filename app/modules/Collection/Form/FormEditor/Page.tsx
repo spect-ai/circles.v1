@@ -17,7 +17,11 @@ import Tooltip from "@/app/common/components/Tooltip";
 import styled from "styled-components";
 import { Droppable } from "react-beautiful-dnd";
 import Editor from "@/app/common/components/Editor";
-import { addField, updateFormCollection } from "@/app/services/Collection";
+import {
+  addField,
+  deleteField,
+  updateFormCollection,
+} from "@/app/services/Collection";
 import { logError } from "@/app/common/utils/utils";
 import { v4 as uuid } from "uuid";
 import { motion } from "framer-motion";
@@ -26,7 +30,7 @@ import { toast } from "react-toastify";
 import mixpanel from "mixpanel-browser";
 import { RxFileText, RxText } from "react-icons/rx";
 import { useScroll } from "react-use";
-import { GuildRole, Stamp } from "@/app/types";
+import { CollectionType, GuildRole, Stamp } from "@/app/types";
 import { StampCard } from "@/app/modules/PublicForm";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
@@ -534,10 +538,21 @@ const Page = ({
                                 shape="circle"
                                 size="extraSmall"
                                 variant="transparent"
-                                onClick={() => {
+                                onClick={async () => {
                                   if (collection.data) {
                                     setPropertyId(field);
                                     setShowConfirmOnDelete(true);
+                                  } else {
+                                    const res: CollectionType =
+                                      await deleteField(
+                                        collection.id,
+                                        (field as string).trim()
+                                      );
+                                    if (res.id) {
+                                      updateCollection(res);
+                                    } else {
+                                      logError("Error deleting field");
+                                    }
                                   }
                                 }}
                               >

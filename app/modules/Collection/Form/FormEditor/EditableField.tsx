@@ -826,41 +826,44 @@ const EditableField = ({
                           </Stack>
                         )}
                       </Stack>
+                      {collection.properties[id]?.type === "reward" && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{
+                            opacity: focused ? 1 : 0,
+                            height: focused ? "auto" : 0,
+                          }}
+                          exit={{ opacity: 0, height: 0 }}
+                        >
+                          <Box marginTop="2">
+                            <RewardTokenOptions
+                              networks={defaultRewardOptions}
+                              setNetworks={setDefaultRewardOptions}
+                              propertyId={id}
+                            />
+                          </Box>
+                        </motion.div>
+                      )}
+                      <Accordian
+                        name="Advanced"
+                        defaultOpen={advancedDefaultOpen}
+                      >
+                        <AddAdvancedConditions
+                          rootConditionGroup={advancedConditions}
+                          setRootConditionGroup={(conditionGroup) => {
+                            setIsDirty(true);
+                            setAdvancedConditions(conditionGroup);
+                          }}
+                          firstRowMessage="When"
+                          buttonText="Add Condition"
+                          groupButtonText="Group Conditions"
+                          collection={collection}
+                          dropDownPortal={true}
+                          validConditionFields={validConditionFields}
+                        />
+                      </Accordian>
                     </motion.div>
                   </Stack>
-                  {collection.properties[id]?.type === "reward" && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{
-                        opacity: focused ? 1 : 0,
-                        height: focused ? "auto" : 0,
-                      }}
-                      exit={{ opacity: 0, height: 0 }}
-                    >
-                      <Box marginTop="2">
-                        <RewardTokenOptions
-                          networks={defaultRewardOptions}
-                          setNetworks={setDefaultRewardOptions}
-                          propertyId={id}
-                        />
-                      </Box>
-                    </motion.div>
-                  )}
-                  <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
-                    <AddAdvancedConditions
-                      rootConditionGroup={advancedConditions}
-                      setRootConditionGroup={(conditionGroup) => {
-                        setIsDirty(true);
-                        setAdvancedConditions(conditionGroup);
-                      }}
-                      firstRowMessage="When"
-                      buttonText="Add Condition"
-                      groupButtonText="Group Conditions"
-                      collection={collection}
-                      dropDownPortal={true}
-                      validConditionFields={validConditionFields}
-                    />
-                  </Accordian>
                 </Stack>
               </Box>
             </Container>
