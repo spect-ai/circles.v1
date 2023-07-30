@@ -850,9 +850,25 @@ const EditableField = ({
                       >
                         <AddAdvancedConditions
                           rootConditionGroup={advancedConditions}
-                          setRootConditionGroup={(conditionGroup) => {
+                          setRootConditionGroup={async (conditionGroup) => {
                             setIsDirty(true);
                             setAdvancedConditions(conditionGroup);
+                            try {
+                              const res = await updateField(collection.id, {
+                                id: collection.properties[id].id,
+                                advancedConditions: conditionGroup,
+                              });
+
+                              if (res.id) {
+                                updateCollection(res);
+                              } else {
+                                logError("Error updating field");
+                              }
+                            } catch (error) {
+                              // Handle API error
+                              console.error(error);
+                              logError("Error updating field");
+                            }
                           }}
                           firstRowMessage="When"
                           buttonText="Add Condition"
