@@ -76,7 +76,7 @@ export default function PublicField({
     <Box paddingY="2" borderRadius="large">
       <FieldContainer
         label={
-          form.properties[propertyId].type === "readonly"
+          form.properties[propertyId].name === "Untitled Field"
             ? ""
             : form.properties[propertyId]?.name
         }
